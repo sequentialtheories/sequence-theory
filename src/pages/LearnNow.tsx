@@ -131,9 +131,9 @@ const LearnNow = () => {
                 <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-8 w-8 text-purple-600" />
                 </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Professional Strategies</h4>
+                <h4 className="text-lg font-semibold mb-3 text-gray-900">Evolving Market</h4>
                 <p className="text-gray-600">
-                  Access the same strategies used by hedge funds and institutional investors, simplified for individuals.
+                  Cryptocurrency is still in its early stages and will only continue to grow in adoption. Position yourself ahead of the curve in this rapidly evolving market.
                 </p>
               </div>
               <div className="text-center">
