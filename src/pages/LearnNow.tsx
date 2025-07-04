@@ -37,7 +37,7 @@ const LearnNow = () => {
       icon: TrendingUp,
       title: "Expanding Beyond Vault Club",
       description: "Learn when and how to diversify your portfolio beyond structured investment contracts.",
-      level: "Intermediate",
+      level: "Advanced",
       slug: "expanding-beyond-vault-club"
     }
   ];
