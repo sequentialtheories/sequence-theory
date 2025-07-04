@@ -1,5 +1,6 @@
+
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
@@ -20,10 +21,17 @@ const LearnNow = () => {
     },
     {
       icon: PlayCircle,
-      title: "Vault Club Investment Contracts",
+      title: "Investment Contracts",
       description: "Understand how Vault Club contracts work and their advantages for new investors.",
       level: "Intermediate",
       slug: "vault-club-contracts"
+    },
+    {
+      icon: Coins,
+      title: "Digital Asset Exposure",
+      description: "Deep dive into specific tokens like BTC, ETH, SOL, and LINK. Learn about tokenization and Web3.",
+      level: "Intermediate",
+      slug: "digital-asset-exposure"
     },
     {
       icon: Zap,
