@@ -48,15 +48,15 @@ const ExpandingBeyondVaultClub = () => {
         <h3 className="text-2xl font-semibold text-gray-900">The Vault Club + Additional Strategy</h3>
         
         <p className="text-gray-700 mb-4">
-          The smartest approach is to keep your Vault Club contracts as your core foundation while adding complementary strategies. 
-          Think of it like building a financial ecosystem where each part serves a different purpose.
+          Consider how successful investors often maintain their core holdings as a foundation while adding complementary strategies. 
+          Think of it like building a financial ecosystem where each part serves a different purpose and works together harmoniously.
         </p>
 
         <div className="space-y-6">
           <div className="bg-purple-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-purple-800">Core Foundation: Vault Club (60-80% of digital assets)</h4>
+            <h4 className="text-lg font-semibold mb-3 text-purple-800">Core Foundation: Vault Club</h4>
             <p className="text-gray-700 mb-3">
-              Your Vault Club contracts remain your primary wealth-building engine:
+              Your Vault Club contracts naturally serve as your primary wealth-building engine:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>Systematic, automated investing removes emotional decisions</li>
@@ -67,9 +67,9 @@ const ExpandingBeyondVaultClub = () => {
           </div>
           
           <div className="bg-yellow-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Exploration Holdings (10-25% of digital assets)</h4>
+            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Exploration Holdings</h4>
             <p className="text-gray-700 mb-3">
-              Additional investments that complement your Vault Club foundation:
+              Additional investments that complement your Vault Club foundation might include:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>Learning-focused investments in major cryptocurrencies</li>
@@ -80,9 +80,9 @@ const ExpandingBeyondVaultClub = () => {
           </div>
           
           <div className="bg-red-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-red-800">Experimental Holdings (5-15% of digital assets)</h4>
+            <h4 className="text-lg font-semibold mb-3 text-red-800">Experimental Holdings</h4>
             <p className="text-gray-700 mb-3">
-              Small amounts for learning and testing new strategies:
+              Small amounts for learning and testing new strategies often work well:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>New protocols you want to understand</li>
@@ -99,7 +99,7 @@ const ExpandingBeyondVaultClub = () => {
           <div className="bg-indigo-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-indigo-800">Dollar-Cost Averaging (DCA)</h4>
             <p className="text-gray-700 mb-3">
-              Similar to your Vault Club approach, invest fixed amounts regularly:
+              Similar to your Vault Club approach, regular fixed investments can work beautifully:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>Reduces impact of volatility</li>
@@ -112,7 +112,7 @@ const ExpandingBeyondVaultClub = () => {
           <div className="bg-teal-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-teal-800">Opportunistic Investing</h4>
             <p className="text-gray-700 mb-3">
-              Take advantage of market opportunities while maintaining your foundation:
+              Taking advantage of market opportunities while maintaining your foundation can enhance returns:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>Buy quality assets during market downturns</li>
@@ -140,25 +140,25 @@ const ExpandingBeyondVaultClub = () => {
         <h3 className="text-2xl font-semibold text-gray-900">Risk Management for Expanded Portfolios</h3>
         
         <p className="text-gray-700 mb-4">
-          Your Vault Club experience teaches excellent risk management principles. Apply these same concepts to additional investments:
+          Your Vault Club experience teaches excellent risk management principles. These same concepts naturally extend to additional investments:
         </p>
 
         <div className="space-y-6">
           <div className="bg-red-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-red-800">Position Sizing Rules</h4>
+            <h4 className="text-lg font-semibold mb-3 text-red-800">Position Sizing Principles</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Never risk your Vault Club commitments for additional investments</li>
-              <li>No single additional asset should exceed 10% of your total portfolio</li>
-              <li>Keep experimental investments under 5% each</li>
-              <li>Consider correlation - don't buy multiple similar projects</li>
+              <li>Vault Club commitments remain protected from additional investment risks</li>
+              <li>Individual additional assets typically stay within reasonable limits</li>
+              <li>Experimental investments remain genuinely small</li>
+              <li>Consider correlation - similar projects might concentrate risk</li>
             </ul>
           </div>
           
           <div className="bg-yellow-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-yellow-800">Exit Strategies</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Set profit-taking levels before you invest</li>
-              <li>Have loss limits to protect capital</li>
+              <li>Profit-taking levels decided before you invest</li>
+              <li>Loss limits to protect capital</li>
               <li>Time-based reviews of investment thesis</li>
               <li>Rebalancing triggers when allocations shift</li>
             </ul>
@@ -181,12 +181,15 @@ const ExpandingBeyondVaultClub = () => {
         <h3 className="text-2xl font-semibold text-gray-900">The Gradual Expansion Process</h3>
         
         <div className="bg-green-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-green-800">Suggested Expansion Timeline</h4>
+          <h4 className="text-lg font-semibold mb-3 text-green-800">Natural Expansion Timeline</h4>
+          <p className="text-gray-700 mb-3">
+            Many successful Vault Club members find their expansion follows a natural progression:
+          </p>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li><strong>Months 1-6:</strong> 95% Vault Club, 5% learning with major assets</li>
-            <li><strong>Months 6-18:</strong> 85% Vault Club, 15% additional strategic holdings</li>
-            <li><strong>Year 2+:</strong> 70-80% Vault Club, 20-30% additional investments</li>
-            <li><strong>Always:</strong> Vault Club remains your primary wealth-building strategy</li>
+            <li><strong>Early Months:</strong> Focus primarily on Vault Club with small learning investments</li>
+            <li><strong>Growing Confidence:</strong> Gradual addition of strategic holdings</li>
+            <li><strong>Mature Strategy:</strong> Balanced approach with Vault Club as foundation</li>
+            <li><strong>Throughout:</strong> Vault Club remains your primary wealth-building strategy</li>
           </ul>
         </div>
 
@@ -195,11 +198,11 @@ const ExpandingBeyondVaultClub = () => {
         <div className="bg-red-50 p-6 rounded-lg">
           <h4 className="text-lg font-semibold mb-3 text-red-800">Protecting Your Foundation</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li><strong>Never risk Vault Club commitments:</strong> Additional investments should never interfere with your contracts</li>
-            <li><strong>Avoid overconfidence:</strong> Early wins don't make you an expert</li>
-            <li><strong>Don't chase trends:</strong> Stick to your systematic approach</li>
-            <li><strong>Maintain perspective:</strong> Additional investments are for learning and modest enhancement</li>
-            <li><strong>Stay disciplined:</strong> Apply the same systematic thinking you learned from Vault Club</li>
+            <li><strong>Foundation First:</strong> Additional investments never interfere with your Vault Club contracts</li>
+            <li><strong>Perspective Matters:</strong> Early wins don't make anyone an expert overnight</li>
+            <li><strong>Trend Resistance:</strong> Systematic thinking beats chasing the latest craze</li>
+            <li><strong>Purpose Clarity:</strong> Additional investments serve learning and modest enhancement</li>
+            <li><strong>Discipline Maintenance:</strong> The same systematic thinking from Vault Club applies everywhere</li>
           </ul>
         </div>
 
@@ -211,16 +214,16 @@ const ExpandingBeyondVaultClub = () => {
         </p>
 
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-gray-800">Key Principles for Success</h4>
+          <h4 className="text-lg font-semibold mb-3 text-gray-800">Principles for Successful Expansion</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>Keep Vault Club as your primary wealth-building foundation (60-80%)</li>
-            <li>Add complementary investments for learning and opportunity (20-40%)</li>
-            <li>Apply systematic thinking from Vault Club to all investments</li>
-            <li>Never risk your foundational contracts for additional opportunities</li>
-            <li>Use proper position sizing and risk management</li>
-            <li>Stay connected to your Vault Club community and insights</li>
-            <li>Maintain long-term perspective and disciplined approach</li>
-            <li>Remember: expansion enhances your foundation, it doesn't replace it</li>
+            <li>Vault Club serves as your primary wealth-building foundation</li>
+            <li>Additional investments enhance learning and create opportunities</li>
+            <li>Systematic thinking from Vault Club extends to all investments</li>
+            <li>Foundational contracts remain protected from additional investment risks</li>
+            <li>Proper position sizing and risk management guide all decisions</li>
+            <li>Your Vault Club community and insights remain valuable resources</li>
+            <li>Long-term perspective and disciplined approach never change</li>
+            <li>Expansion enhances your foundation rather than replacing it</li>
           </ul>
         </div>
       </div>
