@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Clock, Target, DollarSign, TrendingUp } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
@@ -9,7 +9,6 @@ const LearnNow = () => {
       icon: DollarSign,
       title: "Financial Basics",
       description: "Learn the fundamentals of money, investing, and building wealth in simple terms.",
-      duration: "2 hours",
       level: "Beginner",
       slug: "financial-basics"
     },
@@ -17,7 +16,6 @@ const LearnNow = () => {
       icon: BookOpen,
       title: "Digital Asset Fundamentals",
       description: "Master the basics of digital assets, blockchain technology, and market dynamics.",
-      duration: "2 hours",
       level: "Beginner",
       slug: "digital-asset-fundamentals"
     },
@@ -25,7 +23,6 @@ const LearnNow = () => {
       icon: PlayCircle,
       title: "Vault Club Investment Contracts",
       description: "Understand how Vault Club contracts work and their advantages for new investors.",
-      duration: "3 hours",
       level: "Intermediate",
       slug: "vault-club-contracts"
     },
@@ -33,7 +30,6 @@ const LearnNow = () => {
       icon: TrendingUp,
       title: "Expanding Beyond Vault Club",
       description: "Learn when and how to diversify your portfolio beyond structured investment contracts.",
-      duration: "2.5 hours",
       level: "Intermediate",
       slug: "expanding-beyond-vault-club"
     }
@@ -74,10 +70,6 @@ const LearnNow = () => {
           </p>
           <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span>Self-paced learning</span>
-            </div>
-            <div className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span>Expert instructors</span>
             </div>
@@ -111,11 +103,7 @@ const LearnNow = () => {
                         {module.level}
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-3">{module.description}</p>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Clock className="h-4 w-4" />
-                      <span>{module.duration}</span>
-                    </div>
+                    <p className="text-gray-600">{module.description}</p>
                   </div>
                 </div>
               </Link>

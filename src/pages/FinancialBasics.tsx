@@ -1,9 +1,8 @@
-
 import ArticleLayout from "@/components/ArticleLayout";
 
 const FinancialBasics = () => {
   return (
-    <ArticleLayout title="Financial Basics" duration="2 hours" level="Beginner">
+    <ArticleLayout title="Financial Basics" level="Beginner">
       <div className="space-y-8">
         <h2 className="text-3xl font-bold text-gray-900">Understanding Money and Wealth</h2>
         

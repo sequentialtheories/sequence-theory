@@ -1,16 +1,15 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, Award } from "lucide-react";
+import { ArrowLeft, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface ArticleLayoutProps {
   title: string;
-  duration: string;
   level: string;
   children: React.ReactNode;
 }
 
-const ArticleLayout = ({ title, duration, level, children }: ArticleLayoutProps) => {
+const ArticleLayout = ({ title, level, children }: ArticleLayoutProps) => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -28,15 +27,9 @@ const ArticleLayout = ({ title, duration, level, children }: ArticleLayoutProps)
             />
             <div>
               <h1 className="text-3xl font-bold">{title}</h1>
-              <div className="flex items-center gap-4 text-gray-100 mt-2">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{duration}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Award className="h-4 w-4" />
-                  <span>{level}</span>
-                </div>
+              <div className="flex items-center gap-1 text-gray-100 mt-2">
+                <Award className="h-4 w-4" />
+                <span>{level}</span>
               </div>
             </div>
           </div>
