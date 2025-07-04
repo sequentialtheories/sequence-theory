@@ -51,6 +51,14 @@ const Hero = () => {
                 Learn More
               </Button>
             </Link>
+            <Link to="/learn-now">
+              <Button 
+                size="lg"
+                className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-4 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+              >
+                Learn Now
+              </Button>
+            </Link>
           </div>
         </div>
         
