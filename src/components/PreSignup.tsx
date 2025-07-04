@@ -37,7 +37,7 @@ const PreSignup = () => {
             Join The Vault Club
           </h2>
           <p className="text-xl mb-8">
-            You're building wealth online. Secure your priority access to our DeFi platform.
+            You're ready to ease into digital assets. Secure your priority access to Sequence Theory's premier volatility mitigation platform.
           </p>
           
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">

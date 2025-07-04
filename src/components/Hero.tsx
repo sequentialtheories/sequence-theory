@@ -27,10 +27,10 @@ const Hero = () => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-8 text-white">
-            Making Crypto Accessible
+            Easing into Digital Assets
           </h1>
           <p className="text-xl md:text-2xl mb-12 text-gray-300 max-w-2xl mx-auto">
-            Join The Vault Club and start building wealth online with simple, secure DeFi tools
+            Join The Vault Club, Sequence Theory's premier service for mitigating volatility in your digital asset journey
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

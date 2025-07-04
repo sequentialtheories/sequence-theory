@@ -5,18 +5,18 @@ const About = () => {
   const features = [
     {
       icon: GraduationCap,
-      title: "Master DeFi",
-      description: "You're already thinking beyond traditional finance. Here's what comes next."
+      title: "Master Digital Assets",
+      description: "You're already thinking beyond traditional investments. Here's what comes next."
     },
     {
       icon: TrendingUp,
-      title: "Build Wealth",
-      description: "You know the opportunity exists. These are the tools to capitalize on it."
+      title: "Mitigate Volatility",
+      description: "You know the opportunity exists. These are the tools to smooth out the ups and downs."
     },
     {
       icon: Shield,
-      title: "Stay Secure",
-      description: "You understand the risks. We've built the safeguards you need."
+      title: "Stay Protected",
+      description: "You understand the risks. We've built the safeguards to ease your entry."
     },
     {
       icon: Users,
@@ -30,11 +30,11 @@ const About = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-            Bridge Traditional Finance & Crypto
+            The Vault Club by Sequence Theory
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            You already know where finance is heading. We're building the bridge 
-            between where you are and where you need to be.
+            Our premier service designed for those ready to ease into digital assets 
+            while mitigating the volatility that comes with the territory.
           </p>
         </div>
         
