@@ -1,37 +1,41 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Clock, Target } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Clock, Target, DollarSign, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
   const learningModules = [
     {
+      icon: DollarSign,
+      title: "Financial Basics",
+      description: "Learn the fundamentals of money, investing, and building wealth in simple terms.",
+      duration: "2 hours",
+      level: "Beginner",
+      slug: "financial-basics"
+    },
+    {
       icon: BookOpen,
       title: "Digital Asset Fundamentals",
       description: "Master the basics of digital assets, blockchain technology, and market dynamics.",
       duration: "2 hours",
-      level: "Beginner"
-    },
-    {
-      icon: Target,
-      title: "Risk Management Essentials",
-      description: "Learn professional risk management techniques used by institutional investors.",
-      duration: "1.5 hours",
-      level: "Beginner"
+      level: "Beginner",
+      slug: "digital-asset-fundamentals"
     },
     {
       icon: PlayCircle,
-      title: "Investment Contract Strategies",
-      description: "Understand how structured investment contracts work and their advantages.",
+      title: "Vault Club Investment Contracts",
+      description: "Understand how Vault Club contracts work and their advantages for new investors.",
       duration: "3 hours",
-      level: "Intermediate"
+      level: "Intermediate",
+      slug: "vault-club-contracts"
     },
     {
-      icon: Award,
-      title: "Portfolio Construction",
-      description: "Build a diversified digital asset portfolio using quantitative methods.",
+      icon: TrendingUp,
+      title: "Expanding Beyond Vault Club",
+      description: "Learn when and how to diversify your portfolio beyond structured investment contracts.",
       duration: "2.5 hours",
-      level: "Intermediate"
+      level: "Intermediate",
+      slug: "expanding-beyond-vault-club"
     }
   ];
 
@@ -91,7 +95,11 @@ const LearnNow = () => {
           <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">Your Learning Path</h3>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {learningModules.map((module, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <Link 
+                key={index} 
+                to={`/learn/${module.slug}`}
+                className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
+              >
                 <div className="flex items-start gap-4">
                   <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
                     <module.icon className="h-6 w-6 text-white" />
@@ -110,7 +118,7 @@ const LearnNow = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
