@@ -1,4 +1,3 @@
-
 import ArticleLayout from "@/components/ArticleLayout";
 
 const ExpandingBeyondVaultClub = () => {
@@ -71,7 +70,7 @@ const ExpandingBeyondVaultClub = () => {
             <div className="mt-4 p-4 bg-cyan-100 rounded-lg">
               <p className="text-sm text-cyan-800">
                 <strong>Popular Exchanges:</strong> Coinbase (beginner-friendly), Binance (advanced features), 
-                Kraken (security-focused), Gemini (regulated), FTX alternatives for professional trading.
+                Kraken (security-focused), Gemini (regulated).
               </p>
             </div>
           </div>
