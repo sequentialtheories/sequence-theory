@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Rocket } from "lucide-react";
+import { Mail, Vault } from "lucide-react";
 
 const PreSignup = () => {
   const [email, setEmail] = useState("");
@@ -17,8 +17,8 @@ const PreSignup = () => {
     // Simulate API call
     setTimeout(() => {
       toast({
-        title: "Welcome to the future!",
-        description: "You've been added to our early access list. We'll be in touch soon!",
+        title: "Welcome to The Vault Club!",
+        description: "You're now on our priority list for early access. Get ready to start building wealth online!",
       });
       setEmail("");
       setIsLoading(false);
@@ -26,19 +26,20 @@ const PreSignup = () => {
   };
 
   return (
-    <section id="signup" className="py-20 bg-gradient-to-r from-purple-900 via-slate-900 to-blue-900 text-white">
+    <section id="signup" className="py-20 bg-gradient-to-r from-purple-900 via-slate-900 to-cyan-900 text-white">
       <div className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
-            <Rocket className="h-10 w-10 text-white" />
+          <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+            <Vault className="h-10 w-10 text-white" />
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Be Among the First
+            Join The Vault Club
           </h2>
           <p className="text-xl mb-8 text-gray-300">
-            Join our exclusive early access program and get a front-row seat to the future 
-            of decentralized applications. Limited spots available.
+            Get priority access to our DeFi investment platform and start your journey 
+            into digital wealth building with proper education and support. 
+            Limited founding member spots available.
           </p>
           
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -58,12 +59,13 @@ const PreSignup = () => {
               disabled={isLoading}
               className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 font-semibold transition-all duration-300 transform hover:scale-105"
             >
-              {isLoading ? "Joining..." : "Get Access"}
+              {isLoading ? "Joining..." : "Get Priority Access"}
             </Button>
           </form>
           
-          <p className="text-sm text-gray-400 mt-4">
-            No spam, ever. We respect your privacy and will only send you updates about our launch.
+          <p className="text-sm text-gray-400 mt-6">
+            Join our community of everyday investors learning to build wealth in the digital era. 
+            No spam, just valuable insights and platform updates.
           </p>
         </div>
       </div>
