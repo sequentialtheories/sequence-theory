@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,7 +13,7 @@ const LearnNow = () => {
     },
     {
       icon: BookOpen,
-      title: "Digital Asset Fundamentals",
+      title: "Digital Asset Fundamentals", 
       description: "Master the basics of digital assets, blockchain technology, and market dynamics.",
       level: "Beginner",
       slug: "digital-asset-fundamentals"
@@ -35,9 +34,9 @@ const LearnNow = () => {
     },
     {
       icon: TrendingUp,
-      title: "Expanding Beyond Vault Club",
-      description: "Learn when and how to diversify your portfolio beyond structured investment contracts.",
-      level: "Advanced",
+      title: "Expanding Your Portfolio",
+      description: "Learn strategic approaches to diversifying beyond structured investment contracts.",
+      level: "Advanced", 
       slug: "expanding-beyond-vault-club"
     }
   ];
