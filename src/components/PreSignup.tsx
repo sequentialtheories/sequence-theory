@@ -18,7 +18,7 @@ const PreSignup = () => {
     setTimeout(() => {
       toast({
         title: "Welcome to The Vault Club!",
-        description: "You're now on our priority list for early access. Get ready to start building wealth online!",
+        description: "You're now on our priority list for early access.",
       });
       setEmail("");
       setIsLoading(false);
@@ -26,20 +26,18 @@ const PreSignup = () => {
   };
 
   return (
-    <section id="signup" className="py-20 bg-gradient-to-r from-purple-900 via-slate-900 to-cyan-900 text-white">
+    <section id="signup" className="py-20 bg-gradient-to-r from-purple-600 to-cyan-600 text-white">
       <div className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
+          <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8">
             <Vault className="h-10 w-10 text-white" />
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Join The Vault Club
           </h2>
-          <p className="text-xl mb-8 text-gray-300">
-            Get priority access to our DeFi investment platform and start your journey 
-            into digital wealth building with proper education and support. 
-            Limited founding member spots available.
+          <p className="text-xl mb-8">
+            Get priority access to our DeFi platform and start building wealth online.
           </p>
           
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -51,21 +49,20 @@ const PreSignup = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="pl-12 py-3 bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400"
+                className="pl-12 py-3 bg-white/10 border-white/20 text-white placeholder:text-gray-300 focus:border-white focus:ring-white"
               />
             </div>
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 font-semibold transition-all duration-300 transform hover:scale-105"
+              className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 font-semibold transition-all duration-300"
             >
-              {isLoading ? "Joining..." : "Get Priority Access"}
+              {isLoading ? "Joining..." : "Get Access"}
             </Button>
           </form>
           
-          <p className="text-sm text-gray-400 mt-6">
-            Join our community of everyday investors learning to build wealth in the digital era. 
-            No spam, just valuable insights and platform updates.
+          <p className="text-sm text-purple-100 mt-6">
+            Join our community of everyday investors. No spam, just valuable insights.
           </p>
         </div>
       </div>
