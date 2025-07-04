@@ -5,23 +5,23 @@ const About = () => {
   const features = [
     {
       icon: GraduationCap,
-      title: "Master Digital Assets",
-      description: "You're already thinking beyond traditional investments. Here's what comes next."
+      title: "Earn While You Learn",
+      description: "Generate returns through structured investment contracts while building your digital asset knowledge."
     },
     {
       icon: TrendingUp,
       title: "Mitigate Volatility",
-      description: "You know the opportunity exists. These are the tools to smooth out the ups and downs."
+      description: "Skip the random token speculation. Our platform provides steady growth through proven strategies."
     },
     {
       icon: Shield,
-      title: "Stay Protected",
-      description: "You understand the risks. We've built the safeguards to ease your entry."
+      title: "Investment Contracts",
+      description: "Structured agreements that protect your capital while you ease into the digital asset space."
     },
     {
       icon: Users,
       title: "Your Community",
-      description: "You're not alone in this. Connect with others who see what you see."
+      description: "Connect with others who understand the difference between investing and gambling on tokens."
     }
   ];
 
@@ -33,8 +33,8 @@ const About = () => {
             The Vault Club by Sequence Theory
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Our premier service designed for those ready to ease into digital assets 
-            while mitigating the volatility that comes with the territory.
+            Our premier investment contract platform designed for those ready to ease into digital assets 
+            through structured earning opportunities, not random token purchases.
           </p>
         </div>
         

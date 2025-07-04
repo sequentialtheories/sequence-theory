@@ -30,7 +30,7 @@ const Hero = () => {
             Easing into Digital Assets
           </h1>
           <p className="text-xl md:text-2xl mb-12 text-gray-300 max-w-2xl mx-auto">
-            Join The Vault Club, Sequence Theory's premier service for mitigating volatility in your digital asset journey
+            Join The Vault Club - our investment contract platform designed to help you earn and learn before diving into the token chaos
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
