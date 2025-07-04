@@ -5,23 +5,23 @@ const About = () => {
   const features = [
     {
       icon: GraduationCap,
-      title: "Learn DeFi",
-      description: "Simple lessons that make crypto investing accessible to everyone."
+      title: "Master DeFi",
+      description: "You're already thinking beyond traditional finance. Here's what comes next."
     },
     {
       icon: TrendingUp,
       title: "Build Wealth",
-      description: "Investment tools designed for everyday users, not just experts."
+      description: "You know the opportunity exists. These are the tools to capitalize on it."
     },
     {
       icon: Shield,
       title: "Stay Secure",
-      description: "Safe and simple platform for crypto newcomers."
+      description: "You understand the risks. We've built the safeguards you need."
     },
     {
       icon: Users,
-      title: "Join Community",
-      description: "Connect with others on their digital wealth journey."
+      title: "Your Community",
+      description: "You're not alone in this. Connect with others who see what you see."
     }
   ];
 
@@ -33,8 +33,8 @@ const About = () => {
             Bridge Traditional Finance & Crypto
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            We're making cryptocurrency accessible by breaking down complex concepts 
-            into simple steps everyone can follow.
+            You already know where finance is heading. We're building the bridge 
+            between where you are and where you need to be.
           </p>
         </div>
         

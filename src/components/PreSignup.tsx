@@ -37,7 +37,7 @@ const PreSignup = () => {
             Join The Vault Club
           </h2>
           <p className="text-xl mb-8">
-            Get priority access to our DeFi platform and start building wealth online.
+            You're building wealth online. Secure your priority access to our DeFi platform.
           </p>
           
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -57,12 +57,12 @@ const PreSignup = () => {
               disabled={isLoading}
               className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 font-semibold transition-all duration-300"
             >
-              {isLoading ? "Joining..." : "Get Access"}
+              {isLoading ? "Registering..." : "Register for Early Access"}
             </Button>
           </form>
           
           <p className="text-sm text-purple-100 mt-6">
-            Join our community of everyday investors. No spam, just valuable insights.
+            You're already part of this movement. No spam, just the tools you need.
           </p>
         </div>
       </div>
