@@ -1,9 +1,8 @@
-
 import ArticleLayout from "@/components/ArticleLayout";
 
 const ExpandingBeyondVaultClub = () => {
   return (
-    <ArticleLayout title="Expanding Beyond Vault Club" duration="2.5 hours" level="Intermediate">
+    <ArticleLayout title="Expanding Beyond Vault Club" level="Intermediate">
       <div className="space-y-8">
         <h2 className="text-3xl font-bold text-gray-900">When You're Ready to Spread Your Wings</h2>
         

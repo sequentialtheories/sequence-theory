@@ -1,9 +1,8 @@
-
 import ArticleLayout from "@/components/ArticleLayout";
 
 const DigitalAssetFundamentals = () => {
   return (
-    <ArticleLayout title="Digital Asset Fundamentals" duration="2 hours" level="Beginner">
+    <ArticleLayout title="Digital Asset Fundamentals" level="Beginner">
       <div className="space-y-8">
         <h2 className="text-3xl font-bold text-gray-900">What Are Digital Assets?</h2>
         

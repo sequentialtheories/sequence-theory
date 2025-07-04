@@ -3,204 +3,188 @@ import ArticleLayout from "@/components/ArticleLayout";
 
 const VaultClubContracts = () => {
   return (
-    <ArticleLayout title="Vault Club Investment Contracts" duration="3 hours" level="Intermediate">
+    <ArticleLayout title="Vault Club Investment Contracts" level="Intermediate">
       <div className="space-y-8">
-        <h2 className="text-3xl font-bold text-gray-900">What Are Vault Club Contracts?</h2>
+        <h2 className="text-3xl font-bold text-gray-900">What Is The Vault Club?</h2>
         
         <div className="bg-cyan-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-cyan-800">Think of It Like a Managed Investment Fund</h3>
+          <h3 className="text-xl font-semibold mb-4 text-cyan-800">A Structured DeFi Investment System</h3>
           <p className="text-gray-700 mb-4">
-            Imagine you want to invest in the stock market, but you don't know which stocks to pick. So you give your money to a professional fund manager who picks stocks for you. 
-            Vault Club contracts work similarly, but for digital assets.
+            The Vault Club is a sophisticated, automated investment system that uses smart contracts on the Polygon blockchain. 
+            It's not about giving your money to random people - it's about participating in a carefully designed, 
+            algorithmic system that manages DeFi investments through proven protocols.
           </p>
           <p className="text-gray-700">
-            Instead of you trying to figure out which cryptocurrencies to buy, when to buy them, and how to store them safely, 
-            you enter into a contract where professionals handle all of that complexity for you.
+            Think of it like a high-tech savings account that automatically invests your money across different 
+            DeFi protocols to generate returns, with built-in protections and a structured approach to wealth building.
           </p>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">How Vault Club Contracts Work</h3>
+        <h3 className="text-2xl font-semibold text-gray-900">How The System Actually Works</h3>
         
         <div className="bg-purple-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-purple-800">The Simple Process</h4>
-          <ol className="list-decimal pl-6 text-gray-700 space-y-3">
-            <li><strong>You invest your money:</strong> You contribute a certain amount to the contract</li>
-            <li><strong>Professional management:</strong> Experienced traders and algorithms manage the digital assets</li>
-            <li><strong>Diversified exposure:</strong> Your money gets spread across multiple digital assets and strategies</li>
-            <li><strong>Regular returns:</strong> You receive returns based on the performance of the underlying assets</li>
-            <li><strong>Transparency:</strong> You can track the performance and see what's happening with your investment</li>
-          </ol>
+          <h4 className="text-lg font-semibold mb-3 text-purple-800">The Two-Phase Strategy</h4>
+          <div className="space-y-4">
+            <div>
+              <h5 className="font-semibold text-purple-700">Phase 1: The Engine Pool (Growth Phase)</h5>
+              <p className="text-gray-700 mb-2">
+                Your deposits are automatically allocated across three different "strands" of DeFi protocols:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 space-y-1">
+                <li><strong>AAVE Base Capital (10%):</strong> Stable lending at ~5% APY for security</li>
+                <li><strong>AAVE Long-Term Yield (60%):</strong> Staking for ~10% APY</li>
+                <li><strong>Quickswap Accelerator (30%):</strong> Liquidity farming for ~15% APY</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold text-purple-700">Phase 2: Wealth Preservation</h5>
+              <p className="text-gray-700">
+                When the system reaches certain targets (50% completion or ~$2M total value), 
+                it automatically transitions to accumulating Wrapped Bitcoin (wBTC) for long-term wealth preservation.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Why Vault Club Contracts Make Sense for Beginners</h3>
+        <h3 className="text-2xl font-semibold text-gray-900">The Smart Contract Structure</h3>
         
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-green-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-green-800">Removes Technical Barriers</h4>
-            <p className="text-gray-700">
-              You don't need to learn how to set up wallets, understand private keys, or navigate complex exchanges. 
-              It's like having a professional driver instead of having to learn to drive in a Formula 1 race.
+            <h4 className="text-lg font-semibold mb-3 text-green-800">Automated Execution</h4>
+            <p className="text-gray-700 mb-3">
+              Everything runs on smart contracts with no human intervention needed for investment decisions:
             </p>
+            <ul className="list-disc pl-6 text-gray-700 space-y-1">
+              <li>Routed Reinvestment Logic (RRL) automatically manages capital flow</li>
+              <li>Profits are harvested and reinvested weekly (168 hours fixed)</li>
+              <li>Chainlink Keepers provide automation</li>
+              <li>Multi-signature security protocols</li>
+            </ul>
           </div>
           
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Professional Risk Management</h4>
-            <p className="text-gray-700">
-              The contracts use sophisticated risk management techniques that would take years for you to learn and implement yourself. 
-              It's like having a professional pilot instead of trying to fly a plane on your first day.
-            </p>
-          </div>
-          
-          <div className="bg-yellow-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Diversification</h4>
-            <p className="text-gray-700">
-              Instead of putting all your money into one cryptocurrency and hoping for the best, 
-              your investment is spread across multiple assets and strategies, reducing your overall risk.
-            </p>
-          </div>
-          
-          <div className="bg-pink-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-pink-800">Learning While Earning</h4>
-            <p className="text-gray-700">
-              You can gain exposure to digital assets while learning about the market, 
-              without the stress of making all the decisions yourself from day one.
-            </p>
-          </div>
-        </div>
-
-        <h3 className="text-2xl font-semibold text-gray-900">Types of Strategies Used</h3>
-        
-        <div className="space-y-6">
-          <div className="bg-indigo-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-indigo-800">Quantitative Strategies</h4>
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Group-Based Contracts</h4>
             <p className="text-gray-700 mb-3">
-              These use mathematical models and algorithms to make investment decisions. Think of it like having a super-smart robot that can analyze thousands of data points in seconds to make trading decisions.
+              You join small groups (4-8 people) with shared investment contracts:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Trend following algorithms</li>
-              <li>Mean reversion strategies</li>
-              <li>Arbitrage opportunities</li>
-              <li>Market making strategies</li>
-            </ul>
-          </div>
-          
-          <div className="bg-orange-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-orange-800">Fundamental Analysis</h4>
-            <p className="text-gray-700 mb-3">
-              This involves analyzing the actual value and potential of different digital assets based on their technology, team, use case, and market position.
-            </p>
-            <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Technology assessment</li>
-              <li>Team and development activity</li>
-              <li>Market adoption metrics</li>
-              <li>Competitive positioning</li>
-            </ul>
-          </div>
-          
-          <div className="bg-teal-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-teal-800">Risk Management</h4>
-            <p className="text-gray-700 mb-3">
-              Perhaps most importantly, professional risk management techniques are used to protect your investment from major losses.
-            </p>
-            <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Position sizing (never putting too much in one asset)</li>
-              <li>Stop-loss mechanisms</li>
-              <li>Correlation analysis</li>
-              <li>Volatility adjustment</li>
+              <li>Lock-up periods from 1-20 years</li>
+              <li>Regular weekly deposits required</li>
+              <li>Penalties for missed deposits (3% share decrease)</li>
+              <li>Emergency withdrawal option (deposits only, no profits)</li>
             </ul>
           </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Understanding the Contract Structure</h3>
-        
-        <div className="bg-gray-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-gray-800">Key Contract Elements</h4>
-          <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li><strong>Investment Period:</strong> How long your money is committed to the contract</li>
-            <li><strong>Minimum Investment:</strong> The smallest amount you can invest</li>
-            <li><strong>Fee Structure:</strong> What you pay for the professional management</li>
-            <li><strong>Performance Metrics:</strong> How success is measured and reported</li>
-            <li><strong>Exit Conditions:</strong> When and how you can withdraw your investment</li>
-            <li><strong>Risk Disclosures:</strong> What could go wrong and how it's managed</li>
-          </ul>
-        </div>
-
-        <h3 className="text-2xl font-semibold text-gray-900">What to Expect: Realistic Returns and Risks</h3>
+        <h3 className="text-2xl font-semibent text-gray-900">Investment Requirements and Structure</h3>
         
         <div className="bg-yellow-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-yellow-800">Setting Realistic Expectations</h4>
+          <h4 className="text-lg font-semibold mb-3 text-yellow-800">Commitment Levels</h4>
+          <div className="space-y-3">
+            <div>
+              <h5 className="font-semibold">Heavy Rigor (Highest Returns)</h5>
+              <p className="text-gray-700">Years 1-3: $100/week → Years 4-6: $200/week → Years 7-10: $300/week → Years 11+: $400/week</p>
+            </div>
+            <div>
+              <h5 className="font-semibold">Medium Rigor</h5>
+              <p className="text-gray-700">Weekly deposits: $50, $100, $200, or $250</p>
+            </div>
+            <div>
+              <h5 className="font-semibold">Light Rigor</h5>
+              <p className="text-gray-700">Monthly deposits: $100, $150, $200, or $250</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Technical Infrastructure</h3>
+        
+        <div className="bg-indigo-50 p-6 rounded-lg">
+          <h4 className="text-lg font-semibold mb-3 text-indigo-800">Built on Proven Technology</h4>
+          <ul className="list-disc pl-6 text-gray-700 space-y-2">
+            <li><strong>Network:</strong> Polygon PoS (low fees, fast transactions)</li>
+            <li><strong>Contracts:</strong> Solidity with modular design</li>
+            <li><strong>Protocols:</strong> Only audited DeFi protocols (AAVE, Quickswap)</li>
+            <li><strong>Automation:</strong> Chainlink Keepers for reliable execution</li>
+            <li><strong>Security:</strong> Multi-signature wallets and audit recommendations</li>
+          </ul>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Risk Management</h3>
+        
+        <div className="space-y-4">
+          <div className="bg-red-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-red-800">Built-in Protections</h4>
+            <ul className="list-disc pl-6 text-gray-700 space-y-2">
+              <li><strong>DeFi Yield Drop:</strong> Phase 2 transition and Subscription Backed Borrowing</li>
+              <li><strong>Protocol Failure:</strong> Only audited protocols used</li>
+              <li><strong>Smart Contract Failure:</strong> Modular logic with emergency overrides</li>
+              <li><strong>User Inconsistency:</strong> Penalties and education/awareness programs</li>
+              <li><strong>Regulatory Uncertainty:</strong> Legal governance and clear Terms of Service</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Projected Outcomes</h3>
+        
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h4 className="text-lg font-semibold mb-3 text-gray-800">Conservative vs Aggressive Scenarios</h4>
           <p className="text-gray-700 mb-4">
-            While digital assets can produce spectacular returns, they can also produce spectacular losses. 
-            Vault Club contracts aim to provide more consistent, risk-adjusted returns rather than trying to hit home runs every time.
+            Based on 15+ years with high rigor and 8-person groups:
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <h5 className="font-semibold text-gray-700">Conservative Scenario</h5>
+              <p className="text-gray-700">Total Vault: ~$2M | Per User: ~$250k</p>
+            </div>
+            <div>
+              <h5 className="font-semibold text-gray-700">Aggressive Scenario</h5>
+              <p className="text-gray-700">Total Vault: $6M | Per User: $750k</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Why This System Works</h3>
+        
+        <div className="space-y-4">
+          <div className="bg-teal-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-teal-800">Key Advantages</h4>
+            <ul className="list-disc pl-6 text-gray-700 space-y-2">
+              <li><strong>Systematic Approach:</strong> Removes emotion and speculation from crypto investing</li>
+              <li><strong>Compound Interest:</strong> Automated reinvestment maximizes compounding effects</li>
+              <li><strong>Professional Strategies:</strong> Quantitative hedge fund methodologies made accessible</li>
+              <li><strong>Risk Management:</strong> Diversified across protocols with built-in safety measures</li>
+              <li><strong>Long-term Focus:</strong> Encourages disciplined, consistent investing</li>
+              <li><strong>Transparency:</strong> All operations visible on blockchain</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Understanding the Commitment</h3>
+        
+        <div className="bg-orange-50 p-6 rounded-lg">
+          <h4 className="text-lg font-semibold mb-3 text-orange-800">What You're Actually Doing</h4>
+          <p className="text-gray-700 mb-4">
+            You're not giving money to random people or trusting human fund managers. Instead, you're:
           </p>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>Returns will be volatile - some months up, some months down</li>
-            <li>The goal is long-term wealth building, not get-rich-quick schemes</li>
-            <li>Professional management reduces risk but doesn't eliminate it</li>
-            <li>Your investment can still lose money, especially in the short term</li>
+            <li>Participating in an automated, algorithmic investment system</li>
+            <li>Joining a small group with shared financial goals and timeline</li>
+            <li>Committing to regular deposits over a fixed period</li>
+            <li>Benefiting from institutional-grade DeFi strategies</li>
+            <li>Building wealth through disciplined, systematic investing</li>
           </ul>
         </div>
-
-        <h3 className="text-2xl font-semibold text-gray-900">How This Prepares You for Independent Investing</h3>
-        
-        <p className="text-gray-700 mb-4">
-          Think of Vault Club contracts as training wheels for digital asset investing. While your money is being professionally managed, you can:
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Learn the Market</h4>
-            <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Observe how professionals make decisions</li>
-              <li>Understand market cycles and volatility</li>
-              <li>Learn about different digital assets</li>
-              <li>See how risk management works in practice</li>
-            </ul>
-          </div>
-          
-          <div className="bg-green-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-green-800">Build Confidence</h4>
-            <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Experience market volatility without panic</li>
-              <li>Understand your risk tolerance</li>
-              <li>Learn to think long-term</li>
-              <li>Develop emotional discipline</li>
-            </ul>
-          </div>
-        </div>
-
-        <h3 className="text-2xl font-semibold text-gray-900">Questions to Ask Before Investing</h3>
-        
-        <div className="bg-red-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-red-800">Due Diligence Checklist</h4>
-          <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>Who are the managers and what's their track record?</li>
-            <li>What exactly are the fees and how are they calculated?</li>
-            <li>How liquid is the investment - can I get my money out if needed?</li>
-            <li>What are the worst-case scenarios and how are they managed?</li>
-            <li>How transparent is the reporting and performance tracking?</li>
-            <li>What happens if the management company has problems?</li>
-            <li>How does this fit into my overall investment portfolio?</li>
-          </ul>
-        </div>
-
-        <h3 className="text-2xl font-semibold text-gray-900">Your Journey Forward</h3>
-        
-        <p className="text-gray-700 mb-4">
-          Vault Club contracts are designed to be a stepping stone, not a final destination. As you gain experience and knowledge, 
-          you can gradually take on more direct control of your digital asset investments.
-        </p>
 
         <div className="bg-gray-50 p-6 rounded-lg">
           <h4 className="text-lg font-semibold mb-3 text-gray-800">Key Takeaways</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>Vault Club contracts provide professional management for digital asset exposure</li>
-            <li>They remove technical barriers and provide sophisticated risk management</li>
-            <li>Different strategies are used to generate returns while managing risk</li>
-            <li>Expectations should be realistic - consistent growth, not get-rich-quick</li>
-            <li>They serve as training wheels while you learn the market</li>
-            <li>Always do your due diligence before investing</li>
-            <li>They're a stepping stone to more independent investing</li>
+            <li>The Vault Club is an automated DeFi investment system, not a human-managed fund</li>
+            <li>Smart contracts handle all investment decisions and capital allocation</li>
+            <li>Two-phase strategy: growth through DeFi yields, then preservation through Bitcoin</li>
+            <li>Small group structure with 1-20 year commitment periods</li>
+            <li>Built-in risk management and emergency protections</li>
+            <li>Designed for long-term wealth building, not speculation</li>
+            <li>Transparent, blockchain-based operations</li>
           </ul>
         </div>
       </div>
