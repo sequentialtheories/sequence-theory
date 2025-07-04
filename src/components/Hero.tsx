@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const scrollToSignup = () => {
@@ -41,13 +42,15 @@ const Hero = () => {
             >
               Join The Vault Club
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-gray-400 text-gray-300 hover:bg-white hover:text-gray-900 px-8 py-4 rounded-full text-lg transition-all duration-300"
-            >
-              Learn More
-            </Button>
+            <Link to="/learn-more">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-gray-400 text-gray-300 hover:bg-white hover:text-gray-900 px-8 py-4 rounded-full text-lg transition-all duration-300"
+              >
+                Learn More
+              </Button>
+            </Link>
           </div>
         </div>
         
