@@ -1,9 +1,8 @@
-
 import ArticleLayout from "@/components/ArticleLayout";
 
 const VaultClubContracts = () => {
   return (
-    <ArticleLayout title="Vault Club Investment Contracts" level="Intermediate">
+    <ArticleLayout title="Investment Contracts" level="Intermediate">
       <div className="space-y-8">
         <h2 className="text-3xl font-bold text-gray-900">What Is The Vault Club?</h2>
         
