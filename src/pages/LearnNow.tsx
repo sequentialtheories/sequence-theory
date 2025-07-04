@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
@@ -25,6 +25,13 @@ const LearnNow = () => {
       description: "Understand how Vault Club contracts work and their advantages for new investors.",
       level: "Intermediate",
       slug: "vault-club-contracts"
+    },
+    {
+      icon: Zap,
+      title: "DeFi & Protocols",
+      description: "Deep dive into the technical mechanics of staking, liquidity farming, and DeFi protocols.",
+      level: "Advanced",
+      slug: "defi-protocols"
     },
     {
       icon: TrendingUp,
