@@ -12,7 +12,7 @@ const Footer = () => {
           
           <div className="border-t border-gray-800 pt-8">
             <p className="text-sm">
-              © {new Date().getFullYear()} Sequence Theory, Inc. All rights reserved. |
+              © {new Date().getFullYear()} Sequence Theory, Inc. All rights reserved. | 
               <span className="ml-2">Building the future, one block at a time.</span>
             </p>
           </div>
