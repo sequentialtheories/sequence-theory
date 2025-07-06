@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import LearnMore from "./pages/LearnMore";
 import LearnNow from "./pages/LearnNow";
 import NotFound from "./pages/NotFound";
+import WhitePaper from "./pages/WhitePaper";
 import FinancialBasics from "./pages/FinancialBasics";
 import DigitalAssetFundamentals from "./pages/DigitalAssetFundamentals";
 import VaultClubContracts from "./pages/VaultClubContracts";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/learn-more" element={<LearnMore />} />
           <Route path="/learn-now" element={<LearnNow />} />
+          <Route path="/white-paper" element={<WhitePaper />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
           <Route path="/learn/vault-club-contracts" element={<VaultClubContracts />} />

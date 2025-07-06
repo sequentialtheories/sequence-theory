@@ -5,6 +5,7 @@ import PreSignup from "@/components/PreSignup";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -31,11 +32,7 @@ const Index = () => {
               </Button>
             </a>
             
-            <a
-              href="/lovable-uploads/ba89813f-6e52-48b8-b2cf-67601c222f5c.png"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link to="/white-paper">
               <Button 
                 variant="outline" 
                 className="inline-flex items-center gap-2 hover:bg-gray-100"
@@ -43,7 +40,7 @@ const Index = () => {
                 Read White Paper
                 <FileText className="h-4 w-4" />
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
