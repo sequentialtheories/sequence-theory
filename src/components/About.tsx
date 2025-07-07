@@ -6,6 +6,7 @@ const About = () => {
   const [isEarnWhileYouLearnExpanded, setIsEarnWhileYouLearnExpanded] = useState(false);
   const [isMitigateVolatilityExpanded, setIsMitigateVolatilityExpanded] = useState(false);
   const [isInvestmentContractsExpanded, setIsInvestmentContractsExpanded] = useState(false);
+  const [isYourCommunityExpanded, setIsYourCommunityExpanded] = useState(false);
 
   const features = [
     {
@@ -38,7 +39,11 @@ const About = () => {
     {
       icon: Users,
       title: "Your Community",
-      description: "Connect with others who understand the difference between investing and gambling on tokens."
+      description: "Connect with others who understand the difference between investing and gambling on tokens.",
+      expandedDescription: "Your Community at Sequence Theory is built on trust, purpose, and long-term value — something that's unfortunately rare in the crypto space. Too often, wealth-building platforms turn out to be get rich quick schemes or pump and dump groups disguised as communities. Many so called crypto groups push \"free plays\" or insider tips that are really just setups for someone else to profit at your expense. We're the outlier. Sequence Theory operates with full transparency, a mission driven purpose, and a clear goal: to make crypto more accessible, educational, and empowering for everyday people. We're not here to exploit the system. We're here to rebuild it, and that means actively calling out and stepping over the predatory actors that give this space a bad name. This is your community built for real progress, not empty promises.",
+      isExpandable: true,
+      isExpanded: isYourCommunityExpanded,
+      setExpanded: setIsYourCommunityExpanded
     }
   ];
 
