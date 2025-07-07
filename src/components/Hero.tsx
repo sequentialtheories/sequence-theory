@@ -4,8 +4,9 @@ import { ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
-  const scrollToSignup = () => {
-    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToNextSection = () => {
+    const vaultClubSection = document.querySelector('section[class*="py-20 bg-white"]');
+    vaultClubSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -28,37 +29,22 @@ const Hero = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-            Professional DeFi Investment Strategies
+            Easing Into Investing
           </h1>
           
           <p className="text-lg md:text-xl mb-8 text-gray-300 max-w-3xl mx-auto">
             Sequence Theory brings institutional-grade investment approaches to individual investors through 
             <span className="text-purple-400 font-semibold"> The Vault Club</span> - our flagship DeFi investment contract platform.
           </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button 
-              onClick={scrollToSignup}
-              size="lg" 
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105"
-            >
-              Join The Vault Club
-            </Button>
-            <Link to="/learn-more">
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-gray-400 text-gray-300 hover:bg-white hover:text-gray-900 px-8 py-4 rounded-full text-lg transition-all duration-300"
-              >
-                Learn How It Works
-              </Button>
-            </Link>
-          </div>
         </div>
         
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <button 
+          onClick={scrollToNextSection}
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:text-purple-400 transition-colors"
+          aria-label="Scroll to next section"
+        >
           <ArrowDown className="h-8 w-8 text-gray-400" />
-        </div>
+        </button>
       </div>
     </section>
   );
