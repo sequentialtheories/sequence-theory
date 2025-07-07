@@ -1,17 +1,17 @@
 
-import { GraduationCap, TrendingUp, Shield, Users } from "lucide-react";
+import { useState } from "react";
+import { GraduationCap, TrendingUp, Shield, Users, ChevronDown, ChevronUp } from "lucide-react";
 
 const About = () => {
+  const [isEarnWhileYouLearnExpanded, setIsEarnWhileYouLearnExpanded] = useState(false);
+
   const features = [
     {
       icon: GraduationCap,
       title: "Earn While You Learn",
-      description: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience."
-    },
-    {
-      icon: GraduationCap,
-      title: "Earn While You Learn",
-      description: "Generate returns through structured investment contracts while building your digital asset knowledge."
+      description: "Generate returns through structured investment contracts while building your digital asset knowledge.",
+      expandedDescription: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience.",
+      isExpandable: true
     },
     {
       icon: TrendingUp,
@@ -55,9 +55,30 @@ const About = () => {
               <h3 className="text-xl font-semibold mb-4 text-gray-900">
                 {feature.title}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 mb-4">
                 {feature.description}
               </p>
+              
+              {feature.isExpandable && (
+                <>
+                  {isEarnWhileYouLearnExpanded && (
+                    <div className="text-gray-600 mb-4 animate-fade-in">
+                      <p>{feature.expandedDescription}</p>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setIsEarnWhileYouLearnExpanded(!isEarnWhileYouLearnExpanded)}
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm"
+                  >
+                    {isEarnWhileYouLearnExpanded ? "Read less" : "Read more"}
+                    {isEarnWhileYouLearnExpanded ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </button>
+                </>
+              )}
             </div>
           ))}
         </div>
