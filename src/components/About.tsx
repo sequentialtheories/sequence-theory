@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { GraduationCap, TrendingUp, Shield, Users, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -13,7 +12,7 @@ const About = () => {
       icon: GraduationCap,
       title: "Earn While You Learn",
       description: "Generate returns through structured investment contracts while building your digital asset knowledge.",
-      expandedDescription: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience. While users engage with our smart contract strategies inside The Vault Club, they simultaneously gain structured financial knowledge—empowering them to understand the mechanics behind their investments in real time. This hands-on approach reduces costly trial-and-error learning, builds long-term confidence, and helps users grow both their assets and their understanding of decentralized finance from day one.",
+      expandedDescription: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience. While users engage with our smart contract strategies inside The Vault Club, they simultaneously gain structured financial knowledge—empowering them to understand the mechanics behind their investments in real time. This hands-on approach reduces costly trial-and-error learning, builds long-term confidence, and helps users grow both their assets and their understanding of decentralized finance from day one. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
       isExpandable: true,
       isExpanded: isEarnWhileYouLearnExpanded,
       setExpanded: setIsEarnWhileYouLearnExpanded
@@ -22,7 +21,7 @@ const About = () => {
       icon: TrendingUp,
       title: "Mitigate Volatility",
       description: "Skip the random token speculation. Our platform provides steady growth through proven strategies.",
-      expandedDescription: "Mitigating Volatility is about bringing structure to the unpredictable nature of crypto. In this space, prices move based almost entirely on supply and demand, since there's no central value anchor like in traditional markets. That means price swings are often driven by hype, panic, or sudden shifts in sentiment. The Vault Club helps reduce that chaos by introducing more predictable & systematic behavior into the market. Through features like recurring contributions, automated reinvestment, and time-locked contracts, we create steady demand and discourage impulsive decision making. This helps smooth out some of the noise and gives users a more stable path to be successful over time.",
+      expandedDescription: "Mitigating Volatility is about bringing structure to the unpredictable nature of crypto. In this space, prices move based almost entirely on supply and demand, since there's no central value anchor like in traditional markets. That means price swings are often driven by hype, panic, or sudden shifts in sentiment. The Vault Club helps reduce that chaos by introducing more predictable & systematic behavior into the market. Through features like recurring contributions, automated reinvestment, and time-locked contracts, we create steady demand and discourage impulsive decision making. This helps smooth out some of the noise and gives users a more stable path to be successful over time. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
       isExpandable: true,
       isExpanded: isMitigateVolatilityExpanded,
       setExpanded: setIsMitigateVolatilityExpanded
@@ -31,7 +30,7 @@ const About = () => {
       icon: Shield,
       title: "Investment Contracts",
       description: "Structured agreements that protect your capital while you ease into the digital asset space.",
-      expandedDescription: "Investment Contracts are a safer and smarter way to start in crypto—especially before diving into an exchange. Platforms like Coinbase or Binance can feel like a sea of tokens, many of which serve different purposes or, frankly, have no real value at all. Some tokens aren't even designed to increase in price, and others—like memecoins—exist mainly for speculation. For beginners, this can lead to confusion, impulsive purchases, and costly mistakes. That's why The Vault Club offers structured contracts as a starting point. Instead of buying random tokens and figuring it out later, users can begin with a clear, guided strategy that grows over time and teaches them how crypto really works. It's about building first, then exploring on your terms, with confidence.",
+      expandedDescription: "Investment Contracts are a safer and smarter way to start in crypto—especially before diving into an exchange. Platforms like Coinbase or Binance can feel like a sea of tokens, many of which serve different purposes or, frankly, have no real value at all. Some tokens aren't even designed to increase in price, and others—like memecoins—exist mainly for speculation. For beginners, this can lead to confusion, impulsive purchases, and costly mistakes. That's why The Vault Club offers structured contracts as a starting point. Instead of buying random tokens and figuring it out later, users can begin with a clear, guided strategy that grows over time and teaches them how crypto really works. It's about building first, then exploring on your terms, with confidence. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
       isExpandable: true,
       isExpanded: isInvestmentContractsExpanded,
       setExpanded: setIsInvestmentContractsExpanded
