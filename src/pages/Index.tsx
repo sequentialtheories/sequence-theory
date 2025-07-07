@@ -1,6 +1,7 @@
 
 import Hero from "@/components/Hero";
 import SequenceTheoryMission from "@/components/SequenceTheoryMission";
+import EarnWhileYouLearn from "@/components/EarnWhileYouLearn";
 import About from "@/components/About";
 import PreSignup from "@/components/PreSignup";
 import Footer from "@/components/Footer";
@@ -13,6 +14,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Hero />
       <SequenceTheoryMission />
+      <EarnWhileYouLearn />
       <About />
       <PreSignup />
       
