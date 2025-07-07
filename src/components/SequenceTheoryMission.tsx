@@ -33,6 +33,18 @@ const SequenceTheoryMission = () => {
                 <p>
                   Looking ahead, we see a future where traditional finance and blockchain converge. Whether through tokenized stocks or real-world asset integration, Sequence Theory is exploring ways to simplify access to financial markets and bring more users into a digitally native financial ecosystem—one that's equitable, transparent, and built for everyone.
                 </p>
+
+                <div className="mt-8 pt-8 border-t border-gray-200">
+                  <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                    Earn While You Learn
+                  </h3>
+                  <p className="mb-4">
+                    Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy.
+                  </p>
+                  <p>
+                    Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience. While users engage with our smart contract strategies inside The Vault Club, they simultaneously gain structured financial knowledge—empowering them to understand the mechanics behind their investments in real time.
+                  </p>
+                </div>
               </div>
             )}
             
