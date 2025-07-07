@@ -40,10 +40,10 @@ const Hero = () => {
         
         <button 
           onClick={scrollToNextSection}
-          className="absolute bottom-16 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:text-purple-400 transition-colors"
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:text-purple-400 transition-colors"
           aria-label="Scroll to next section"
         >
-          <ArrowDown className="h-8 w-8 text-gray-400" />
+          <ArrowDown className="h-12 w-12 text-white" />
         </button>
       </div>
     </section>
