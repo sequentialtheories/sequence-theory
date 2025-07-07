@@ -34,7 +34,7 @@ const Hero = () => {
             Join The Vault Club - our investment contract platform designed to help you earn and learn before diving into the token chaos
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             <Button 
               onClick={scrollToSignup}
               size="lg" 
@@ -63,7 +63,7 @@ const Hero = () => {
         </div>
         
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ArrowDown className="h-6 w-6 text-gray-400" />
+          <ArrowDown className="h-10 w-10 text-gray-400" />
         </div>
       </div>
     </section>
