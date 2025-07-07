@@ -60,6 +60,37 @@ const Hero = () => {
               </Button>
             </Link>
           </div>
+          
+          {/* Quick Learning Path Preview */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-purple-200">Your Learning Journey</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-medium text-white">Step 1</div>
+                <div className="text-gray-300">Financial Basics</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-medium text-white">Step 2</div>
+                <div className="text-gray-300">Digital Assets</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-medium text-white">Step 3</div>
+                <div className="text-gray-300">Vault Club</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-medium text-white">Step 4</div>
+                <div className="text-gray-300">Safe Exposure</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-medium text-white">Step 5</div>
+                <div className="text-gray-300">DeFi Protocols</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3">
+                <div className="font-medium text-white">Step 6</div>
+                <div className="text-gray-300">Beyond Vault</div>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
