@@ -1,6 +1,6 @@
-
 import { CheckCircle, Circle, Lock } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const LearningProgress = () => {
   const location = useLocation();
@@ -13,8 +13,8 @@ const LearningProgress = () => {
       isUnlocked: true
     },
     {
-      title: "Digital Asset Fundamentals",
-      href: "/learn/digital-asset-fundamentals", 
+      title: "Digital Asset Fundamentals", 
+      href: "/learn/digital-asset-fundamentals",
       description: "Understanding cryptocurrency and blockchain",
       isUnlocked: true
     },
