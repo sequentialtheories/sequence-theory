@@ -1,8 +1,9 @@
 
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
-import SequenceTheoryMission from "@/components/SequenceTheoryMission";
-import About from "@/components/About";
+import VaultClubMain from "@/components/VaultClubMain";
+import SupplementalOfferings from "@/components/SupplementalOfferings";
+import CompanyMission from "@/components/CompanyMission";
 import PreSignup from "@/components/PreSignup";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,10 +14,11 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Navigation />
-      <div className="pt-16"> {/* Add padding-top to account for fixed navigation */}
+      <div className="pt-16">
         <Hero />
-        <SequenceTheoryMission />
-        <About />
+        <VaultClubMain />
+        <SupplementalOfferings />
+        <CompanyMission />
         <PreSignup />
         
         {/* View Preview Section */}

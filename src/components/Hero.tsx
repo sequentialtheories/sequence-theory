@@ -10,7 +10,7 @@ const Hero = () => {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white relative overflow-hidden">
-      {/* Subtle background elements */}
+      {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl"></div>
@@ -19,26 +19,28 @@ const Hero = () => {
       <div className="container mx-auto px-6 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Logo */}
-          <div className="mb-12">
+          <div className="mb-8">
             <img 
               src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
               alt="Sequence Theory Logo" 
-              className="h-32 md:h-40 mx-auto"
+              className="h-24 md:h-32 mx-auto"
             />
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-8 text-white">
-            Easing into Digital Assets
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+            Professional DeFi Investment Strategies
           </h1>
-          <p className="text-xl md:text-2xl mb-12 text-gray-300 max-w-2xl mx-auto">
-            Join The Vault Club - our investment contract platform designed to help you earn and learn before diving into the token chaos
+          
+          <p className="text-lg md:text-xl mb-8 text-gray-300 max-w-3xl mx-auto">
+            Sequence Theory brings institutional-grade investment approaches to individual investors through 
+            <span className="text-purple-400 font-semibold"> The Vault Club</span> - our flagship DeFi investment contract platform.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Button 
               onClick={scrollToSignup}
               size="lg" 
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105"
             >
               Join The Vault Club
             </Button>
@@ -48,53 +50,14 @@ const Hero = () => {
                 size="lg"
                 className="border-gray-400 text-gray-300 hover:bg-white hover:text-gray-900 px-8 py-4 rounded-full text-lg transition-all duration-300"
               >
-                Learn More
+                Learn How It Works
               </Button>
             </Link>
-            <Link to="/learn-now">
-              <Button 
-                size="lg"
-                className="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-4 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
-              >
-                Learn Now
-              </Button>
-            </Link>
-          </div>
-          
-          {/* Quick Learning Path Preview */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-purple-200">Your Learning Journey</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="font-medium text-white">Step 1</div>
-                <div className="text-gray-300">Financial Basics</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="font-medium text-white">Step 2</div>
-                <div className="text-gray-300">Digital Assets</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="font-medium text-white">Step 3</div>
-                <div className="text-gray-300">Vault Club</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="font-medium text-white">Step 4</div>
-                <div className="text-gray-300">Safe Exposure</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="font-medium text-white">Step 5</div>
-                <div className="text-gray-300">DeFi Protocols</div>
-              </div>
-              <div className="bg-white/10 rounded-lg p-3">
-                <div className="font-medium text-white">Step 6</div>
-                <div className="text-gray-300">Beyond Vault</div>
-              </div>
-            </div>
           </div>
         </div>
         
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ArrowDown className="h-10 w-10 text-gray-400" />
+          <ArrowDown className="h-8 w-8 text-gray-400" />
         </div>
       </div>
     </section>
