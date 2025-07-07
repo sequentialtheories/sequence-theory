@@ -5,6 +5,7 @@ import { GraduationCap, TrendingUp, Shield, Users, ChevronDown, ChevronUp } from
 const About = () => {
   const [isEarnWhileYouLearnExpanded, setIsEarnWhileYouLearnExpanded] = useState(false);
   const [isMitigateVolatilityExpanded, setIsMitigateVolatilityExpanded] = useState(false);
+  const [isInvestmentContractsExpanded, setIsInvestmentContractsExpanded] = useState(false);
 
   const features = [
     {
@@ -28,7 +29,11 @@ const About = () => {
     {
       icon: Shield,
       title: "Investment Contracts",
-      description: "Structured agreements that protect your capital while you ease into the digital asset space."
+      description: "Structured agreements that protect your capital while you ease into the digital asset space.",
+      expandedDescription: "Investment Contracts are a safer and smarter way to start in crypto—especially before diving into an exchange. Platforms like Coinbase or Binance can feel like a sea of tokens, many of which serve different purposes or, frankly, have no real value at all. Some tokens aren't even designed to increase in price, and others—like memecoins—exist mainly for speculation. For beginners, this can lead to confusion, impulsive purchases, and costly mistakes. That's why The Vault Club offers structured contracts as a starting point. Instead of buying random tokens and figuring it out later, users can begin with a clear, guided strategy that grows over time and teaches them how crypto really works. It's about building first, then exploring on your terms, with confidence.",
+      isExpandable: true,
+      isExpanded: isInvestmentContractsExpanded,
+      setExpanded: setIsInvestmentContractsExpanded
     },
     {
       icon: Users,
