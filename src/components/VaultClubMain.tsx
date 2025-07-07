@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
+import { Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const VaultClubMain = () => {
@@ -16,7 +15,7 @@ const VaultClubMain = () => {
     },
     {
       icon: TrendingUp,
-      title: "Steady Growth Focus",
+      title: "Steady Growth Focus", 
       description: "Consistent returns over volatile speculation"
     },
     {
@@ -134,10 +133,9 @@ const VaultClubMain = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-white text-white px-8 py-3 rounded-full text-lg transition-colors"
+                  className="border-white text-white px-8 py-3 rounded-full text-lg"
                 >
                   Learn More Details
-                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
             </div>
