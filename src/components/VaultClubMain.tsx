@@ -134,7 +134,7 @@ const VaultClubMain = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-white text-white hover:bg-white hover:text-purple-900 px-8 py-3 rounded-full text-lg"
+                  className="border-white text-white px-8 py-3 rounded-full text-lg transition-colors"
                 >
                   Learn More Details
                   <ArrowRight className="h-5 w-5 ml-2" />
