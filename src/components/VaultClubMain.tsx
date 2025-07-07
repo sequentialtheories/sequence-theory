@@ -35,7 +35,7 @@ const VaultClubMain = () => {
     "Professional-grade DeFi strategies adapted for individuals",
     "Automated diversification across established protocols",
     "Built-in risk management and capital protection",
-    "Flexible commitment periods from 1-20 years"
+    "Flexible commitment periods from 1 month to 20 years"
   ];
 
   return (
