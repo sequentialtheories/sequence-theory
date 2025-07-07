@@ -1,7 +1,5 @@
-
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const VaultClubMain = () => {
   const scrollToSignup = () => {
@@ -122,23 +120,13 @@ const VaultClubMain = () => {
             <p className="text-lg mb-6 opacity-90">
               Join The Vault Club and let automated DeFi strategies work for you.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={scrollToSignup}
-                size="lg" 
-                className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold"
-              >
-                Get Priority Access
-              </Button>
-              <Link to="/learn-more">
-                <Button 
-                  size="lg"
-                  className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold"
-                >
-                  Learn More Details
-                </Button>
-              </Link>
-            </div>
+            <Button 
+              onClick={scrollToSignup}
+              size="lg" 
+              className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold"
+            >
+              Get Priority Access
+            </Button>
           </div>
         </div>
       </div>
