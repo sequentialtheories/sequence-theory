@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -131,9 +132,8 @@ const VaultClubMain = () => {
               </Button>
               <Link to="/learn-more">
                 <Button 
-                  variant="outline" 
                   size="lg"
-                  className="border-white text-white px-8 py-3 rounded-full text-lg"
+                  className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold"
                 >
                   Learn More Details
                 </Button>
