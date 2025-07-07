@@ -6,14 +6,13 @@ const Footer = () => {
         <div className="text-center">
           <h3 className="text-2xl font-bold text-white mb-4">Sequence Theory, Inc.</h3>
           <p className="mb-6 max-w-2xl mx-auto">
-            Building tomorrow's decentralized applications today. 
-            Stay connected as we shape the future of Web3.
+            Democratizing access to wealth building by creating intuitive, education first tools that empower everyday people to participate in digital & traditional financial systems with confidence.
           </p>
           
           <div className="border-t border-gray-800 pt-8">
             <p className="text-sm">
-              © 2024 Sequence Theory, Inc. All rights reserved. | 
-              <span className="ml-2">Building the future, one block at a time.</span>
+              © 2025 Sequence Theory, Inc. All rights reserved. | 
+              <span className="ml-2">Choreographing Capital</span>
             </p>
           </div>
         </div>
