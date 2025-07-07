@@ -60,40 +60,6 @@ const SupplementalOfferings = () => {
             </div>
           ))}
         </div>
-
-        {/* Learning Path Preview */}
-        <div className="mt-16 max-w-3xl mx-auto">
-          <div className="bg-white rounded-xl p-8 border border-gray-200">
-            <h3 className="text-xl font-semibold mb-6 text-gray-900 text-center flex items-center justify-center gap-2">
-              <BookOpen className="h-5 w-5 text-purple-600" />
-              Quick Learning Path Overview
-            </h3>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[
-                "Financial Basics",
-                "Digital Assets", 
-                "Vault Club",
-                "Safe Exposure",
-                "DeFi Protocols",
-                "Advanced Strategies"
-              ].map((step, index) => (
-                <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-4 text-center">
-                  <div className="text-sm font-medium text-purple-700">Step {index + 1}</div>
-                  <div className="text-sm text-gray-700 mt-1">{step}</div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="text-center mt-6">
-              <Link to="/learn-now">
-                <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white">
-                  Start Your Education Journey
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
