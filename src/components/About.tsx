@@ -6,6 +6,11 @@ const About = () => {
     {
       icon: GraduationCap,
       title: "Earn While You Learn",
+      description: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience."
+    },
+    {
+      icon: GraduationCap,
+      title: "Earn While You Learn",
       description: "Generate returns through structured investment contracts while building your digital asset knowledge."
     },
     {
