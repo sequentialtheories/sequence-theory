@@ -59,15 +59,17 @@ const VaultClubMain = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4 text-purple-800">Automated DeFi Investment System</h4>
                 <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  <li>Auto-allocates across AAVE, Quickswap, and other established DeFi protocols</li>
-                  <li>Transitions to Bitcoin accumulation for long-term wealth preservation</li>
+                  <li>Deposits auto-allocated across established DeFi protocols like AAVE and Quickswap</li>
+                  <li>Profits harvested and reinvested on regular schedules</li>
+                  <li>System transitions through growth phases to Bitcoin accumulation for wealth preservation</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-lg font-semibold mb-4 text-cyan-800">Group-Based Contracts</h4>
                 <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  <li>Small groups (4-8 people) with flexible weekly/monthly schedules</li>
-                  <li>Blockchain-transparent with emergency withdrawal options</li>
+                  <li>Small groups (4-8 people) with shared investment contracts and commitment levels</li>
+                  <li>Weekly or monthly deposit schedules with lock-up periods matching your goals</li>
+                  <li>Blockchain-transparent operations with emergency withdrawal and multi-signature security</li>
                 </ul>
               </div>
             </div>
