@@ -82,16 +82,6 @@ const LearnNow = () => {
             Skip the trial and error. Our structured learning modules teach you everything you need to know 
             about digital asset investing, from fundamentals to advanced strategies.
           </p>
-          <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span>Expert instructors</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              <span>Certificate upon completion</span>
-            </div>
-          </div>
         </div>
       </section>
 
