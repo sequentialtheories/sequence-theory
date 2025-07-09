@@ -33,8 +33,8 @@ const Hero = () => {
           </h1>
           
           <p className="text-lg md:text-xl mb-8 text-gray-300 max-w-3xl mx-auto">
-            Sequence Theory brings institutional-grade investment approaches to individual investors through 
-            <span className="text-purple-400 font-semibold"> The Vault Club</span> - our flagship DeFi investment contract platform.
+            Institutional-grade investment approaches for individual investors through 
+            <span className="text-purple-400 font-semibold"> The Vault Club</span> - our DeFi investment platform.
           </p>
         </div>
         

@@ -37,7 +37,7 @@ const PreSignup = () => {
             Join The Vault Club
           </h2>
           <p className="text-xl mb-8">
-            Ready to ease into digital assets the smart way? Secure your priority access to our investment contract platform - where you earn and learn before the token madness.
+            Ready to ease into digital assets smartly? Get priority access to our investment platform - earn and learn before token madness.
           </p>
           
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -62,7 +62,7 @@ const PreSignup = () => {
           </form>
           
           <p className="text-sm text-purple-100 mt-6">
-            Skip the speculation. Start with structured earning. No spam, just smart investing.
+            Skip speculation. Start with structured earning. No spam.
           </p>
         </div>
       </div>

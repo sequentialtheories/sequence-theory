@@ -31,10 +31,9 @@ const VaultClubMain = () => {
 
   const benefits = [
     "Structured investment contracts for steady growth",
-    "Professional-grade DeFi strategies adapted for individuals",
+    "Professional DeFi strategies for individuals",
     "Automated diversification across established protocols",
-    "Built-in risk management and capital protection",
-    "Flexible commitment periods from 1 month to 20 years"
+    "Built-in risk management and capital protection"
   ];
 
   return (
@@ -46,14 +45,14 @@ const VaultClubMain = () => {
             The Vault Club
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Our flagship DeFi investment contract platform that brings hedge fund-level strategies 
-            to individual investors through automated smart contracts and structured group investments.
+            DeFi investment contracts bringing hedge fund strategies 
+            to individual investors through automated smart contracts.
           </p>
         </div>
 
         {/* How It Works */}
         <div className="max-w-4xl mx-auto mb-16">
-          <h3 className="text-2xl font-bold text-center mb-8 text-gray-900">How The Vault Club Works</h3>
+          <h3 className="text-2xl font-bold text-center mb-8 text-gray-900">How It Works</h3>
           <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-2xl p-8">
             <div className="grid md:grid-cols-2 gap-8">
               <div>
@@ -78,7 +77,7 @@ const VaultClubMain = () => {
 
         {/* Key Features */}
         <div className="mb-16">
-          <h3 className="text-2xl font-bold text-center mb-12 text-gray-900">Why Choose The Vault Club</h3>
+          <h3 className="text-2xl font-bold text-center mb-12 text-gray-900">Key Features</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="text-center">
@@ -110,9 +109,9 @@ const VaultClubMain = () => {
         {/* CTA Section */}
         <div className="text-center">
           <div className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-2xl p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Ready to Start Building Wealth?</h3>
+            <h3 className="text-2xl font-bold mb-4">Ready to Build Wealth?</h3>
             <p className="text-lg mb-6 opacity-90">
-              Join The Vault Club and let automated DeFi strategies work for you.
+              Join The Vault Club and let automated DeFi work for you.
             </p>
             <Button 
               onClick={scrollToSignup}

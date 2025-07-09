@@ -8,14 +8,14 @@ const SupplementalOfferings = () => {
     {
       icon: GraduationCap,
       title: "Educational Resources",
-      description: "Comprehensive learning modules covering financial basics, digital assets, and DeFi protocols.",
+      description: "Learning modules covering financial basics, digital assets, and DeFi protocols.",
       link: "/learn-now",
       linkText: "Start Learning"
     },
     {
       icon: Users,
       title: "Investment Community",
-      description: "Connect with like-minded investors who understand strategic investing over speculation.",
+      description: "Connect with investors who prioritize strategy over speculation.",
       link: "/learn-more",
       linkText: "Join Community"
     }
@@ -29,8 +29,8 @@ const SupplementalOfferings = () => {
             Beyond The Vault Club
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            While The Vault Club is our primary service, we also provide educational resources 
-            and community support to help you succeed in your investment journey.
+            Beyond The Vault Club, we provide education and community 
+            to help you succeed in investing.
           </p>
         </div>
 

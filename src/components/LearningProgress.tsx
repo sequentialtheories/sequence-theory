@@ -9,13 +9,13 @@ const LearningProgress = () => {
     {
       title: "Financial Basics",
       href: "/learn/financial-basics",
-      description: "Foundation concepts for wealth building",
+      description: "Foundation wealth building concepts",
       isUnlocked: true
     },
     {
       title: "Digital Asset Fundamentals", 
       href: "/learn/digital-asset-fundamentals",
-      description: "Understanding cryptocurrency and blockchain",
+      description: "Cryptocurrency and blockchain basics",
       isUnlocked: true
     },
     {
@@ -27,7 +27,7 @@ const LearningProgress = () => {
     {
       title: "Digital Asset Exposure",
       href: "/learn/digital-asset-exposure",
-      description: "Safe ways to gain crypto exposure",
+      description: "Safe crypto exposure methods",
       isUnlocked: true
     },
     {

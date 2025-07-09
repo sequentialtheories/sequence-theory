@@ -6,17 +6,17 @@ const CompanyMission = () => {
     {
       icon: Target,
       title: "Our Core Mission",
-      description: "Democratize access to sophisticated investment strategies that were previously exclusive to large institutions and hedge funds."
+      description: "Democratize sophisticated investment strategies previously exclusive to institutions."
     },
     {
       icon: Lightbulb,
       title: "Our Approach",
-      description: "Combine the precision of quantitative finance with blockchain innovation to create structured, automated investment opportunities."
+      description: "Combine quantitative finance with blockchain innovation for automated investment opportunities."
     },
     {
       icon: Globe,
       title: "Our Vision",
-      description: "Build a future where traditional finance and blockchain converge, making professional-grade investing accessible to everyone."
+      description: "Make professional investing accessible through convergence of traditional and blockchain finance."
     }
   ];
 
@@ -28,8 +28,7 @@ const CompanyMission = () => {
             About Sequence Theory
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We're on a mission to bridge the gap between institutional-grade investment strategies 
-            and individual investors through innovative DeFi technology.
+            Bridging institutional investment strategies and individual investors through DeFi technology.
           </p>
         </div>
 
@@ -53,22 +52,21 @@ const CompanyMission = () => {
             
             <div className="prose prose-lg mx-auto text-gray-700">
               <p className="mb-4">
-                The Vault Club represents our core belief that sophisticated investment strategies shouldn't be 
-                gatekept by traditional finance. By leveraging smart contracts and DeFi protocols, we've created 
-                a system that operates with the precision of quantitative hedge funds while remaining transparent 
-                and accessible.
+                Sophisticated investment strategies shouldn't be gatekept by traditional finance. 
+                Using smart contracts and DeFi protocols, we've created a system with hedge fund precision 
+                while remaining transparent and accessible.
               </p>
               
               <p className="mb-4">
-                Our platform focuses on steady growth and risk management rather than speculative trading. 
-                Through automated diversification across established protocols like AAVE and Quickswap, 
-                The Vault Club provides institutional-quality investment management for individual investors.
+                Our platform focuses on steady growth and risk management over speculation. 
+                Through automated diversification across AAVE and Quickswap, 
+                The Vault Club provides institutional-quality management for individuals.
               </p>
               
               <p>
-                Looking ahead, we're exploring ways to integrate traditional assets with blockchain technology, 
-                creating bridges between established financial markets and the emerging DeFi ecosystem. 
-                Our goal is to build financial tools that are equitable, transparent, and built for everyone.
+                We're exploring integration of traditional assets with blockchain technology, 
+                bridging established markets and emerging DeFi. 
+                Our goal: equitable, transparent financial tools for everyone.
               </p>
             </div>
           </div>
