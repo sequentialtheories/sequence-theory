@@ -35,17 +35,17 @@ const LearnNow = () => {
     },
     {
       icon: Zap,
-      title: "DeFi & Protocols",
-      description: "Deep dive into the technical mechanics of staking, liquidity farming, and DeFi protocols.",
+      title: "Expanding Your Portfolio",
+      description: "Learn strategic approaches to diversifying beyond structured investment contracts.",
       level: "Advanced",
-      slug: "defi-protocols"
+      slug: "expanding-beyond-vault-club"
     },
     {
       icon: TrendingUp,
-      title: "Expanding Your Portfolio",
-      description: "Learn strategic approaches to diversifying beyond structured investment contracts.",
+      title: "DeFi & Protocols",
+      description: "Deep dive into the technical mechanics of staking, liquidity farming, and DeFi protocols.",
       level: "Advanced", 
-      slug: "expanding-beyond-vault-club"
+      slug: "defi-protocols"
     },
     {
       icon: Target,
@@ -146,8 +146,8 @@ const LearnNow = () => {
                   "Digital Assets", 
                   "Vault Club",
                   "Safe Exposure",
+                  "Expanding Portfolio",
                   "DeFi Protocols",
-                  "Advanced Strategies",
                   "Market Analysis"
                 ].map((step, index) => (
                   <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-4 text-center">

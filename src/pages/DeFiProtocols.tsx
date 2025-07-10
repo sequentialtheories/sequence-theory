@@ -1,7 +1,7 @@
 
 import ArticleLayout from "@/components/ArticleLayout";
 import { Link } from "react-router-dom";
-import { Coins } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 const DeFiProtocols = () => {
   return (
@@ -558,14 +558,14 @@ const DeFiProtocols = () => {
             <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">Continue Your Learning Journey</h3>
             <div className="grid md:grid-cols-2 gap-6">
               <Link 
-                to="/learn/digital-asset-exposure"
+                to="/learn/expanding-beyond-vault-club"
                 className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <Coins className="h-6 w-6 text-purple-600" />
-                  <span className="font-semibold text-gray-900">Previous: Digital Asset Exposure</span>
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                  <span className="font-semibold text-gray-900">Previous: Expanding Your Portfolio</span>
                 </div>
-                <p className="text-gray-600">Deep dive into specific tokens like BTC, ETH, SOL, and LINK. Learn about tokenization and Web3.</p>
+                <p className="text-gray-600">Learn strategic approaches to diversifying beyond structured investment contracts.</p>
               </Link>
               
               <Link 

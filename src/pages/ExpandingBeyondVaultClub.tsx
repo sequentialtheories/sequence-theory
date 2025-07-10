@@ -1,6 +1,6 @@
 import ArticleLayout from "@/components/ArticleLayout";
 import { Link } from "react-router-dom";
-import { Zap } from "lucide-react";
+import { Coins } from "lucide-react";
 
 const ExpandingBeyondVaultClub = () => {
   return (
@@ -318,14 +318,14 @@ const ExpandingBeyondVaultClub = () => {
             <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">Continue Your Learning Journey</h3>
             <div className="grid md:grid-cols-2 gap-6">
               <Link 
-                to="/learn/defi-protocols"
+                to="/learn/digital-asset-exposure"
                 className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <Zap className="h-6 w-6 text-purple-600" />
-                  <span className="font-semibold text-gray-900">Previous: DeFi & Protocols</span>
+                  <Coins className="h-6 w-6 text-purple-600" />
+                  <span className="font-semibold text-gray-900">Previous: Digital Asset Exposure</span>
                 </div>
-                <p className="text-gray-600">Deep dive into the technical mechanics of staking, liquidity farming, and DeFi protocols.</p>
+                <p className="text-gray-600">Deep dive into specific tokens like BTC, ETH, SOL, and LINK. Learn about tokenization and Web3.</p>
               </Link>
               
               <Link 
