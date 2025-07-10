@@ -215,18 +215,6 @@ const ExpandingBeyondVaultClub = () => {
           </div>
         </section>
 
-        {/* Ready to Put This Into Practice */}
-        <section className="py-16 bg-gradient-to-r from-cyan-600 to-purple-600 text-white rounded-xl">
-          <div className="container mx-auto px-6 text-center">
-            <h3 className="text-3xl font-bold mb-6">Ready to Put This Into Practice?</h3>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join The Vault Club and start applying what you've learned with our structured investment contracts.
-            </p>
-            <button className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
-              Join The Vault Club
-            </button>
-          </div>
-        </section>
       </div>
     </ArticleLayout>
   );
