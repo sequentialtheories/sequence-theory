@@ -190,24 +190,6 @@ const LearnNow = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-cyan-600 to-purple-600 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <h3 className="text-3xl font-bold mb-6">Ready to Begin Your Education?</h3>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Start your journey to becoming a knowledgeable digital asset investor. 
-            Join thousands of others who chose education over speculation.
-          </p>
-          <Link to="/#signup">
-            <Button 
-              size="lg" 
-              className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105"
-            >
-              Start Learning Today
-            </Button>
-          </Link>
-        </div>
-      </section>
     </div>
   );
 };
