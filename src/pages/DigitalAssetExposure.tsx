@@ -1,5 +1,7 @@
 
 import ArticleLayout from "@/components/ArticleLayout";
+import { Link } from "react-router-dom";
+import { PlayCircle } from "lucide-react";
 
 const DigitalAssetExposure = () => {
   return (
@@ -257,6 +259,48 @@ const DigitalAssetExposure = () => {
             <li>Strategic exposure considers each token's role rather than just price potential</li>
           </ul>
         </div>
+
+        {/* Continue Your Learning Journey */}
+        <section className="bg-gray-50 rounded-xl p-8">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">Continue Your Learning Journey</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Link 
+                to="/learn/vault-club-contracts"
+                className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <PlayCircle className="h-6 w-6 text-purple-600" />
+                  <span className="font-semibold text-gray-900">Previous: Investment Contracts</span>
+                </div>
+                <p className="text-gray-600">Understand how Vault Club contracts work and their advantages for new investors.</p>
+              </Link>
+              
+              <Link 
+                to="/learn-now"
+                className="block bg-gradient-to-r from-cyan-600 to-purple-600 text-white rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="font-semibold">Back to Learning Path</span>
+                </div>
+                <p className="text-gray-100">Explore all available learning modules and continue your education.</p>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Ready to Put This Into Practice */}
+        <section className="py-16 bg-gradient-to-r from-cyan-600 to-purple-600 text-white rounded-xl">
+          <div className="container mx-auto px-6 text-center">
+            <h3 className="text-3xl font-bold mb-6">Ready to Put This Into Practice?</h3>
+            <p className="text-xl mb-8 max-w-2xl mx-auto">
+              Join The Vault Club and start applying what you've learned with our structured investment contracts.
+            </p>
+            <button className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
+              Join The Vault Club
+            </button>
+          </div>
+        </section>
       </div>
     </ArticleLayout>
   );
