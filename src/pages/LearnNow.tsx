@@ -85,6 +85,44 @@ const LearnNow = () => {
         </div>
       </section>
 
+      {/* Why Start Now */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-3xl font-bold mb-8 text-center text-gray-900">Why Start Learning Now?</h3>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="bg-cyan-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="h-8 w-8 text-cyan-600" />
+                </div>
+                <h4 className="text-lg font-semibold mb-3 text-gray-900">Avoid Costly Mistakes</h4>
+                <p className="text-gray-600">
+                  Learn from others' experiences and avoid the common pitfalls that cost investors thousands.
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-8 w-8 text-purple-600" />
+                </div>
+                <h4 className="text-lg font-semibold mb-3 text-gray-900">Evolving Market</h4>
+                <p className="text-gray-600">
+                  Cryptocurrency is still in its early stages and will only continue to grow in adoption. Position yourself ahead of the curve in this rapidly evolving market.
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-green-600" />
+                </div>
+                <h4 className="text-lg font-semibold mb-3 text-gray-900">Join the Community</h4>
+                <p className="text-gray-600">
+                  Connect with like-minded investors who prioritize education and strategic thinking over speculation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Quick Learning Path Overview */}
       <section className="py-16">
         <div className="container mx-auto px-6">
@@ -152,43 +190,6 @@ const LearnNow = () => {
         </div>
       </section>
 
-      {/* Why Start Now */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold mb-8 text-center text-gray-900">Why Start Learning Now?</h3>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="bg-cyan-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="h-8 w-8 text-cyan-600" />
-                </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Avoid Costly Mistakes</h4>
-                <p className="text-gray-600">
-                  Learn from others' experiences and avoid the common pitfalls that cost investors thousands.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-8 w-8 text-purple-600" />
-                </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Evolving Market</h4>
-                <p className="text-gray-600">
-                  Cryptocurrency is still in its early stages and will only continue to grow in adoption. Position yourself ahead of the curve in this rapidly evolving market.
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8 text-green-600" />
-                </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Join the Community</h4>
-                <p className="text-gray-600">
-                  Connect with like-minded investors who prioritize education and strategic thinking over speculation.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
     </div>
   );
