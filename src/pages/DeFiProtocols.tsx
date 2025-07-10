@@ -325,39 +325,177 @@ const DeFiProtocols = () => {
           </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Yield Strategies: Stacking the Returns</h3>
+        <h3 className="text-2xl font-semibold text-gray-900">CEX vs DEX: Two Different Worlds</h3>
         
-        <div className="bg-orange-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-orange-800">How Protocols Stack Rewards</h4>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-blue-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Centralized Exchanges (CEX)</h4>
+            <p className="text-gray-700 mb-4">
+              Traditional exchanges controlled by companies, like banks but for digital assets:
+            </p>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-blue-700">Examples:</h5>
+                <p className="text-gray-700">Coinbase, Binance, Kraken, Gemini</p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-blue-700">How They Work:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Company holds your assets in their wallets</li>
+                  <li>Trades happen on their internal systems</li>
+                  <li>You trust them to keep your money safe</li>
+                  <li>Easy user interface and customer support</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-blue-700">Pros:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>User-friendly for beginners</li>
+                  <li>Customer support when things go wrong</li>
+                  <li>Insurance on some deposits</li>
+                  <li>Fiat currency on/off ramps</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-blue-700">Cons:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>You don't truly own your crypto</li>
+                  <li>Can freeze accounts or restrict access</li>
+                  <li>Single point of failure (hacks, bankruptcy)</li>
+                  <li>Higher fees</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-green-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-green-800">Decentralized Exchanges (DEX)</h4>
+            <p className="text-gray-700 mb-4">
+              No company in control - just smart contracts doing the work automatically:
+            </p>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-green-700">Examples:</h5>
+                <p className="text-gray-700">Uniswap, Quickswap, PancakeSwap, SushiSwap</p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-green-700">How They Work:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>You keep control of your own wallet</li>
+                  <li>Smart contracts handle the trading</li>
+                  <li>Liquidity provided by other users</li>
+                  <li>No company can stop you from trading</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-green-700">Pros:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>You maintain control of your assets</li>
+                  <li>No account creation or KYC required</li>
+                  <li>Access to thousands of tokens</li>
+                  <li>Transparent operations on blockchain</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-green-700">Cons:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>More complex for beginners</li>
+                  <li>No customer support</li>
+                  <li>Higher transaction fees (gas)</li>
+                  <li>Risk of user error (wrong address, etc.)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Decentralized Applications (dApps)</h3>
+        
+        <div className="bg-purple-50 p-6 rounded-lg">
+          <h4 className="text-lg font-semibold mb-3 text-purple-800">What Are dApps?</h4>
           <p className="text-gray-700 mb-4">
-            Smart DeFi strategies often combine multiple earning methods. Here's how it works:
+            Decentralized Applications are like regular apps (think Instagram or Uber), but instead of running 
+            on company servers, they run on blockchain networks. No single company controls them.
           </p>
           <div className="space-y-4">
             <div>
-              <h5 className="font-semibold text-orange-700">Layer 1: Base Lending</h5>
+              <h5 className="font-semibold text-purple-700">Key Characteristics:</h5>
+              <ul className="list-disc pl-6 text-gray-700 space-y-1">
+                <li><strong>Open Source:</strong> Anyone can see and verify the code</li>
+                <li><strong>Decentralized:</strong> No single point of control or failure</li>
+                <li><strong>Blockchain-Based:</strong> All data and logic stored on blockchain</li>
+                <li><strong>Token-Incentivized:</strong> Often use tokens for governance or utility</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold text-purple-700">Popular dApp Categories:</h5>
+              <div className="grid md:grid-cols-2 gap-4 mt-3">
+                <div>
+                  <h6 className="font-medium text-purple-600">Finance (DeFi)</h6>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Uniswap - Decentralized trading</li>
+                    <li>AAVE - Lending and borrowing</li>
+                    <li>Compound - Interest earning</li>
+                  </ul>
+                </div>
+                <div>
+                  <h6 className="font-medium text-purple-600">Gaming & NFTs</h6>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Axie Infinity - Play-to-earn gaming</li>
+                    <li>OpenSea - NFT marketplace</li>
+                    <li>Decentraland - Virtual world</li>
+                  </ul>
+                </div>
+                <div>
+                  <h6 className="font-medium text-purple-600">Social & Identity</h6>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>ENS - Domain names (.eth)</li>
+                    <li>Lens Protocol - Decentralized social</li>
+                    <li>Mirror - Publishing platform</li>
+                  </ul>
+                </div>
+                <div>
+                  <h6 className="font-medium text-purple-600">Infrastructure</h6>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Chainlink - Oracle services</li>
+                    <li>IPFS - Decentralized storage</li>
+                    <li>The Graph - Data indexing</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Smart Contracts: The Building Blocks</h3>
+        
+        <div className="bg-teal-50 p-6 rounded-lg">
+          <h4 className="text-lg font-semibold mb-3 text-teal-800">Understanding Smart Contracts</h4>
+          <p className="text-gray-700 mb-4">
+            Smart contracts are self-executing agreements written in code. Think of them as digital vending machines - 
+            you put in the right input, and you automatically get the expected output.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <h5 className="font-semibold text-teal-700">Real-World Example:</h5>
+              <p className="text-gray-700 mb-2">
+                Traditional insurance claim: Submit paperwork → Wait weeks → Insurance company reviews → 
+                Human decides → Maybe you get paid
+              </p>
               <p className="text-gray-700">
-                Deposit USDC in AAVE, earn 3% interest from borrowers.
+                Smart contract insurance: Weather data shows hurricane → Contract automatically pays out 
+                to affected areas → Money arrives in minutes
               </p>
             </div>
             <div>
-              <h5 className="font-semibold text-orange-700">Layer 2: Liquidity Provision</h5>
-              <p className="text-gray-700">
-                Take your aUSDC receipt token and pair it with another token to provide liquidity, 
-                earning trading fees on top of the lending interest.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold text-orange-700">Layer 3: Reward Tokens</h5>
-              <p className="text-gray-700">
-                Many protocols give bonus tokens to liquidity providers. These can be staked for more rewards 
-                or sold for additional income.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold text-orange-700">Layer 4: Compound Interest</h5>
-              <p className="text-gray-700">
-                Automatically reinvest all earnings back into the strategy, so your returns generate their own returns.
-              </p>
+              <h5 className="font-semibold text-teal-700">Why They Matter:</h5>
+              <ul className="list-disc pl-6 text-gray-700 space-y-1">
+                <li><strong>Automatic Execution:</strong> No humans needed to enforce the agreement</li>
+                <li><strong>Transparent:</strong> Everyone can see exactly how they work</li>
+                <li><strong>Immutable:</strong> Once deployed, the rules can't be changed arbitrarily</li>
+                <li><strong>Global Access:</strong> Available 24/7 to anyone with internet</li>
+                <li><strong>Reduced Costs:</strong> No middlemen taking fees</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -375,6 +513,13 @@ const DeFiProtocols = () => {
               </p>
             </div>
             <div>
+              <h5 className="font-semibold text-gray-700">User Error Risk</h5>
+              <p className="text-gray-700">
+                With great power comes great responsibility. Send tokens to the wrong address? 
+                They're gone forever. No customer service to call.
+              </p>
+            </div>
+            <div>
               <h5 className="font-semibold text-gray-700">Liquidation Risk</h5>
               <p className="text-gray-700">
                 If you're borrowing against collateral and prices move against you, your collateral 
@@ -382,17 +527,10 @@ const DeFiProtocols = () => {
               </p>
             </div>
             <div>
-              <h5 className="font-semibold text-gray-700">Token Risk</h5>
+              <h5 className="font-semibold text-gray-700">Network Congestion</h5>
               <p className="text-gray-700">
-                Reward tokens from newer protocols might lose value quickly. Sometimes the "high yields" 
-                come from tokens that are inflating rapidly.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-semibold text-gray-700">Complexity Risk</h5>
-              <p className="text-gray-700">
-                The more complex a strategy, the more things can go wrong. Simple strategies are often safer 
-                than elaborate yield farming schemes.
+                When networks get busy, transaction fees spike and confirmations slow down. 
+                This can affect your ability to interact with dApps when you need to.
               </p>
             </div>
           </div>
