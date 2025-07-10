@@ -57,69 +57,6 @@ const UnderstandingMarkets = () => {
           </div>
         </section>
 
-        {/* Traditional Financial Markets */}
-        <section className="mb-16">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold mb-8 text-gray-900">Traditional Financial Markets Framework</h3>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <BarChart3 className="h-6 w-6 text-blue-600" />
-                  <h4 className="text-xl font-semibold text-gray-900">Equity Markets</h4>
-                </div>
-                <ul className="space-y-3 text-gray-600">
-                  <li>• Stock exchanges (NYSE, NASDAQ, LSE)</li>
-                  <li>• Market capitalization dynamics</li>
-                  <li>• Valuation methodologies</li>
-                  <li>• Dividend vs. growth strategies</li>
-                  <li>• Sector rotation patterns</li>
-                </ul>
-              </div>
-              
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <DollarSign className="h-6 w-6 text-green-600" />
-                  <h4 className="text-xl font-semibold text-gray-900">Bond Markets</h4>
-                </div>
-                <ul className="space-y-3 text-gray-600">
-                  <li>• Government vs. corporate bonds</li>
-                  <li>• Yield curve interpretation</li>
-                  <li>• Credit risk assessment</li>
-                  <li>• Interest rate sensitivity</li>
-                  <li>• Fixed income allocation</li>
-                </ul>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Globe className="h-6 w-6 text-purple-600" />
-                  <h4 className="text-xl font-semibold text-gray-900">Forex Markets</h4>
-                </div>
-                <ul className="space-y-3 text-gray-600">
-                  <li>• Currency pair dynamics</li>
-                  <li>• Central bank policies</li>
-                  <li>• Economic indicators impact</li>
-                  <li>• Carry trade strategies</li>
-                  <li>• Geopolitical influences</li>
-                </ul>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <PieChart className="h-6 w-6 text-orange-600" />
-                  <h4 className="text-xl font-semibold text-gray-900">Commodities</h4>
-                </div>
-                <ul className="space-y-3 text-gray-600">
-                  <li>• Precious metals (Gold, Silver)</li>
-                  <li>• Energy markets (Oil, Gas)</li>
-                  <li>• Agricultural products</li>
-                  <li>• Supply/demand fundamentals</li>
-                  <li>• Inflation hedging properties</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Cryptocurrency Market Deep Dive */}
         <section className="mb-16">
@@ -214,6 +151,70 @@ const UnderstandingMarkets = () => {
                     <li><strong>Technology Upgrades:</strong> Protocol improvements affect valuations</li>
                   </ul>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Traditional Financial Markets */}
+        <section className="mb-16">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-3xl font-bold mb-8 text-gray-900">Traditional Financial Markets Framework</h3>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <BarChart3 className="h-6 w-6 text-blue-600" />
+                  <h4 className="text-xl font-semibold text-gray-900">Equity Markets</h4>
+                </div>
+                <ul className="space-y-3 text-gray-600">
+                  <li>• Stock exchanges (NYSE, NASDAQ, LSE)</li>
+                  <li>• Market capitalization dynamics</li>
+                  <li>• Valuation methodologies</li>
+                  <li>• Dividend vs. growth strategies</li>
+                  <li>• Sector rotation patterns</li>
+                </ul>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                  <h4 className="text-xl font-semibold text-gray-900">Bond Markets</h4>
+                </div>
+                <ul className="space-y-3 text-gray-600">
+                  <li>• Government vs. corporate bonds</li>
+                  <li>• Yield curve interpretation</li>
+                  <li>• Credit risk assessment</li>
+                  <li>• Interest rate sensitivity</li>
+                  <li>• Fixed income allocation</li>
+                </ul>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Globe className="h-6 w-6 text-purple-600" />
+                  <h4 className="text-xl font-semibold text-gray-900">Forex Markets</h4>
+                </div>
+                <ul className="space-y-3 text-gray-600">
+                  <li>• Currency pair dynamics</li>
+                  <li>• Central bank policies</li>
+                  <li>• Economic indicators impact</li>
+                  <li>• Carry trade strategies</li>
+                  <li>• Geopolitical influences</li>
+                </ul>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <PieChart className="h-6 w-6 text-orange-600" />
+                  <h4 className="text-xl font-semibold text-gray-900">Commodities</h4>
+                </div>
+                <ul className="space-y-3 text-gray-600">
+                  <li>• Precious metals (Gold, Silver)</li>
+                  <li>• Energy markets (Oil, Gas)</li>
+                  <li>• Agricultural products</li>
+                  <li>• Supply/demand fundamentals</li>
+                  <li>• Inflation hedging properties</li>
+                </ul>
               </div>
             </div>
           </div>
