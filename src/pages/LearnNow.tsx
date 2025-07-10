@@ -46,6 +46,13 @@ const LearnNow = () => {
       description: "Learn strategic approaches to diversifying beyond structured investment contracts.",
       level: "Advanced", 
       slug: "expanding-beyond-vault-club"
+    },
+    {
+      icon: Target,
+      title: "Understanding Markets",
+      description: "Deep dive into global financial markets, crypto market origins, evolution, and future outlook.",
+      level: "Expert",
+      slug: "understanding-markets"
     }
   ];
 
@@ -133,14 +140,15 @@ const LearnNow = () => {
                 Quick Learning Path Overview
               </h3>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   "Financial Basics",
                   "Digital Assets", 
                   "Vault Club",
                   "Safe Exposure",
                   "DeFi Protocols",
-                  "Advanced Strategies"
+                  "Advanced Strategies",
+                  "Market Analysis"
                 ].map((step, index) => (
                   <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-4 text-center">
                     <div className="text-sm font-medium text-purple-700">Step {index + 1}</div>
