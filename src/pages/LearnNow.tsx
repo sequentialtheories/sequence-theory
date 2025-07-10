@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
@@ -53,6 +53,13 @@ const LearnNow = () => {
       description: "Deep dive into global financial markets, crypto market origins, evolution, and future outlook.",
       level: "Expert",
       slug: "understanding-markets"
+    },
+    {
+      icon: AlertTriangle,
+      title: "Shortfalls of Crypto",
+      description: "Learn about technology exploitation, memecoin controversies, and how to identify red flags.",
+      level: "Expert",
+      slug: "shortfalls-of-crypto"
     }
   ];
 
@@ -148,7 +155,8 @@ const LearnNow = () => {
                   "Safe Exposure",
                   "Expanding Portfolio",
                   "DeFi Protocols",
-                  "Market Analysis"
+                  "Market Analysis",
+                  "Risk Awareness"
                 ].map((step, index) => (
                   <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-4 text-center">
                     <div className="text-sm font-medium text-purple-700">Step {index + 1}</div>
