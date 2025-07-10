@@ -58,69 +58,179 @@ const ExpandingBeyondVaultClub = () => {
           </div>
           
           <div className="bg-cyan-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-cyan-800">Step 2: Individual Token Selection - Exchange Trading</h4>
+            <h4 className="text-lg font-semibold mb-3 text-cyan-800">Step 2: Individual Token Selection - Cryptocurrency Exchanges</h4>
             <p className="text-gray-700 mb-3">
-              Once comfortable with your foundation, you can explore individual digital assets through cryptocurrency exchanges:
+              Once comfortable with your foundation, cryptocurrency exchanges open up access to thousands of digital assets:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Research and select specific tokens based on fundamentals</li>
-              <li>Learn to use major exchanges like Coinbase, Binance, or Kraken</li>
+              <li>Research and select specific tokens based on fundamentals and use cases</li>
+              <li>Access to major cryptocurrencies, DeFi tokens, and emerging projects</li>
               <li>Practice dollar-cost averaging into chosen assets</li>
-              <li>Understand security practices for holding digital assets</li>
+              <li>Learn proper security practices for holding digital assets</li>
               <li>Develop skills in technical and fundamental analysis</li>
+              <li>Explore different blockchain ecosystems and their native tokens</li>
             </ul>
             <div className="mt-4 p-4 bg-cyan-100 rounded-lg">
               <p className="text-sm text-cyan-800">
-                <strong>Popular Exchanges:</strong> Coinbase (beginner-friendly), Binance (advanced features), 
-                Kraken (security-focused), Gemini (regulated).
+                <strong>Popular Exchanges:</strong> Coinbase (beginner-friendly), Binance (thousands of tokens), 
+                Kraken (security-focused), Gemini (regulated), KuCoin (altcoins).
               </p>
             </div>
           </div>
           
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Step 3: Traditional Markets - Stock Market</h4>
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Step 3: Traditional Markets (Optional Advanced Step)</h4>
             <p className="text-gray-700 mb-3">
-              With digital asset experience, traditional markets become your next expansion opportunity:
+              With digital asset experience, traditional markets can complement your portfolio:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Established companies with proven business models</li>
-              <li>Dividend income from profitable businesses</li>
+              <li>Established companies for stability and dividends</li>
               <li>Index funds for broad market exposure</li>
-              <li>Tax-advantaged retirement accounts (401k, IRA)</li>
+              <li>Tax-advantaged retirement accounts</li>
+              <li>Different risk/return profile from digital assets</li>
             </ul>
           </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Opening Your First Brokerage Account</h3>
+        <h3 className="text-2xl font-semibold text-gray-900">Understanding Cryptocurrency Exchanges</h3>
         
         <p className="text-gray-700 mb-4">
-          After gaining experience with individual token selection, opening a brokerage account expands your investment universe to traditional markets.
+          Cryptocurrency exchanges are digital marketplaces where you can buy, sell, and trade thousands of different tokens. 
+          Think of them as specialized financial platforms that give you access to the entire digital asset ecosystem.
         </p>
 
         <div className="bg-green-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-green-800">Popular Brokerage Options</h4>
+          <h4 className="text-lg font-semibold mb-3 text-green-800">The Plethora of Available Tokens</h4>
+          <p className="text-gray-700 mb-4">
+            Major exchanges offer access to thousands of tokens across different categories and blockchain ecosystems:
+          </p>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <h5 className="font-semibold text-green-700 mb-2">Full-Service Brokers</h5>
+              <h5 className="font-semibold text-green-700 mb-2">Major Categories</h5>
               <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                <li>Fidelity - Excellent research tools</li>
-                <li>Charles Schwab - Strong customer service</li>
-                <li>Vanguard - Best for low-cost index funds</li>
+                <li>Layer 1 blockchains (Bitcoin, Ethereum, Solana)</li>
+                <li>DeFi protocol tokens (Uniswap, AAVE, Compound)</li>
+                <li>Gaming and metaverse tokens</li>
+                <li>Infrastructure and oracle tokens</li>
+                <li>Stablecoins across different networks</li>
               </ul>
             </div>
             <div>
-              <h5 className="font-semibold text-green-700 mb-2">Modern Platforms</h5>
+              <h5 className="font-semibold text-green-700 mb-2">Ecosystem Diversity</h5>
               <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                <li>E*TRADE - User-friendly interface</li>
-                <li>TD Ameritrade - Advanced trading tools</li>
-                <li>Interactive Brokers - Professional features</li>
+                <li>Ethereum ecosystem tokens</li>
+                <li>Binance Smart Chain projects</li>
+                <li>Solana-based applications</li>
+                <li>Polygon and layer 2 solutions</li>
+                <li>Emerging blockchain networks</li>
               </ul>
             </div>
           </div>
           <p className="text-gray-700 mt-4">
-            Most brokers now offer commission-free stock trades and have eliminated minimum balance requirements. 
-            Account opening typically takes 15-30 minutes and can start with as little as $1.
+            This variety allows you to build targeted exposure to specific sectors, technologies, or investment themes 
+            within the digital asset space - from Web3 infrastructure to decentralized finance applications.
           </p>
+        </div>
+
+        <h3 className="text-2xl font-semibold text-gray-900">Hot Wallets vs. Cold Wallets: Security Fundamentals</h3>
+        
+        <p className="text-gray-700 mb-4">
+          Understanding wallet security is crucial when moving beyond structured contracts to individual token ownership. 
+          The type of wallet you choose affects both convenience and security.
+        </p>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-orange-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-orange-800">Hot Wallets</h4>
+            <p className="text-gray-700 mb-3">
+              Connected to the internet for easy access and transactions:
+            </p>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-orange-700">Examples:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Exchange wallets (Coinbase, Binance)</li>
+                  <li>Browser extensions (MetaMask, Phantom)</li>
+                  <li>Mobile apps (Trust Wallet, Exodus)</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-orange-700">Best For:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Active trading and DeFi interactions</li>
+                  <li>Small amounts for daily use</li>
+                  <li>Learning and experimentation</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-orange-700">Risks:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Vulnerable to hacks and malware</li>
+                  <li>Exchange custody risk</li>
+                  <li>Phishing attacks</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Cold Wallets</h4>
+            <p className="text-gray-700 mb-3">
+              Offline storage for maximum security:
+            </p>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-blue-700">Examples:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Hardware wallets (Ledger, Trezor)</li>
+                  <li>Paper wallets (printed private keys)</li>
+                  <li>Air-gapped computers</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-blue-700">Best For:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Long-term holdings ("HODLing")</li>
+                  <li>Large amounts of crypto</li>
+                  <li>Maximum security priority</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-blue-700">Trade-offs:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                  <li>Less convenient for frequent transactions</li>
+                  <li>Hardware costs ($50-200)</li>
+                  <li>Learning curve for setup</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-purple-50 p-6 rounded-lg">
+          <h4 className="text-lg font-semibold mb-3 text-purple-800">Security Best Practices</h4>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h5 className="font-semibold text-purple-700 mb-2">For Beginners:</h5>
+              <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                <li>Start with reputable exchanges like Coinbase</li>
+                <li>Use exchange wallets for small amounts initially</li>
+                <li>Enable two-factor authentication (2FA)</li>
+                <li>Never share your private keys or seed phrases</li>
+                <li>Double-check all addresses before sending</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold text-purple-700 mb-2">As You Advance:</h5>
+              <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                <li>Graduate to hardware wallets for larger holdings</li>
+                <li>Learn to use self-custody wallets (MetaMask)</li>
+                <li>Understand backup and recovery procedures</li>
+                <li>Consider multi-signature setups for very large amounts</li>
+                <li>Keep software and firmware updated</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <h3 className="text-2xl font-semibold text-gray-900">Multi-Asset Investment Strategies</h3>
@@ -129,43 +239,59 @@ const ExpandingBeyondVaultClub = () => {
           <div className="bg-purple-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-purple-800">Strategic Asset Allocation</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li><strong>Core Holdings:</strong> Vault Club contracts and broad market index funds (60-80%)</li>
-              <li><strong>Individual Tokens:</strong> Selected digital assets via exchanges (10-20%)</li>
-              <li><strong>Growth Stocks:</strong> Individual stocks and growth-focused ETFs (10-15%)</li>
-              <li><strong>Cash/Bonds:</strong> Emergency funds and fixed income (5-15%)</li>
+              <li><strong>Core Holdings:</strong> Vault Club contracts for systematic digital asset exposure (60-70%)</li>
+              <li><strong>Individual Tokens:</strong> Selected digital assets via exchanges for targeted exposure (20-30%)</li>
+              <li><strong>Emerging Opportunities:</strong> New tokens and DeFi protocols (5-10%)</li>
+              <li><strong>Stablecoins:</strong> For liquidity and DeFi opportunities (5-10%)</li>
             </ul>
           </div>
           
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Dollar-Cost Averaging Across Assets</h4>
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Dollar-Cost Averaging Across Tokens</h4>
             <p className="text-gray-700">
-              Your Vault Club experience with systematic investing extends perfectly to both individual tokens 
-              and stocks through regular exchange purchases, systematic retirement account contributions, 
-              and automatic dividend reinvestment plans.
+              Your Vault Club experience with systematic investing extends perfectly to individual tokens through 
+              regular exchange purchases. Set up recurring buys for your chosen tokens to smooth out volatility 
+              and build positions over time without trying to time the market.
             </p>
+          </div>
+          
+          <div className="bg-cyan-50 p-6 rounded-lg">
+            <h4 className="text-lg font-semibold mb-3 text-cyan-800">Ecosystem Diversification</h4>
+            <p className="text-gray-700 mb-3">
+              Spread your individual token selections across different blockchain ecosystems and use cases:
+            </p>
+            <ul className="list-disc pl-6 text-gray-700 space-y-1">
+              <li><strong>Store of Value:</strong> Bitcoin for digital gold exposure</li>
+              <li><strong>Smart Contract Platforms:</strong> Ethereum, Solana, Avalanche</li>
+              <li><strong>DeFi Infrastructure:</strong> Chainlink, Uniswap, AAVE</li>
+              <li><strong>Layer 2 Solutions:</strong> Polygon, Arbitrum, Optimism</li>
+              <li><strong>Emerging Narratives:</strong> AI tokens, gaming tokens, RWA tokens</li>
+            </ul>
           </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Risk Management & Tax Considerations</h3>
+        <h3 className="text-2xl font-semibold text-gray-900">Risk Management & Security Considerations</h3>
         
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-red-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-red-800">Position Sizing</h4>
+            <h4 className="text-lg font-semibold mb-3 text-red-800">Position Sizing & Portfolio Management</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>Vault Club commitments remain your foundation</li>
-              <li>Individual tokens should be researched and limited</li>
-              <li>Stock positions stay within reasonable portfolio limits</li>
-              <li>Consider correlation between similar assets</li>
+              <li>Individual tokens should be researched and position-sized appropriately</li>
+              <li>Never invest more than you can afford to lose in any single token</li>
+              <li>Consider correlation between similar ecosystem tokens</li>
+              <li>Regularly rebalance based on performance and goals</li>
             </ul>
           </div>
           
           <div className="bg-yellow-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Tax Implications</h4>
+            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Security & Tax Implications</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Digital assets (both contracts and individual tokens) taxed as property</li>
-              <li>Stocks have favorable qualified dividend treatment</li>
-              <li>Tax-advantaged accounts reduce current tax burden</li>
-              <li>Consider tax-loss harvesting across asset classes</li>
+              <li>All digital assets (contracts and individual tokens) taxed as property</li>
+              <li>Track all transactions for tax reporting purposes</li>
+              <li>Consider using portfolio tracking tools (CoinTracker, Koinly)</li>
+              <li>Understand the tax implications of DeFi activities</li>
+              <li>Keep detailed records of purchases, sales, and transfers</li>
             </ul>
           </div>
         </div>
@@ -176,13 +302,13 @@ const ExpandingBeyondVaultClub = () => {
           <h4 className="text-lg font-semibold mb-3 text-gray-800">Key Takeaways</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
             <li>Vault Club contracts serve as your sophisticated digital asset foundation</li>
-            <li>Individual token selection through exchanges develops your analysis skills</li>
-            <li>Traditional stock markets provide established wealth-building opportunities</li>
-            <li>Each step builds knowledge and confidence for the next</li>
-            <li>Systematic investing principles apply across all asset classes</li>
-            <li>Tax-advantaged accounts maximize long-term wealth building</li>
-            <li>Proper diversification enhances rather than replaces your foundation</li>
-            <li>Professional relationships and continuing education remain crucial</li>
+            <li>Cryptocurrency exchanges provide access to thousands of tokens across different ecosystems</li>
+            <li>Hot wallets offer convenience for active trading, cold wallets provide security for long-term storage</li>
+            <li>Individual token selection develops your analysis and research skills</li>
+            <li>Ecosystem diversification reduces concentration risk while maintaining digital asset focus</li>
+            <li>Systematic investing principles apply to both structured contracts and individual tokens</li>
+            <li>Proper security practices become critical when self-custodying digital assets</li>
+            <li>Tax tracking and compliance require ongoing attention and proper tools</li>
           </ul>
         </div>
 
