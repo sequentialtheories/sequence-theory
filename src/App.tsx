@@ -16,6 +16,7 @@ import DigitalAssetExposure from "./pages/DigitalAssetExposure";
 import DeFiProtocols from "./pages/DeFiProtocols";
 import ExpandingBeyondVaultClub from "./pages/ExpandingBeyondVaultClub";
 import UnderstandingMarkets from "./pages/UnderstandingMarkets";
+import ShortfallsOfCrypto from "./pages/ShortfallsOfCrypto";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/learn/defi-protocols" element={<DeFiProtocols />} />
           <Route path="/learn/expanding-beyond-vault-club" element={<ExpandingBeyondVaultClub />} />
           <Route path="/learn/understanding-markets" element={<UnderstandingMarkets />} />
+          <Route path="/learn/shortfalls-of-crypto" element={<ShortfallsOfCrypto />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

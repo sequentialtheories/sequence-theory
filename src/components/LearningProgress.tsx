@@ -41,6 +41,18 @@ const LearningProgress = () => {
       href: "/learn/expanding-beyond-vault-club",
       description: "Advanced strategies and next steps",
       isUnlocked: true
+    },
+    {
+      title: "Understanding Markets",
+      href: "/learn/understanding-markets",
+      description: "Market analysis and economic cycles",
+      isUnlocked: true
+    },
+    {
+      title: "Shortfalls of Crypto",
+      href: "/learn/shortfalls-of-crypto",
+      description: "Technology exploitation and red flags",
+      isUnlocked: true
     }
   ];
 
