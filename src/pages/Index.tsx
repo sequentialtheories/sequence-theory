@@ -26,7 +26,7 @@ const Index = () => {
           <div className="container mx-auto px-6 text-center">
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a
-                href="https://claude.ai/public/artifacts/97bd8f52-98c0-40ea-81c5-3a05a3eed034?fullscreen=true"
+                href="https://claude.ai/public/artifacts/97b71d10-3256-49a0-82d1-d1b62e6c4543"
                 target="_blank"
                 rel="noopener noreferrer"
               >
