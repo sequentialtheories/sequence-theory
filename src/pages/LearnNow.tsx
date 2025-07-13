@@ -403,6 +403,55 @@ const LearnNow = () => {
           </div>
         </section>}
 
+      {/* Comprehensive Exam Section */}
+      <section className="py-16 bg-gradient-to-br from-slate-50 to-gray-100">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                📚 Comprehensive Final Exam
+              </h3>
+              <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+                Ready to test everything you've learned? Take our comprehensive exam covering all modules from Finance, Web3, and Education about Education.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-lg text-center">
+              <div className="mb-6">
+                <div className="bg-gradient-to-r from-slate-600 to-gray-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-10 w-10 text-white" />
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">Final Comprehensive Assessment</h4>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                  This exam draws from all learning modules across our three main categories. Show what you've mastered!
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h5 className="font-semibold text-slate-700 mb-2">35 Questions</h5>
+                  <p className="text-sm text-gray-600">Randomly selected from 50+ questions</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h5 className="font-semibold text-gray-700 mb-2">All Topics</h5>
+                  <p className="text-sm text-gray-600">Finance, Web3, and Education</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h5 className="font-semibold text-green-700 mb-2">Final Score</h5>
+                  <p className="text-sm text-gray-600">Complete assessment results</p>
+                </div>
+              </div>
+
+              <Link to="/comprehensive-exam">
+                <Button className="bg-gradient-to-r from-slate-600 to-gray-600 text-white px-8 py-4 text-lg font-semibold hover:from-slate-700 hover:to-gray-700 hover:scale-105 transition-all">
+                  Take Comprehensive Exam
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>;
 };
 export default LearnNow;
