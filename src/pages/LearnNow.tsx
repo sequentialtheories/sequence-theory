@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 const LearnNow = () => {
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const learningCategories = [{
     title: "Finance",
     description: "Build a strong foundation in financial literacy and money management",
@@ -225,36 +225,38 @@ const LearnNow = () => {
       </section>
 
       {/* Selected Category Modules */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                {learningCategories[selectedCategory].title} Modules
-              </h3>
-              <p className="text-gray-600">{learningCategories[selectedCategory].description}</p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {learningCategories[selectedCategory].modules.map((module, moduleIndex) => <Link key={moduleIndex} to={`/learn/${module.slug}`} className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <module.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h5 className="text-lg font-semibold text-gray-900">{module.title}</h5>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                          {module.level}
-                        </span>
+      {selectedCategory !== null && (
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-8">
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                  {learningCategories[selectedCategory].title} Modules
+                </h3>
+                <p className="text-gray-600">{learningCategories[selectedCategory].description}</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => <Link key={moduleIndex} to={`/learn/${module.slug}`} className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <module.icon className="h-6 w-6 text-white" />
                       </div>
-                      <p className="text-gray-600 text-sm">{module.description}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h5 className="text-lg font-semibold text-gray-900">{module.title}</h5>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                            {module.level}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm">{module.description}</p>
+                      </div>
                     </div>
-                  </div>
-                </Link>)}
+                  </Link>)}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Finance Quiz Section */}
       <section className="py-16 bg-white">
