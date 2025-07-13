@@ -258,54 +258,56 @@ const LearnNow = () => {
         </section>
       )}
 
-      {/* Finance Quiz Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Finance Modules Comprehensive Quiz 🧠
-              </h3>
-              <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                Test your knowledge across all finance modules. This quiz covers concepts from The Concept & Purpose of Money through Financial Strategy & Planning.
-              </p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200 text-center">
-              <div className="mb-6">
-                <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="h-10 w-10 text-white" />
-                </div>
-                <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Knowledge?</h4>
-                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Take our comprehensive 15-question quiz covering all finance modules. Questions are presented one at a time with instant progress tracking.
+      {/* Finance Quiz Section - Only show when Finance is selected */}
+      {selectedCategory === 0 && (
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  Finance Modules Comprehensive Quiz 🧠
+                </h3>
+                <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+                  Test your knowledge across all finance modules. This quiz covers concepts from The Concept & Purpose of Money through Financial Strategy & Planning.
                 </p>
               </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200 text-center">
+                <div className="mb-6">
+                  <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Target className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Knowledge?</h4>
+                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Take our comprehensive 15-question quiz covering all finance modules. Questions are presented one at a time with instant progress tracking.
+                  </p>
+                </div>
 
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-4 rounded-lg border border-purple-200">
-                  <h5 className="font-semibold text-purple-700 mb-2">15 Questions</h5>
-                  <p className="text-sm text-gray-600">Comprehensive coverage of all modules</p>
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white p-4 rounded-lg border border-purple-200">
+                    <h5 className="font-semibold text-purple-700 mb-2">15 Questions</h5>
+                    <p className="text-sm text-gray-600">Comprehensive coverage of all modules</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-purple-200">
+                    <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
+                    <p className="text-sm text-gray-600">Questions presented individually</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-purple-200">
+                    <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                    <p className="text-sm text-gray-600">Get your score immediately</p>
+                  </div>
                 </div>
-                <div className="bg-white p-4 rounded-lg border border-purple-200">
-                  <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
-                  <p className="text-sm text-gray-600">Questions presented individually</p>
-                </div>
-                <div className="bg-white p-4 rounded-lg border border-purple-200">
-                  <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
-                  <p className="text-sm text-gray-600">Get your score immediately</p>
-                </div>
+
+                <Link to="/finance-quiz">
+                  <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-4 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700 hover:scale-105 transition-all">
+                    Start Quiz
+                  </Button>
+                </Link>
               </div>
-
-              <Link to="/finance-quiz">
-                <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-4 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700 hover:scale-105 transition-all">
-                  Start Quiz
-                </Button>
-              </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
     </div>;
 };
