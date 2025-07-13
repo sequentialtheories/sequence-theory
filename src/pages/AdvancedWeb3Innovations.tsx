@@ -1,4 +1,5 @@
 import ArticleLayout from "@/components/ArticleLayout";
+import { Link } from "react-router-dom";
 import { 
   Zap, Layers, Shield, Users, Network, Eye, EyeOff, TrendingUp, 
   AlertTriangle, CheckCircle, Target, Lightbulb, Lock, Unlock,
@@ -442,6 +443,52 @@ const AdvancedWeb3Innovations = () => {
                 <p className="text-gray-600 text-sm">{risk.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Advanced Web3 Innovations Quiz */}
+        <div className="bg-gradient-to-br from-indigo-900 to-purple-900 text-white rounded-2xl p-8">
+          <div className="text-center mb-8">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-3 rounded-xl inline-block mb-4">
+              <Brain className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Test Your Advanced Web3 Knowledge</h3>
+            <p className="text-indigo-200 mb-6">
+              Challenge yourself with 15 questions covering advanced Web3 innovations, staking mechanisms, DeFi protocols, and cutting-edge blockchain technologies.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {[
+              { icon: Lock, title: "Staking Mechanisms", desc: "Liquid staking, restaking, and validator services" },
+              { icon: DollarSign, title: "Lending Protocols", desc: "Flash loans, credit delegation, and undercollateralized lending" },
+              { icon: Zap, title: "MEV Strategies", desc: "Front-running, sandwich attacks, and value extraction" },
+              { icon: TrendingUp, title: "Meme Coin Dynamics", desc: "Social finance and viral marketing mechanisms" },
+              { icon: BarChart3, title: "Yield Farming", desc: "Liquidity mining and yield optimization strategies" },
+              { icon: Users, title: "DAO Governance", desc: "Quadratic voting and treasury management" },
+              { icon: Layers, title: "Layer 2 Solutions", desc: "Rollups, state channels, and scaling technologies" },
+              { icon: EyeOff, title: "Privacy Tech", desc: "Zero-knowledge proofs and cryptographic techniques" },
+              { icon: Settings, title: "AMM Evolution", desc: "Concentrated liquidity and dynamic fees" }
+            ].map((topic, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                <topic.icon className="h-6 w-6 text-indigo-300 mb-2" />
+                <h4 className="font-semibold text-white mb-1">{topic.title}</h4>
+                <p className="text-indigo-200 text-sm">{topic.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link 
+              to="/advanced-web3-quiz" 
+              className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              <Brain className="h-5 w-5 mr-2 inline" />
+              Start Advanced Web3 Quiz
+            </Link>
+            <p className="text-indigo-200 text-sm mt-4">
+              15 questions • Expert level • Based on module content
+            </p>
           </div>
         </div>
 
