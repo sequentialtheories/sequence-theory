@@ -249,7 +249,9 @@ const HistoricalEvolutionMoney = () => {
                 <li>• Central banks printed $20+ trillion since 2008</li>
                 <li>• We're in the longest fiat experiment ever</li>
                 <li>• Digital alternatives are emerging</li>
-                <li>• Understanding history helps predict the future</li>
+                <li className="bg-gradient-to-r from-primary/10 to-secondary/10 p-3 rounded-md border border-primary/20 font-medium text-foreground">
+                  💡 Understanding history helps predict the future
+                </li>
                 <li>• Your wealth depends on these choices</li>
               </ul>
             </div>
