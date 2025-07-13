@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -258,6 +258,77 @@ const LearnNow = () => {
           </div>
         </section>
       )}
+
+      {/* Comprehensive Exam Section */}
+      <section className="py-16 bg-gradient-to-br from-indigo-900 to-purple-900 text-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-8">
+              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 rounded-xl inline-block mb-6">
+                <GraduationCap className="h-12 w-12 text-white" />
+              </div>
+              <h3 className="text-4xl font-bold mb-4">
+                Comprehensive Knowledge Exam 🏆
+              </h3>
+              <p className="text-indigo-200 text-xl max-w-3xl mx-auto mb-8">
+                Test your mastery across all three learning paths with our comprehensive 35-question exam. 
+                Questions are randomly selected from a pool of 50 covering Finance, Web3, and Education concepts.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-6 mb-10">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                <div className="text-3xl font-bold text-yellow-400 mb-2">50</div>
+                <p className="text-indigo-200 text-sm">Total Question Pool</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                <div className="text-3xl font-bold text-green-400 mb-2">35</div>
+                <p className="text-indigo-200 text-sm">Questions Per Exam</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                <div className="text-3xl font-bold text-blue-400 mb-2">3</div>
+                <p className="text-indigo-200 text-sm">Learning Categories</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                <div className="text-3xl font-bold text-purple-400 mb-2">∞</div>
+                <p className="text-indigo-200 text-sm">Unique Combinations</p>
+              </div>
+            </div>
+
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 mb-8">
+              <h4 className="text-2xl font-semibold mb-6">What's Included</h4>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg p-4 border border-cyan-400/30">
+                  <Coins className="h-8 w-8 text-cyan-400 mb-3 mx-auto" />
+                  <h5 className="font-semibold text-cyan-300 mb-2">Finance</h5>
+                  <p className="text-cyan-200 text-sm">Money concepts, markets, wealth building, and financial strategy</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-lg p-4 border border-purple-400/30">
+                  <Zap className="h-8 w-8 text-purple-400 mb-3 mx-auto" />
+                  <h5 className="font-semibold text-purple-300 mb-2">Web3</h5>
+                  <p className="text-purple-200 text-sm">Blockchain, DeFi, cryptocurrencies, and digital assets</p>
+                </div>
+                <div className="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-lg p-4 border border-orange-400/30">
+                  <BookOpen className="h-8 w-8 text-orange-400 mb-3 mx-auto" />
+                  <h5 className="font-semibold text-orange-300 mb-2">Education</h5>
+                  <p className="text-orange-200 text-sm">Learning systems, barriers, and democratizing knowledge</p>
+                </div>
+              </div>
+            </div>
+
+            <Link to="/comprehensive-exam">
+              <Button className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-12 py-4 text-xl font-bold hover:from-yellow-600 hover:to-orange-600 hover:scale-105 transition-all shadow-lg">
+                <GraduationCap className="h-6 w-6 mr-3" />
+                Take Comprehensive Exam
+              </Button>
+            </Link>
+            
+            <p className="text-indigo-300 text-sm mt-4">
+              Each exam attempt features a unique set of 35 randomly selected questions
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Finance Quiz Section - Only show when Finance is selected */}
       {selectedCategory === 0 && (

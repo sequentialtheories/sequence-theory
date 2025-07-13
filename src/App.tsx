@@ -32,6 +32,7 @@ import AdvancedWeb3Innovations from "./pages/AdvancedWeb3Innovations";
 import FinanceQuiz from "./pages/FinanceQuiz";
 import Web3Quiz from "./pages/Web3Quiz";
 import EducationQuiz from "./pages/EducationQuiz";
+import ComprehensiveExam from "./pages/ComprehensiveExam";
 import ConsequencesEducationalAbsence from "./pages/ConsequencesEducationalAbsence";
 import FinancialLiteracyGatekeeping from "./pages/FinancialLiteracyGatekeeping";
 import ColonialismMoneyTrade from "./pages/ColonialismMoneyTrade";
@@ -53,6 +54,7 @@ const App = () => (
           <Route path="/finance-quiz" element={<FinanceQuiz />} />
           <Route path="/web3-quiz" element={<Web3Quiz />} />
           <Route path="/education-quiz" element={<EducationQuiz />} />
+          <Route path="/comprehensive-exam" element={<ComprehensiveExam />} />
           <Route path="/white-paper" element={<WhitePaper />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
