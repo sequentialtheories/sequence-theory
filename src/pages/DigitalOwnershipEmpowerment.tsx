@@ -325,7 +325,7 @@ const DigitalOwnershipEmpowerment = () => {
             title: "Digital Books",
             desc: "Collectible and interactive publications",
             color: "bg-indigo-500"
-          }].map((nft, index) => <div key={index} className="bg-white rounded-lg p-4 border border-pink-200 hover:shadow-md transition-all hover:scale-105">
+          }].map((nft, index) => <div key={index} className="bg-white rounded-lg p-4 border border-pink-200 hover:shadow-md transition-all">
                 <div className={`${nft.color} text-white p-2 rounded-lg inline-block mb-3`}>
                   <span className="text-xl">{nft.icon}</span>
                 </div>
@@ -468,7 +468,7 @@ const DigitalOwnershipEmpowerment = () => {
             description: "Digital trading cards and memorabilia",
             examples: ["NBA Top Shot moments", "Sorare football cards", "MLB Champions"],
             color: "from-teal-500 to-cyan-600"
-          }].map((application, index) => <div key={index} className="bg-white rounded-xl p-6 border border-violet-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          }].map((application, index) => <div key={index} className="bg-white rounded-xl p-6 border border-violet-200 hover:shadow-lg transition-all duration-300">
                 <div className={`bg-gradient-to-r ${application.color} p-2 rounded-lg inline-block mb-4`}>
                   <span className="text-white font-bold text-sm px-2">APP</span>
                 </div>
