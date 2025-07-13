@@ -1,9 +1,11 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const learningCategories = [
     {
       title: "Finance",
@@ -237,11 +239,27 @@ const LearnNow = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {learningCategories.map((category, index) => (
-                  <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-6 text-center">
-                    <div className="text-lg font-semibold text-purple-700 mb-2">{category.title}</div>
-                    <div className="text-sm text-gray-700">{category.description}</div>
-                    <div className="text-xs text-purple-600 mt-2 font-medium">{category.modules.length} Modules</div>
-                  </div>
+                  <button
+                    key={index}
+                    onClick={() => setSelectedCategory(index)}
+                    className={`p-6 text-center rounded-lg transition-all duration-300 ${
+                      selectedCategory === index
+                        ? 'bg-gradient-to-r from-purple-100 to-cyan-100 border-2 border-purple-400 shadow-lg'
+                        : 'bg-gradient-to-r from-purple-50 to-cyan-50 border border-gray-200 hover:shadow-md'
+                    }`}
+                  >
+                    <div className={`text-lg font-semibold mb-2 ${
+                      selectedCategory === index ? 'text-purple-800' : 'text-purple-700'
+                    }`}>
+                      {category.title}
+                    </div>
+                    <div className="text-sm text-gray-700 mb-2">{category.description}</div>
+                    <div className={`text-xs font-medium mt-2 ${
+                      selectedCategory === index ? 'text-purple-700' : 'text-purple-600'
+                    }`}>
+                      {category.modules.length} Modules
+                    </div>
+                  </button>
                 ))}
               </div>
               
@@ -255,43 +273,40 @@ const LearnNow = () => {
         </div>
       </section>
 
-      {/* Learning Categories */}
+      {/* Selected Category Modules */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
-          <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">Your Learning Categories</h3>
-          <div className="space-y-16">
-            {learningCategories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="max-w-6xl mx-auto">
-                <div className="text-center mb-8">
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">{category.title}</h4>
-                  <p className="text-gray-600">{category.description}</p>
-                </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.modules.map((module, moduleIndex) => (
-                    <Link 
-                      key={moduleIndex} 
-                      to={`/learn/${module.slug}`}
-                      className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <module.icon className="h-6 w-6 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="text-lg font-semibold text-gray-900">{module.title}</h5>
-                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                              {module.level}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 text-sm">{module.description}</p>
-                        </div>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                {learningCategories[selectedCategory].title} Modules
+              </h3>
+              <p className="text-gray-600">{learningCategories[selectedCategory].description}</p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {learningCategories[selectedCategory].modules.map((module, moduleIndex) => (
+                <Link 
+                  key={moduleIndex} 
+                  to={`/learn/${module.slug}`}
+                  className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <module.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="text-lg font-semibold text-gray-900">{module.title}</h5>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                          {module.level}
+                        </span>
                       </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
+                      <p className="text-gray-600 text-sm">{module.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
