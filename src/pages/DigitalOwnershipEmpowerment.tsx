@@ -231,7 +231,7 @@ const DigitalOwnershipEmpowerment = () => {
             title: "Monetization",
             description: "Generate income from your digital assets",
             color: "from-yellow-500 to-orange-600"
-          }].map((feature, index) => <div key={index} className="bg-white rounded-xl p-6 border border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+          }].map((feature, index) => <div key={index} className="bg-white rounded-xl p-6 border border-blue-200 hover:shadow-lg transition-all duration-300">
                 <div className={`bg-gradient-to-r ${feature.color} p-3 rounded-lg inline-block mb-4`}>
                   <feature.icon className="h-6 w-6 text-white" />
                 </div>
