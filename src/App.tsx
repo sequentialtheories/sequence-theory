@@ -30,6 +30,7 @@ import LearningHumanProgressFoundation from "./pages/LearningHumanProgressFounda
 import BlockchainTechnologyDeepDive from "./pages/BlockchainTechnologyDeepDive";
 import AdvancedWeb3Innovations from "./pages/AdvancedWeb3Innovations";
 import FinanceQuiz from "./pages/FinanceQuiz";
+import Web3Quiz from "./pages/Web3Quiz";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/learn-more" element={<LearnMore />} />
           <Route path="/learn-now" element={<LearnNow />} />
           <Route path="/finance-quiz" element={<FinanceQuiz />} />
+          <Route path="/web3-quiz" element={<Web3Quiz />} />
           <Route path="/white-paper" element={<WhitePaper />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
