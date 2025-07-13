@@ -3,9 +3,46 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+  const { toast } = useToast();
+
+  // Correct answers for the quiz
+  const correctAnswers = {
+    q1: 'a', q2: 'b', q3: 'c', q4: 'b', q5: 'b', 
+    q6: 'b', q7: 'b', q8: 'b', q9: 'b', q10: 'a', 
+    q11: 'b', q12: 'a', q13: 'b', q14: 'b', q15: 'b'
+  };
+
+  const handleQuizSubmit = () => {
+    const form = document.querySelector('form[name="quiz"]') as HTMLFormElement;
+    if (!form) return;
+
+    const formData = new FormData(form);
+    let score = 0;
+    let totalQuestions = Object.keys(correctAnswers).length;
+
+    // Check each answer
+    Object.entries(correctAnswers).forEach(([question, correctAnswer]) => {
+      const userAnswer = formData.get(question);
+      if (userAnswer === correctAnswer) {
+        score++;
+      }
+    });
+
+    setQuizScore(score);
+    setQuizSubmitted(true);
+
+    const percentage = Math.round((score / totalQuestions) * 100);
+    toast({
+      title: "Quiz Completed!",
+      description: `You scored ${score}/${totalQuestions} (${percentage}%). ${percentage >= 70 ? 'Great job!' : 'Keep studying!'}`,
+    });
+  };
   const learningCategories = [
     {
       title: "Finance",
@@ -325,7 +362,7 @@ const LearnNow = () => {
             </div>
             
             <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200">
-              <div className="space-y-8">
+              <form name="quiz" className="space-y-8">
                 
                 {/* Question 1 - Money's Core Functions */}
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
@@ -762,16 +799,48 @@ const LearnNow = () => {
                   </div>
                 </div>
 
-                {/* Answer Key */}
-                <div className="bg-gray-100 p-6 rounded-lg border-2 border-gray-300">
-                  <p className="text-sm text-gray-600 text-center font-medium">
-                    <strong>Answer Key:</strong> 1-a, 2-b, 3-c, 4-b, 5-b, 6-b, 7-b, 8-b, 9-b, 10-a, 11-b, 12-a, 13-b, 14-b, 15-b
-                  </p>
-                  <p className="text-xs text-gray-500 text-center mt-2">
-                    Each question tests core concepts from the respective finance modules. Review the modules for detailed explanations of these concepts.
-                  </p>
+                {/* Submit Button and Results */}
+                <div className="text-center mt-8">
+                  {!quizSubmitted ? (
+                    <Button 
+                      type="button"
+                      onClick={handleQuizSubmit}
+                      className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-3 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700"
+                    >
+                      Submit Quiz
+                    </Button>
+                  ) : (
+                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                      <h4 className="text-xl font-bold mb-2 text-gray-900">Quiz Results</h4>
+                      <p className="text-lg mb-2">
+                        You scored: <span className="font-bold text-purple-600">{quizScore}/15</span>
+                      </p>
+                      <p className="text-lg mb-4">
+                        Percentage: <span className="font-bold text-cyan-600">{Math.round((quizScore / 15) * 100)}%</span>
+                      </p>
+                      {Math.round((quizScore / 15) * 100) >= 70 ? (
+                        <p className="text-green-600 font-semibold">🎉 Great job! You have a solid understanding of finance fundamentals.</p>
+                      ) : (
+                        <p className="text-orange-600 font-semibold">📚 Keep studying! Review the modules to strengthen your knowledge.</p>
+                      )}
+                      <Button 
+                        type="button"
+                        onClick={() => {
+                          setQuizSubmitted(false);
+                          setQuizScore(0);
+                          // Reset form
+                          const form = document.querySelector('form[name="quiz"]') as HTMLFormElement;
+                          if (form) form.reset();
+                        }}
+                        className="mt-4 bg-gray-600 text-white hover:bg-gray-700"
+                      >
+                        Retake Quiz
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
+
+              </form>
             </div>
           </div>
         </div>
