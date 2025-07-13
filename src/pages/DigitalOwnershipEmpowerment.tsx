@@ -11,7 +11,7 @@ const DigitalOwnershipEmpowerment = () => {
             </div>
             <h2 className="text-3xl font-bold text-gray-900">The Revolution of True Digital Ownership</h2>
           </div>
-          <p className="text-xl text-gray-700 leading-relaxed">Think about video game cosmetics, your music, accounts, everything you think you own online is more comparable to cosplaying, or lending. Centralized platforms firstly can ban & control you at their will. You don't own anything online. That's what Web3 serves to solve. </p>
+          <p className="text-xl text-gray-700 leading-relaxed">Consider your digital life: video game skins, music playlists, social media accounts—everything you think you "own" online is actually just borrowed. You're essentially renting access from platforms that can revoke your privileges at any moment. True digital ownership doesn't exist in today's centralized web. Web3 fundamentally changes this by giving you genuine ownership of your digital assets. </p>
         </div>
 
         {/* Traditional vs Blockchain Comparison */}
