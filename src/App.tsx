@@ -27,6 +27,7 @@ import CryptocurrenciesFundamentals from "./pages/CryptocurrenciesFundamentals";
 import DigitalOwnershipEmpowerment from "./pages/DigitalOwnershipEmpowerment";
 import TokensTokenization from "./pages/TokensTokenization";
 import LearningHumanProgressFoundation from "./pages/LearningHumanProgressFoundation";
+import FinanceQuiz from "./pages/FinanceQuiz";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/learn-more" element={<LearnMore />} />
           <Route path="/learn-now" element={<LearnNow />} />
+          <Route path="/finance-quiz" element={<FinanceQuiz />} />
           <Route path="/white-paper" element={<WhitePaper />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />

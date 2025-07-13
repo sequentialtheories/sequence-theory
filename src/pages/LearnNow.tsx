@@ -3,46 +3,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
-  const [quizSubmitted, setQuizSubmitted] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
-  const { toast } = useToast();
-
-  // Correct answers for the quiz
-  const correctAnswers = {
-    q1: 'a', q2: 'b', q3: 'c', q4: 'b', q5: 'b', 
-    q6: 'b', q7: 'b', q8: 'b', q9: 'b', q10: 'a', 
-    q11: 'b', q12: 'a', q13: 'b', q14: 'b', q15: 'b'
-  };
-
-  const handleQuizSubmit = () => {
-    const form = document.querySelector('form[name="quiz"]') as HTMLFormElement;
-    if (!form) return;
-
-    const formData = new FormData(form);
-    let score = 0;
-    let totalQuestions = Object.keys(correctAnswers).length;
-
-    // Check each answer
-    Object.entries(correctAnswers).forEach(([question, correctAnswer]) => {
-      const userAnswer = formData.get(question);
-      if (userAnswer === correctAnswer) {
-        score++;
-      }
-    });
-
-    setQuizScore(score);
-    setQuizSubmitted(true);
-
-    const percentage = Math.round((score / totalQuestions) * 100);
-    toast({
-      title: "Quiz Completed!",
-      description: `You scored ${score}/${totalQuestions} (${percentage}%). ${percentage >= 70 ? 'Great job!' : 'Keep studying!'}`,
-    });
-  };
   const learningCategories = [
     {
       title: "Finance",
@@ -348,7 +311,7 @@ const LearnNow = () => {
         </div>
       </section>
 
-      {/* Finance Modules Comprehensive Quiz */}
+      {/* Finance Quiz Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
@@ -356,491 +319,42 @@ const LearnNow = () => {
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 Finance Modules Comprehensive Quiz 🧠
               </h3>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-gray-600 max-w-2xl mx-auto mb-8">
                 Test your knowledge across all finance modules. This quiz covers concepts from The Concept & Purpose of Money through Financial Strategy & Planning.
               </p>
             </div>
             
-            <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200">
-              <form name="quiz" className="space-y-8">
-                
-                {/* Question 1 - Money's Core Functions */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">1</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What are the three core functions of money according to the Concept & Purpose of Money module?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q1" value="a" className="w-4 h-4" />
-                          <span>Store of value, medium of exchange, unit of account</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q1" value="b" className="w-4 h-4" />
-                          <span>Investment tool, payment method, savings account</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q1" value="c" className="w-4 h-4" />
-                          <span>Gold standard, fiat currency, digital currency</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q1" value="d" className="w-4 h-4" />
-                          <span>Credit, debit, cash</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: The Concept & Purpose of Money module</p>
-                    </div>
-                  </div>
+            <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200 text-center">
+              <div className="mb-6">
+                <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="h-10 w-10 text-white" />
                 </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Knowledge?</h4>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                  Take our comprehensive 15-question quiz covering all finance modules. Questions are presented one at a time with instant progress tracking.
+                </p>
+              </div>
 
-                {/* Question 2 - Historical Evolution */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">2</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">According to the Historical Evolution of Money, what system preceded modern monetary systems?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q2" value="a" className="w-4 h-4" />
-                          <span>Banking system</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q2" value="b" className="w-4 h-4" />
-                          <span>Barter system</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q2" value="c" className="w-4 h-4" />
-                          <span>Credit card system</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q2" value="d" className="w-4 h-4" />
-                          <span>Stock market system</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Historical Evolution of Money module</p>
-                    </div>
-                  </div>
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                  <h5 className="font-semibold text-purple-700 mb-2">15 Questions</h5>
+                  <p className="text-sm text-gray-600">Comprehensive coverage of all modules</p>
                 </div>
-
-                {/* Question 3 - Financial Markets Types */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">3</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">Which financial market is primarily for short-term, highly liquid investments?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q3" value="a" className="w-4 h-4" />
-                          <span>Stock market</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q3" value="b" className="w-4 h-4" />
-                          <span>Bond market</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q3" value="c" className="w-4 h-4" />
-                          <span>Money market</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q3" value="d" className="w-4 h-4" />
-                          <span>Derivatives market</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Types of Financial Markets module</p>
-                    </div>
-                  </div>
+                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                  <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
+                  <p className="text-sm text-gray-600">Questions presented individually</p>
                 </div>
-
-                {/* Question 4 - Crypto Market Role */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">4</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">How does the crypto market operate differently from traditional markets?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q4" value="a" className="w-4 h-4" />
-                          <span>It operates only during business hours</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q4" value="b" className="w-4 h-4" />
-                          <span>It operates 24/7 and is globally accessible</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q4" value="c" className="w-4 h-4" />
-                          <span>It requires government approval for all transactions</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q4" value="d" className="w-4 h-4" />
-                          <span>It only allows institutional investors</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: The Crypto Market's Role module</p>
-                    </div>
-                  </div>
+                <div className="bg-white p-4 rounded-lg border border-purple-200">
+                  <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                  <p className="text-sm text-gray-600">Get your score immediately</p>
                 </div>
+              </div>
 
-                {/* Question 5 - Wealth and Society */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">5</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">According to Wealth & Societal Empowerment, how does wealth creation impact communities?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q5" value="a" className="w-4 h-4" />
-                          <span>It only benefits the wealthy individual</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q5" value="b" className="w-4 h-4" />
-                          <span>It creates economic multiplier effects that benefit entire communities</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q5" value="c" className="w-4 h-4" />
-                          <span>It has no impact on communities</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q5" value="d" className="w-4 h-4" />
-                          <span>It always creates inequality</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Wealth & Societal Empowerment module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 6 - SMART Goals */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">6</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What does the "T" in SMART financial goals represent?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q6" value="a" className="w-4 h-4" />
-                          <span>Targeted</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q6" value="b" className="w-4 h-4" />
-                          <span>Time-bound</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q6" value="c" className="w-4 h-4" />
-                          <span>Tactical</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q6" value="d" className="w-4 h-4" />
-                          <span>Transparent</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Financial Strategy & Planning module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 7 - Emergency Fund */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">7</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">How many months of expenses should an emergency fund typically cover?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q7" value="a" className="w-4 h-4" />
-                          <span>1-2 months</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q7" value="b" className="w-4 h-4" />
-                          <span>3-6 months</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q7" value="c" className="w-4 h-4" />
-                          <span>8-12 months</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q7" value="d" className="w-4 h-4" />
-                          <span>12+ months</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Financial Strategy & Planning module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 8 - Asset Classes */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">8</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">Which asset class is primarily known for "stability and income generation"?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q8" value="a" className="w-4 h-4" />
-                          <span>Stocks</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q8" value="b" className="w-4 h-4" />
-                          <span>Bonds</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q8" value="c" className="w-4 h-4" />
-                          <span>Real Estate</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q8" value="d" className="w-4 h-4" />
-                          <span>Cryptocurrency</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Financial Strategy & Planning module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 9 - Money's Social Role */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">9</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">Why was money invented to replace the barter system?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q9" value="a" className="w-4 h-4" />
-                          <span>To make transactions more complex</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q9" value="b" className="w-4 h-4" />
-                          <span>To solve the "double coincidence of wants" problem</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q9" value="c" className="w-4 h-4" />
-                          <span>To create inflation</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q9" value="d" className="w-4 h-4" />
-                          <span>To eliminate all trade</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: The Concept & Purpose of Money module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 10 - Market Functions */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">10</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What is a primary function of financial markets?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q10" value="a" className="w-4 h-4" />
-                          <span>Price discovery and capital allocation</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q10" value="b" className="w-4 h-4" />
-                          <span>Eliminating all investment risk</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q10" value="c" className="w-4 h-4" />
-                          <span>Guaranteeing profits to all investors</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q10" value="d" className="w-4 h-4" />
-                          <span>Preventing market volatility</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Types of Financial Markets module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 11 - Tax Optimization */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">11</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What is "tax-loss harvesting" in financial planning?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q11" value="a" className="w-4 h-4" />
-                          <span>Avoiding all taxes on investments</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q11" value="b" className="w-4 h-4" />
-                          <span>Offsetting gains with losses to reduce tax liability</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q11" value="c" className="w-4 h-4" />
-                          <span>Only investing in tax-free accounts</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q11" value="d" className="w-4 h-4" />
-                          <span>Moving to a different country</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Financial Strategy & Planning module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 12 - Behavioral Finance */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">12</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What is "loss aversion" in behavioral finance?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q12" value="a" className="w-4 h-4" />
-                          <span>The tendency to avoid losses more than seeking equivalent gains</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q12" value="b" className="w-4 h-4" />
-                          <span>Always choosing the safest investment</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q12" value="c" className="w-4 h-4" />
-                          <span>Never selling any investments</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q12" value="d" className="w-4 h-4" />
-                          <span>Avoiding all financial markets</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Financial Strategy & Planning module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 13 - Cryptocurrency Integration */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">13</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">How is the crypto market integrating with traditional finance?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q13" value="a" className="w-4 h-4" />
-                          <span>It's completely replacing traditional finance</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q13" value="b" className="w-4 h-4" />
-                          <span>Through institutional adoption and regulatory frameworks</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q13" value="c" className="w-4 h-4" />
-                          <span>It operates completely independently</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q13" value="d" className="w-4 h-4" />
-                          <span>There is no integration happening</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: The Crypto Market's Role module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 14 - Wealth Democratization */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">14</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What tools are democratizing wealth creation according to the modules?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q14" value="a" className="w-4 h-4" />
-                          <span>Only traditional banking services</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q14" value="b" className="w-4 h-4" />
-                          <span>Fintech platforms, online education, and micro-investing</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q14" value="c" className="w-4 h-4" />
-                          <span>Exclusive private wealth management</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q14" value="d" className="w-4 h-4" />
-                          <span>Government-controlled investment programs</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Wealth & Societal Empowerment module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Question 15 - Estate Planning */}
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex items-start gap-3 mb-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1 rounded-full">15</span>
-                    <div className="flex-1">
-                      <p className="font-semibold mb-3">What are the primary estate planning documents mentioned in financial planning?</p>
-                      <div className="space-y-2 text-sm">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q15" value="a" className="w-4 h-4" />
-                          <span>Bank statements and credit reports</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q15" value="b" className="w-4 h-4" />
-                          <span>Wills and trusts</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q15" value="c" className="w-4 h-4" />
-                          <span>Tax returns and investment accounts</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="q15" value="d" className="w-4 h-4" />
-                          <span>Insurance policies only</span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 italic">Source: Financial Strategy & Planning module</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit Button and Results */}
-                <div className="text-center mt-8">
-                  {!quizSubmitted ? (
-                    <Button 
-                      type="button"
-                      onClick={handleQuizSubmit}
-                      className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-3 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700"
-                    >
-                      Submit Quiz
-                    </Button>
-                  ) : (
-                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                      <h4 className="text-xl font-bold mb-2 text-gray-900">Quiz Results</h4>
-                      <p className="text-lg mb-2">
-                        You scored: <span className="font-bold text-purple-600">{quizScore}/15</span>
-                      </p>
-                      <p className="text-lg mb-4">
-                        Percentage: <span className="font-bold text-cyan-600">{Math.round((quizScore / 15) * 100)}%</span>
-                      </p>
-                      {Math.round((quizScore / 15) * 100) >= 70 ? (
-                        <p className="text-green-600 font-semibold">🎉 Great job! You have a solid understanding of finance fundamentals.</p>
-                      ) : (
-                        <p className="text-orange-600 font-semibold">📚 Keep studying! Review the modules to strengthen your knowledge.</p>
-                      )}
-                      <Button 
-                        type="button"
-                        onClick={() => {
-                          setQuizSubmitted(false);
-                          setQuizScore(0);
-                          // Reset form
-                          const form = document.querySelector('form[name="quiz"]') as HTMLFormElement;
-                          if (form) form.reset();
-                        }}
-                        className="mt-4 bg-gray-600 text-white hover:bg-gray-700"
-                      >
-                        Retake Quiz
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-              </form>
+              <Link to="/finance-quiz">
+                <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-4 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700 hover:scale-105 transition-all">
+                  Start Quiz
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
