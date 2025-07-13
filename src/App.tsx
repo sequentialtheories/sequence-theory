@@ -31,6 +31,11 @@ import BlockchainTechnologyDeepDive from "./pages/BlockchainTechnologyDeepDive";
 import AdvancedWeb3Innovations from "./pages/AdvancedWeb3Innovations";
 import FinanceQuiz from "./pages/FinanceQuiz";
 import Web3Quiz from "./pages/Web3Quiz";
+import ConsequencesEducationalAbsence from "./pages/ConsequencesEducationalAbsence";
+import FinancialLiteracyGatekeeping from "./pages/FinancialLiteracyGatekeeping";
+import ColonialismMoneyTrade from "./pages/ColonialismMoneyTrade";
+import GlobalEducationStatistics from "./pages/GlobalEducationStatistics";
+import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowledge";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +72,11 @@ const App = () => (
           <Route path="/learn/blockchain-technology-deep-dive" element={<BlockchainTechnologyDeepDive />} />
           <Route path="/learn/advanced-web3-innovations" element={<AdvancedWeb3Innovations />} />
           <Route path="/learn/learning-human-progress-foundation" element={<LearningHumanProgressFoundation />} />
+          <Route path="/learn/consequences-educational-absence" element={<ConsequencesEducationalAbsence />} />
+          <Route path="/learn/financial-literacy-gatekeeping" element={<FinancialLiteracyGatekeeping />} />
+          <Route path="/learn/colonialism-money-trade" element={<ColonialismMoneyTrade />} />
+          <Route path="/learn/global-education-statistics" element={<GlobalEducationStatistics />} />
+          <Route path="/learn/democratizing-financial-knowledge" element={<DemocratizingFinancialKnowledge />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
