@@ -65,19 +65,19 @@ const LearnNow = () => {
       description: "Explore different types of tokens and the tokenization process.",
       level: "Intermediate",
       slug: "tokens-tokenization"
-    }, {
-      icon: BookOpen,
-      title: "Blockchain Technology Deep Dive",
-      description: "Master the technical foundations of blockchain technology.",
-      level: "Intermediate",
-      slug: "blockchain-technology-deep-dive"
-    }, {
+        }, {
+          icon: BookOpen,
+          title: "Blockchain Technology Deep Dive",
+          description: "Master the technical foundations of blockchain technology.",
+          level: "Intermediate",
+          slug: "blockchain-technology-deep-dive"
+        }, {
       icon: TrendingUp,
-      title: "Decentralized Finance (DeFi)",
-      description: "Learn about DeFi protocols, yield farming, and decentralized trading.",
-      level: "Advanced",
-      slug: "decentralized-finance-defi"
-    }, {
+          title: "Decentralized Finance (DeFi)",
+          description: "Learn about DeFi protocols, yield farming, and decentralized trading.",
+          level: "Advanced",
+          slug: "decentralized-finance-defi"
+        }, {
       icon: AlertTriangle,
       title: "Advanced Web3 Innovations",
       description: "Explore staking, lending, meme coins, and sophisticated Web3 innovations.",

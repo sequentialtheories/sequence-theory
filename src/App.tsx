@@ -27,6 +27,8 @@ import CryptocurrenciesFundamentals from "./pages/CryptocurrenciesFundamentals";
 import DigitalOwnershipEmpowerment from "./pages/DigitalOwnershipEmpowerment";
 import TokensTokenization from "./pages/TokensTokenization";
 import LearningHumanProgressFoundation from "./pages/LearningHumanProgressFoundation";
+import BlockchainTechnologyDeepDive from "./pages/BlockchainTechnologyDeepDive";
+import AdvancedWeb3Innovations from "./pages/AdvancedWeb3Innovations";
 import FinanceQuiz from "./pages/FinanceQuiz";
 
 const queryClient = new QueryClient();
@@ -47,7 +49,7 @@ const App = () => (
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
           <Route path="/learn/vault-club-contracts" element={<VaultClubContracts />} />
           <Route path="/learn/digital-asset-exposure" element={<DigitalAssetExposure />} />
-          <Route path="/learn/defi-protocols" element={<DeFiProtocols />} />
+          <Route path="/learn/decentralized-finance-defi" element={<DeFiProtocols />} />
           <Route path="/learn/expanding-beyond-vault-club" element={<ExpandingBeyondVaultClub />} />
           <Route path="/learn/understanding-markets" element={<UnderstandingMarkets />} />
           <Route path="/learn/shortfalls-of-crypto" element={<ShortfallsOfCrypto />} />
@@ -60,6 +62,8 @@ const App = () => (
           <Route path="/learn/cryptocurrencies-fundamentals" element={<CryptocurrenciesFundamentals />} />
           <Route path="/learn/digital-ownership-empowerment" element={<DigitalOwnershipEmpowerment />} />
           <Route path="/learn/tokens-tokenization" element={<TokensTokenization />} />
+          <Route path="/learn/blockchain-technology-deep-dive" element={<BlockchainTechnologyDeepDive />} />
+          <Route path="/learn/advanced-web3-innovations" element={<AdvancedWeb3Innovations />} />
           <Route path="/learn/learning-human-progress-foundation" element={<LearningHumanProgressFoundation />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
