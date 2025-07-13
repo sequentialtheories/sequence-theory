@@ -125,7 +125,8 @@ const LearnNow = () => {
       slug: "democratizing-financial-knowledge"
     }]
   }];
-  return <div className="min-h-screen bg-white">
+  return (
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-6">
         <div className="container mx-auto px-6">
@@ -309,6 +310,59 @@ const LearnNow = () => {
         </section>
       )}
 
-    </div>;
+      {/* Web3 Quiz Section - Only show when Web3 is selected */}
+      {selectedCategory === 1 && (
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  Web3 Modules Comprehensive Quiz 🚀
+                </h3>
+                <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+                  Test your knowledge across all Web3 modules. This quiz covers concepts from Cryptocurrency Fundamentals through Advanced Web3 Innovations.
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-8 border border-indigo-200 text-center">
+                <div className="mb-6">
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Web3 Knowledge?</h4>
+                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Take our comprehensive 15-question quiz covering all Web3 modules. Questions are presented one at a time with instant progress tracking.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white p-4 rounded-lg border border-indigo-200">
+                    <h5 className="font-semibold text-indigo-700 mb-2">15 Questions</h5>
+                    <p className="text-sm text-gray-600">Comprehensive coverage of all Web3 modules</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-indigo-200">
+                    <h5 className="font-semibold text-purple-700 mb-2">One by One</h5>
+                    <p className="text-sm text-gray-600">Questions presented individually</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-indigo-200">
+                    <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                    <p className="text-sm text-gray-600">Get your score immediately</p>
+                  </div>
+                </div>
+
+                <Link to="/web3-quiz">
+                  <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transition-all">
+                    Start Web3 Quiz
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+    </div>
+  );
 };
+
 export default LearnNow;
