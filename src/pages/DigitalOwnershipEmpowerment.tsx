@@ -3,6 +3,115 @@ import { Award, Users, Zap, Shield, Globe, Crown, Key, Coins, Palette, Building,
 const DigitalOwnershipEmpowerment = () => {
   return <ArticleLayout title="Digital Ownership & Empowerment" level="Beginner">
       <div className="space-y-12">
+        {/* What is Web1 & Web2 */}
+        <div className="bg-gradient-to-br from-slate-50 to-gray-50 rounded-2xl p-8 border border-slate-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-gradient-to-r from-slate-600 to-gray-600 p-3 rounded-xl">
+              <Globe className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">What is Web1 & Web2?</h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {/* Web 1.0 */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-lg inline-block mb-4">
+                <span className="text-white font-bold text-lg">1.0</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Web 1.0: Read-Only</h3>
+              <p className="text-gray-600 mb-4">The early internet (1990s-2000s) was static and one-directional.</p>
+              <div className="space-y-2">
+                {[
+                  "Static HTML websites",
+                  "Information consumption only", 
+                  "No user interaction",
+                  "Company-controlled content"
+                ].map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-sm text-slate-700">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Web 2.0 */}
+            <div className="bg-white rounded-xl p-6 border border-orange-200">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-3 rounded-lg inline-block mb-4">
+                <span className="text-white font-bold text-lg">2.0</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Web 2.0: Read-Write</h3>
+              <p className="text-gray-600 mb-4">Interactive platforms emerged, but centralized control remained.</p>
+              <div className="space-y-2">
+                {[
+                  "Social media platforms",
+                  "User-generated content",
+                  "Interactive applications", 
+                  "Platform-owned data"
+                ].map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-sm text-orange-700">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Web 3.0 */}
+            <div className="bg-white rounded-xl p-6 border border-purple-200">
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-lg inline-block mb-4">
+                <span className="text-white font-bold text-lg">3.0</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Web 3.0: Read-Write-Own</h3>
+              <p className="text-gray-600 mb-4">Decentralized networks enable true digital ownership.</p>
+              <div className="space-y-2">
+                {[
+                  "Decentralized applications",
+                  "User-owned data & assets",
+                  "Blockchain verification",
+                  "Self-sovereign identity"
+                ].map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-sm text-purple-700">
+                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Evolution Timeline */}
+          <div className="bg-gradient-to-r from-slate-100 to-gray-100 rounded-xl p-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              The Evolution of Digital Ownership
+            </h4>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="bg-red-100 text-red-800 p-2 rounded-lg mb-2">
+                  <AlertTriangle className="h-5 w-5 mx-auto" />
+                </div>
+                <h5 className="font-semibold text-gray-900">Web 1.0 & 2.0</h5>
+                <p className="text-sm text-gray-600">You own nothing. Platforms control everything from your content to your identity.</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-yellow-100 text-yellow-800 p-2 rounded-lg mb-2">
+                  <Zap className="h-5 w-5 mx-auto" />
+                </div>
+                <h5 className="font-semibold text-gray-900">The Transition</h5>
+                <p className="text-sm text-gray-600">Blockchain technology emerges, enabling cryptographic proof of ownership.</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-green-100 text-green-800 p-2 rounded-lg mb-2">
+                  <Crown className="h-5 w-5 mx-auto" />
+                </div>
+                <h5 className="font-semibold text-gray-900">Web 3.0</h5>
+                <p className="text-sm text-gray-600">True digital ownership becomes possible through decentralized networks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Introduction Hero */}
         <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-200">
           <div className="flex items-center gap-3 mb-6">
