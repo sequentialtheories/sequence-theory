@@ -352,7 +352,7 @@ const LearnNow = () => {
 
                 <Link to="/web3-quiz">
                   <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transition-all">
-                    Start Web3 Quiz
+                    Start Quiz
                   </Button>
                 </Link>
               </div>
