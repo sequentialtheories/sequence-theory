@@ -1,11 +1,6 @@
 import ArticleLayout from "@/components/ArticleLayout";
-
 const CryptocurrenciesFundamentals = () => {
-  return (
-    <ArticleLayout
-      title="Cryptocurrencies Fundamentals"
-      level="Beginner"
-    >
+  return <ArticleLayout title="Cryptocurrencies Fundamentals" level="Beginner">
       <div className="prose prose-lg max-w-none">
         <h2>What Are Cryptocurrencies?</h2>
         <p>
@@ -119,8 +114,6 @@ const CryptocurrenciesFundamentals = () => {
           <li>The space is rapidly evolving with new developments regularly</li>
         </ul>
       </div>
-    </ArticleLayout>
-  );
+    </ArticleLayout>;
 };
-
 export default CryptocurrenciesFundamentals;
