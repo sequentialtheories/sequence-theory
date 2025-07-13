@@ -1,4 +1,5 @@
 import ArticleLayout from "@/components/ArticleLayout";
+import { Award, Users, Zap, Shield, Globe, Crown, Key, Coins, Palette, Building, TrendingUp, AlertTriangle, CheckCircle, Lightbulb, Target, Rocket } from "lucide-react";
 
 const DigitalOwnershipEmpowerment = () => {
   return (
@@ -6,148 +7,424 @@ const DigitalOwnershipEmpowerment = () => {
       title="Digital Ownership & Empowerment"
       level="Beginner"
     >
-      <div className="prose prose-lg max-w-none">
-        <h2>The Revolution of True Digital Ownership</h2>
-        <p>
-          Blockchain technology has introduced the concept of true digital ownership for the first time in history.
-          This represents a fundamental shift from traditional digital assets that are merely licensed to users.
-        </p>
+      <div className="space-y-12">
+        {/* Introduction Hero */}
+        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-3 rounded-xl">
+              <Crown className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">The Revolution of True Digital Ownership</h2>
+          </div>
+          <p className="text-xl text-gray-700 leading-relaxed">
+            Blockchain technology has introduced the concept of true digital ownership for the first time in history.
+            This represents a fundamental shift from traditional digital assets that are merely licensed to users,
+            creating unprecedented opportunities for economic and creative empowerment.
+          </p>
+        </div>
 
-        <h3>Traditional vs. True Digital Ownership</h3>
-        <p>
-          Understanding the difference between traditional digital assets and blockchain-based ownership:
-        </p>
-        <ul>
-          <li><strong>Traditional Digital:</strong> You license content from platforms (iTunes, Steam, etc.)</li>
-          <li><strong>Blockchain Digital:</strong> You own the asset through cryptographic proof</li>
-          <li><strong>Platform Dependency:</strong> Traditional assets can be revoked by platforms</li>
-          <li><strong>Self-Sovereignty:</strong> Blockchain assets are controlled by private keys</li>
-        </ul>
+        {/* Traditional vs Blockchain Comparison */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Traditional Digital */}
+          <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
+            <h3 className="text-xl font-bold text-red-800 mb-4 flex items-center gap-2">
+              <AlertTriangle className="h-6 w-6" />
+              Traditional Digital Ownership
+            </h3>
+            <div className="space-y-4">
+              {[
+                { icon: "📄", title: "License Only", desc: "You license content from platforms (iTunes, Steam, etc.)" },
+                { icon: "🏢", title: "Platform Dependent", desc: "Assets can be revoked by platforms anytime" },
+                { icon: "🔒", title: "Limited Control", desc: "Platform controls access and usage rights" },
+                { icon: "❌", title: "Non-Transferable", desc: "Cannot sell or trade your digital assets" }
+              ].map((item, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-red-200">
+                  <span className="text-2xl">{item.icon}</span>
+                  <div>
+                    <h4 className="font-semibold text-red-900">{item.title}</h4>
+                    <p className="text-red-700 text-sm">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <h3>What Digital Ownership Enables</h3>
-        <p>
-          True digital ownership opens up new possibilities:
-        </p>
-        <ul>
-          <li><strong>Transferability:</strong> Sell or trade your digital assets freely</li>
-          <li><strong>Interoperability:</strong> Use assets across different platforms and games</li>
-          <li><strong>Permanence:</strong> Assets exist independent of any single platform</li>
-          <li><strong>Programmability:</strong> Assets can have built-in rules and behaviors</li>
-          <li><strong>Composability:</strong> Combine assets to create new experiences</li>
-        </ul>
+          {/* Blockchain Digital */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+            <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
+              <CheckCircle className="h-6 w-6" />
+              True Digital Ownership
+            </h3>
+            <div className="space-y-4">
+              {[
+                { icon: "🔑", title: "Cryptographic Proof", desc: "You own the asset through private keys" },
+                { icon: "🌐", title: "Self-Sovereign", desc: "Independent of any single platform" },
+                { icon: "🎛️", title: "Full Control", desc: "Complete ownership and usage rights" },
+                { icon: "💰", title: "Freely Tradeable", desc: "Sell, trade, or transfer as you wish" }
+              ].map((item, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-green-200">
+                  <span className="text-2xl">{item.icon}</span>
+                  <div>
+                    <h4 className="font-semibold text-green-900">{item.title}</h4>
+                    <p className="text-green-700 text-sm">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        <h3>Empowerment Through Ownership</h3>
-        <p>
-          Digital ownership creates new forms of empowerment:
-        </p>
-        <ul>
-          <li><strong>Economic Empowerment:</strong> Generate income from digital assets</li>
-          <li><strong>Creative Empowerment:</strong> Artists can sell directly to collectors</li>
-          <li><strong>Social Empowerment:</strong> Build reputation and status through ownership</li>
-          <li><strong>Financial Empowerment:</strong> Use assets as collateral or investment</li>
-        </ul>
+        {/* What Digital Ownership Enables */}
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 border border-blue-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-2 rounded-lg">
+              <Zap className="h-6 w-6 text-white" />
+            </div>
+            What Digital Ownership Enables
+          </h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: TrendingUp,
+                title: "Transferability",
+                description: "Sell or trade your digital assets freely",
+                color: "from-blue-500 to-cyan-600"
+              },
+              {
+                icon: Globe,
+                title: "Interoperability",
+                description: "Use assets across different platforms and games",
+                color: "from-green-500 to-emerald-600"
+              },
+              {
+                icon: Shield,
+                title: "Permanence",
+                description: "Assets exist independent of any single platform",
+                color: "from-purple-500 to-violet-600"
+              },
+              {
+                icon: Zap,
+                title: "Programmability",
+                description: "Assets can have built-in rules and behaviors",
+                color: "from-orange-500 to-red-600"
+              },
+              {
+                icon: Building,
+                title: "Composability",
+                description: "Combine assets to create new experiences",
+                color: "from-pink-500 to-rose-600"
+              },
+              {
+                icon: Coins,
+                title: "Monetization",
+                description: "Generate income from your digital assets",
+                color: "from-yellow-500 to-orange-600"
+              }
+            ].map((feature, index) => (
+              <div key={index} className="bg-white rounded-xl p-6 border border-blue-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                <div className={`bg-gradient-to-r ${feature.color} p-3 rounded-lg inline-block mb-4`}>
+                  <feature.icon className="h-6 w-6 text-white" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h4>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <h3>NFTs and Digital Collectibles</h3>
-        <p>
-          Non-Fungible Tokens (NFTs) represent unique digital assets:
-        </p>
-        <ul>
-          <li><strong>Art and Media:</strong> Digital artwork, music, and videos</li>
-          <li><strong>Gaming Assets:</strong> Characters, weapons, and virtual land</li>
-          <li><strong>Virtual Real Estate:</strong> Plots of land in digital worlds</li>
-          <li><strong>Identity and Credentials:</strong> Digital certificates and memberships</li>
-          <li><strong>Utility Tokens:</strong> Access rights and special privileges</li>
-        </ul>
+        {/* Empowerment Through Ownership */}
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-2 rounded-lg">
+              <Crown className="h-6 w-6 text-white" />
+            </div>
+            Empowerment Through Ownership
+          </h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                icon: "💰",
+                title: "Economic Empowerment",
+                description: "Generate income from digital assets through trading, renting, or royalties",
+                examples: ["NFT trading profits", "Virtual land rental income", "Creator royalties"]
+              },
+              {
+                icon: "🎨",
+                title: "Creative Empowerment",
+                description: "Artists can sell directly to collectors without intermediaries",
+                examples: ["Direct artist-to-fan sales", "Programmable royalties", "Creative commons licensing"]
+              },
+              {
+                icon: "👥",
+                title: "Social Empowerment",
+                description: "Build reputation and status through verified ownership",
+                examples: ["Exclusive community access", "Status symbol displays", "Proof of participation"]
+              },
+              {
+                icon: "🏦",
+                title: "Financial Empowerment",
+                description: "Use assets as collateral or investment vehicles",
+                examples: ["NFT-backed loans", "Fractional ownership", "Asset-based DeFi strategies"]
+              }
+            ].map((empowerment, index) => (
+              <div key={index} className="bg-white rounded-xl p-6 border border-indigo-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl">{empowerment.icon}</span>
+                  <h4 className="text-lg font-semibold text-gray-900">{empowerment.title}</h4>
+                </div>
+                <p className="text-gray-700 mb-4">{empowerment.description}</p>
+                <div className="space-y-2">
+                  {empowerment.examples.map((example, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-sm text-indigo-700">
+                      <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                      {example}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <h3>Decentralized Identity</h3>
-        <p>
-          Blockchain enables self-sovereign identity:
-        </p>
-        <ul>
-          <li><strong>Personal Data Control:</strong> You control your own information</li>
-          <li><strong>Portable Identity:</strong> Use the same identity across platforms</li>
-          <li><strong>Verifiable Credentials:</strong> Cryptographically provable qualifications</li>
-          <li><strong>Privacy Protection:</strong> Share only what's necessary</li>
-        </ul>
+        {/* NFTs and Digital Collectibles */}
+        <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-8 border border-pink-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-pink-600 to-rose-600 p-2 rounded-lg">
+              <Palette className="h-6 w-6 text-white" />
+            </div>
+            NFTs and Digital Collectibles
+          </h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: "🎨", title: "Art & Media", desc: "Digital artwork, music, and videos", color: "bg-pink-500" },
+              { icon: "🎮", title: "Gaming Assets", desc: "Characters, weapons, and virtual items", color: "bg-purple-500" },
+              { icon: "🏘️", title: "Virtual Real Estate", desc: "Plots of land in digital worlds", color: "bg-blue-500" },
+              { icon: "🎓", title: "Identity & Credentials", desc: "Certificates and memberships", color: "bg-green-500" },
+              { icon: "🎫", title: "Utility Tokens", desc: "Access rights and special privileges", color: "bg-orange-500" },
+              { icon: "📚", title: "Digital Books", desc: "Collectible and interactive publications", color: "bg-indigo-500" }
+            ].map((nft, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 border border-pink-200 hover:shadow-md transition-all hover:scale-105">
+                <div className={`${nft.color} text-white p-2 rounded-lg inline-block mb-3`}>
+                  <span className="text-xl">{nft.icon}</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">{nft.title}</h4>
+                <p className="text-gray-600 text-sm">{nft.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <h3>Financial Sovereignty</h3>
-        <p>
-          Blockchain technology enables financial independence:
-        </p>
-        <ul>
-          <li><strong>Self-Custody:</strong> Hold your own assets without intermediaries</li>
-          <li><strong>Global Access:</strong> Participate in global financial markets</li>
-          <li><strong>Censorship Resistance:</strong> Transactions can't be easily blocked</li>
-          <li><strong>Programmable Money:</strong> Automate financial processes</li>
-        </ul>
+        {/* Self-Sovereign Identity & Financial Sovereignty */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Decentralized Identity */}
+          <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-6 border border-teal-200">
+            <h3 className="text-xl font-bold text-teal-800 mb-4 flex items-center gap-2">
+              <Key className="h-6 w-6" />
+              Decentralized Identity
+            </h3>
+            <div className="space-y-4">
+              {[
+                { title: "Personal Data Control", desc: "You control your own information" },
+                { title: "Portable Identity", desc: "Use the same identity across platforms" },
+                { title: "Verifiable Credentials", desc: "Cryptographically provable qualifications" },
+                { title: "Privacy Protection", desc: "Share only what's necessary" }
+              ].map((feature, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-teal-200">
+                  <CheckCircle className="h-5 w-5 text-teal-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-teal-900">{feature.title}</h4>
+                    <p className="text-teal-700 text-sm">{feature.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <h3>Breaking Down Barriers</h3>
-        <p>
-          Digital ownership democratizes access to opportunities:
-        </p>
-        <ul>
-          <li><strong>Geographic Independence:</strong> Access global markets from anywhere</li>
-          <li><strong>Lower Entry Barriers:</strong> Participate with smaller amounts</li>
-          <li><strong>Direct Creator Economy:</strong> Eliminate middlemen and gatekeepers</li>
-          <li><strong>Fractional Ownership:</strong> Own portions of expensive assets</li>
-        </ul>
+          {/* Financial Sovereignty */}
+          <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
+            <h3 className="text-xl font-bold text-emerald-800 mb-4 flex items-center gap-2">
+              <Coins className="h-6 w-6" />
+              Financial Sovereignty
+            </h3>
+            <div className="space-y-4">
+              {[
+                { title: "Self-Custody", desc: "Hold your own assets without intermediaries" },
+                { title: "Global Access", desc: "Participate in global financial markets" },
+                { title: "Censorship Resistance", desc: "Transactions can't be easily blocked" },
+                { title: "Programmable Money", desc: "Automate financial processes" }
+              ].map((feature, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-emerald-200">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-emerald-900">{feature.title}</h4>
+                    <p className="text-emerald-700 text-sm">{feature.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        <h3>Challenges and Considerations</h3>
-        <p>
-          Digital ownership also comes with responsibilities:
-        </p>
-        <ul>
-          <li><strong>Security Responsibility:</strong> Protecting private keys and assets</li>
-          <li><strong>Technical Complexity:</strong> Understanding blockchain interactions</li>
-          <li><strong>Regulatory Uncertainty:</strong> Evolving legal frameworks</li>
-          <li><strong>Environmental Concerns:</strong> Energy usage of some blockchains</li>
-        </ul>
+        {/* Breaking Down Barriers */}
+        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border border-amber-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-amber-600 to-yellow-600 p-2 rounded-lg">
+              <Globe className="h-6 w-6 text-white" />
+            </div>
+            Breaking Down Barriers
+          </h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: "🌍", title: "Geographic Independence", desc: "Access global markets from anywhere" },
+              { icon: "💸", title: "Lower Entry Barriers", desc: "Participate with smaller amounts" },
+              { icon: "🎭", title: "Direct Creator Economy", desc: "Eliminate middlemen and gatekeepers" },
+              { icon: "🧩", title: "Fractional Ownership", desc: "Own portions of expensive assets" }
+            ].map((barrier, index) => (
+              <div key={index} className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                <div className="text-3xl mb-3">{barrier.icon}</div>
+                <h4 className="font-semibold text-gray-900 mb-2">{barrier.title}</h4>
+                <p className="text-gray-600 text-sm">{barrier.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <h3>Real-World Applications</h3>
-        <p>
-          Practical uses of digital ownership today:
-        </p>
-        <ul>
-          <li><strong>Digital Art Markets:</strong> Platforms like OpenSea and SuperRare</li>
-          <li><strong>Gaming Economies:</strong> Play-to-earn games with tradeable assets</li>
-          <li><strong>Music and Media:</strong> Direct artist-to-fan relationships</li>
-          <li><strong>Virtual Worlds:</strong> Ownership of digital land and buildings</li>
-          <li><strong>Domain Names:</strong> Decentralized website addresses</li>
-        </ul>
+        {/* Real-World Applications */}
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-8 border border-violet-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-violet-600 to-purple-600 p-2 rounded-lg">
+              <Rocket className="h-6 w-6 text-white" />
+            </div>
+            Real-World Applications Today
+          </h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Digital Art Markets",
+                description: "Platforms like OpenSea and SuperRare",
+                examples: ["Beeple's $69M NFT sale", "CryptoPunks community", "Art Blocks generative art"],
+                color: "from-pink-500 to-rose-600"
+              },
+              {
+                title: "Gaming Economies",
+                description: "Play-to-earn games with tradeable assets",
+                examples: ["Axie Infinity scholarships", "The Sandbox land plots", "Gods Unchained cards"],
+                color: "from-blue-500 to-cyan-600"
+              },
+              {
+                title: "Music & Media",
+                description: "Direct artist-to-fan relationships",
+                examples: ["Royal music royalties", "Sound.xyz releases", "Catalog record labels"],
+                color: "from-purple-500 to-violet-600"
+              },
+              {
+                title: "Virtual Worlds",
+                description: "Ownership of digital land and buildings",
+                examples: ["Decentraland real estate", "Somnium Space worlds", "Cryptovoxels galleries"],
+                color: "from-green-500 to-emerald-600"
+              },
+              {
+                title: "Domain Names",
+                description: "Decentralized website addresses",
+                examples: ["ENS domains", "Unstoppable Domains", "Handshake protocol"],
+                color: "from-orange-500 to-red-600"
+              },
+              {
+                title: "Collectibles & Sports",
+                description: "Digital trading cards and memorabilia",
+                examples: ["NBA Top Shot moments", "Sorare football cards", "MLB Champions"],
+                color: "from-teal-500 to-cyan-600"
+              }
+            ].map((application, index) => (
+              <div key={index} className="bg-white rounded-xl p-6 border border-violet-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                <div className={`bg-gradient-to-r ${application.color} p-2 rounded-lg inline-block mb-4`}>
+                  <span className="text-white font-bold text-sm px-2">APP</span>
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">{application.title}</h4>
+                <p className="text-gray-600 mb-4">{application.description}</p>
+                <div className="space-y-2">
+                  {application.examples.map((example, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-sm text-violet-700">
+                      <div className="w-1.5 h-1.5 bg-violet-500 rounded-full"></div>
+                      {example}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <h3>The Future of Digital Ownership</h3>
-        <p>
-          Emerging trends in digital ownership:
-        </p>
-        <ul>
-          <li>Integration with physical world assets</li>
-          <li>Improved user interfaces and experiences</li>
-          <li>Cross-chain compatibility and standards</li>
-          <li>AI-generated and dynamic content</li>
-          <li>Social and community-driven ownership models</li>
-        </ul>
+        {/* Challenges and Getting Started */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Challenges */}
+          <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
+            <h3 className="text-xl font-bold text-red-800 mb-4 flex items-center gap-2">
+              <AlertTriangle className="h-6 w-6" />
+              Challenges & Considerations
+            </h3>
+            <div className="space-y-3">
+              {[
+                "Security responsibility for protecting private keys",
+                "Technical complexity of blockchain interactions",
+                "Regulatory uncertainty in evolving legal frameworks",
+                "Environmental concerns with some blockchains"
+              ].map((challenge, index) => (
+                <div key={index} className="flex items-start gap-2 text-red-700">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm">{challenge}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <h3>Getting Started</h3>
-        <p>
-          Steps to begin exploring digital ownership:
-        </p>
-        <ul>
-          <li>Set up a digital wallet</li>
-          <li>Start with small, low-value transactions</li>
-          <li>Explore different marketplaces and platforms</li>
-          <li>Join communities around projects you're interested in</li>
-          <li>Learn about the underlying technology</li>
-          <li>Always prioritize security and education</li>
-        </ul>
+          {/* Getting Started */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+            <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2">
+              <Lightbulb className="h-6 w-6" />
+              Getting Started
+            </h3>
+            <div className="space-y-3">
+              {[
+                "Set up a digital wallet (MetaMask, Coinbase Wallet)",
+                "Start with small, low-value transactions",
+                "Explore different marketplaces and platforms",
+                "Join communities around projects you're interested in",
+                "Learn about the underlying technology",
+                "Always prioritize security and education"
+              ].map((step, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div className="bg-green-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    {index + 1}
+                  </div>
+                  <span className="text-sm text-green-700">{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
-        <h3>Key Takeaways</h3>
-        <ul>
-          <li>Blockchain enables true digital ownership for the first time</li>
-          <li>Digital ownership creates new forms of economic and creative empowerment</li>
-          <li>NFTs and digital assets open up new markets and opportunities</li>
-          <li>Self-sovereignty comes with increased responsibility</li>
-          <li>The space is rapidly evolving with new applications emerging</li>
-        </ul>
+        {/* Key Takeaways */}
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white">
+          <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+            <Target className="h-6 w-6" />
+            Key Takeaways
+          </h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              "Blockchain enables true digital ownership for the first time in history",
+              "Digital ownership creates new forms of economic and creative empowerment",
+              "NFTs and digital assets open up new markets and opportunities",
+              "Self-sovereignty comes with increased responsibility for security",
+              "The space is rapidly evolving with new applications emerging constantly"
+            ].map((takeaway, index) => (
+              <div key={index} className="flex items-center gap-3 p-3 bg-white/10 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-300 flex-shrink-0" />
+                <span className="text-white">{takeaway}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </ArticleLayout>
   );
