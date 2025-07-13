@@ -4,62 +4,150 @@ import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, Tren
 import { Link } from "react-router-dom";
 
 const LearnNow = () => {
-  const learningModules = [
+  const learningCategories = [
     {
-      icon: DollarSign,
-      title: "Financial Basics",
-      description: "Learn the fundamentals of money, investing, and building wealth in simple terms.",
-      level: "Beginner",
-      slug: "financial-basics"
+      title: "Finance",
+      description: "Build a strong foundation in financial literacy and money management",
+      modules: [
+        {
+          icon: DollarSign,
+          title: "The Concept & Purpose of Money",
+          description: "Understand what money is, its fundamental role in society, and why it exists.",
+          level: "Beginner",
+          slug: "concept-purpose-money"
+        },
+        {
+          icon: BookOpen,
+          title: "Historical Evolution of Money",
+          description: "Learn how money has evolved throughout history and the lessons it teaches us.",
+          level: "Beginner", 
+          slug: "historical-evolution-money"
+        },
+        {
+          icon: TrendingUp,
+          title: "Types of Financial Markets",
+          description: "Explore different financial markets and how they function in the global economy.",
+          level: "Intermediate",
+          slug: "types-financial-markets"
+        },
+        {
+          icon: Coins,
+          title: "The Crypto Market's Role",
+          description: "Understand how cryptocurrency markets fit into the broader financial ecosystem.",
+          level: "Intermediate",
+          slug: "crypto-market-role"
+        },
+        {
+          icon: Users,
+          title: "Wealth & Societal Empowerment",
+          description: "Learn how wealth drives societal change and individual empowerment.",
+          level: "Advanced",
+          slug: "wealth-societal-empowerment"
+        },
+        {
+          icon: Target,
+          title: "Financial Strategy & Planning",
+          description: "Master strategic financial planning and wealth-building techniques.",
+          level: "Advanced",
+          slug: "financial-strategy-planning"
+        }
+      ]
     },
     {
-      icon: BookOpen,
-      title: "Digital Asset Fundamentals", 
-      description: "Master the basics of digital assets, blockchain technology, and market dynamics.",
-      level: "Beginner",
-      slug: "digital-asset-fundamentals"
+      title: "Web3 (Crypto & Blockchain)",
+      description: "Dive deep into the world of decentralized technologies and digital assets",
+      modules: [
+        {
+          icon: Zap,
+          title: "Cryptocurrencies Fundamentals",
+          description: "Learn the basics of cryptocurrencies and how they work.",
+          level: "Beginner",
+          slug: "cryptocurrencies-fundamentals"
+        },
+        {
+          icon: Award,
+          title: "Digital Ownership & Empowerment",
+          description: "Understand how blockchain enables true digital ownership and empowerment.",
+          level: "Beginner",
+          slug: "digital-ownership-empowerment"
+        },
+        {
+          icon: PlayCircle,
+          title: "Tokens & Tokenization",
+          description: "Explore different types of tokens and the tokenization process.",
+          level: "Intermediate",
+          slug: "tokens-tokenization"
+        },
+        {
+          icon: BookOpen,
+          title: "Blockchain Technology Deep Dive",
+          description: "Master the technical foundations of blockchain technology.",
+          level: "Intermediate",
+          slug: "blockchain-technology-deep-dive"
+        },
+        {
+          icon: TrendingUp,
+          title: "Decentralized Finance (DeFi)",
+          description: "Learn about DeFi protocols, yield farming, and decentralized trading.",
+          level: "Advanced",
+          slug: "decentralized-finance-defi"
+        },
+        {
+          icon: AlertTriangle,
+          title: "Advanced Web3 Innovations",
+          description: "Explore staking, lending, meme coins, and sophisticated Web3 innovations.",
+          level: "Expert",
+          slug: "advanced-web3-innovations"
+        }
+      ]
     },
     {
-      icon: PlayCircle,
-      title: "Investment Contracts",
-      description: "Understand how Vault Club contracts work and their advantages for new investors.",
-      level: "Intermediate",
-      slug: "vault-club-contracts"
-    },
-    {
-      icon: Coins,
-      title: "Digital Asset Exposure",
-      description: "Deep dive into specific tokens like BTC, ETH, SOL, and LINK. Learn about tokenization and Web3.",
-      level: "Intermediate",
-      slug: "digital-asset-exposure"
-    },
-    {
-      icon: Zap,
-      title: "Expanding Your Portfolio",
-      description: "Learn strategic approaches to diversifying beyond structured investment contracts.",
-      level: "Advanced",
-      slug: "expanding-beyond-vault-club"
-    },
-    {
-      icon: TrendingUp,
-      title: "DeFi & Protocols",
-      description: "Deep dive into the technical mechanics of staking, liquidity farming, and DeFi protocols.",
-      level: "Advanced", 
-      slug: "defi-protocols"
-    },
-    {
-      icon: Target,
-      title: "Understanding Markets",
-      description: "Deep dive into global financial markets, crypto market origins, evolution, and future outlook.",
-      level: "Expert",
-      slug: "understanding-markets"
-    },
-    {
-      icon: AlertTriangle,
-      title: "Shortfalls of Crypto",
-      description: "Learn about technology exploitation, memecoin controversies, and how to identify red flags.",
-      level: "Expert",
-      slug: "shortfalls-of-crypto"
+      title: "Education about Education",
+      description: "Understand the power of learning and its impact on human progress",
+      modules: [
+        {
+          icon: BookOpen,
+          title: "Learning as Human Progress Foundation",
+          description: "Discover how learning serves as the foundation of all human advancement.",
+          level: "Beginner",
+          slug: "learning-human-progress-foundation"
+        },
+        {
+          icon: AlertTriangle,
+          title: "Consequences of Educational Absence",
+          description: "Understand what happens when education is lacking or inaccessible.",
+          level: "Beginner",
+          slug: "consequences-educational-absence"
+        },
+        {
+          icon: Target,
+          title: "Financial Literacy Gatekeeping",
+          description: "Learn how financial education has been historically restricted and controlled.",
+          level: "Intermediate",
+          slug: "financial-literacy-gatekeeping"
+        },
+        {
+          icon: DollarSign,
+          title: "Colonialism of Money & Trade",
+          description: "Explore how monetary systems have been used as tools of control throughout history.",
+          level: "Intermediate",
+          slug: "colonialism-money-trade"
+        },
+        {
+          icon: TrendingUp,
+          title: "Global Education Statistics",
+          description: "Examine worldwide data on financial literacy and educational inequality.",
+          level: "Advanced",
+          slug: "global-education-statistics"
+        },
+        {
+          icon: Users,
+          title: "Democratizing Financial Knowledge",
+          description: "Learn how to break down barriers and make financial education accessible to all.",
+          level: "Advanced",
+          slug: "democratizing-financial-knowledge"
+        }
+      ]
     }
   ];
 
@@ -147,27 +235,19 @@ const LearnNow = () => {
                 Quick Learning Path Overview
               </h3>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  "Financial Basics",
-                  "Digital Assets", 
-                  "Vault Club",
-                  "Safe Exposure",
-                  "Expanding Portfolio",
-                  "DeFi Protocols",
-                  "Market Analysis",
-                  "Risk Awareness"
-                ].map((step, index) => (
-                  <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-4 text-center">
-                    <div className="text-sm font-medium text-purple-700">Step {index + 1}</div>
-                    <div className="text-sm text-gray-700 mt-1">{step}</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {learningCategories.map((category, index) => (
+                  <div key={index} className="bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg p-6 text-center">
+                    <div className="text-lg font-semibold text-purple-700 mb-2">{category.title}</div>
+                    <div className="text-sm text-gray-700">{category.description}</div>
+                    <div className="text-xs text-purple-600 mt-2 font-medium">{category.modules.length} Modules</div>
                   </div>
                 ))}
               </div>
               
               <div className="text-center mt-6">
                 <p className="text-gray-600 mb-4">
-                  Follow our structured path to build your digital asset knowledge from the ground up.
+                  Explore three comprehensive learning paths designed to give you a complete understanding of finance, technology, and education.
                 </p>
               </div>
             </div>
@@ -175,32 +255,42 @@ const LearnNow = () => {
         </div>
       </section>
 
-      {/* Learning Path */}
+      {/* Learning Categories */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
-          <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">Your Learning Path</h3>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {learningModules.map((module, index) => (
-              <Link 
-                key={index} 
-                to={`/learn/${module.slug}`}
-                className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <module.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-lg font-semibold text-gray-900">{module.title}</h4>
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                        {module.level}
-                      </span>
-                    </div>
-                    <p className="text-gray-600">{module.description}</p>
-                  </div>
+          <h3 className="text-3xl font-bold mb-12 text-center text-gray-900">Your Learning Categories</h3>
+          <div className="space-y-16">
+            {learningCategories.map((category, categoryIndex) => (
+              <div key={categoryIndex} className="max-w-6xl mx-auto">
+                <div className="text-center mb-8">
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">{category.title}</h4>
+                  <p className="text-gray-600">{category.description}</p>
                 </div>
-              </Link>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {category.modules.map((module, moduleIndex) => (
+                    <Link 
+                      key={moduleIndex} 
+                      to={`/learn/${module.slug}`}
+                      className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <module.icon className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h5 className="text-lg font-semibold text-gray-900">{module.title}</h5>
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                              {module.level}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 text-sm">{module.description}</p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
