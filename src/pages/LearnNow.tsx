@@ -361,6 +361,57 @@ const LearnNow = () => {
         </section>
       )}
 
+      {/* Education Quiz Section - Only show when Education about Education is selected */}
+      {selectedCategory === 2 && (
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  Education about Education Quiz 🎓
+                </h3>
+                <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+                  Test your knowledge across all Education modules. This quiz covers concepts from Learning as Human Progress Foundation through Democratizing Financial Knowledge.
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-8 border border-amber-200 text-center">
+                <div className="mb-6">
+                  <div className="bg-gradient-to-r from-amber-600 to-orange-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Education Knowledge?</h4>
+                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Take our comprehensive 15-question quiz covering all Education about Education modules. Questions are presented one at a time with instant progress tracking.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white p-4 rounded-lg border border-amber-200">
+                    <h5 className="font-semibold text-amber-700 mb-2">15 Questions</h5>
+                    <p className="text-sm text-gray-600">Comprehensive coverage of all Education modules</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-amber-200">
+                    <h5 className="font-semibold text-orange-700 mb-2">One by One</h5>
+                    <p className="text-sm text-gray-600">Questions presented individually</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg border border-amber-200">
+                    <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                    <p className="text-sm text-gray-600">Get your score immediately</p>
+                  </div>
+                </div>
+
+                <Link to="/education-quiz">
+                  <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-8 py-4 text-lg font-semibold hover:from-amber-700 hover:to-orange-700 hover:scale-105 transition-all">
+                    Start Quiz
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
     </div>
   );
 };
