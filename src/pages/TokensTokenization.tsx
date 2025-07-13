@@ -82,7 +82,7 @@ const TokensTokenization = () => {
               {
                 icon: Palette,
                 title: "Non-Fungible Tokens (NFTs)",
-                description: "Represent unique digital assets",
+                description: "Represent unique, one-of-a-kind digital assets (unlike fungible tokens where each unit is identical)",
                 examples: ["Digital art", "Collectibles", "Game items"],
                 uses: ["Unique ownership", "Digital collectibles", "Identity tokens"],
                 color: "from-pink-500 to-rose-600"
