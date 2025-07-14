@@ -444,7 +444,7 @@ const LearnNow = () => {
 
               <Link to="/comprehensive-exam">
                 <Button className="bg-gradient-to-r from-slate-600 to-gray-600 text-white px-8 py-4 text-lg font-semibold hover:from-slate-700 hover:to-gray-700 hover:scale-105 transition-all">
-                  Take Comprehensive Exam
+                  Take Exam
                 </Button>
               </Link>
             </div>
