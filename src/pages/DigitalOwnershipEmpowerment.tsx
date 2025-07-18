@@ -771,7 +771,7 @@ const DigitalOwnershipEmpowerment = () => {
               "Decentralized networks create a more connected, interoperable internet ecosystem",
               "Blockchain technology democratizes access to global markets and financial systems",
               "Self-custody empowers individuals but requires continuous education and security awareness",
-              "Building knowledge systematically—from The Vault Club to exchanges to self-custody—ensures success"
+              "Building knowledge from the ground up before diving into advanced crypto concepts ensures success"
             ].map((takeaway, index) => <div key={index} className="flex items-center gap-3 p-3 bg-white/10 rounded-lg">
                 <CheckCircle className="h-5 w-5 text-green-300 flex-shrink-0" />
                 <span className="text-white">{takeaway}</span>
