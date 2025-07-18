@@ -21,17 +21,10 @@ const DigitalOwnershipEmpowerment = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">Web 1.0: Read-Only</h3>
               <p className="text-gray-600 mb-4">The early internet (1990s-2000s) was static and one-directional.</p>
               <div className="space-y-2">
-                {[
-                  "Static HTML websites",
-                  "Information consumption only", 
-                  "No user interaction",
-                  "Company-controlled content"
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm text-slate-700">
+                {["Static HTML websites", "Information consumption only", "No user interaction", "Company-controlled content"].map((feature, idx) => <div key={idx} className="flex items-center gap-2 text-sm text-slate-700">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                     {feature}
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
 
@@ -43,17 +36,10 @@ const DigitalOwnershipEmpowerment = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">Web 2.0: Read-Write</h3>
               <p className="text-gray-600 mb-4">Interactive platforms emerged, but centralized control remained.</p>
               <div className="space-y-2">
-                {[
-                  "Social media platforms",
-                  "User-generated content",
-                  "Interactive applications", 
-                  "Platform-owned data"
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm text-orange-700">
+                {["Social media platforms", "User-generated content", "Interactive applications", "Platform-owned data"].map((feature, idx) => <div key={idx} className="flex items-center gap-2 text-sm text-orange-700">
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
                     {feature}
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
 
@@ -65,17 +51,10 @@ const DigitalOwnershipEmpowerment = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-3">Web 3.0: Read-Write-Own</h3>
               <p className="text-gray-600 mb-4">Decentralized networks enable true digital ownership.</p>
               <div className="space-y-2">
-                {[
-                  "Decentralized applications",
-                  "User-owned data & assets",
-                  "Blockchain verification",
-                  "Self-sovereign identity"
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm text-purple-700">
+                {["Decentralized applications", "User-owned data & assets", "Blockchain verification", "Self-sovereign identity"].map((feature, idx) => <div key={idx} className="flex items-center gap-2 text-sm text-purple-700">
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
                     {feature}
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
           </div>
@@ -120,7 +99,7 @@ const DigitalOwnershipEmpowerment = () => {
             </div>
             <h2 className="text-3xl font-bold text-gray-900">The Revolution of True Digital Ownership</h2>
           </div>
-          <p className="text-xl text-gray-700 leading-relaxed">Consider your digital life: video game skins, music playlists, social media accounts—everything you think you "own" online is actually just borrowed. You're essentially renting access from platforms that can revoke your privileges at any moment. True digital ownership doesn't exist in today's centralized web. Web3 fundamentally changes this by giving you genuine ownership of your digital assets. </p>
+          <p className="text-xl text-gray-700 leading-relaxed">Consider your digital life: video game skins, music playlists, social media accounts—everything you think you "own" online is actually just borrowed from companies. You're essentially renting access from platforms that can revoke your privileges at any moment. True digital ownership doesn't exist in today's centralized web. Web3 fundamentally changes this by giving you genuine ownership of your digital assets through the following. </p>
         </div>
 
         {/* Traditional vs Blockchain Comparison */}
