@@ -765,7 +765,14 @@ const DigitalOwnershipEmpowerment = () => {
             Key Takeaways
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
-            {["Blockchain enables true digital ownership for the first time in history", "Digital ownership creates new forms of economic and creative empowerment", "NFTs and digital assets open up new markets and opportunities", "Self-sovereignty comes with increased responsibility for security", "The space is rapidly evolving with new applications emerging constantly"].map((takeaway, index) => <div key={index} className="flex items-center gap-3 p-3 bg-white/10 rounded-lg">
+            {[
+              "Digital ownership eliminates middlemen, allowing direct creator-to-consumer relationships",
+              "Creators and owners gain unprecedented control over their digital assets and revenue streams", 
+              "Decentralized networks create a more connected, interoperable internet ecosystem",
+              "Blockchain technology democratizes access to global markets and financial systems",
+              "Self-custody empowers individuals but requires continuous education and security awareness",
+              "Building knowledge systematically—from THE Vault Club to exchanges to self-custody—ensures success"
+            ].map((takeaway, index) => <div key={index} className="flex items-center gap-3 p-3 bg-white/10 rounded-lg">
                 <CheckCircle className="h-5 w-5 text-green-300 flex-shrink-0" />
                 <span className="text-white">{takeaway}</span>
               </div>)}
