@@ -413,24 +413,24 @@ const DigitalOwnershipEmpowerment = () => {
                 <div className="bg-blue-500 text-white p-3 rounded-lg mb-3">
                   <span className="font-bold">Stage 1</span>
                 </div>
-                <h5 className="font-semibold text-gray-900 mb-2">Start Custodial</h5>
+                <h5 className="font-semibold text-gray-900 mb-2">The Vault Club</h5>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li>Begin with Coinbase or similar</li>
-                  <li>Learn the basics safely</li>
-                  <li>Small amounts ($50-500)</li>
-                  <li>Focus on understanding crypto</li>
+                  <li>Start your crypto journey here</li>
+                  <li>Educational foundation</li>
+                  <li>Community support & learning</li>
+                  <li>Safe introduction to crypto</li>
                 </ul>
               </div>
               <div className="text-center">
                 <div className="bg-indigo-500 text-white p-3 rounded-lg mb-3">
                   <span className="font-bold">Stage 2</span>
                 </div>
-                <h5 className="font-semibold text-gray-900 mb-2">The Vault Club</h5>
+                <h5 className="font-semibold text-gray-900 mb-2">Try Exchanges</h5>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li>Bridge to full exchanges</li>
-                  <li>Educational stepping stone</li>
-                  <li>Guided introduction to trading</li>
-                  <li>Community support & learning</li>
+                  <li>Begin with Coinbase or similar</li>
+                  <li>Learn the basics safely</li>
+                  <li>Small amounts ($50-500)</li>
+                  <li>Focus on understanding crypto</li>
                 </ul>
               </div>
               <div className="text-center">
