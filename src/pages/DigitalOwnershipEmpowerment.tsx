@@ -335,6 +335,141 @@ const DigitalOwnershipEmpowerment = () => {
           </div>
         </div>
 
+        {/* Custodial vs Non-Custodial: Understanding Ownership Models */}
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-8 border border-emerald-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-2 rounded-lg">
+              <Key className="h-6 w-6 text-white" />
+            </div>
+            Custodial vs Non-Custodial: Understanding Ownership Models
+          </h3>
+          
+          <p className="text-gray-700 mb-6">
+            Before diving into wallet types, it's crucial to understand who actually controls your digital assets. 
+            This fundamental distinction affects your security, convenience, and true ownership.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+              <h4 className="text-lg font-semibold mb-3 text-blue-800">Custodial Wallets</h4>
+              <p className="text-gray-700 mb-3">
+                A third party (like an exchange) holds your private keys and manages your assets:
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <h5 className="font-semibold text-blue-700">Examples:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Coinbase, Binance, Kraken</li>
+                    <li>PayPal, Robinhood crypto</li>
+                    <li>Traditional brokerage crypto offerings</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-blue-700">Why Great for Beginners:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>No risk of losing private keys</li>
+                    <li>Familiar banking-like experience</li>
+                    <li>Customer support when issues arise</li>
+                    <li>Often insured against company failures</li>
+                    <li>Easy account recovery with email/phone</li>
+                    <li>Built-in security measures and monitoring</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-blue-700">Trade-offs:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>You don't truly "own" the assets</li>
+                    <li>Platform can freeze your account</li>
+                    <li>Higher fees for convenience</li>
+                    <li>Limited access to DeFi protocols</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
+              <h4 className="text-lg font-semibold mb-3 text-purple-800">Non-Custodial Wallets</h4>
+              <p className="text-gray-700 mb-3">
+                You control your private keys and have true ownership of your assets:
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <h5 className="font-semibold text-purple-700">Examples:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>MetaMask, Trust Wallet</li>
+                    <li>Hardware wallets (Ledger, Trezor)</li>
+                    <li>Mobile wallets (Exodus, Atomic)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-purple-700">Benefits:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>True ownership of your assets</li>
+                    <li>No third-party risk</li>
+                    <li>Access to full DeFi ecosystem</li>
+                    <li>Complete privacy and control</li>
+                    <li>Lower long-term costs</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-purple-700">Responsibilities:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Secure backup of seed phrases</li>
+                    <li>No customer support for recovery</li>
+                    <li>Higher learning curve</li>
+                    <li>Personal security responsibility</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-emerald-100 to-teal-100 rounded-xl p-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Your Journey from Custodial to Self-Custody
+            </h4>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="bg-blue-500 text-white p-3 rounded-lg mb-3">
+                  <span className="font-bold">Stage 1</span>
+                </div>
+                <h5 className="font-semibold text-gray-900 mb-2">Start Custodial</h5>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>Begin with Coinbase or similar</li>
+                  <li>Learn the basics safely</li>
+                  <li>Small amounts ($50-500)</li>
+                  <li>Focus on understanding crypto</li>
+                </ul>
+              </div>
+              <div className="text-center">
+                <div className="bg-purple-500 text-white p-3 rounded-lg mb-3">
+                  <span className="font-bold">Stage 2</span>
+                </div>
+                <h5 className="font-semibold text-gray-900 mb-2">Try Hot Wallets</h5>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>Install MetaMask or Trust Wallet</li>
+                  <li>Transfer small amounts to practice</li>
+                  <li>Explore DeFi with tiny amounts</li>
+                  <li>Learn seed phrase security</li>
+                </ul>
+              </div>
+              <div className="text-center">
+                <div className="bg-green-500 text-white p-3 rounded-lg mb-3">
+                  <span className="font-bold">Stage 3</span>
+                </div>
+                <h5 className="font-semibold text-gray-900 mb-2">Graduate to Cold Storage</h5>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>Buy hardware wallet for larger holdings</li>
+                  <li>Keep hot wallet for active trading</li>
+                  <li>Develop robust security practices</li>
+                  <li>Achieve true financial sovereignty</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Hot Wallets vs. Cold Wallets: Security Fundamentals */}
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-200">
           <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
@@ -345,13 +480,13 @@ const DigitalOwnershipEmpowerment = () => {
           </h3>
           
           <p className="text-gray-700 mb-6">
-            Understanding wallet security is crucial when taking ownership of your digital assets. 
-            The type of wallet you choose affects both convenience and security.
+            Once you're ready for self-custody, choosing between hot and cold storage depends on your use case. 
+            Most experienced users employ both types strategically.
           </p>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-orange-50 p-6 rounded-lg border border-orange-200">
-              <h4 className="text-lg font-semibold mb-3 text-orange-800">Hot Wallets</h4>
+              <h4 className="text-lg font-semibold mb-3 text-orange-800">Hot Wallets (Non-Custodial)</h4>
               <p className="text-gray-700 mb-3">
                 Connected to the internet for easy access and transactions:
               </p>
@@ -359,25 +494,26 @@ const DigitalOwnershipEmpowerment = () => {
                 <div>
                   <h5 className="font-semibold text-orange-700">Examples:</h5>
                   <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                    <li>Exchange wallets (Coinbase, Binance)</li>
                     <li>Browser extensions (MetaMask, Phantom)</li>
-                    <li>Mobile wallet apps</li>
+                    <li>Mobile wallet apps (Trust Wallet, Exodus)</li>
+                    <li>Desktop wallets (Electrum, Atomic)</li>
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-orange-700">Benefits:</h5>
+                  <h5 className="font-semibold text-orange-700">Best Uses:</h5>
                   <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                    <li>Convenient for regular trading</li>
-                    <li>Quick access to funds</li>
-                    <li>Easy to use for beginners</li>
+                    <li>DeFi interactions and trading</li>
+                    <li>NFT purchases and transactions</li>
+                    <li>Daily spending amounts</li>
+                    <li>Learning and experimentation</li>
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-orange-700">Risks:</h5>
+                  <h5 className="font-semibold text-orange-700">Security Considerations:</h5>
                   <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                    <li>Vulnerable to hacks and malware</li>
-                    <li>Exchange custody risk</li>
-                    <li>Phishing attacks</li>
+                    <li>Vulnerable to malware and phishing</li>
+                    <li>Only keep what you can afford to lose</li>
+                    <li>Use on dedicated devices when possible</li>
                   </ul>
                 </div>
               </div>
@@ -386,7 +522,7 @@ const DigitalOwnershipEmpowerment = () => {
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
               <h4 className="text-lg font-semibold mb-3 text-blue-800">Cold Wallets</h4>
               <p className="text-gray-700 mb-3">
-                Offline storage for maximum security:
+                Offline storage for maximum security of larger holdings:
               </p>
               <div className="space-y-3">
                 <div>
@@ -398,19 +534,21 @@ const DigitalOwnershipEmpowerment = () => {
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-blue-700">Benefits:</h5>
+                  <h5 className="font-semibold text-blue-700">Best Uses:</h5>
                   <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                    <li>Maximum security for long-term storage</li>
-                    <li>Protected from online threats</li>
-                    <li>You control the private keys</li>
+                    <li>Long-term savings ("HODLing")</li>
+                    <li>Large cryptocurrency holdings</li>
+                    <li>Retirement/investment accounts</li>
+                    <li>Maximum security scenarios</li>
                   </ul>
                 </div>
                 <div>
-                  <h5 className="font-semibold text-blue-700">Considerations:</h5>
+                  <h5 className="font-semibold text-blue-700">Investment Required:</h5>
                   <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                    <li>Less convenient for frequent trading</li>
-                    <li>Requires more technical knowledge</li>
-                    <li>Physical security responsibility</li>
+                    <li>Hardware cost ($50-200)</li>
+                    <li>Time to learn proper setup</li>
+                    <li>Physical security measures</li>
+                    <li>Backup and recovery planning</li>
                   </ul>
                 </div>
               </div>
@@ -426,19 +564,21 @@ const DigitalOwnershipEmpowerment = () => {
               <div>
                 <h5 className="font-semibold text-gray-800 mb-2">For Beginners:</h5>
                 <ul className="list-disc pl-4 text-gray-700 space-y-1 text-sm">
-                  <li>Start with reputable exchange wallets for small amounts</li>
+                  <li>Start with reputable custodial exchanges</li>
                   <li>Enable two-factor authentication (2FA)</li>
-                  <li>Never share your private keys or seed phrases</li>
-                  <li>Use strong, unique passwords</li>
+                  <li>Never share private keys or seed phrases</li>
+                  <li>Practice with small amounts first</li>
+                  <li>Write down seed phrases on paper, never digitally</li>
                 </ul>
               </div>
               <div>
-                <h5 className="font-semibold text-gray-800 mb-2">For Larger Holdings:</h5>
+                <h5 className="font-semibold text-gray-800 mb-2">As You Advance:</h5>
                 <ul className="list-disc pl-4 text-gray-700 space-y-1 text-sm">
-                  <li>Invest in a hardware wallet</li>
-                  <li>Store seed phrases securely offline</li>
-                  <li>Consider multi-signature wallets</li>
-                  <li>Regularly update wallet software</li>
+                  <li>Transition gradually to self-custody</li>
+                  <li>Use hot wallets for active amounts only</li>
+                  <li>Invest in hardware wallets for larger holdings</li>
+                  <li>Consider multi-signature setups</li>
+                  <li>Regularly update and review security practices</li>
                 </ul>
               </div>
             </div>
