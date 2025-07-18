@@ -408,7 +408,7 @@ const DigitalOwnershipEmpowerment = () => {
               <Target className="h-5 w-5" />
               Your Journey from Custodial to Self-Custody
             </h4>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="bg-blue-500 text-white p-3 rounded-lg mb-3">
                   <span className="font-bold">Stage 1</span>
@@ -422,8 +422,20 @@ const DigitalOwnershipEmpowerment = () => {
                 </ul>
               </div>
               <div className="text-center">
-                <div className="bg-purple-500 text-white p-3 rounded-lg mb-3">
+                <div className="bg-indigo-500 text-white p-3 rounded-lg mb-3">
                   <span className="font-bold">Stage 2</span>
+                </div>
+                <h5 className="font-semibold text-gray-900 mb-2">The Vault Club</h5>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li>Bridge to full exchanges</li>
+                  <li>Educational stepping stone</li>
+                  <li>Guided introduction to trading</li>
+                  <li>Community support & learning</li>
+                </ul>
+              </div>
+              <div className="text-center">
+                <div className="bg-purple-500 text-white p-3 rounded-lg mb-3">
+                  <span className="font-bold">Stage 3</span>
                 </div>
                 <h5 className="font-semibold text-gray-900 mb-2">Try Hot Wallets</h5>
                 <ul className="text-sm text-gray-700 space-y-1">
@@ -435,7 +447,7 @@ const DigitalOwnershipEmpowerment = () => {
               </div>
               <div className="text-center">
                 <div className="bg-green-500 text-white p-3 rounded-lg mb-3">
-                  <span className="font-bold">Stage 3</span>
+                  <span className="font-bold">Stage 4</span>
                 </div>
                 <h5 className="font-semibold text-gray-900 mb-2">Graduate to Cold Storage</h5>
                 <ul className="text-sm text-gray-700 space-y-1">
