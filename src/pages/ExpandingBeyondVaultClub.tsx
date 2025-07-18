@@ -132,106 +132,6 @@ const ExpandingBeyondVaultClub = () => {
           </p>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Hot Wallets vs. Cold Wallets: Security Fundamentals</h3>
-        
-        <p className="text-gray-700 mb-4">
-          Understanding wallet security is crucial when moving beyond structured contracts to individual token ownership. 
-          The type of wallet you choose affects both convenience and security.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-orange-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-orange-800">Hot Wallets</h4>
-            <p className="text-gray-700 mb-3">
-              Connected to the internet for easy access and transactions:
-            </p>
-            <div className="space-y-3">
-              <div>
-                <h5 className="font-semibold text-orange-700">Examples:</h5>
-                <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                  <li>Exchange wallets (Coinbase, Binance)</li>
-                  <li>Browser extensions (MetaMask, Phantom)</li>
-                  <li>Mobile apps (Trust Wallet, Exodus)</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-semibold text-orange-700">Best For:</h5>
-                <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                  <li>Active trading and DeFi interactions</li>
-                  <li>Small amounts for daily use</li>
-                  <li>Learning and experimentation</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-semibold text-orange-700">Risks:</h5>
-                <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                  <li>Vulnerable to hacks and malware</li>
-                  <li>Exchange custody risk</li>
-                  <li>Phishing attacks</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Cold Wallets</h4>
-            <p className="text-gray-700 mb-3">
-              Offline storage for maximum security:
-            </p>
-            <div className="space-y-3">
-              <div>
-                <h5 className="font-semibold text-blue-700">Examples:</h5>
-                <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                  <li>Hardware wallets (Ledger, Trezor)</li>
-                  <li>Paper wallets (printed private keys)</li>
-                  <li>Air-gapped computers</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-semibold text-blue-700">Best For:</h5>
-                <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                  <li>Long-term holdings ("HODLing")</li>
-                  <li>Large amounts of crypto</li>
-                  <li>Maximum security priority</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-semibold text-blue-700">Trade-offs:</h5>
-                <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                  <li>Less convenient for frequent transactions</li>
-                  <li>Hardware costs ($50-200)</li>
-                  <li>Learning curve for setup</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-purple-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-purple-800">Security Best Practices</h4>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h5 className="font-semibold text-purple-700 mb-2">For Beginners:</h5>
-              <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                <li>Start with reputable exchanges like Coinbase</li>
-                <li>Use exchange wallets for small amounts initially</li>
-                <li>Enable two-factor authentication (2FA)</li>
-                <li>Never share your private keys or seed phrases</li>
-                <li>Double-check all addresses before sending</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-semibold text-purple-700 mb-2">As You Advance:</h5>
-              <ul className="list-disc pl-4 text-gray-700 space-y-1">
-                <li>Graduate to hardware wallets for larger holdings</li>
-                <li>Learn to use self-custody wallets (MetaMask)</li>
-                <li>Understand backup and recovery procedures</li>
-                <li>Consider multi-signature setups for very large amounts</li>
-                <li>Keep software and firmware updated</li>
-              </ul>
-            </div>
-          </div>
-        </div>
 
         <h3 className="text-2xl font-semibold text-gray-900">Multi-Asset Investment Strategies</h3>
         
@@ -303,7 +203,7 @@ const ExpandingBeyondVaultClub = () => {
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
             <li>Vault Club contracts serve as your sophisticated digital asset foundation</li>
             <li>Cryptocurrency exchanges provide access to thousands of tokens across different ecosystems</li>
-            <li>Hot wallets offer convenience for active trading, cold wallets provide security for long-term storage</li>
+            <li>Choose the right wallet type based on your security needs and trading frequency</li>
             <li>Individual token selection develops your analysis and research skills</li>
             <li>Ecosystem diversification reduces concentration risk while maintaining digital asset focus</li>
             <li>Systematic investing principles apply to both structured contracts and individual tokens</li>

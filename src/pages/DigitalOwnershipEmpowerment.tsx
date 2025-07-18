@@ -335,6 +335,116 @@ const DigitalOwnershipEmpowerment = () => {
           </div>
         </div>
 
+        {/* Hot Wallets vs. Cold Wallets: Security Fundamentals */}
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-gradient-to-r from-amber-600 to-orange-600 p-2 rounded-lg">
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+            Hot Wallets vs. Cold Wallets: Security Fundamentals
+          </h3>
+          
+          <p className="text-gray-700 mb-6">
+            Understanding wallet security is crucial when taking ownership of your digital assets. 
+            The type of wallet you choose affects both convenience and security.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-orange-50 p-6 rounded-lg border border-orange-200">
+              <h4 className="text-lg font-semibold mb-3 text-orange-800">Hot Wallets</h4>
+              <p className="text-gray-700 mb-3">
+                Connected to the internet for easy access and transactions:
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <h5 className="font-semibold text-orange-700">Examples:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Exchange wallets (Coinbase, Binance)</li>
+                    <li>Browser extensions (MetaMask, Phantom)</li>
+                    <li>Mobile wallet apps</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-orange-700">Benefits:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Convenient for regular trading</li>
+                    <li>Quick access to funds</li>
+                    <li>Easy to use for beginners</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-orange-700">Risks:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Vulnerable to hacks and malware</li>
+                    <li>Exchange custody risk</li>
+                    <li>Phishing attacks</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+              <h4 className="text-lg font-semibold mb-3 text-blue-800">Cold Wallets</h4>
+              <p className="text-gray-700 mb-3">
+                Offline storage for maximum security:
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <h5 className="font-semibold text-blue-700">Examples:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Hardware wallets (Ledger, Trezor)</li>
+                    <li>Paper wallets (printed private keys)</li>
+                    <li>Air-gapped computers</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-blue-700">Benefits:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Maximum security for long-term storage</li>
+                    <li>Protected from online threats</li>
+                    <li>You control the private keys</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-blue-700">Considerations:</h5>
+                  <ul className="list-disc pl-4 text-gray-700 space-y-1">
+                    <li>Less convenient for frequent trading</li>
+                    <li>Requires more technical knowledge</li>
+                    <li>Physical security responsibility</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-6 mt-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Lightbulb className="h-5 w-5" />
+              Best Practices for Wallet Security
+            </h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h5 className="font-semibold text-gray-800 mb-2">For Beginners:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1 text-sm">
+                  <li>Start with reputable exchange wallets for small amounts</li>
+                  <li>Enable two-factor authentication (2FA)</li>
+                  <li>Never share your private keys or seed phrases</li>
+                  <li>Use strong, unique passwords</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-semibold text-gray-800 mb-2">For Larger Holdings:</h5>
+                <ul className="list-disc pl-4 text-gray-700 space-y-1 text-sm">
+                  <li>Invest in a hardware wallet</li>
+                  <li>Store seed phrases securely offline</li>
+                  <li>Consider multi-signature wallets</li>
+                  <li>Regularly update wallet software</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Self-Sovereign Identity & Financial Sovereignty */}
         <div className="grid md:grid-cols-2 gap-8">
           {/* Decentralized Identity */}
