@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shield, TrendingUp, Users, Target, CheckCircle, DollarSign } from "lucide-react";
+import { ArrowLeft, Shield, TrendingUp, Users, Target, CheckCircle, DollarSign, FileText, Vault, ArrowRight, Bitcoin, AlertTriangle, ArrowDown, Timer, Coins } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LearnMore = () => {
@@ -186,39 +186,184 @@ const LearnMore = () => {
         </div>
       </section>
 
-      {/* Sequence of Events */}
-      <section className="py-12 bg-gray-50">
+      {/* Contract Flow Visualization */}
+      <section className="py-20 bg-gradient-to-br from-slate-50 to-gray-100">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-8 text-center text-gray-900">How It Works</h3>
-            <div className="grid md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">1</span>
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-3xl font-bold mb-4 text-center text-gray-900">How Vault Club Contracts Work</h3>
+            <p className="text-gray-600 text-center mb-16 max-w-3xl mx-auto">
+              Experience the sophisticated flow of institutional-grade investment contracts designed for individual investors.
+            </p>
+
+            {/* Main Flow Diagram */}
+            <div className="relative">
+              {/* Step 1: Contract Registration */}
+              <div className="mb-16">
+                <div className="flex flex-col lg:flex-row items-center gap-8">
+                  <div className="flex-1 bg-white rounded-2xl p-8 shadow-lg border border-purple-100">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="bg-gradient-to-r from-purple-600 to-purple-700 w-16 h-16 rounded-full flex items-center justify-center">
+                        <FileText className="h-8 w-8 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-gray-900">Contract Represents Subclubs</h4>
+                        <span className="text-purple-600 font-semibold">Initial Setup</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mb-4">
+                      Each investment contract is a sophisticated financial instrument that represents and manages multiple subclubs. 
+                      When you join, your subclub becomes part of a structured investment vehicle.
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 mt-6">
+                      <div className="text-center p-3 bg-purple-50 rounded-lg">
+                        <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                        <span className="text-xs font-medium text-gray-700">Subclub A</span>
+                      </div>
+                      <div className="text-center p-3 bg-purple-50 rounded-lg">
+                        <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                        <span className="text-xs font-medium text-gray-700">Subclub B</span>
+                      </div>
+                      <div className="text-center p-3 bg-purple-50 rounded-lg">
+                        <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                        <span className="text-xs font-medium text-gray-700">Subclub C</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="hidden lg:block">
+                    <ArrowDown className="h-8 w-8 text-purple-400 animate-pulse" />
+                  </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Subclub Contract Registration</h4>
-                <p className="text-sm text-gray-600">Register and join a structured investment subclub</p>
               </div>
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">2</span>
+
+              {/* Step 2: Mega Vault Entry */}
+              <div className="mb-16">
+                <div className="flex flex-col lg:flex-row items-center gap-8">
+                  <div className="flex-1 bg-white rounded-2xl p-8 shadow-lg border border-cyan-100">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="bg-gradient-to-r from-cyan-600 to-cyan-700 w-16 h-16 rounded-full flex items-center justify-center">
+                        <Vault className="h-8 w-8 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-gray-900">Immediate Mega Vault Placement</h4>
+                        <span className="text-cyan-600 font-semibold">Instant Security</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mb-4">
+                      All subclubs are immediately and initially placed in the secure Mega Vault. This provides instant 
+                      diversification and professional-grade risk management from day one.
+                    </p>
+                    <div className="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl mt-6">
+                      <div className="flex items-center justify-center gap-4">
+                        <div className="text-center">
+                          <div className="w-12 h-12 bg-cyan-200 rounded-full flex items-center justify-center mb-2">
+                            <Vault className="h-6 w-6 text-cyan-700" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">Mega Vault</span>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <div className="w-8 h-2 bg-cyan-300 rounded"></div>
+                          <div className="w-8 h-2 bg-cyan-300 rounded"></div>
+                          <div className="w-8 h-2 bg-cyan-300 rounded"></div>
+                        </div>
+                        <div className="text-center">
+                          <span className="text-xs text-gray-600">All Subclubs Protected</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="hidden lg:block">
+                    <ArrowDown className="h-8 w-8 text-cyan-400 animate-pulse" />
+                  </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Subclub Enters Mega Vault</h4>
-                <p className="text-sm text-gray-600">Your subclub joins the main investment pool</p>
               </div>
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">3</span>
+
+              {/* Step 3: Gradual Exit and wBTC Accumulation */}
+              <div className="mb-16">
+                <div className="flex flex-col lg:flex-row items-center gap-8">
+                  <div className="flex-1 bg-white rounded-2xl p-8 shadow-lg border border-orange-100">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="bg-gradient-to-r from-orange-600 to-orange-700 w-16 h-16 rounded-full flex items-center justify-center">
+                        <Bitcoin className="h-8 w-8 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-gray-900">Strategic wBTC Accumulation</h4>
+                        <span className="text-orange-600 font-semibold">Gradual Deployment</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mb-4">
+                      Contracts slowly and strategically exit the Mega Vault to accumulate wBTC independently. 
+                      This gradual approach minimizes market impact and optimizes entry points.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 mt-6">
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <Timer className="h-6 w-6 text-orange-600 mb-2" />
+                        <span className="text-sm font-medium text-gray-700">Timed Exits</span>
+                        <p className="text-xs text-gray-500 mt-1">Strategic market timing</p>
+                      </div>
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <Coins className="h-6 w-6 text-orange-600 mb-2" />
+                        <span className="text-sm font-medium text-gray-700">wBTC Growth</span>
+                        <p className="text-xs text-gray-500 mt-1">Independent accumulation</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="hidden lg:block">
+                    <ArrowDown className="h-8 w-8 text-orange-400 animate-pulse" />
+                  </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Contract Accumulates wBTC</h4>
-                <p className="text-sm text-gray-600">Your investment grows through strategic wBTC accumulation</p>
               </div>
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold">4</span>
+
+              {/* Step 4: Contract Conclusion */}
+              <div className="mb-12">
+                <div className="bg-white rounded-2xl p-8 shadow-lg border border-green-100">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 w-16 h-16 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-8 w-8 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold text-gray-900">Contract Length Consensus Reached</h4>
+                      <span className="text-green-600 font-semibold">Decision Time</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-6">
+                    When the predetermined contract length reaches consensus, you have complete control over your accumulated wBTC.
+                  </p>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                      <Vault className="h-8 w-8 text-green-600 mx-auto mb-3" />
+                      <h5 className="font-semibold text-gray-900 mb-2">Hold wBTC</h5>
+                      <p className="text-sm text-gray-600">Keep your wBTC for long-term appreciation</p>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                      <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-3" />
+                      <h5 className="font-semibold text-gray-900 mb-2">Liquidate</h5>
+                      <p className="text-sm text-gray-600">Convert to fiat and secure your profits</p>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                      <ArrowRight className="h-8 w-8 text-green-600 mx-auto mb-3" />
+                      <h5 className="font-semibold text-gray-900 mb-2">Transfer</h5>
+                      <p className="text-sm text-gray-600">Move funds to your preferred wallet</p>
+                    </div>
+                  </div>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Hold or Liquidate wBTC</h4>
-                <p className="text-sm text-gray-600">At conclusion, choose to hold your wBTC or liquidate</p>
+              </div>
+
+              {/* Security Warning */}
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl p-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="h-8 w-8 text-red-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <h5 className="font-semibold text-red-900 mb-2">Important Security Notice</h5>
+                    <p className="text-red-800 text-sm leading-relaxed">
+                      <strong>Users are highly advised not to hold large funds on this service.</strong> The Vault Club 
+                      operates as a hot wallet similar to exchanges, prioritizing accessibility over maximum security. 
+                      For large holdings, consider transferring to a hardware wallet after contract completion.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
