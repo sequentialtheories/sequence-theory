@@ -83,7 +83,8 @@ const LearnMore = () => {
               <div className="bg-card border rounded-xl p-8">
                 <h4 className="text-xl font-semibold mb-4 text-foreground">Structured Investment Contracts</h4>
                 <p className="text-muted-foreground mb-4">
-                  When you join The Vault Club, you enter a structured investment contract that represents multiple subclubs. 
+                  When you join The Vault Club, you enter a subclub that has its own structured investment contract. 
+                  These contracts are created at the start to set fixed parameters such as member amount, rigor, and length.
                   All participants are immediately placed in our secure Mega Vault, which provides instant diversification 
                   and professional-grade risk management.
                 </p>
