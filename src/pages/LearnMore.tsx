@@ -358,7 +358,7 @@ const LearnMore = () => {
                   <div>
                     <h5 className="font-semibold text-red-900 mb-2">Important Security Notice</h5>
                     <p className="text-red-800 text-sm leading-relaxed">
-                      <strong>Users are highly advised not to hold large funds on this service.</strong> The Vault Club 
+                      <strong>Users are highly advised not to hold large amounts of unused funds on this service.</strong> The Vault Club 
                       operates as a hot wallet similar to exchanges, prioritizing accessibility over maximum security. 
                       For large holdings, consider transferring to a hardware wallet after contract completion.
                     </p>
