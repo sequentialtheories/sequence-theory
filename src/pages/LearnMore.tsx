@@ -186,6 +186,45 @@ const LearnMore = () => {
         </div>
       </section>
 
+      {/* Sequence of Events */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold mb-8 text-center text-gray-900">How It Works</h3>
+            <div className="grid md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white font-bold">1</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Subclub Contract Registration</h4>
+                <p className="text-sm text-gray-600">Register and join a structured investment subclub</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white font-bold">2</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Subclub Enters Mega Vault</h4>
+                <p className="text-sm text-gray-600">Your subclub joins the main investment pool</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white font-bold">3</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Contract Accumulates wBTC</h4>
+                <p className="text-sm text-gray-600">Your investment grows through strategic wBTC accumulation</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white font-bold">4</span>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Hold or Liquidate wBTC</h4>
+                <p className="text-sm text-gray-600">At conclusion, choose to hold your wBTC or liquidate</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section id="signup-section" className="py-16 bg-gradient-to-r from-purple-600 to-cyan-600 text-white">
         <div className="container mx-auto px-6 text-center">
