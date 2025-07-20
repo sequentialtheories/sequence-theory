@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,48 @@ import { Mail, Vault } from "lucide-react";
 const PreSignup = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [lastSubmissionTime, setLastSubmissionTime] = useState<number>(0);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Email validation function
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  };
+
+  // Rate limiting: 1 submission per 30 seconds
+  const isRateLimited = useCallback((): boolean => {
+    const now = Date.now();
+    const timeSinceLastSubmission = now - lastSubmissionTime;
+    return timeSinceLastSubmission < 30000; // 30 seconds
+  }, [lastSubmissionTime]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email format
+    if (!validateEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check rate limiting
+    if (isRateLimited()) {
+      toast({
+        title: "Too Many Requests",
+        description: "Please wait 30 seconds before trying again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
+    setLastSubmissionTime(Date.now());
     
     try {
       // Store email in early access signups table
