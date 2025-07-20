@@ -97,12 +97,7 @@ export default function Auth() {
             Join Sequence Theory
           </CardTitle>
           <CardDescription>
-            {prefilledEmail 
-              ? 'Create your password to complete your account'
-              : isLogin 
-              ? 'Sign in to access your learning journey' 
-              : 'Create your account to start learning'
-            }
+            Create Your Account to Access Learning Modules & The Vault Club
           </CardDescription>
         </CardHeader>
         <CardContent>
