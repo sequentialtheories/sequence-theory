@@ -87,9 +87,9 @@ export default function Auth() {
         variant="ghost"
         size="sm"
         onClick={() => navigate('/')}
-        className="absolute top-4 left-4 p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+        className="absolute top-4 left-4 p-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-colors rounded-full border-2 border-purple-200 hover:border-purple-300 bg-white/50 backdrop-blur-sm"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-5 w-5" />
       </Button>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
