@@ -22,13 +22,20 @@ const SupplementalOfferings = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">
-            Beyond The Vault Club
+    <section className="py-16 bg-muted/50 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+      <div className="absolute top-0 left-0 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute bottom-0 right-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl animate-float-delayed"></div>
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-12 animate-slide-up">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">
+            <span className="bg-gradient-primary bg-clip-text text-transparent">
+              Beyond The Vault Club
+            </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-slide-up [animation-delay:0.2s]">
             Beyond The Vault Club, we provide education and community 
             to help you succeed in investing.
           </p>
@@ -36,23 +43,23 @@ const SupplementalOfferings = () => {
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {offerings.map((offering, index) => (
-            <div key={index} className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow">
-              <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <offering.icon className="h-6 w-6 text-white" />
+            <div key={index} className="bg-gradient-card backdrop-blur-sm rounded-xl p-8 shadow-medium hover:shadow-strong transition-spring hover:scale-105 border border-primary/10 group animate-slide-up" style={{ animationDelay: `${0.3 + index * 0.2}s` }}>
+              <div className="bg-gradient-primary w-12 h-12 rounded-lg flex items-center justify-center mb-6 shadow-medium transition-spring group-hover:scale-110 group-hover:shadow-glow animate-glow">
+                <offering.icon className="h-6 w-6 text-primary-foreground" />
               </div>
               
-              <h3 className="text-xl font-semibold mb-4 text-gray-900">
+              <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-primary transition-smooth">
                 {offering.title}
               </h3>
               
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-muted-foreground mb-6 leading-relaxed group-hover:text-foreground transition-smooth">
                 {offering.description}
               </p>
               
               <Link to={offering.link}>
                 <Button 
                   variant="outline" 
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                  className="border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
                 >
                   {offering.linkText}
                 </Button>

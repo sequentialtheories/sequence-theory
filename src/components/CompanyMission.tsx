@@ -21,49 +21,56 @@ const CompanyMission = () => {
   ];
 
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-6 text-gray-900">
-            About Sequence Theory
+    <section className="py-20 bg-background relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
+      <div className="absolute top-1/4 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute bottom-1/4 left-0 w-60 h-60 bg-accent/5 rounded-full blur-3xl animate-float-delayed"></div>
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-16 animate-slide-up">
+          <h2 className="text-4xl font-bold mb-6 text-foreground">
+            <span className="bg-gradient-primary bg-clip-text text-transparent">
+              About Sequence Theory
+            </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up [animation-delay:0.2s]">
             Bridging institutional investment strategies and individual investors through DeFi technology.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {missionPoints.map((point, index) => (
-            <div key={index} className="text-center">
-              <div className="bg-gradient-to-r from-purple-600 to-cyan-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <point.icon className="h-8 w-8 text-white" />
+            <div key={index} className="text-center group animate-slide-up" style={{ animationDelay: `${0.3 + index * 0.2}s` }}>
+              <div className="bg-gradient-primary w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-medium transition-spring group-hover:scale-110 group-hover:shadow-glow animate-glow">
+                <point.icon className="h-8 w-8 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-900">{point.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{point.description}</p>
+              <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-primary transition-smooth">{point.title}</h3>
+              <p className="text-muted-foreground leading-relaxed group-hover:text-foreground transition-smooth">{point.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border border-gray-200">
-            <h3 className="text-2xl font-semibold mb-6 text-gray-900 text-center">
+        <div className="max-w-4xl mx-auto animate-slide-up [animation-delay:0.5s]">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 border border-primary/10 shadow-medium hover:shadow-strong transition-spring">
+            <h3 className="text-2xl font-semibold mb-6 text-foreground text-center">
               Why We Built The Vault Club
             </h3>
             
-            <div className="prose prose-lg mx-auto text-gray-700">
-              <p className="mb-4">
+            <div className="space-y-6 text-muted-foreground">
+              <p className="text-lg leading-relaxed animate-slide-left">
                 Sophisticated investment strategies shouldn't be gatekept by traditional finance. 
                 Using smart contracts and DeFi protocols, we've created a system with hedge fund precision 
                 while remaining transparent and accessible.
               </p>
               
-              <p className="mb-4">
+              <p className="text-lg leading-relaxed animate-slide-right [animation-delay:0.7s]">
                 Our platform focuses on steady growth and risk management over speculation. 
                 Through automated diversification across AAVE and Quickswap, 
                 The Vault Club provides institutional-quality management for individuals.
               </p>
               
-              <p>
+              <p className="text-lg leading-relaxed animate-slide-left [animation-delay:0.9s]">
                 We're exploring integration of traditional assets with blockchain technology, 
                 bridging established markets and emerging DeFi. 
                 Our goal: equitable, transparent financial tools for everyone.

@@ -18,40 +18,42 @@ const Navigation = () => {
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-primary/20 shadow-soft transition-smooth">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 group">
             <img 
               src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
               alt="Sequence Theory" 
-              className="h-8 w-auto"
+              className="h-8 w-auto transition-spring group-hover:scale-110"
             />
-            <span className="text-white font-semibold text-lg hidden sm:block">
+            <span className="text-foreground font-semibold text-lg hidden sm:block transition-smooth group-hover:text-primary">
               Sequence Theory
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <Link
                 key={item.href}
                 to={item.href}
-                className={`text-sm font-medium transition-colors ${
+                className={`text-sm font-medium transition-bounce relative group animate-slide-left ${
                   isActive(item.href)
-                    ? "text-purple-400"
-                    : "text-gray-300 hover:text-white"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {item.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
             <Button 
               onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
               size="sm"
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-all duration-300"
+              className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-2 rounded-full transition-spring hover:scale-105 animate-glow"
             >
               Join The Vault Club
             </Button>
@@ -60,7 +62,7 @@ const Navigation = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gray-300 hover:text-white"
+            className="md:hidden text-muted-foreground hover:text-foreground transition-spring hover:scale-110"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -68,18 +70,19 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
+          <div className="md:hidden py-4 border-t border-primary/20 bg-gradient-secondary/50 backdrop-blur-sm animate-slide-up">
             <div className="flex flex-col space-y-4">
-              {navItems.map((item) => (
+              {navItems.map((item, index) => (
                 <Link
                   key={item.href}
                   to={item.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm font-medium transition-colors ${
+                  className={`text-sm font-medium transition-bounce animate-slide-left ${
                     isActive(item.href)
-                      ? "text-purple-400"
-                      : "text-gray-300 hover:text-white"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {item.label}
                 </Link>
@@ -90,7 +93,7 @@ const Navigation = () => {
                   document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition-all duration-300 w-fit"
+                className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
               >
                 Join The Vault Club
               </Button>
