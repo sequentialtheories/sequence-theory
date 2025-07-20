@@ -185,7 +185,7 @@ const LearnNow = () => {
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Award className="h-4 w-4 text-indigo-600" />
-              <span className="font-medium text-gray-700">Fun Quizzes</span>
+              <span className="font-medium text-gray-700">Quiz & Test</span>
             </div>
           </div>
         </div>
