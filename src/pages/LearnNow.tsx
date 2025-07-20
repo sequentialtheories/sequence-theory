@@ -214,7 +214,7 @@ const LearnNow = () => {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg">
                   <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <Target className="h-8 w-8 text-white" />
                   </div>
@@ -228,7 +228,7 @@ const LearnNow = () => {
               
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg">
                   <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <Award className="h-8 w-8 text-white" />
                   </div>
@@ -242,7 +242,7 @@ const LearnNow = () => {
               
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg">
                   <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <Users className="h-8 w-8 text-white" />
                   </div>
