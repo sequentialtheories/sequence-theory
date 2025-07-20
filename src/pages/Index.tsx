@@ -31,10 +31,6 @@ const Index = () => {
         <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container mx-auto px-6 text-center relative z-10">
-            <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-8">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Choreographing Capital</span>
-            </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
               Sequence Theory: 
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block">
