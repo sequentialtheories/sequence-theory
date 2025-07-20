@@ -172,18 +172,16 @@ const LearnNow = () => {
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-800 to-cyan-800 bg-clip-text text-transparent leading-tight">
             Get Smart About Money
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-10 leading-relaxed">
-            No confusing jargon. No boring lectures. Just clear, simple lessons that actually make sense.
-          </p>
+          
           
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <BookOpen className="h-4 w-4 text-purple-600" />
-              <span className="font-medium text-gray-700">18 Easy Lessons</span>
+              <span className="font-medium text-gray-700">18 Lessons</span>
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Users className="h-4 w-4 text-cyan-600" />
-              <span className="font-medium text-gray-700">Made by Real People</span>
+              <span className="font-medium text-gray-700">Made by Educated People</span>
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Award className="h-4 w-4 text-indigo-600" />
@@ -283,41 +281,23 @@ const LearnNow = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {learningCategories.map((category, index) => (
-                    <button 
-                      key={index} 
-                      onClick={() => setSelectedCategory(index)} 
-                      className={`group relative p-8 text-center rounded-2xl transition-all duration-500 transform hover:-translate-y-2 ${
-                        selectedCategory === index 
-                          ? 'bg-gradient-to-br from-purple-600 to-cyan-600 text-white shadow-2xl scale-105' 
-                          : 'bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-cyan-50 border border-gray-200 hover:border-purple-300 shadow-lg hover:shadow-xl'
-                      }`}
-                    >
-                      <div className={`absolute inset-0 rounded-2xl blur-xl opacity-20 ${
-                        selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600' : 'bg-gray-200'
-                      }`}></div>
+                  {learningCategories.map((category, index) => <button key={index} onClick={() => setSelectedCategory(index)} className={`group relative p-8 text-center rounded-2xl transition-all duration-500 transform hover:-translate-y-2 ${selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600 text-white shadow-2xl scale-105' : 'bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-cyan-50 border border-gray-200 hover:border-purple-300 shadow-lg hover:shadow-xl'}`}>
+                      <div className={`absolute inset-0 rounded-2xl blur-xl opacity-20 ${selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600' : 'bg-gray-200'}`}></div>
                       
                       <div className="relative z-10">
-                        <div className={`text-xl font-bold mb-4 ${
-                          selectedCategory === index ? 'text-white' : 'text-gray-900 group-hover:text-purple-700'
-                        }`}>
+                        <div className={`text-xl font-bold mb-4 ${selectedCategory === index ? 'text-white' : 'text-gray-900 group-hover:text-purple-700'}`}>
                           {category.title}
                         </div>
-                        <div className={`text-sm leading-relaxed ${
-                          selectedCategory === index ? 'text-white/90' : 'text-gray-600 group-hover:text-gray-700'
-                        }`}>
+                        <div className={`text-sm leading-relaxed ${selectedCategory === index ? 'text-white/90' : 'text-gray-600 group-hover:text-gray-700'}`}>
                           {category.description}
                         </div>
                         
-                        {selectedCategory === index && (
-                          <div className="mt-4 inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2">
+                        {selectedCategory === index && <div className="mt-4 inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2">
                             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                             <span className="text-sm font-medium text-white">Selected</span>
-                          </div>
-                        )}
+                          </div>}
                       </div>
-                    </button>
-                  ))}
+                    </button>)}
                 </div>
                 
                 <div className="text-center mt-10">
@@ -333,8 +313,7 @@ const LearnNow = () => {
       </section>
 
       {/* Selected Category Modules */}
-      {selectedCategory !== null && (
-        <section className="relative py-20 bg-gradient-to-br from-slate-50 via-white to-gray-50 overflow-hidden">
+      {selectedCategory !== null && <section className="relative py-20 bg-gradient-to-br from-slate-50 via-white to-gray-50 overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute top-10 left-10 w-64 h-64 bg-purple-300/20 rounded-full blur-3xl animate-float"></div>
             <div className="absolute bottom-10 right-10 w-80 h-80 bg-cyan-300/20 rounded-full blur-3xl animate-float-delayed"></div>
@@ -356,12 +335,7 @@ const LearnNow = () => {
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => (
-                  <Link 
-                    key={moduleIndex} 
-                    to={`/learn/${module.slug}`} 
-                    className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  >
+                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => <Link key={moduleIndex} to={`/learn/${module.slug}`} className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
                     <div className="relative z-10">
@@ -374,12 +348,7 @@ const LearnNow = () => {
                             <h5 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors leading-tight">
                               {module.title}
                             </h5>
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                              module.level === 'Beginner' ? 'bg-green-100 text-green-700' :
-                              module.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                              module.level === 'Advanced' ? 'bg-orange-100 text-orange-700' :
-                              'bg-red-100 text-red-700'
-                            }`}>
+                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${module.level === 'Beginner' ? 'bg-green-100 text-green-700' : module.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' : module.level === 'Advanced' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>
                               {module.level}
                             </span>
                           </div>
@@ -402,13 +371,11 @@ const LearnNow = () => {
                     </div>
                     
                     <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-b-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                  </Link>
-                ))}
+                  </Link>)}
               </div>
             </div>
           </div>
-        </section>
-      )}
+        </section>}
 
       {/* Finance Quiz Section - Only show when Finance is selected */}
       {selectedCategory === 0 && <section className="py-16 bg-white">
