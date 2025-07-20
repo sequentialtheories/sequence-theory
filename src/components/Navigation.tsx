@@ -1,12 +1,35 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, GraduationCap } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Menu, X, GraduationCap, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You've been signed out successfully",
+      });
+      navigate('/');
+    }
+  };
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -58,13 +81,39 @@ const Navigation = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
-            <Button 
-              onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
-              size="sm"
-              className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-2 rounded-full transition-spring hover:scale-105 animate-glow"
-            >
-              Join The Vault Club
-            </Button>
+            
+            <div className="flex items-center space-x-3">
+              <Button 
+                onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
+                size="sm"
+                className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-2 rounded-full transition-spring hover:scale-105 animate-glow"
+              >
+                Join The Vault Club
+              </Button>
+              
+              {!loading && (
+                user ? (
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    size="sm"
+                    className="px-4 py-2 rounded-full transition-spring hover:scale-105"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => navigate('/auth')}
+                    variant="outline"
+                    size="sm"
+                    className="px-4 py-2 rounded-full transition-spring hover:scale-105"
+                  >
+                    Sign In
+                  </Button>
+                )
+              )}
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -95,16 +144,48 @@ const Navigation = () => {
                   {item.label}
                 </Link>
               ))}
-              <Button 
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                size="sm"
-                className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
-              >
-                Join The Vault Club
-              </Button>
+              
+              <div className="flex flex-col space-y-3 pt-2">
+                <Button 
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  size="sm"
+                  className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
+                >
+                  Join The Vault Club
+                </Button>
+                
+                {!loading && (
+                  user ? (
+                    <Button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleLogout();
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        navigate('/auth');
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
+                    >
+                      Sign In
+                    </Button>
+                  )
+                )}
+              </div>
             </div>
           </div>
         )}

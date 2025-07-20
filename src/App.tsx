@@ -4,6 +4,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/components/AuthProvider";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import LearnMore from "./pages/LearnMore";
 import LearnNow from "./pages/LearnNow";
@@ -47,10 +50,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/learn-more" element={<LearnMore />} />
-          <Route path="/learn-now" element={<LearnNow />} />
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/learn-more" element={<LearnMore />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/learn-now" element={
+              <ProtectedRoute>
+                <LearnNow />
+              </ProtectedRoute>
+            } />
           <Route path="/finance-quiz" element={<FinanceQuiz />} />
           <Route path="/web3-quiz" element={<Web3Quiz />} />
           <Route path="/education-quiz" element={<EducationQuiz />} />
@@ -83,7 +92,8 @@ const App = () => (
           <Route path="/learn/democratizing-financial-knowledge" element={<DemocratizingFinancialKnowledge />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

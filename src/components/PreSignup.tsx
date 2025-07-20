@@ -1,28 +1,51 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Mail, Vault } from "lucide-react";
 
 const PreSignup = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Store email in early access signups table
+      const { error } = await supabase
+        .from('early_access_signups')
+        .insert([{ email }]);
+
+      if (error) {
+        // If email already exists, that's okay - just proceed to account creation
+        if (error.code !== '23505') { // 23505 is unique constraint violation
+          throw error;
+        }
+      }
+
       toast({
         title: "Welcome to The Vault Club!",
-        description: "You're now on our priority list for early access.",
+        description: "Complete your account to get early access.",
       });
-      setEmail("");
+
+      // Redirect to auth page with email prefilled
+      navigate(`/auth?email=${encodeURIComponent(email)}`);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
