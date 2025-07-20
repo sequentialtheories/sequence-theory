@@ -170,7 +170,7 @@ const LearnNow = () => {
           </div>
           
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-800 to-cyan-800 bg-clip-text text-transparent leading-tight">
-            Get Smart About Money & Crypto
+            Get Smart About Money
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-10 leading-relaxed">
             No confusing jargon. No boring lectures. Just clear, simple lessons that actually make sense.
