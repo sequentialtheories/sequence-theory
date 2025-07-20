@@ -9,6 +9,10 @@ const Hero = () => {
     vaultClubSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToSignup = () => {
+    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-hero text-white relative overflow-hidden">
       {/* Animated background elements */}
@@ -31,7 +35,8 @@ const Hero = () => {
             <img 
               src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
               alt="Sequence Theory Logo" 
-              className="h-24 md:h-32 mx-auto transition-spring hover:scale-110 animate-glow"
+              className="h-24 md:h-32 mx-auto transition-spring hover:scale-110 animate-glow cursor-pointer"
+              onClick={scrollToSignup}
             />
           </div>
           
