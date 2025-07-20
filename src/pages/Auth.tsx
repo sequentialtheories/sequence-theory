@@ -94,7 +94,7 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
-            {prefilledEmail ? 'Complete Your Account' : isLogin ? 'Welcome Back' : 'Join The Vault Club'}
+            Join Sequence Theory
           </CardTitle>
           <CardDescription>
             {prefilledEmail 
