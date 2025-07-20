@@ -74,7 +74,7 @@ const Index = () => {
                 <div className="w-24 h-1 bg-gradient-to-r from-destructive to-destructive/60 mx-auto mb-8"></div>
                 <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
                   Albert Einstein called compound interest the "eighth wonder of the world," yet most people 
-                  never benefit from it meaningfully. The issue isn't failure—it's friction.
+                  never benefit from it meaningfully. The issue isn't failure, it's friction maintaining these core principles.
                 </p>
               </div>
               
