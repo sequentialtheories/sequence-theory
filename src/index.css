@@ -17,17 +17,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 60% 8%;
 
-    --primary: 250 60% 40%;
+    --primary: 250 70% 30%;
     --primary-foreground: 210 40% 98%;
-    --primary-glow: 250 70% 60%;
+    --primary-glow: 250 80% 50%;
 
     --secondary: 250 25% 92%;
-    --secondary-foreground: 250 60% 40%;
+    --secondary-foreground: 250 70% 30%;
 
     --muted: 220 30% 96%;
     --muted-foreground: 220 16% 46%;
 
-    --accent: 330 75% 58%;
+    --accent: 330 85% 68%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -35,19 +35,19 @@ All colors MUST be HSL.
 
     --border: 220 30% 90%;
     --input: 220 30% 90%;
-    --ring: 250 60% 40%;
+    --ring: 250 70% 30%;
 
-    /* Enhanced gradients - Deep Indigo Purple to Hot Pink */
-    --gradient-primary: linear-gradient(135deg, hsl(250 60% 40%) 0%, hsl(330 75% 58%) 100%);
+    /* Enhanced gradients - Darker Indigo to Brighter Pink */
+    --gradient-primary: linear-gradient(135deg, hsl(250 70% 30%) 0%, hsl(330 85% 68%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(250 25% 92%) 0%, hsl(220 30% 96%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(250 60% 40%) 0%, hsl(250 70% 60%) 50%, hsl(330 75% 58%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(250 70% 30%) 0%, hsl(250 80% 50%) 50%, hsl(330 85% 68%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.8) 0%, hsl(220 30% 98% / 0.9) 100%);
 
-    /* Beautiful shadows with deep indigo tones */
-    --shadow-soft: 0 4px 20px hsl(250 60% 40% / 0.1);
-    --shadow-medium: 0 8px 30px hsl(250 60% 40% / 0.15);
-    --shadow-strong: 0 15px 40px hsl(250 60% 40% / 0.2);
-    --shadow-glow: 0 0 30px hsl(250 70% 60% / 0.3);
+    /* Beautiful shadows with darker indigo tones */
+    --shadow-soft: 0 4px 20px hsl(250 70% 30% / 0.1);
+    --shadow-medium: 0 8px 30px hsl(250 70% 30% / 0.15);
+    --shadow-strong: 0 15px 40px hsl(250 70% 30% / 0.2);
+    --shadow-glow: 0 0 30px hsl(250 80% 50% / 0.3);
 
     /* Enhanced animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -133,10 +133,10 @@ All colors MUST be HSL.
 
   @keyframes glow {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(250 70% 60% / 0.3);
+      box-shadow: 0 0 20px hsl(250 80% 50% / 0.3);
     }
     50% {
-      box-shadow: 0 0 40px hsl(250 70% 60% / 0.6);
+      box-shadow: 0 0 40px hsl(250 80% 50% / 0.6);
     }
   }
 
@@ -221,8 +221,8 @@ All colors MUST be HSL.
 
   .bg-grid-pattern {
     background-image: 
-      linear-gradient(hsl(250 60% 40% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(250 60% 40% / 0.03) 1px, transparent 1px);
+      linear-gradient(hsl(250 70% 30% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(250 70% 30% / 0.03) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 
@@ -274,7 +274,7 @@ All colors MUST be HSL.
     background: linear-gradient(
       90deg,
       transparent 0%,
-      hsl(250 70% 60% / 0.2) 50%,
+      hsl(250 80% 50% / 0.2) 50%,
       transparent 100%
     );
     background-size: 200% 100%;
