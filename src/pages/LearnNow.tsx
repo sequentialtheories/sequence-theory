@@ -196,10 +196,7 @@ const LearnNow = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-100 to-purple-100 rounded-full px-6 py-2 mb-6">
-                <Zap className="h-4 w-4 text-purple-600" />
-                <span className="text-sm font-semibold text-purple-800">Why Start Now</span>
-              </div>
+              
                 <h3 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
                   Why Start Now?
                 </h3>
