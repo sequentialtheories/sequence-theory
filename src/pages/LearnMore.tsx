@@ -1,48 +1,34 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const LearnMore = () => {
   const scrollToSignup = () => {
     const element = document.getElementById('signup-section');
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
-  const benefits = [
-    "Access to institutional-grade investment strategies",
-    "Structured contracts with wBTC accumulation focus",
-    "Initial placement in diversified Mega Vault for security",
-    "Risk management protocols to protect your capital",
-    "Community of serious investors focused on steady growth"
-  ];
-
-  const features = [
-    {
-      icon: Shield,
-      title: "Risk Management First",
-      description: "All investments start in our secure Mega Vault before gradual wBTC accumulation begins."
-    },
-    {
-      icon: TrendingUp,
-      title: "Steady Growth Focus",
-      description: "Structured contracts designed for consistent wBTC accumulation over time."
-    },
-    {
-      icon: Users,
-      title: "Educational Community",
-      description: "Learn alongside other investors who understand the difference between strategy and speculation."
-    },
-    {
-      icon: Target,
-      title: "Strategic Approach",
-      description: "Investment contracts based on proven financial principles, adapted for digital assets."
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+  const benefits = ["Access to institutional-grade investment strategies", "Structured contracts with wBTC accumulation focus", "Initial placement in diversified Mega Vault for security", "Risk management protocols to protect your capital", "Community of serious investors focused on steady growth"];
+  const features = [{
+    icon: Shield,
+    title: "Risk Management First",
+    description: "All investments start in our secure Mega Vault before gradual wBTC accumulation begins."
+  }, {
+    icon: TrendingUp,
+    title: "Steady Growth Focus",
+    description: "Structured contracts designed for consistent wBTC accumulation over time."
+  }, {
+    icon: Users,
+    title: "Educational Community",
+    description: "Learn alongside other investors who understand the difference between strategy and speculation."
+  }, {
+    icon: Target,
+    title: "Strategic Approach",
+    description: "Investment contracts based on proven financial principles, adapted for digital assets."
+  }];
+  return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-xl"></div>
@@ -53,8 +39,8 @@ const LearnMore = () => {
       {/* Header */}
       <header className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-primary-foreground py-12 overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}></div>
         <div className="container mx-auto px-6 relative z-10">
           <Link to="/" className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-all duration-300 hover:translate-x-1 mb-6">
             <ArrowLeft className="h-4 w-4" />
@@ -86,17 +72,13 @@ const LearnMore = () => {
             focusing on steady wBTC accumulation and risk management.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              onClick={scrollToSignup}
-              size="lg" 
-              className="text-lg px-10 py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-            >
+            <Button onClick={scrollToSignup} size="lg" className="text-lg px-10 py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
               Get Started Today
               <TrendingUp className="ml-2 h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span className="text-sm">Join thousands of investors</span>
+              
+              
             </div>
           </div>
         </div>
@@ -192,7 +174,9 @@ const LearnMore = () => {
                   <div className="absolute -inset-4 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
                   <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-secondary/20">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                      <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{
+                      animationDelay: '0.5s'
+                    }}></div>
                       <span className="text-sm font-medium text-secondary">Strategic Innovation</span>
                     </div>
                     <p className="text-lg text-muted-foreground leading-relaxed">
@@ -211,14 +195,12 @@ const LearnMore = () => {
                     <div className="w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
                   </h4>
                   <ul className="space-y-5">
-                    {benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-start gap-4 group">
+                    {benefits.map((benefit, index) => <li key={index} className="flex items-start gap-4 group">
                         <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
                           <CheckCircle className="h-4 w-4 text-white" />
                         </div>
                         <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">{benefit}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                 </div>
               </div>
@@ -240,8 +222,7 @@ const LearnMore = () => {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="group relative">
+            {features.map((feature, index) => <div key={index} className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl transform rotate-2 group-hover:rotate-0 transition-transform duration-300"></div>
                 <div className="relative bg-card p-8 rounded-xl border border-primary/10 hover:border-primary/30 shadow-lg hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
                   <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -251,8 +232,7 @@ const LearnMore = () => {
                   <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                   <div className="w-full h-0.5 bg-gradient-to-r from-primary/30 to-transparent mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -285,7 +265,9 @@ const LearnMore = () => {
                   </div>
                   
                   <div className="flex items-start gap-6">
-                    <div className="flex-shrink-0 w-3 h-3 bg-secondary rounded-full mt-3 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                    <div className="flex-shrink-0 w-3 h-3 bg-secondary rounded-full mt-3 animate-pulse" style={{
+                    animationDelay: '0.5s'
+                  }}></div>
                     <p className="text-xl text-muted-foreground leading-relaxed">
                       Each contract begins with placement in our diversified Mega Vault, providing immediate security 
                       and professional oversight. As market conditions allow, contracts gradually transition to 
@@ -322,7 +304,9 @@ const LearnMore = () => {
       <section id="signup-section" className="py-20 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="absolute top-10 left-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-24 h-24 bg-secondary/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-10 right-10 w-24 h-24 bg-secondary/10 rounded-full blur-xl animate-pulse" style={{
+        animationDelay: '1s'
+      }}></div>
         
         <div className="container mx-auto px-6 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -369,8 +353,6 @@ const LearnMore = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default LearnMore;
