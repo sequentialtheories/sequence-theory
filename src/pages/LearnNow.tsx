@@ -166,7 +166,7 @@ const LearnNow = () => {
         <div className="container mx-auto px-6 text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-8 shadow-lg border border-white/20">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-gray-700">Live Learning Platform</span>
+            <span className="text-sm font-medium text-gray-700">Learning Platform</span>
           </div>
           
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-800 to-cyan-800 bg-clip-text text-transparent leading-tight">
