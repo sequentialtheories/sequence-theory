@@ -17,17 +17,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 60% 8%;
 
-    --primary: 280 70% 30%;
+    --primary: 270 60% 25%;
     --primary-foreground: 210 40% 98%;
-    --primary-glow: 280 80% 50%;
+    --primary-glow: 270 70% 45%;
 
-    --secondary: 280 25% 92%;
-    --secondary-foreground: 280 70% 30%;
+    --secondary: 270 30% 90%;
+    --secondary-foreground: 270 60% 25%;
 
     --muted: 220 30% 96%;
     --muted-foreground: 220 16% 46%;
 
-    --accent: 210 85% 60%;
+    --accent: 220 70% 45%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -35,19 +35,19 @@ All colors MUST be HSL.
 
     --border: 220 30% 90%;
     --input: 220 30% 90%;
-    --ring: 280 70% 30%;
+    --ring: 270 60% 25%;
 
-    /* Enhanced gradients - Violet to Blue */
-    --gradient-primary: linear-gradient(135deg, hsl(280 70% 30%) 0%, hsl(210 85% 60%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(280 25% 92%) 0%, hsl(220 30% 96%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(280 70% 30%) 0%, hsl(280 80% 50%) 50%, hsl(210 85% 60%) 100%);
+    /* Enhanced gradients - Deep Violet to Darker Blue */
+    --gradient-primary: linear-gradient(135deg, hsl(270 60% 25%) 0%, hsl(220 70% 45%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(270 30% 90%) 0%, hsl(220 30% 96%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(270 60% 25%) 0%, hsl(270 70% 45%) 50%, hsl(220 70% 45%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.8) 0%, hsl(220 30% 98% / 0.9) 100%);
 
-    /* Beautiful shadows with violet tones */
-    --shadow-soft: 0 4px 20px hsl(280 70% 30% / 0.1);
-    --shadow-medium: 0 8px 30px hsl(280 70% 30% / 0.15);
-    --shadow-strong: 0 15px 40px hsl(280 70% 30% / 0.2);
-    --shadow-glow: 0 0 30px hsl(280 80% 50% / 0.3);
+    /* Beautiful shadows with deeper violet tones */
+    --shadow-soft: 0 4px 20px hsl(270 60% 25% / 0.1);
+    --shadow-medium: 0 8px 30px hsl(270 60% 25% / 0.15);
+    --shadow-strong: 0 15px 40px hsl(270 60% 25% / 0.2);
+    --shadow-glow: 0 0 30px hsl(270 70% 45% / 0.3);
 
     /* Enhanced animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -133,10 +133,10 @@ All colors MUST be HSL.
 
   @keyframes glow {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(280 80% 50% / 0.3);
+      box-shadow: 0 0 20px hsl(270 70% 45% / 0.3);
     }
     50% {
-      box-shadow: 0 0 40px hsl(280 80% 50% / 0.6);
+      box-shadow: 0 0 40px hsl(270 70% 45% / 0.6);
     }
   }
 
@@ -221,8 +221,8 @@ All colors MUST be HSL.
 
   .bg-grid-pattern {
     background-image: 
-      linear-gradient(hsl(280 70% 30% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(280 70% 30% / 0.03) 1px, transparent 1px);
+      linear-gradient(hsl(270 60% 25% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(270 60% 25% / 0.03) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 
@@ -274,7 +274,7 @@ All colors MUST be HSL.
     background: linear-gradient(
       90deg,
       transparent 0%,
-      hsl(280 80% 50% / 0.2) 50%,
+      hsl(270 70% 45% / 0.2) 50%,
       transparent 100%
     );
     background-size: 200% 100%;
