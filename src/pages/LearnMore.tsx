@@ -1,16 +1,15 @@
+import Navigation from "@/components/Navigation";
+import Hero from "@/components/Hero";
+import VaultClubMain from "@/components/VaultClubMain";
+import SupplementalOfferings from "@/components/SupplementalOfferings";
+import CompanyMission from "@/components/CompanyMission";
+import PreSignup from "@/components/PreSignup";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
+import { ExternalLink, FileText, ArrowLeft, Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const LearnMore = () => {
-  const scrollToSignup = () => {
-    const element = document.getElementById('signup-section');
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }
-  };
-  const benefits = ["Access to institutional-grade investment strategies", "Structured contracts with wBTC accumulation focus", "Initial placement in diversified Mega Vault for security", "Risk management protocols to protect your capital", "Community of serious investors focused on steady growth"];
   const features = [{
     icon: Shield,
     title: "Risk Management First",
@@ -28,7 +27,9 @@ const LearnMore = () => {
     title: "Strategic Approach",
     description: "Investment contracts based on proven financial principles, adapted for digital assets."
   }];
-  return <div className="min-h-screen bg-background relative overflow-hidden">
+
+  return (
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-xl"></div>
@@ -47,51 +48,53 @@ const LearnMore = () => {
             Back to Home
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-            Learn More About The Vault Club
+            The Vault Club: Investment Platform
           </h1>
           <div className="w-24 h-1 bg-gradient-to-r from-white/50 to-transparent mt-4"></div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="container mx-auto px-6 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-8">
-            <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Professional Grade Investment Platform</span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
-            Democratizing Financial 
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block">
-              Empowerment for All
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-            Sequence Theory provides accessible financial tools and services that empower everyday users 
-            to build wealth through communal cryptocurrency investments and educational opportunities. 
-            By removing traditional barriers to sophisticated investment strategies, we create a structured 
-            entryway into the digital asset economy & finance together.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button onClick={scrollToSignup} size="lg" className="text-lg px-10 py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-              Get Started Today
-              <TrendingUp className="ml-2 h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2 text-muted-foreground">
+      <div className="pt-16">
+        <Hero />
+        <VaultClubMain />
+        <SupplementalOfferings />
+        <CompanyMission />
+        <PreSignup />
+        
+        {/* View Preview Section */}
+        <section className="py-8 bg-muted/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+          <div className="container mx-auto px-6 text-center relative z-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
+              <a
+                href="https://claude.ai/public/artifacts/97b71d10-3256-49a0-82d1-d1b62e6c4543?fullscreen=true"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button 
+                  variant="outline" 
+                  className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
+                >
+                  View Preview
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </a>
               
-              
+              <Link to="/white-paper">
+                <Button 
+                  variant="outline" 
+                  className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
+                >
+                  Read White Paper
+                  <FileText className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
-        </div>
-        {/* Floating elements */}
-        <div className="absolute top-20 left-20 animate-float">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl rotate-12"></div>
-        </div>
-        <div className="absolute bottom-20 right-20 animate-float-delayed">
-          <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl -rotate-12"></div>
-        </div>
-      </section>
+        </section>
+        
+        <Footer />
+      </div>
 
       {/* The Problem Section */}
       <section className="py-20 relative bg-gradient-to-br from-muted/20 to-secondary/10">
@@ -532,6 +535,8 @@ const LearnMore = () => {
           </div>
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
+
 export default LearnMore;
