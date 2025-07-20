@@ -46,7 +46,7 @@ const LearnNow = () => {
     }]
   }, {
     title: "Crypto & Digital Money",
-    description: "Digital money that no single person controls (pretty cool, right?)",
+    description: "Digital money that no single person controls (The tech)",
     modules: [{
       icon: Zap,
       title: "Crypto 101",
