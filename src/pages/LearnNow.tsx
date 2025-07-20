@@ -125,69 +125,136 @@ const LearnNow = () => {
       slug: "democratizing-financial-knowledge"
     }]
   }];
-  return <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-6">
-        <div className="container mx-auto px-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-gray-100 hover:text-white transition-colors mb-4">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
+      <header className="relative bg-gradient-to-r from-cyan-600 via-purple-600 to-indigo-600 text-white py-8 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl translate-y-32 -translate-x-32"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-all duration-300 mb-6 group">
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            <span className="relative">
+              Back to Home
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white scale-x-0 transition-transform group-hover:scale-x-100"></span>
+            </span>
           </Link>
-          <div className="flex items-center gap-4">
-            <img src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" alt="Sequence Theory Logo" className="h-16" />
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-white/20 rounded-2xl blur-lg"></div>
+              <img src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" alt="Sequence Theory Logo" className="h-20 relative z-10 drop-shadow-2xl" />
+            </div>
             <div>
-              <h1 className="text-3xl font-bold">Learn Now</h1>
-              <p className="text-gray-100">Start Your Digital Asset Education Journey</p>
+              <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent">
+                Learn Now
+              </h1>
+              <p className="text-xl text-white/90 font-medium">Start Your Digital Asset Education Journey</p>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-cyan-50 to-purple-50">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+      <section className="relative py-20 bg-gradient-to-br from-cyan-50 via-purple-50 to-indigo-50 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-300/30 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-float-delayed"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-cyan-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-8 shadow-lg border border-white/20">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-gray-700">Live Learning Platform</span>
+          </div>
+          
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-800 to-cyan-800 bg-clip-text text-transparent leading-tight">
             Master Digital Assets Today
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-10 leading-relaxed">
             Skip the trial and error. Our structured learning modules teach you everything you need to know 
             about digital asset investing, from fundamentals to advanced strategies.
           </p>
+          
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
+              <BookOpen className="h-4 w-4 text-purple-600" />
+              <span className="font-medium text-gray-700">18 Comprehensive Modules</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
+              <Users className="h-4 w-4 text-cyan-600" />
+              <span className="font-medium text-gray-700">Expert-Designed Curriculum</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
+              <Award className="h-4 w-4 text-indigo-600" />
+              <span className="font-medium text-gray-700">Interactive Quizzes</span>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Why Start Now */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold mb-8 text-center text-gray-900">Why Start Learning Now?</h3>
+      <section className="relative py-20 bg-white overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-indigo-500"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-100 to-purple-100 rounded-full px-6 py-2 mb-6">
+                <Zap className="h-4 w-4 text-purple-600" />
+                <span className="text-sm font-semibold text-purple-800">Why Start Now</span>
+              </div>
+              <h3 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
+                Why Start Learning Now?
+              </h3>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                The digital asset revolution is happening now. Position yourself for success with the right knowledge.
+              </p>
+            </div>
+            
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="bg-cyan-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="h-8 w-8 text-cyan-600" />
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                  <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <Target className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">Avoid Costly Mistakes</h4>
+                  <p className="text-gray-600 leading-relaxed">
+                    Learn from others' experiences and avoid the common pitfalls that cost investors thousands.
+                  </p>
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-b-2xl"></div>
                 </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Avoid Costly Mistakes</h4>
-                <p className="text-gray-600">
-                  Learn from others' experiences and avoid the common pitfalls that cost investors thousands.
-                </p>
               </div>
-              <div className="text-center">
-                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-8 w-8 text-purple-600" />
+              
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <Award className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">Evolving Market</h4>
+                  <p className="text-gray-600 leading-relaxed">
+                    Cryptocurrency is still in its early stages and will only continue to grow in adoption. Position yourself ahead of the curve in this rapidly evolving market.
+                  </p>
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-b-2xl"></div>
                 </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Evolving Market</h4>
-                <p className="text-gray-600">
-                  Cryptocurrency is still in its early stages and will only continue to grow in adoption. Position yourself ahead of the curve in this rapidly evolving market.
-                </p>
               </div>
-              <div className="text-center">
-                <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8 text-green-600" />
+              
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                <div className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                  <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">Join the Community</h4>
+                  <p className="text-gray-600 leading-relaxed">
+                    Connect with like-minded investors who prioritize education and strategic thinking over speculation.
+                  </p>
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-b-2xl"></div>
                 </div>
-                <h4 className="text-lg font-semibold mb-3 text-gray-900">Join the Community</h4>
-                <p className="text-gray-600">
-                  Connect with like-minded investors who prioritize education and strategic thinking over speculation.
-                </p>
               </div>
             </div>
           </div>
@@ -195,29 +262,71 @@ const LearnNow = () => {
       </section>
 
       {/* Quick Learning Path Overview */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
-              <h3 className="text-xl font-semibold mb-6 text-gray-900 text-center flex items-center justify-center gap-2">
-                <BookOpen className="h-5 w-5 text-purple-600" />
-                Quick Learning Path Overview
-              </h3>
+      <section className="relative py-20 bg-gradient-to-br from-gray-50 to-slate-100">
+        <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-10 border border-white/20 shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-3xl"></div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {learningCategories.map((category, index) => <button key={index} onClick={() => setSelectedCategory(index)} className={`p-6 text-center rounded-lg transition-all duration-300 ${selectedCategory === index ? 'bg-gradient-to-r from-purple-100 to-cyan-100 border-2 border-purple-400 shadow-lg' : 'bg-gradient-to-r from-purple-50 to-cyan-50 border border-gray-200 hover:shadow-md'}`}>
-                    <div className={`text-lg font-semibold mb-2 ${selectedCategory === index ? 'text-purple-800' : 'text-purple-700'}`}>
-                      {category.title}
-                    </div>
-                    <div className="text-sm text-gray-700 mb-2">{category.description}</div>
-                    
-                  </button>)}
-              </div>
-              
-              <div className="text-center mt-6">
-                <p className="text-gray-600 mb-4">
-                  Explore three comprehensive learning paths designed to give you a complete understanding of finance, technology, and education.
-                </p>
+              <div className="relative z-10">
+                <div className="text-center mb-12">
+                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-full px-6 py-3 mb-6 shadow-lg">
+                    <BookOpen className="h-5 w-5" />
+                    <span className="font-semibold">Learning Path Overview</span>
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
+                    Choose Your Learning Journey
+                  </h3>
+                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Three comprehensive paths designed to give you complete mastery of finance, technology, and education.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {learningCategories.map((category, index) => (
+                    <button 
+                      key={index} 
+                      onClick={() => setSelectedCategory(index)} 
+                      className={`group relative p-8 text-center rounded-2xl transition-all duration-500 transform hover:-translate-y-2 ${
+                        selectedCategory === index 
+                          ? 'bg-gradient-to-br from-purple-600 to-cyan-600 text-white shadow-2xl scale-105' 
+                          : 'bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-cyan-50 border border-gray-200 hover:border-purple-300 shadow-lg hover:shadow-xl'
+                      }`}
+                    >
+                      <div className={`absolute inset-0 rounded-2xl blur-xl opacity-20 ${
+                        selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600' : 'bg-gray-200'
+                      }`}></div>
+                      
+                      <div className="relative z-10">
+                        <div className={`text-xl font-bold mb-4 ${
+                          selectedCategory === index ? 'text-white' : 'text-gray-900 group-hover:text-purple-700'
+                        }`}>
+                          {category.title}
+                        </div>
+                        <div className={`text-sm leading-relaxed ${
+                          selectedCategory === index ? 'text-white/90' : 'text-gray-600 group-hover:text-gray-700'
+                        }`}>
+                          {category.description}
+                        </div>
+                        
+                        {selectedCategory === index && (
+                          <div className="mt-4 inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2">
+                            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            <span className="text-sm font-medium text-white">Selected</span>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="text-center mt-10">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full px-6 py-3">
+                    <Target className="h-4 w-4 text-gray-600" />
+                    <span className="text-gray-700 font-medium">Click any path to explore its modules</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -225,36 +334,82 @@ const LearnNow = () => {
       </section>
 
       {/* Selected Category Modules */}
-      {selectedCategory !== null && <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+      {selectedCategory !== null && (
+        <section className="relative py-20 bg-gradient-to-br from-slate-50 via-white to-gray-50 overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-10 left-10 w-64 h-64 bg-purple-300/20 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-10 right-10 w-80 h-80 bg-cyan-300/20 rounded-full blur-3xl animate-float-delayed"></div>
+          </div>
+          
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-cyan-100 rounded-full px-6 py-2 mb-6">
+                  <Zap className="h-4 w-4 text-purple-600" />
+                  <span className="text-sm font-semibold text-purple-800">Learning Modules</span>
+                </div>
+                <h3 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
                   {learningCategories[selectedCategory].title} Modules
                 </h3>
-                <p className="text-gray-600">{learningCategories[selectedCategory].description}</p>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  {learningCategories[selectedCategory].description}
+                </p>
               </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => <Link key={moduleIndex} to={`/learn/${module.slug}`} className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                    <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-r from-cyan-600 to-purple-600 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <module.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <h5 className="text-lg font-semibold text-gray-900">{module.title}</h5>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                            {module.level}
-                          </span>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => (
+                  <Link 
+                    key={moduleIndex} 
+                    to={`/learn/${module.slug}`} 
+                    className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-start gap-4 mb-6">
+                        <div className="bg-gradient-to-br from-cyan-600 to-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                          <module.icon className="h-7 w-7 text-white" />
                         </div>
-                        <p className="text-gray-600 text-sm">{module.description}</p>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-3">
+                            <h5 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors leading-tight">
+                              {module.title}
+                            </h5>
+                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                              module.level === 'Beginner' ? 'bg-green-100 text-green-700' :
+                              module.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                              module.level === 'Advanced' ? 'bg-orange-100 text-orange-700' :
+                              'bg-red-100 text-red-700'
+                            }`}>
+                              {module.level}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-700 transition-colors">
+                            {module.description}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <PlayCircle className="h-4 w-4" />
+                          <span>Interactive Learning</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-purple-600 group-hover:gap-2 transition-all">
+                          <span className="text-sm font-medium">Start Learning</span>
+                          <ArrowLeft className="h-4 w-4 rotate-180 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
                     </div>
-                  </Link>)}
+                    
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-b-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
-        </section>}
+        </section>
+      )}
 
       {/* Finance Quiz Section - Only show when Finance is selected */}
       {selectedCategory === 0 && <section className="py-16 bg-white">
