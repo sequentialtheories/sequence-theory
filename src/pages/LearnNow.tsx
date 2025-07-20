@@ -5,122 +5,122 @@ import { Link } from "react-router-dom";
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const learningCategories = [{
-    title: "Finance",
-    description: "Build a strong foundation in financial literacy and money management",
+    title: "Money Basics",
+    description: "Learn how money actually works (it's simpler than you think!)",
     modules: [{
       icon: DollarSign,
-      title: "The Concept & Purpose of Money",
-      description: "Understand what money is, its fundamental role in society, and why it exists.",
+      title: "What is Money Really?",
+      description: "Why we even have money and how it makes life easier for everyone.",
       level: "Beginner",
       slug: "concept-purpose-money"
     }, {
       icon: BookOpen,
-      title: "Historical Evolution of Money",
-      description: "Learn how money has evolved throughout history and the lessons it teaches us.",
+      title: "Money Through Time",
+      description: "From trading chickens to digital coins - money's wild journey.",
       level: "Beginner",
       slug: "historical-evolution-money"
     }, {
       icon: TrendingUp,
-      title: "Types of Financial Markets",
-      description: "Explore different financial markets and how they function in the global economy.",
+      title: "Where Money Lives",
+      description: "Stock markets, bond markets, and other places your money can hang out.",
       level: "Intermediate",
       slug: "types-financial-markets"
     }, {
       icon: Coins,
-      title: "The Crypto Market's Role",
-      description: "Understand how cryptocurrency markets fit into the broader financial ecosystem.",
+      title: "Crypto's Place in Money World",
+      description: "How digital money fits into everything else.",
       level: "Intermediate",
       slug: "crypto-market-role"
     }, {
       icon: Users,
-      title: "Wealth & Societal Empowerment",
-      description: "Learn how wealth drives societal change and individual empowerment.",
+      title: "Money = Power (Here's How)",
+      description: "Why having money gives you choices and changes communities.",
       level: "Advanced",
       slug: "wealth-societal-empowerment"
     }, {
       icon: Target,
-      title: "Financial Strategy & Planning",
-      description: "Master strategic financial planning and wealth-building techniques.",
+      title: "Your Money Game Plan",
+      description: "Smart ways to grow your money over time.",
       level: "Advanced",
       slug: "financial-strategy-planning"
     }]
   }, {
-    title: "Web3 (Crypto & Blockchain)",
-    description: "Dive deep into the world of decentralized technologies and digital assets",
+    title: "Crypto & Digital Money",
+    description: "Digital money that no single person controls (pretty cool, right?)",
     modules: [{
       icon: Zap,
-      title: "Cryptocurrencies Fundamentals",
-      description: "Learn the basics of cryptocurrencies and how they work.",
+      title: "Crypto 101",
+      description: "What crypto is and why people are excited about it.",
       level: "Beginner",
       slug: "cryptocurrencies-fundamentals"
     }, {
       icon: Award,
-      title: "Digital Ownership & Empowerment",
-      description: "Understand how blockchain enables true digital ownership and empowerment.",
+      title: "Owning Digital Stuff",
+      description: "How crypto lets you truly own things online.",
       level: "Beginner",
       slug: "digital-ownership-empowerment"
     }, {
       icon: PlayCircle,
-      title: "Tokens & Tokenization",
-      description: "Explore different types of tokens and the tokenization process.",
+      title: "Digital Tokens Explained",
+      description: "Different types of digital tokens and what they do.",
       level: "Intermediate",
       slug: "tokens-tokenization"
     }, {
       icon: BookOpen,
-      title: "Blockchain Technology Deep Dive",
-      description: "Master the technical foundations of blockchain technology.",
+      title: "How Blockchain Works",
+      description: "The technology that makes crypto possible (without the confusing tech talk).",
       level: "Intermediate",
       slug: "blockchain-technology-deep-dive"
     }, {
       icon: TrendingUp,
-      title: "Decentralized Finance (DeFi)",
-      description: "Learn about DeFi protocols, yield farming, and decentralized trading.",
+      title: "DeFi: Banking Without Banks",
+      description: "Lending, borrowing, and trading - all without traditional banks.",
       level: "Advanced",
       slug: "decentralized-finance-defi"
     }, {
       icon: AlertTriangle,
-      title: "Advanced Web3 Innovations",
-      description: "Explore staking, lending, meme coins, and sophisticated Web3 innovations.",
+      title: "Next-Level Crypto Stuff",
+      description: "Staking, yield farming, and the latest crypto innovations.",
       level: "Expert",
       slug: "advanced-web3-innovations"
     }]
   }, {
-    title: "Education about Education",
-    description: "Understand the power of learning and its impact on human progress",
+    title: "Why Learning Matters",
+    description: "How education changes everything (and why some people try to limit it)",
     modules: [{
       icon: BookOpen,
-      title: "Learning as Human Progress Foundation",
-      description: "Discover how learning serves as the foundation of all human advancement.",
+      title: "Learning Changes the World",
+      description: "How every big human achievement started with someone learning something new.",
       level: "Beginner",
       slug: "learning-human-progress-foundation"
     }, {
       icon: AlertTriangle,
-      title: "Consequences of Educational Absence",
-      description: "Understand what happens when education is lacking or inaccessible.",
+      title: "What Happens Without Education",
+      description: "Why keeping people from learning hurts everyone.",
       level: "Beginner",
       slug: "consequences-educational-absence"
     }, {
       icon: Target,
-      title: "Financial Literacy Gatekeeping",
-      description: "Learn how financial education has been historically restricted and controlled.",
+      title: "Who Gets to Learn About Money?",
+      description: "How financial education has been kept from regular people.",
       level: "Intermediate",
       slug: "financial-literacy-gatekeeping"
     }, {
       icon: DollarSign,
-      title: "Colonialism of Money & Trade",
-      description: "Explore how monetary systems have been used as tools of control throughout history.",
+      title: "Money as Control",
+      description: "How powerful people have used money systems to control others.",
       level: "Intermediate",
       slug: "colonialism-money-trade"
     }, {
       icon: TrendingUp,
-      title: "Global Education Statistics",
-      description: "Examine worldwide data on financial literacy and educational inequality.",
+      title: "Education Around the World",
+      description: "Who gets financial education and who doesn't (the numbers might surprise you).",
       level: "Advanced",
       slug: "global-education-statistics"
     }, {
       icon: Users,
-      title: "Democratizing Financial Knowledge",
-      description: "Learn how to break down barriers and make financial education accessible to all.",
+      title: "Making Learning Free for All",
+      description: "How to break down barriers and teach everyone about money.",
       level: "Advanced",
       slug: "democratizing-financial-knowledge"
     }]
@@ -149,7 +149,7 @@ const LearnNow = () => {
               <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent">
                 Learn Now
               </h1>
-              <p className="text-xl text-white/90 font-medium">Start Your Digital Asset Education Journey</p>
+              <p className="text-xl text-white/90 font-medium">Start your money & crypto journey today</p>
             </div>
           </div>
         </div>
@@ -170,25 +170,24 @@ const LearnNow = () => {
           </div>
           
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-800 to-cyan-800 bg-clip-text text-transparent leading-tight">
-            Master Digital Assets Today
+            Get Smart About Money & Crypto
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-10 leading-relaxed">
-            Skip the trial and error. Our structured learning modules teach you everything you need to know 
-            about digital asset investing, from fundamentals to advanced strategies.
+            No confusing jargon. No boring lectures. Just clear, simple lessons that actually make sense.
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <BookOpen className="h-4 w-4 text-purple-600" />
-              <span className="font-medium text-gray-700">18 Comprehensive Modules</span>
+              <span className="font-medium text-gray-700">18 Easy Lessons</span>
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Users className="h-4 w-4 text-cyan-600" />
-              <span className="font-medium text-gray-700">Expert-Designed Curriculum</span>
+              <span className="font-medium text-gray-700">Made by Real People</span>
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Award className="h-4 w-4 text-indigo-600" />
-              <span className="font-medium text-gray-700">Interactive Quizzes</span>
+              <span className="font-medium text-gray-700">Fun Quizzes</span>
             </div>
           </div>
         </div>
@@ -206,12 +205,12 @@ const LearnNow = () => {
                 <Zap className="h-4 w-4 text-purple-600" />
                 <span className="text-sm font-semibold text-purple-800">Why Start Now</span>
               </div>
-              <h3 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
-                Why Start Learning Now?
-              </h3>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                The digital asset revolution is happening now. Position yourself for success with the right knowledge.
-              </p>
+                <h3 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
+                  Why Start Now?
+                </h3>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  Money and crypto are changing fast. Get ahead while you still can.
+                </p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-8">
@@ -221,9 +220,9 @@ const LearnNow = () => {
                   <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <Target className="h-8 w-8 text-white" />
                   </div>
-                  <h4 className="text-xl font-bold mb-4 text-gray-900">Avoid Costly Mistakes</h4>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">Don't Lose Your Money</h4>
                   <p className="text-gray-600 leading-relaxed">
-                    Learn from others' experiences and avoid the common pitfalls that cost investors thousands.
+                    Learn what NOT to do so you don't make expensive mistakes.
                   </p>
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-b-2xl"></div>
                 </div>
@@ -235,9 +234,9 @@ const LearnNow = () => {
                   <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <Award className="h-8 w-8 text-white" />
                   </div>
-                  <h4 className="text-xl font-bold mb-4 text-gray-900">Evolving Market</h4>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">You're Still Early</h4>
                   <p className="text-gray-600 leading-relaxed">
-                    Cryptocurrency is still in its early stages and will only continue to grow in adoption. Position yourself ahead of the curve in this rapidly evolving market.
+                    Crypto is still new. Most people don't understand it yet. That's your advantage.
                   </p>
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-b-2xl"></div>
                 </div>
@@ -249,9 +248,9 @@ const LearnNow = () => {
                   <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <Users className="h-8 w-8 text-white" />
                   </div>
-                  <h4 className="text-xl font-bold mb-4 text-gray-900">Join the Community</h4>
+                  <h4 className="text-xl font-bold mb-4 text-gray-900">Find Your People</h4>
                   <p className="text-gray-600 leading-relaxed">
-                    Connect with like-minded investors who prioritize education and strategic thinking over speculation.
+                    Meet smart people who actually think before they invest.
                   </p>
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-b-2xl"></div>
                 </div>
@@ -276,10 +275,10 @@ const LearnNow = () => {
                     <span className="font-semibold">Learning Path Overview</span>
                   </div>
                   <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
-                    Choose Your Learning Journey
+                    Pick Your Path
                   </h3>
                   <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Three comprehensive paths designed to give you complete mastery of finance, technology, and education.
+                    Three simple paths. Pick what interests you most.
                   </p>
                 </div>
                 
@@ -324,7 +323,7 @@ const LearnNow = () => {
                 <div className="text-center mt-10">
                   <div className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full px-6 py-3">
                     <Target className="h-4 w-4 text-gray-600" />
-                    <span className="text-gray-700 font-medium">Click any path to explore its modules</span>
+                    <span className="text-gray-700 font-medium">Click any path to see what's inside</span>
                   </div>
                 </div>
               </div>
@@ -417,10 +416,10 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Finance Modules Comprehensive Quiz 🧠
+                  Money Basics Quiz 🧠
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Test your knowledge across all finance modules. This quiz covers concepts from The Concept & Purpose of Money through Financial Strategy & Planning.
+                  Think you got the money stuff down? Let's find out! Quick quiz on everything from "what is money" to planning your financial future.
                 </p>
               </div>
               
@@ -429,23 +428,24 @@ const LearnNow = () => {
                   <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Target className="h-10 w-10 text-white" />
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Knowledge?</h4>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Skills?</h4>
                   <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    Take our comprehensive 15-question quiz covering all finance modules. Questions are presented one at a time with instant progress tracking.
+                    15 questions about money basics. One question at a time, so no stress!
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-white p-4 rounded-lg border border-purple-200">
                     <h5 className="font-semibold text-purple-700 mb-2">15 Questions</h5>
-                    <p className="text-sm text-gray-600">Comprehensive coverage of all modules</p>
+                    <p className="text-sm text-gray-600">Everything you learned</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg border border-purple-200">
                     <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
-                    <p className="text-sm text-gray-600">Questions presented individually</p>
+                    <p className="text-sm text-gray-600">No rush, take your time</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg border border-purple-200">
                     <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                    <p className="text-sm text-gray-600">See how you did right away</p>
                     
                   </div>
                 </div>
@@ -466,10 +466,10 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Web3 Modules Comprehensive Quiz 🚀
+                  Crypto & Digital Money Quiz 🚀
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Test your knowledge across all Web3 modules. This quiz covers concepts from Cryptocurrency Fundamentals through Advanced Web3 Innovations.
+                  Ready to test your crypto knowledge? From basic crypto to advanced DeFi stuff.
                 </p>
               </div>
               
@@ -478,16 +478,16 @@ const LearnNow = () => {
                   <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Zap className="h-10 w-10 text-white" />
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Web3 Knowledge?</h4>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Crypto Skills?</h4>
                   <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    Take our comprehensive 15-question quiz covering all Web3 modules. Questions are presented one at a time with instant progress tracking.
+                    15 questions about crypto and digital money. One at a time, nice and easy!
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-white p-4 rounded-lg border border-indigo-200">
                     <h5 className="font-semibold text-indigo-700 mb-2">15 Questions</h5>
-                    <p className="text-sm text-gray-600">Comprehensive coverage of all Web3 modules</p>
+                    <p className="text-sm text-gray-600">All the crypto stuff you learned</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg border border-indigo-200">
                     <h5 className="font-semibold text-purple-700 mb-2">One by One</h5>
@@ -515,10 +515,10 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Education about Education Quiz 🎓
+                  Why Learning Matters Quiz 🎓
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Test your knowledge across all Education modules. This quiz covers concepts from Learning as Human Progress Foundation through Democratizing Financial Knowledge.
+                  Time to test what you learned about learning! From why education matters to who gets to learn about money.
                 </p>
               </div>
               
@@ -527,16 +527,16 @@ const LearnNow = () => {
                   <div className="bg-gradient-to-r from-amber-600 to-orange-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <BookOpen className="h-10 w-10 text-white" />
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Education Knowledge?</h4>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Learning Knowledge?</h4>
                   <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    Take our comprehensive 15-question quiz covering all Education about Education modules. Questions are presented one at a time with instant progress tracking.
+                    15 questions about education and why it matters. You know the drill - one question at a time!
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-white p-4 rounded-lg border border-amber-200">
                     <h5 className="font-semibold text-amber-700 mb-2">15 Questions</h5>
-                    <p className="text-sm text-gray-600">Comprehensive coverage of all Education modules</p>
+                    <p className="text-sm text-gray-600">All about learning and education</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg border border-amber-200">
                     <h5 className="font-semibold text-orange-700 mb-2">One by One</h5>
@@ -564,10 +564,10 @@ const LearnNow = () => {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                📚 Comprehensive Final Exam
+                📚 The Big Final Quiz
               </h3>
               <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                Ready to test everything you've learned? Take our comprehensive exam covering all modules from Finance, Web3, and Education about Education.
+                Ready for the ultimate test? This covers everything - money, crypto, and why learning matters.
               </p>
             </div>
             
@@ -576,24 +576,24 @@ const LearnNow = () => {
                 <div className="bg-gradient-to-r from-slate-600 to-gray-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-10 w-10 text-white" />
                 </div>
-                <h4 className="text-2xl font-bold text-gray-900 mb-2">Final Comprehensive Assessment</h4>
+                <h4 className="text-2xl font-bold text-gray-900 mb-2">The Ultimate Knowledge Test</h4>
                 <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  This exam draws from all learning modules across our three main categories. Show what you've mastered!
+                  Questions from all three learning paths. Time to show off what you've learned!
                 </p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                   <h5 className="font-semibold text-slate-700 mb-2">35 Questions</h5>
-                  <p className="text-sm text-gray-600">Randomly selected from 50+ questions</p>
+                  <p className="text-sm text-gray-600">Random mix from all lessons</p>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                   <h5 className="font-semibold text-gray-700 mb-2">All Topics</h5>
-                  <p className="text-sm text-gray-600">Finance, Web3, and Education</p>
+                  <p className="text-sm text-gray-600">Money, crypto, and learning</p>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                   <h5 className="font-semibold text-green-700 mb-2">Final Score</h5>
-                  <p className="text-sm text-gray-600">Complete assessment results</p>
+                  <p className="text-sm text-gray-600">See how you did overall</p>
                 </div>
               </div>
 
