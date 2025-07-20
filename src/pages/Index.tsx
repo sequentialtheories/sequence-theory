@@ -32,7 +32,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container mx-auto px-6 text-center relative z-10">
             <h1 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
-              Sequence Theory: 
+              Sequence Theory, Inc.
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-2xl md:text-3xl">
                 Democratizing Financial Empowerment
               </span>
