@@ -31,7 +31,7 @@ import DigitalOwnershipEmpowerment from "./pages/DigitalOwnershipEmpowerment";
 import TokensTokenization from "./pages/TokensTokenization";
 import LearningHumanProgressFoundation from "./pages/LearningHumanProgressFoundation";
 import BlockchainTechnologyDeepDive from "./pages/BlockchainTechnologyDeepDive";
-import AdvancedWeb3Innovations from "./pages/AdvancedWeb3Innovations";
+
 import FinanceQuiz from "./pages/FinanceQuiz";
 import Web3Quiz from "./pages/Web3Quiz";
 import EducationQuiz from "./pages/EducationQuiz";
@@ -90,7 +90,7 @@ const App = () => (
           <Route path="/learn/digital-ownership-empowerment" element={<InteractiveLearning />} />
            <Route path="/learn/tokens-tokenization" element={<InteractiveLearning />} />
            <Route path="/learn/blockchain-technology-deep-dive" element={<InteractiveLearning />} />
-          <Route path="/learn/advanced-web3-innovations" element={<AdvancedWeb3Innovations />} />
+          <Route path="/learn/advanced-web3-innovations" element={<InteractiveLearning />} />
           <Route path="/learn/learning-human-progress-foundation" element={<LearningHumanProgressFoundation />} />
           <Route path="/learn/consequences-educational-absence" element={<ConsequencesEducationalAbsence />} />
           <Route path="/learn/financial-literacy-gatekeeping" element={<FinancialLiteracyGatekeeping />} />

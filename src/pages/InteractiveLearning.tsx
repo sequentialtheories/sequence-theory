@@ -48,6 +48,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/decentralized-finance-defi') {
     actualModuleId = 'decentralized-finance-defi';
   }
+  if (!actualModuleId && currentPath === '/learn/advanced-web3-innovations') {
+    actualModuleId = 'advanced-web3-innovations';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);

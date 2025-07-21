@@ -3598,6 +3598,434 @@ export const defiBankingModule: ModuleData = {
   ]
 };
 
+// Advanced Web3 Innovations module
+export const advancedWeb3Module: ModuleData = {
+  id: 'advanced-web3-innovations',
+  title: 'Next-Level Crypto Stuff',
+  description: 'Staking, yield farming, and the latest crypto innovations.',
+  level: 'Expert',
+  category: 'Web3 & Digital Ownership',
+  categoryIndex: 1,
+  moduleIndex: 5,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'Cutting-Edge Web3 Innovations',
+      layout: 'visual',
+      content: `The Web3 ecosystem is rapidly evolving with sophisticated financial instruments and technological innovations. This expert-level module explores advanced concepts including staking mechanisms, lending protocols, meme coin dynamics, and sophisticated DeFi strategies that are reshaping the digital economy. We'll dive deep into the bleeding edge of blockchain technology.`,
+      visualElements: {
+        icon: '🚀',
+        gradient: 'from-violet-50 to-purple-100',
+        cards: [
+          {
+            title: 'Advanced Staking',
+            description: 'Liquid staking, restaking, and validator-as-a-service for institutional investors',
+            icon: '🔒',
+            color: 'green'
+          },
+          {
+            title: 'Sophisticated Lending',
+            description: 'Flash loans, credit delegation, and cross-chain lending protocols',
+            icon: '💰',
+            color: 'blue'
+          },
+          {
+            title: 'MEV & Arbitrage',
+            description: 'Maximal extractable value, front-running, and sandwich attacks',
+            icon: '⚡',
+            color: 'orange'
+          },
+          {
+            title: 'Social Finance',
+            description: 'Meme coins, viral marketing, and community-driven token economies',
+            icon: '📈',
+            color: 'pink'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Advanced Staking Mechanisms',
+      layout: 'grid',
+      content: `Staking has evolved beyond simple token lockup to include complex mechanisms for network security and governance. These innovations allow for more flexible and profitable staking strategies while maintaining network security.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Liquid Staking',
+            description: 'Stake tokens while maintaining liquidity through derivative tokens. Protocols like Lido allow you to stake ETH and receive stETH, which can be traded or used in DeFi while still earning staking rewards.',
+            icon: '🌊',
+            color: 'blue'
+          },
+          {
+            title: 'Restaking (EigenLayer)',
+            description: 'Use already-staked ETH to secure additional protocols and earn extra rewards. This creates composable security where one stake secures multiple networks.',
+            icon: '🏗️',
+            color: 'purple'
+          },
+          {
+            title: 'Validator-as-a-Service',
+            description: 'Professional staking services for institutional investors who want staking rewards without technical complexity. Companies like Coinbase and Kraken offer these services.',
+            icon: '🏢',
+            color: 'green'
+          },
+          {
+            title: 'Multi-Asset Staking',
+            description: 'Protocols that allow staking multiple different tokens in a single platform, optimizing returns across various networks simultaneously.',
+            icon: '📊',
+            color: 'orange'
+          },
+          {
+            title: 'Slashing Protection',
+            description: 'Understanding penalty mechanisms for validator misbehavior and how to protect against slashing events that can cause loss of staked tokens.',
+            icon: '⚠️',
+            color: 'red'
+          },
+          {
+            title: 'Governance Staking',
+            description: 'Staking tokens to participate in protocol governance while earning rewards, combining financial returns with decision-making power.',
+            icon: '🗳️',
+            color: 'indigo'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Sophisticated Lending & MEV',
+      layout: 'comparison',
+      content: `Advanced lending mechanisms go beyond simple borrowing, while MEV (Maximal Extractable Value) represents a new frontier in blockchain value extraction that every DeFi user should understand.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Sophisticated Lending Protocols',
+            icon: '💰',
+            items: [
+              'Flash Loans: Uncollateralized loans repaid in same transaction - borrow millions instantly',
+              'Credit Delegation: Allow others to borrow against your collateral with shared responsibility',
+              'Undercollateralized Lending: Using reputation and credit scoring like traditional finance',
+              'Cross-Chain Lending: Borrow on one blockchain using collateral from another chain',
+              'Interest Rate Optimization: Automated yield maximization strategies across protocols'
+            ]
+          },
+          after: {
+            title: 'MEV (Maximal Extractable Value)',
+            icon: '⚡',
+            items: [
+              'Front-running: Profiting from knowledge of pending transactions in the mempool',
+              'Sandwich Attacks: Manipulating prices around large trades to extract value',
+              'Arbitrage Opportunities: Exploiting price differences across different DEXs',
+              'MEV Protection: Protocols like CowSwap preventing value extraction from users',
+              'Flashbots: Transparent and efficient MEV marketplaces for fair value distribution'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Meme Coins and Social Finance',
+      layout: 'grid',
+      content: `Meme coins represent the intersection of culture and finance in the digital age. Understanding their dynamics is crucial for navigating the modern crypto landscape where community and memes can drive billion-dollar valuations.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Viral Marketing Dynamics',
+            description: 'How social media, Reddit communities, and celebrity endorsements drive token adoption and create massive value through network effects and FOMO.',
+            icon: '🚀',
+            color: 'blue'
+          },
+          {
+            title: 'Community Governance',
+            description: 'Meme coin communities making collective decisions about token burns, charity donations, and ecosystem development through decentralized voting.',
+            icon: '🏛️',
+            color: 'purple'
+          },
+          {
+            title: 'Pump and Dump Recognition',
+            description: 'Identifying and avoiding manipulative schemes where early holders coordinate to inflate prices before selling, leaving later investors with losses.',
+            icon: '⚠️',
+            color: 'red'
+          },
+          {
+            title: 'Fair Launch Mechanisms',
+            description: 'Equitable token distribution methods without pre-mines or insider allocations, ensuring early adopters and community members get fair access.',
+            icon: '⚖️',
+            color: 'green'
+          },
+          {
+            title: 'Liquidity Bootstrapping',
+            description: 'How meme coins create initial trading liquidity through community contributions and automated market makers.',
+            icon: '💧',
+            color: 'cyan'
+          },
+          {
+            title: 'Cultural Value Creation',
+            description: 'How memes, community identity, and shared beliefs create genuine economic value that extends beyond pure speculation.',
+            icon: '⭐',
+            color: 'yellow'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Yield Farming & Advanced DAOs',
+      layout: 'comparison',
+      content: `Yield farming has evolved into sophisticated strategies for maximizing returns, while DAOs have developed complex governance structures for managing decentralized communities and treasuries.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Advanced Yield Farming Strategies',
+            icon: '🌾',
+            items: [
+              'Liquidity Mining: Earning additional tokens for providing liquidity to DEX pools',
+              'Yield Stacking: Combining multiple yield sources like staking + lending + LP rewards',
+              'Impermanent Loss Mitigation: Strategies using options or insurance to protect against IL',
+              'Auto-Compounding: Protocols that automatically reinvest earned rewards for compound growth',
+              'Cross-Protocol Arbitrage: Exploiting yield differences between competing protocols',
+              'Risk-Adjusted Returns: Calculating true yields after accounting for smart contract and market risks'
+            ]
+          },
+          after: {
+            title: 'Decentralized Autonomous Organizations',
+            icon: '🏛️',
+            items: [
+              'Quadratic Voting: Preventing whale dominance by making additional votes exponentially expensive',
+              'Delegation Strategies: Optimizing voting power distribution to expert community members',
+              'Proposal Mechanisms: Structured systems for community members to suggest protocol changes',
+              'Treasury Management: Sophisticated strategies for managing community-owned funds',
+              'Multi-Signature Security: Requiring multiple approvals for critical decisions and fund movements',
+              'Reputation Systems: Merit-based influence where contribution history affects governance power'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Layer 2 Solutions & Privacy Tech',
+      layout: 'comparison',
+      content: `Scaling solutions are making blockchain more efficient while privacy technologies are preserving user confidentiality in an increasingly transparent world.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Layer 2 and Scaling Solutions',
+            icon: '🏗️',
+            items: [
+              'Optimistic Rollups: Process transactions off-chain with fraud proofs for security (Arbitrum, Optimism)',
+              'ZK-Rollups: Use zero-knowledge proofs for instant finality and privacy (Polygon zkEVM, zkSync)',
+              'State Channels: Off-chain transaction processing for instant, low-cost transfers',
+              'Plasma Chains: Specialized child chains for specific use cases like gaming or payments',
+              'Sharding: Splitting blockchain state across multiple chains for parallel processing',
+              'Interoperability Protocols: Seamless asset and data transfer between different blockchains'
+            ]
+          },
+          after: {
+            title: 'Privacy-Preserving Technologies',
+            icon: '🔒',
+            items: [
+              'Zero-Knowledge Proofs: Proving statements without revealing the underlying information',
+              'zk-SNARKs: Succinct non-interactive arguments enabling private smart contracts',
+              'Ring Signatures: Anonymous signatures from group members (used in Monero)',
+              'Stealth Addresses: One-time addresses for enhanced transaction privacy',
+              'Mixing Protocols: Breaking transaction linkability through coin mixing services',
+              'Homomorphic Encryption: Performing computations on encrypted data without decrypting it'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-7',
+      type: 'content',
+      title: 'Cutting-Edge Innovations & Risk Management',
+      layout: 'visual',
+      content: `The frontier of Web3 includes derivatives, cross-chain infrastructure, real-world asset tokenization, and institutional DeFi. However, with sophistication comes complex risks that must be carefully managed.`,
+      visualElements: {
+        icon: '🧠',
+        gradient: 'from-indigo-50 to-purple-100',
+        cards: [
+          {
+            title: 'Derivatives & Structured Products',
+            description: 'Perpetual futures, options protocols, synthetic assets, and complex financial instruments bringing traditional finance sophistication to DeFi.',
+            icon: '📈',
+            color: 'indigo'
+          },
+          {
+            title: 'Cross-Chain Infrastructure',
+            description: 'Bridge protocols, cross-chain DEXs, wrapped assets, and atomic swaps enabling seamless multi-blockchain experiences.',
+            icon: '🌐',
+            color: 'green'
+          },
+          {
+            title: 'Real-World Asset Tokenization',
+            description: 'Tokenizing real estate, commodities, carbon credits, art, and equipment financing to bring traditional assets on-chain.',
+            icon: '🏠',
+            color: 'orange'
+          },
+          {
+            title: 'Institutional DeFi Solutions',
+            description: 'KYC/AML compliance, institutional custody, sophisticated reporting, and prime brokerage services for large investors.',
+            icon: '🏢',
+            color: 'blue'
+          },
+          {
+            title: 'Emerging Technologies',
+            description: 'AI-powered protocols, quantum-resistant cryptography, social recovery wallets, account abstraction, and decentralized physical infrastructure.',
+            icon: '🔮',
+            color: 'purple'
+          },
+          {
+            title: 'Risk Management',
+            description: 'Smart contract audits, liquidity risk assessment, governance risk monitoring, and composability risk analysis for complex strategies.',
+            icon: '⚠️',
+            color: 'red'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What is "restaking" in the context of advanced staking mechanisms?',
+      options: [
+        'Unstaking and restaking tokens to reset rewards',
+        'Using already-staked ETH to secure additional protocols and earn extra rewards',
+        'Staking multiple different cryptocurrencies simultaneously',
+        'Converting staking rewards back into staked tokens'
+      ],
+      correctAnswer: 1,
+      explanation: 'Restaking, pioneered by EigenLayer, allows validators to use their already-staked ETH to secure additional protocols, earning extra rewards while creating composable security across multiple networks.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'q2',
+      question: 'What are flash loans in DeFi?',
+      options: [
+        'Very fast loan approval processes',
+        'Loans with extremely high interest rates',
+        'Uncollateralized loans that must be repaid within the same transaction',
+        'Loans that use lightning-fast payment channels'
+      ],
+      correctAnswer: 2,
+      explanation: 'Flash loans are uncollateralized loans that must be borrowed and repaid within the same blockchain transaction. If the loan cannot be repaid, the entire transaction fails, making them risk-free for lenders.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q3',
+      question: 'What is MEV (Maximal Extractable Value)?',
+      options: [
+        'The maximum value a cryptocurrency can reach',
+        'Value extracted by miners/validators from reordering, including, or censoring transactions',
+        'The total value locked in a DeFi protocol',
+        'The maximum amount you can borrow in a lending protocol'
+      ],
+      correctAnswer: 1,
+      explanation: 'MEV refers to the value that miners or validators can extract by reordering, including, or censoring transactions within blocks. This includes front-running, sandwich attacks, and arbitrage opportunities.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q4',
+      question: 'What makes quadratic voting different from traditional voting in DAOs?',
+      options: [
+        'Votes are counted four times',
+        'Only quadrilateral token holders can vote',
+        'Additional votes become exponentially more expensive, preventing whale dominance',
+        'Voting happens four times per year'
+      ],
+      correctAnswer: 2,
+      explanation: 'In quadratic voting, the cost of votes increases quadratically (1, 4, 9, 16, etc.), making it expensive for large token holders to dominate governance, thus creating more democratic decision-making.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q5',
+      question: 'What is the main advantage of ZK-Rollups over Optimistic Rollups?',
+      options: [
+        'ZK-Rollups are always cheaper',
+        'ZK-Rollups provide instant finality and built-in privacy',
+        'ZK-Rollups work on any blockchain',
+        'ZK-Rollups require no technical knowledge'
+      ],
+      correctAnswer: 1,
+      explanation: 'ZK-Rollups use zero-knowledge proofs to provide instant finality (no waiting periods) and built-in privacy, whereas Optimistic Rollups require fraud-proof challenge periods and offer less privacy.',
+      requiresSlides: [5]
+    },
+    {
+      id: 'q6',
+      question: 'What is "impermanent loss" in yield farming?',
+      options: [
+        'Temporary network connection problems',
+        'Loss that occurs when token prices in a liquidity pool change relative to when you deposited',
+        'Interest rate reductions on loans',
+        'Smart contract bugs that cause fund loss'
+      ],
+      correctAnswer: 1,
+      explanation: 'Impermanent loss occurs when the prices of tokens in a liquidity pool change relative to when you deposited them. You may end up with less value than if you had simply held the tokens separately.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q7',
+      question: 'What is a key characteristic of successful meme coins?',
+      options: [
+        'Advanced technical features',
+        'Strong community engagement and viral marketing',
+        'High transaction fees',
+        'Complex tokenomics'
+      ],
+      correctAnswer: 1,
+      explanation: 'Successful meme coins typically rely on strong community engagement, viral marketing, and cultural resonance rather than complex technical features. Community and social dynamics drive their value.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q8',
+      question: 'What is "composability risk" in DeFi?',
+      options: [
+        'Risk of musical composition copyright infringement',
+        'Risk of protocols failing due to dependencies on other protocols',
+        'Risk of smart contracts being too simple',
+        'Risk of user interface complexity'
+      ],
+      correctAnswer: 1,
+      explanation: 'Composability risk refers to the danger of cascading failures when DeFi protocols that depend on each other experience problems. If one protocol fails, it can cause failures in dependent protocols.',
+      requiresSlides: [6]
+    },
+    {
+      id: 'q9',
+      question: 'What are stealth addresses used for?',
+      options: [
+        'Hiding smart contract code',
+        'Creating one-time addresses for enhanced transaction privacy',
+        'Concealing validator identities',
+        'Masking token contract addresses'
+      ],
+      correctAnswer: 1,
+      explanation: 'Stealth addresses are one-time addresses generated for each transaction to enhance privacy by making it difficult to link transactions to a specific recipient.',
+      requiresSlides: [5]
+    },
+    {
+      id: 'q10',
+      question: 'What is the primary benefit of real-world asset tokenization?',
+      options: [
+        'Making physical assets completely digital',
+        'Increasing liquidity and enabling fractional ownership of traditionally illiquid assets',
+        'Eliminating the need for physical storage',
+        'Reducing asset values'
+      ],
+      correctAnswer: 1,
+      explanation: 'Real-world asset tokenization increases liquidity and enables fractional ownership of traditionally illiquid assets like real estate, art, or commodities, making them accessible to more investors.',
+      requiresSlides: [6]
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -3609,6 +4037,7 @@ export const allModules: ModuleData[] = [
   digitalOwnershipModule,
   tokensTokenizationModule,
   blockchainTechnologyModule,
-  defiBankingModule
+  defiBankingModule,
+  advancedWeb3Module
   // Add more modules as they're created
 ];
