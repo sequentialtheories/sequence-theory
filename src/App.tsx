@@ -37,7 +37,7 @@ import Web3Quiz from "./pages/Web3Quiz";
 import EducationQuiz from "./pages/EducationQuiz";
 import ComprehensiveExam from "./pages/ComprehensiveExam";
 
-import FinancialLiteracyGatekeeping from "./pages/FinancialLiteracyGatekeeping";
+
 import ColonialismMoneyTrade from "./pages/ColonialismMoneyTrade";
 import GlobalEducationStatistics from "./pages/GlobalEducationStatistics";
 import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowledge";
@@ -93,7 +93,7 @@ const App = () => (
           <Route path="/learn/advanced-web3-innovations" element={<InteractiveLearning />} />
           <Route path="/learn/learning-human-progress-foundation" element={<InteractiveLearning />} />
           <Route path="/learn/consequences-educational-absence" element={<InteractiveLearning />} />
-          <Route path="/learn/financial-literacy-gatekeeping" element={<FinancialLiteracyGatekeeping />} />
+          <Route path="/learn/financial-literacy-gatekeeping" element={<InteractiveLearning />} />
           <Route path="/learn/colonialism-money-trade" element={<ColonialismMoneyTrade />} />
           <Route path="/learn/global-education-statistics" element={<GlobalEducationStatistics />} />
           <Route path="/learn/democratizing-financial-knowledge" element={<DemocratizingFinancialKnowledge />} />

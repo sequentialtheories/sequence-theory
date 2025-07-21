@@ -57,6 +57,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/consequences-educational-absence') {
     actualModuleId = 'consequences-educational-absence';
   }
+  if (!actualModuleId && currentPath === '/learn/financial-literacy-gatekeeping') {
+    actualModuleId = 'financial-literacy-gatekeeping';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);

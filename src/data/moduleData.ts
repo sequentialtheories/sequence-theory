@@ -4763,6 +4763,321 @@ const consequencesEducationalAbsenceModule: ModuleData = {
   ]
 };
 
+const financialLiteracyGatekeepingModule: ModuleData = {
+  id: 'financial-literacy-gatekeeping',
+  title: 'Financial Literacy Gatekeeping',
+  description: 'How financial knowledge has been deliberately restricted throughout history to maintain power structures.',
+  level: 'Intermediate',
+  category: 'Educational Impact',
+  categoryIndex: 4,
+  moduleIndex: 1,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'The Hidden Barriers to Financial Knowledge',
+      layout: 'visual',
+      content: `Throughout history, financial knowledge has been deliberately restricted, creating artificial barriers that serve to maintain existing power structures.`,
+      visualElements: {
+        icon: '🔒',
+        gradient: 'from-amber-50 to-orange-100',
+        cards: [
+          {
+            title: 'Ancient Priesthoods',
+            description: 'Religious leaders controlled mathematical and financial knowledge',
+            icon: '⛩️',
+            color: 'purple'
+          },
+          {
+            title: 'Medieval Guilds',
+            description: 'Trade secrets kept within exclusive member organizations',
+            icon: '🏰',
+            color: 'blue'
+          },
+          {
+            title: 'Banking Houses',
+            description: 'Wealthy families monopolized financial techniques',
+            icon: '🏛️',
+            color: 'green'
+          },
+          {
+            title: 'Modern Complexity',
+            description: 'Deliberate obfuscation through financial jargon',
+            icon: '🧩',
+            color: 'red'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Historical Financial Gatekeeping',
+      layout: 'grid',
+      content: `Let's trace how financial knowledge has been restricted across different eras:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Ancient Civilizations (3000 BCE - 500 CE)',
+            description: 'Priestly classes controlled mathematical and financial knowledge, making it sacred and exclusive. Created dependency on temple institutions.',
+            icon: '🏛️',
+            color: 'purple'
+          },
+          {
+            title: 'Medieval Europe (500 - 1500 CE)',
+            description: 'Guild systems restricted financial knowledge to members, controlling commerce participation and limiting economic mobility.',
+            icon: '⚔️',
+            color: 'blue'
+          },
+          {
+            title: 'Banking Renaissance (1400 - 1700 CE)',
+            description: 'Wealthy families like the Medici kept financial techniques secret, creating banking oligarchies that influenced nations.',
+            icon: '👑',
+            color: 'yellow'
+          },
+          {
+            title: 'Digital Age (1980 - Present)',
+            description: 'Financial products became increasingly complex, requiring specialized knowledge and creating new forms of exclusion.',
+            icon: '💻',
+            color: 'green'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Modern Gatekeeping Mechanisms',
+      layout: 'comparison',
+      content: `Today's gatekeeping is more sophisticated but just as effective at maintaining barriers:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Institutional Barriers',
+            icon: '🏢',
+            items: [
+              'Minimum investment requirements exclude small investors',
+              'Accredited investor rules limit advanced investments',
+              'Complex financial jargon makes products difficult to understand',
+              'High advisory fees price out average people',
+              'Expensive business schools control knowledge access'
+            ]
+          },
+          after: {
+            title: 'Information Asymmetry',
+            icon: '👁️‍🗨️',
+            items: [
+              'Hidden fees obscure true costs from consumers',
+              'Insider information gives privileged access',
+              'Deliberately confusing product structures',
+              'Marketing manipulation over factual education',
+              'Exclusive relationships and information sharing'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'The True Cost of Financial Gatekeeping',
+      layout: 'feature-cards',
+      content: `Financial gatekeeping creates massive societal costs that hurt everyone:`,
+      visualElements: {
+        features: [
+          {
+            icon: '📊',
+            title: 'Wealth Concentration',
+            description: 'Top 1% owns 32% of all wealth - gatekeeping concentrates wealth among the financially educated elite'
+          },
+          {
+            icon: '😰',
+            title: 'Financial Stress',
+            description: '64% live paycheck to paycheck - lack of financial education creates chronic anxiety and poor decisions'
+          },
+          {
+            icon: '👴',
+            title: 'Retirement Crisis',
+            description: '$3.68 trillion retirement shortfall - gatekeeping prevents effective long-term planning'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Who Benefits from Financial Gatekeeping?',
+      layout: 'grid',
+      content: `Understanding who profits from financial ignorance reveals why these barriers persist:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Financial Institutions',
+            description: 'Higher fees from uninformed customers through information asymmetry that enables premium pricing.',
+            icon: '🏦',
+            color: 'blue'
+          },
+          {
+            title: 'Wealthy Families',
+            description: 'Reduced competition for investment opportunities through exclusive access to high-return investments.',
+            icon: '💎',
+            color: 'purple'
+          },
+          {
+            title: 'Financial Advisors',
+            description: 'Professional monopoly on financial guidance through licensing requirements that limit competition.',
+            icon: '👔',
+            color: 'green'
+          },
+          {
+            title: 'Regulatory Capture',
+            description: 'Industry influences rules to benefit established players while maintaining complexity barriers.',
+            icon: '⚖️',
+            color: 'red'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Breaking Down Financial Gatekeeping',
+      layout: 'comparison',
+      content: `The solution requires both technological innovation and educational reform:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Technology Solutions',
+            icon: '🚀',
+            items: [
+              'Online learning platforms democratize financial education',
+              'Robo-advisors reduce advisory costs significantly',
+              'Cryptocurrency enables direct peer-to-peer transactions',
+              'Mobile apps provide accessible financial tools',
+              'Open-source financial models increase transparency'
+            ]
+          },
+          after: {
+            title: 'Educational Reforms',
+            icon: '📚',
+            items: [
+              'Mandatory financial literacy in school curricula',
+              'Plain language requirements for financial products',
+              'Free public financial education programs',
+              'Community-based financial workshops',
+              'Simplified investment platforms for beginners'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-7',
+      type: 'content',
+      title: 'The Path Forward',
+      layout: 'visual',
+      content: `Breaking financial gatekeeping requires recognizing it exists and taking action to democratize knowledge:`,
+      visualElements: {
+        icon: '🔓',
+        gradient: 'from-indigo-50 to-purple-100',
+        cards: [
+          {
+            title: 'Recognize Gatekeeping',
+            description: 'Question complexity and seek simple explanations',
+            icon: '👁️',
+            color: 'blue'
+          },
+          {
+            title: 'Seek Free Education',
+            description: 'Use online resources and avoid expensive courses',
+            icon: '🎓',
+            color: 'green'
+          },
+          {
+            title: 'Demand Transparency',
+            description: 'Push for clear, simple financial product explanations',
+            icon: '🔍',
+            color: 'yellow'
+          },
+          {
+            title: 'Share Knowledge',
+            description: 'Help others overcome the same barriers you faced',
+            icon: '🤝',
+            color: 'purple'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What was the main method of financial gatekeeping in ancient civilizations?',
+      options: [
+        'High taxes on financial transactions',
+        'Priestly classes controlling mathematical and financial knowledge',
+        'Government monopoly on currency',
+        'Banning foreign trade'
+      ],
+      correctAnswer: 1,
+      explanation: 'In ancient civilizations, priestly classes controlled mathematical and financial knowledge, making it sacred and exclusive, which created dependency on temple institutions for financial transactions.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'q2',
+      question: 'Which modern gatekeeping mechanism creates barriers through complexity?',
+      options: [
+        'Government regulations only',
+        'International trade laws',
+        'Deliberately complex financial products with confusing jargon',
+        'Currency exchange rates'
+      ],
+      correctAnswer: 2,
+      explanation: 'Modern financial gatekeeping often uses deliberately complex products with confusing jargon to make financial services difficult to understand, maintaining information asymmetry.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q3',
+      question: 'What percentage of Americans live paycheck to paycheck, largely due to financial illiteracy?',
+      options: [
+        '45%',
+        '52%',
+        '64%',
+        '78%'
+      ],
+      correctAnswer: 2,
+      explanation: '64% of Americans live paycheck to paycheck, which is largely attributed to lack of financial education and the resulting poor financial decision-making.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q4',
+      question: 'Who primarily benefits from financial gatekeeping?',
+      options: [
+        'Government tax collectors',
+        'Foreign investors only',
+        'Financial institutions, wealthy families, and financial advisors',
+        'Small business owners'
+      ],
+      correctAnswer: 2,
+      explanation: 'Financial gatekeeping primarily benefits financial institutions (through higher fees), wealthy families (through reduced competition), and financial advisors (through professional monopolies).',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q5',
+      question: 'What is one key way technology can break down financial gatekeeping?',
+      options: [
+        'Making financial products more complex',
+        'Increasing the cost of financial advice',
+        'Online learning platforms that democratize financial education',
+        'Limiting access to financial information'
+      ],
+      correctAnswer: 2,
+      explanation: 'Online learning platforms democratize financial education by making quality financial knowledge accessible to everyone, regardless of their economic status or geographic location.',
+      requiresSlides: [5]
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -4777,5 +5092,6 @@ export const allModules: ModuleData[] = [
   defiBankingModule,
   advancedWeb3Module,
   learningChangesWorldModule,
-  consequencesEducationalAbsenceModule
+  consequencesEducationalAbsenceModule,
+  financialLiteracyGatekeepingModule
 ];
