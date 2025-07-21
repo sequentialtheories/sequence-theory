@@ -111,7 +111,7 @@ const PreSignup = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="pl-12 py-3 bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/60 focus:border-primary-foreground/30 focus:ring-primary-foreground/20 backdrop-blur-sm transition-smooth"
+                className="pl-12 py-3 bg-transparent border-transparent text-primary-foreground placeholder:text-primary-foreground/60 focus:border-transparent focus:ring-transparent backdrop-blur-sm transition-smooth"
               />
             </div>
             <Button 
