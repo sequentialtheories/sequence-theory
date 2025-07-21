@@ -1479,11 +1479,424 @@ const cryptoPlaceInMoneyModule: ModuleData = {
   ]
 };
 
+const wealthEmpowermentModule: ModuleData = {
+  id: "wealth-societal-empowerment",
+  title: "Money = Power (Here's How)",
+  description: "Why having money gives you choices and changes communities.",
+  level: "Advanced",
+  category: "Financial Basics",
+  categoryIndex: 0,
+  moduleIndex: 4,
+  slides: [
+    {
+      id: "slide-1",
+      type: "content",
+      title: "Money = Power. That's Not Evil - It's Reality.",
+      layout: 'visual',
+      content: `Let's be honest: money gives you power. Not the evil, corrupt kind - the power to choose, to help, and to change things.`,
+      visualElements: {
+        icon: '👑',
+        gradient: 'from-purple-50 to-indigo-100',
+        cards: [
+          {
+            title: 'Time Freedom',
+            description: 'Choose how to spend your most valuable resource',
+            icon: '⏰',
+            color: 'blue'
+          },
+          {
+            title: 'Choice Freedom',
+            description: 'More options in every life decision you make',
+            icon: '🎯',
+            color: 'green'
+          },
+          {
+            title: 'Risk-Taking Power',
+            description: 'Ability to pursue opportunities without fear',
+            icon: '🚀',
+            color: 'purple'
+          },
+          {
+            title: 'Impact Power',
+            description: 'Resources to create positive change',
+            icon: '💪',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-2",
+      type: "content",
+      title: "The Individual Freedom That Money Buys",
+      layout: 'grid',
+      content: `Money doesn't just buy stuff - it buys the fundamental freedoms that transform your life:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Education Access',
+            description: 'Learn anything, anytime, anywhere - from universities to online courses to personal coaches',
+            icon: '🎓',
+            color: 'blue'
+          },
+          {
+            title: 'Health Security',
+            description: 'Best healthcare, preventive care, mental health support, and wellness resources',
+            icon: '🛡️',
+            color: 'green'
+          },
+          {
+            title: 'Location Independence',
+            description: 'Live where you want, travel freely, escape bad situations, and explore opportunities',
+            icon: '🌍',
+            color: 'purple'
+          },
+          {
+            title: 'Career Leverage',
+            description: 'Say no to bad jobs, start businesses, take career risks, and negotiate from strength',
+            icon: '💼',
+            color: 'orange'
+          },
+          {
+            title: 'Relationship Quality',
+            description: 'Leave toxic relationships, support family, and build connections based on mutual respect',
+            icon: '❤️',
+            color: 'red'
+          },
+          {
+            title: 'Personal Growth',
+            description: 'Therapy, coaching, experiences, and development without worrying about cost',
+            icon: '✨',
+            color: 'yellow'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-3",
+      type: "content",
+      title: "How Wealth Breaks Generational Cycles",
+      layout: 'comparison',
+      content: `Money doesn't just change your life - it can break cycles of poverty that have trapped families for generations.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Poverty Cycle',
+            icon: '🔗',
+            items: [
+              'Limited educational opportunities',
+              'Health problems go untreated',
+              'Can\'t take financial risks',
+              'Stressed family relationships',
+              'Next generation starts behind'
+            ]
+          },
+          after: {
+            title: 'Wealth Building',
+            icon: '🚀',
+            items: [
+              'Quality education for children',
+              'Preventive healthcare access',
+              'Investment and entrepreneurship',
+              'Stable, supportive environment',
+              'Generational wealth transfer'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: "slide-4",
+      type: "content",
+      title: "Your Wealth's Ripple Effect on Society",
+      layout: 'feature-cards',
+      content: `When you build wealth responsibly, the benefits ripple outward to benefit your entire community:`,
+      visualElements: {
+        features: [
+          {
+            icon: '💼',
+            title: 'Job Creation',
+            description: 'Start businesses, invest in companies, and create employment opportunities for others'
+          },
+          {
+            icon: '💰',
+            title: 'Economic Stimulus',
+            description: 'Your spending drives local economies and supports other businesses and families'
+          },
+          {
+            icon: '🏛️',
+            title: 'Tax Contribution',
+            description: 'Higher income generates more public funds for schools, infrastructure, and services'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-5",
+      type: "content",
+      title: "Wealth as a Tool for Positive Change",
+      layout: 'grid',
+      content: `Rich people aren't automatically evil. Money amplifies who you already are - and good people can do incredible things with wealth:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Direct Philanthropy',
+            description: 'Fund causes you care about, from local food banks to global disease eradication',
+            icon: '❤️',
+            color: 'red'
+          },
+          {
+            title: 'Social Enterprises',
+            description: 'Build businesses that solve real problems while generating sustainable profits',
+            icon: '🏢',
+            color: 'blue'
+          },
+          {
+            title: 'Impact Investing',
+            description: 'Invest in companies and projects that create positive environmental and social outcomes',
+            icon: '📈',
+            color: 'green'
+          },
+          {
+            title: 'Policy Influence',
+            description: 'Support political candidates and causes that align with your values and vision',
+            icon: '🗳️',
+            color: 'purple'
+          },
+          {
+            title: 'Innovation Funding',
+            description: 'Back research, startups, and technologies that could benefit humanity',
+            icon: '💡',
+            color: 'yellow'
+          },
+          {
+            title: 'Educational Access',
+            description: 'Fund scholarships, schools, and learning opportunities for underserved communities',
+            icon: '📚',
+            color: 'indigo'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-6",
+      type: "content",
+      title: "The Democratization of Wealth Building",
+      layout: 'visual',
+      content: `Technology is breaking down the old barriers to wealth creation. You don't need to be born rich anymore.`,
+      visualElements: {
+        icon: '🌐',
+        gradient: 'from-green-50 to-emerald-100',
+        cards: [
+          {
+            title: 'Digital Assets',
+            description: 'Fractional investing, crypto, and crowdfunding lower investment barriers',
+            icon: '💎',
+            color: 'blue'
+          },
+          {
+            title: 'Online Education',
+            description: 'World-class financial education available for free or low cost',
+            icon: '📱',
+            color: 'green'
+          },
+          {
+            title: 'Micro-Investing',
+            description: 'Start with spare change and build wealth gradually over time',
+            icon: '🪙',
+            color: 'orange'
+          },
+          {
+            title: 'Global Markets',
+            description: 'Access the same investments as institutions from your phone',
+            icon: '🌍',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-7",
+      type: "content",
+      title: "The Dark Side: Wealth's Responsibilities and Dangers",
+      layout: 'comparison',
+      content: `With great financial power comes great responsibility. Wealth can corrupt and concentrate power dangerously.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Wealth\'s Dark Potential',
+            icon: '⚠️',
+            items: [
+              'Exploitation of workers and consumers',
+              'Political corruption and influence buying',
+              'Extreme inequality and social division',
+              'Environmental destruction for profit',
+              'Hoarding resources while others suffer'
+            ]
+          },
+          after: {
+            title: 'Responsible Wealth Building',
+            icon: '✅',
+            items: [
+              'Fair treatment of employees and customers',
+              'Transparent political engagement',
+              'Creating opportunities for others',
+              'Sustainable business practices',
+              'Active community contribution'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: "slide-8",
+      type: "content",
+      title: "Building Wealth Communities That Lift Everyone",
+      layout: 'grid',
+      content: `The goal isn't just personal wealth - it's creating systems where everyone can build wealth together:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Investment Clubs',
+            description: 'Pool resources and knowledge to make better investment decisions together',
+            icon: '👥',
+            color: 'blue'
+          },
+          {
+            title: 'Mentorship Networks',
+            description: 'Share knowledge and opportunities between experienced and new wealth builders',
+            icon: '🤝',
+            color: 'green'
+          },
+          {
+            title: 'Community Development',
+            description: 'Invest in local businesses, infrastructure, and opportunities that benefit everyone',
+            icon: '🏘️',
+            color: 'purple'
+          },
+          {
+            title: 'Cooperative Models',
+            description: 'Business structures where workers share ownership and profits fairly',
+            icon: '⚖️',
+            color: 'orange'
+          },
+          {
+            title: 'Financial Education',
+            description: 'Teach money skills to family, friends, and community members',
+            icon: '📖',
+            color: 'yellow'
+          },
+          {
+            title: 'Policy Advocacy',
+            description: 'Support laws that create fair opportunities for wealth building',
+            icon: '🏛️',
+            color: 'indigo'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: "q1",
+      question: "What is the most important type of freedom that wealth provides?",
+      options: [
+        "The ability to buy expensive things",
+        "Time freedom and choice in how to live your life",
+        "Power over other people",
+        "Ability to avoid all problems"
+      ],
+      correctAnswer: 1,
+      explanation: "Time freedom and choice are the most valuable aspects of wealth - the ability to choose how to spend your time and make life decisions without financial constraints.",
+      requiresSlides: [0]
+    },
+    {
+      id: "q2",
+      question: "How does individual wealth building benefit society as a whole?",
+      options: [
+        "It doesn't - wealth only benefits the individual",
+        "Through job creation, economic stimulus, and tax contributions",
+        "By making everyone else poorer",
+        "Only through charity donations"
+      ],
+      correctAnswer: 1,
+      explanation: "Individual wealth creates positive ripple effects through job creation, increased consumer spending, higher tax revenues, and investment in productive activities.",
+      requiresSlides: [3]
+    },
+    {
+      id: "q3",
+      question: "What is the best way to break generational cycles of poverty?",
+      options: [
+        "Win the lottery",
+        "Build wealth gradually while investing in education and health",
+        "Move to a different location",
+        "Wait for government assistance"
+      ],
+      correctAnswer: 1,
+      explanation: "Breaking poverty cycles requires building wealth over time while investing in education, health, and creating opportunities for the next generation.",
+      requiresSlides: [2]
+    },
+    {
+      id: "q4",
+      question: "How has technology democratized wealth building?",
+      options: [
+        "It hasn't - only rich people can invest",
+        "Through lower barriers to investing, education, and global market access",
+        "By making everyone automatically wealthy",
+        "Only through cryptocurrency"
+      ],
+      correctAnswer: 1,
+      explanation: "Technology has lowered investment barriers through fractional investing, provided accessible financial education, and given global market access to individual investors.",
+      requiresSlides: [5]
+    },
+    {
+      id: "q5",
+      question: "What is a major responsibility that comes with wealth?",
+      options: [
+        "Buying as much as possible",
+        "Using wealth ethically and contributing to community wellbeing",
+        "Hiding wealth from others",
+        "Only helping family members"
+      ],
+      correctAnswer: 1,
+      explanation: "Wealth comes with the responsibility to use it ethically, avoid exploitation, and contribute to the broader community's wellbeing.",
+      requiresSlides: [6]
+    },
+    {
+      id: "q6",
+      question: "Which wealth-building approach benefits the most people?",
+      options: [
+        "Individual accumulation with no sharing",
+        "Building wealth communities and cooperative models",
+        "Keeping all financial knowledge secret",
+        "Only investing in foreign markets"
+      ],
+      correctAnswer: 1,
+      explanation: "Building wealth communities through investment clubs, mentorship, cooperative business models, and shared financial education benefits the most people.",
+      requiresSlides: [7]
+    },
+    {
+      id: "q7",
+      question: "What distinguishes responsible wealth building from exploitative wealth accumulation?",
+      options: [
+        "The amount of money involved",
+        "Whether you pay taxes",
+        "Fair treatment of others and contributing to community development",
+        "The type of investments you make"
+      ],
+      correctAnswer: 2,
+      explanation: "Responsible wealth building involves fair treatment of employees and customers, transparency, creating opportunities for others, and actively contributing to community development.",
+      requiresSlides: [6]
+    }
+  ]
+};
+
 // You can add more modules here following the same pattern
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
   whereMoneyLivesModule,
-  cryptoPlaceInMoneyModule
+  cryptoPlaceInMoneyModule,
+  wealthEmpowermentModule
   // Add more modules as they're created
 ];
