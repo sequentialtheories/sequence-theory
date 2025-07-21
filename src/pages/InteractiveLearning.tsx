@@ -39,6 +39,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/digital-ownership-empowerment') {
     actualModuleId = 'digital-ownership-empowerment';
   }
+  if (!actualModuleId && currentPath === '/learn/tokens-tokenization') {
+    actualModuleId = 'tokens-tokenization';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);

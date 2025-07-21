@@ -2831,6 +2831,292 @@ export const digitalOwnershipModule: ModuleData = {
   ]
 };
 
+// Ninth module: "Tokens & Tokenization"
+export const tokensTokenizationModule: ModuleData = {
+  id: 'tokens-tokenization',
+  title: 'Digital Tokens Explained',
+  description: 'Different types of digital tokens and what they do.',
+  level: 'Intermediate',
+  category: 'Web3 & Digital Ownership',
+  categoryIndex: 1,
+  moduleIndex: 2,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'Welcome to the Token Universe',
+      layout: 'visual',
+      content: `Tokens are like digital Lego blocks - you can build almost anything with them!`,
+      visualElements: {
+        icon: '🪙',
+        gradient: 'from-blue-50 to-cyan-100',
+        cards: [
+          {
+            title: 'Digital Assets',
+            description: 'Represent anything valuable in digital form',
+            icon: '💎',
+            color: 'blue'
+          },
+          {
+            title: 'Programmable',
+            description: 'Can follow rules and execute automatically',
+            icon: '⚙️',
+            color: 'purple'
+          },
+          {
+            title: 'Transferable',
+            description: 'Send them anywhere in the world instantly',
+            icon: '🌍',
+            color: 'green'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Tokens vs Cryptocurrencies',
+      layout: 'comparison',
+      content: `Most people think they're the same thing, but there's an important difference!`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Cryptocurrencies',
+            icon: '₿',
+            items: [
+              'Have their own blockchain (Bitcoin, Ethereum)',
+              'Primary purpose: be money',
+              'Secure their own network',
+              'Examples: BTC, ETH, LTC',
+              'Need miners/validators'
+            ]
+          },
+          after: {
+            title: 'Tokens',
+            icon: '🪙',
+            items: [
+              'Built on existing blockchains',
+              'Can represent anything',
+              'Use host blockchain security',
+              'Examples: USDC, UNI, NFTs',
+              'Created via smart contracts'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'The Token Family Tree',
+      layout: 'grid',
+      content: `Different types of tokens for different purposes:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Utility Tokens',
+            description: 'Access passes to services. Like buying arcade tokens to play games, but for DeFi platforms.',
+            icon: '🎟️',
+            color: 'orange'
+          },
+          {
+            title: 'Security Tokens',
+            description: 'Digital shares in real companies or assets. Think stocks, but on the blockchain.',
+            icon: '📊',
+            color: 'blue'
+          },
+          {
+            title: 'Governance Tokens',
+            description: 'Voting rights in crypto projects. Your voice in how protocols evolve and spend money.',
+            icon: '🗳️',
+            color: 'purple'
+          },
+          {
+            title: 'NFTs (Non-Fungible)',
+            description: 'Unique digital collectibles. Each one is different, like trading cards or art pieces.',
+            icon: '🎨',
+            color: 'pink'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Tokenization: Turning Real Stuff Digital',
+      layout: 'feature-cards',
+      content: `Take anything valuable and turn it into tokens that anyone can own pieces of:`,
+      visualElements: {
+        features: [
+          {
+            icon: '🏠',
+            title: 'Real Estate',
+            description: 'Buy $100 worth of a $1M house. Finally, real estate investing for normal people.'
+          },
+          {
+            icon: '🎨',
+            title: 'Art & Collectibles',
+            description: 'Own a piece of a Picasso or rare baseball card. Art investing without millions.'
+          },
+          {
+            icon: '💰',
+            title: 'Business Revenue',
+            description: 'Get paid when companies make money. Buy tokens that earn you royalties.'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Why Tokenization is Revolutionary',
+      layout: 'grid',
+      content: `It solves problems that have existed for centuries:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Fractional Ownership',
+            description: 'Can\'t afford a whole Lamborghini? Buy 1/1000th of one. Now anyone can invest in expensive assets.',
+            icon: '🧩',
+            color: 'green'
+          },
+          {
+            title: 'Global Access',
+            description: 'Japanese person wants to own US real estate? No problem. Tokens make everything globally accessible.',
+            icon: '🌍',
+            color: 'blue'
+          },
+          {
+            title: 'Instant Liquidity',
+            description: 'Need to sell your real estate investment? With tokens, it\'s as easy as selling crypto.',
+            icon: '⚡',
+            color: 'yellow'
+          },
+          {
+            title: 'Transparent Ownership',
+            description: 'Blockchain shows exactly who owns what. No more shady ownership disputes or fake documents.',
+            icon: '👁️',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Token Standards: The Rules of the Game',
+      layout: 'comparison',
+      content: `Different blockchains have different rules for how tokens work:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Ethereum Token Standards',
+            icon: 'Ξ',
+            items: [
+              'ERC-20: Regular tokens (like USDC)',
+              'ERC-721: NFTs (unique items)',
+              'ERC-1155: Multi-token (gaming)',
+              'Most popular and established',
+              'Higher fees but more features'
+            ]
+          },
+          after: {
+            title: 'Other Blockchain Standards',
+            icon: '🔗',
+            items: [
+              'BEP-20: Binance Smart Chain',
+              'SPL: Solana tokens',
+              'TRC-20: TRON tokens',
+              'Usually cheaper to use',
+              'Different trade-offs and features'
+            ]
+          }
+        }
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What\'s the main difference between tokens and cryptocurrencies?',
+      options: [
+        'Tokens are more expensive',
+        'Cryptocurrencies have their own blockchain, tokens are built on existing ones',
+        'Tokens are only for NFTs',
+        'There is no difference'
+      ],
+      correctAnswer: 1,
+      explanation: 'Cryptocurrencies like Bitcoin have their own blockchain, while tokens are built on existing blockchains using smart contracts.',
+      requiresSlides: [1] // Can appear after slide 2
+    },
+    {
+      id: 'q2',
+      question: 'What are utility tokens primarily used for?',
+      options: [
+        'Voting in elections',
+        'Accessing services on platforms',
+        'Storing files',
+        'Mining new blocks'
+      ],
+      correctAnswer: 1,
+      explanation: 'Utility tokens provide access to services or platforms, like arcade tokens that let you play games, but for digital services.',
+      requiresSlides: [2] // Can appear after slide 3
+    },
+    {
+      id: 'q3',
+      question: 'What makes NFTs different from other tokens?',
+      options: [
+        'They\'re more expensive',
+        'They\'re unique and non-fungible',
+        'They only work on Ethereum',
+        'They can\'t be transferred'
+      ],
+      correctAnswer: 1,
+      explanation: 'NFTs are non-fungible, meaning each one is unique and different, unlike regular tokens where each unit is identical and interchangeable.',
+      requiresSlides: [2] // Can appear after slide 3
+    },
+    {
+      id: 'q4',
+      question: 'What is tokenization?',
+      options: [
+        'Creating new blockchains',
+        'Converting real-world assets into digital tokens',
+        'Mining cryptocurrency',
+        'Building smart contracts'
+      ],
+      correctAnswer: 1,
+      explanation: 'Tokenization is the process of converting real-world assets (like real estate or art) into digital tokens that can be owned and traded.',
+      requiresSlides: [3] // Can appear after slide 4
+    },
+    {
+      id: 'q5',
+      question: 'What problem does fractional ownership through tokens solve?',
+      options: [
+        'Making transactions faster',
+        'Allowing people to own pieces of expensive assets',
+        'Reducing gas fees',
+        'Creating new cryptocurrencies'
+      ],
+      correctAnswer: 1,
+      explanation: 'Fractional ownership allows people to buy small pieces of expensive assets like real estate or art, making investing accessible to everyone.',
+      requiresSlides: [4] // Can appear after slide 5
+    },
+    {
+      id: 'q6',
+      question: 'What is ERC-20?',
+      options: [
+        'A new cryptocurrency',
+        'A standard for creating regular tokens on Ethereum',
+        'A type of NFT',
+        'A blockchain protocol'
+      ],
+      correctAnswer: 1,
+      explanation: 'ERC-20 is the most common standard for creating regular (fungible) tokens on the Ethereum blockchain, like USDC or UNI.',
+      requiresSlides: [5] // Can appear after slide 6
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -2839,6 +3125,7 @@ export const allModules: ModuleData[] = [
   wealthEmpowermentModule,
   financialStrategyModule,
   cryptoFundamentalsModule,
-  digitalOwnershipModule
+  digitalOwnershipModule,
+  tokensTokenizationModule
   // Add more modules as they're created
 ];
