@@ -15,12 +15,8 @@ const Hero = () => {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-hero text-white relative overflow-hidden">
-      {/* Animated background elements */}
+      {/* Clean gradient background without squares */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-glow/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute top-3/4 right-1/3 w-32 h-32 bg-primary/30 rounded-full blur-2xl animate-pulse-soft"></div>
-        
         {/* Grid pattern overlay */}
         <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
         

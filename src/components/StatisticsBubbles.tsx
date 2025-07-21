@@ -55,9 +55,9 @@ const BubbleCard = ({
   const variants = [
     "bg-gradient-to-br from-violet-200/70 to-purple-300/60 border-violet-300/80",
     "bg-gradient-to-br from-blue-200/70 to-indigo-300/60 border-blue-300/80",
-    "bg-gradient-to-br from-emerald-200/70 to-teal-300/60 border-emerald-300/80",
-    "bg-gradient-to-br from-rose-200/70 to-pink-300/60 border-rose-300/80",
-    "bg-gradient-to-br from-amber-200/70 to-orange-300/60 border-amber-300/80"
+    "bg-gradient-to-br from-purple-200/70 to-violet-300/60 border-purple-300/80",
+    "bg-gradient-to-br from-indigo-200/70 to-blue-300/60 border-indigo-300/80",
+    "bg-gradient-to-br from-violet-300/70 to-purple-400/60 border-violet-400/80"
   ];
 
   const rotations = [-2, 1, -1, 2, -3, 1, -1];
@@ -114,15 +114,15 @@ const BubbleCard = ({
 };
 
 export const StatisticsBubbles = () => {
-  // More centered positioning spreading toward bottom
+  // Positioned to avoid main content areas 
   const positions = [
-    { x: 25, y: 280 },   // Top left, more centered
-    { x: 75, y: 350 },   // Top right, more centered
-    { x: 30, y: 520 },   // Mid left, centered
-    { x: 70, y: 680 },   // Mid right, centered
-    { x: 20, y: 840 },   // Lower left, spreading down
-    { x: 80, y: 1000 },  // Lower right, spreading down
-    { x: 35, y: 1160 }   // Bottom center-left, final spread
+    { x: 15, y: 600 },   // Below hero section
+    { x: 85, y: 700 },   // Right side, clear of main text
+    { x: 20, y: 900 },   // Left side, mission area
+    { x: 75, y: 1100 },  // Right side, lower content
+    { x: 25, y: 1300 },  // Left side, bottom area
+    { x: 80, y: 1500 },  // Right side, bottom spread
+    { x: 30, y: 1700 }   // Final bottom positioning
   ];
 
   return (
