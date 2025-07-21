@@ -89,6 +89,7 @@ export default function InteractiveLearning() {
   }
 
   const handleModuleComplete = (completedModuleId: string) => {
+    console.log('Completing module:', completedModuleId, 'Category:', moduleData.categoryIndex, 'Module:', moduleData.moduleIndex);
     completeModule(completedModuleId, moduleData.categoryIndex, moduleData.moduleIndex);
   };
 

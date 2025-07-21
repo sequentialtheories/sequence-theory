@@ -161,6 +161,7 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
         
         if (finalScore === 3) {
           setModuleCompleted(true);
+          console.log('Module completed with perfect score:', moduleData.id);
           onComplete(moduleData.id);
           toast({
             title: "🎉 Module Completed!",
