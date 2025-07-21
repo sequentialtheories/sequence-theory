@@ -33,8 +33,8 @@ All colors MUST be HSL.
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 30% 90%;
-    --input: 220 30% 90%;
+    --border: transparent;
+    --input: transparent;
     --ring: 270 60% 25%;
 
     /* Enhanced gradients - Bright Vibrant Violet to Bright Blue */
@@ -98,8 +98,8 @@ All colors MUST be HSL.
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: transparent;
+    --input: transparent;
     --ring: 212.7 26.8% 83.9%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
