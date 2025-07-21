@@ -298,119 +298,286 @@ const moneyThroughTimeModule: ModuleData = {
       id: "slide-1",
       type: "content",
       title: "The Greatest Invention You Never Think About",
-      content: `What if I told you that money is one of humanity's greatest inventions - right up there with the wheel, writing, and the internet?
-
-Think about it: money touches every aspect of our lives, yet we rarely question how it came to be. The story of money is actually the story of human civilization itself.
-
-From trading chickens for haircuts to buying coffee with your phone, let's explore how money evolved and why this history matters more than you think.`
+      layout: 'visual',
+      content: `Money is one of humanity's greatest inventions - right up there with the wheel, writing, and the internet!`,
+      visualElements: {
+        icon: '🏛️',
+        gradient: 'from-amber-50 to-orange-100',
+        cards: [
+          {
+            title: 'The Wheel',
+            description: 'Revolutionized transportation and movement',
+            icon: '🛞',
+            color: 'blue'
+          },
+          {
+            title: 'Writing',
+            description: 'Enabled knowledge sharing across time',
+            icon: '📜',
+            color: 'green'
+          },
+          {
+            title: 'Money',
+            description: 'Made complex economies and trade possible',
+            icon: '💰',
+            color: 'yellow'
+          },
+          {
+            title: 'Internet',
+            description: 'Connected the world in the digital age',
+            icon: '🌐',
+            color: 'purple'
+          }
+        ]
+      }
     },
     {
       id: "slide-2", 
       type: "content",
       title: "Life Before Money (The Barter Days)",
-      content: `Picture this: You're a farmer in ancient times with extra grain. You need shoes, but the shoemaker doesn't want grain - he wants meat. So you need to find someone who wants grain and has meat, then trade the meat for shoes.
-
-This is exhausting! And what if your grain spoils while you're searching? Or the shoemaker decides he wants pottery instead?
-
-The barter system worked for small communities, but it had a fatal flaw: both people had to want exactly what the other person offered. Economists call this the "double coincidence of wants" problem.
-
-Trade was limited, and economies couldn't grow beyond tiny villages.`
+      layout: 'comparison',
+      content: `The barter system worked for small communities, but it had a fatal flaw: the "double coincidence of wants" problem.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Barter Problems',
+            icon: '😰',
+            items: [
+              'Need exact match of wants',
+              'Time-consuming negotiations',
+              'Goods spoil while searching',
+              'Complex chains of trades',
+              'Limited to small communities'
+            ]
+          },
+          after: {
+            title: 'What People Needed',
+            icon: '💡',
+            items: [
+              'Universal medium of exchange',
+              'Durable store of value',
+              'Standardized unit of measure',
+              'Portable and divisible',
+              'Widely accepted by all'
+            ]
+          }
+        }
+      }
     },
     {
       id: "slide-3",
       type: "content",
       title: "The First Money: Things People Actually Wanted",
-      content: `Humans got clever. Instead of trading goods directly, they started using items that EVERYONE wanted.
-
-Cattle became money (that's where "capital" comes from!). Salt was so valuable that Roman soldiers were paid with it (hence "salary"). Shells, stones, and precious metals all served as early money.
-
-This was genius! Now you could trade your grain for cattle, and the shoemaker would accept cattle because everyone else did too.
-
-But there was still a problem: Try carrying 10 cows to the market, or keeping your salt fortune from getting wet in the rain.
-
-Money needed to evolve again.`
+      layout: 'grid',
+      content: `Humans got clever and started using items that EVERYONE wanted as money:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Cattle Money',
+            description: 'Valuable livestock became currency - this is where the word "capital" comes from!',
+            icon: '🐄',
+            color: 'green'
+          },
+          {
+            title: 'Salt Payment',
+            description: 'So valuable that Roman soldiers were paid with it - giving us the word "salary"',
+            icon: '🧂',
+            color: 'blue'
+          },
+          {
+            title: 'Shell Currency',
+            description: 'Cowrie shells served as money across Africa, Asia, and Pacific islands',
+            icon: '🐚',
+            color: 'purple'
+          },
+          {
+            title: 'Precious Metals',
+            description: 'Gold and silver: rare, durable, and universally desired across cultures',
+            icon: '🥇',
+            color: 'yellow'
+          }
+        ]
+      }
     },
     {
       id: "slide-4",
       type: "content",
       title: "The Coin Revolution (Money Gets Official)",
-      content: `Around 650 BCE, the kingdom of Lydia created something revolutionary: the first official coins.
-
-These weren't just metal chunks - they were standardized pieces with guaranteed weight and purity, stamped by the government. Suddenly, you didn't need to weigh and test metal with every transaction.
-
-Coins spread like wildfire because they solved major problems:
-• Same size and value everywhere
-• Hard to fake (government stamp)
-• Easy to carry and count
-• Didn't spoil or die
-
-But humans being human, governments quickly learned they could "cheat" by reducing the precious metal content while keeping the same face value. The first inflation was born!`
+      layout: 'feature-cards',
+      content: `Around 650 BCE, the kingdom of Lydia created something revolutionary: the first official coins.`,
+      visualElements: {
+        features: [
+          {
+            icon: '⚖️',
+            title: 'Standardized Weight',
+            description: 'Government guaranteed exact weight and purity - no more weighing and testing'
+          },
+          {
+            icon: '👑',
+            title: 'Official Stamp',
+            description: 'Royal seal prevented counterfeiting and built trust in the currency'
+          },
+          {
+            icon: '🚀',
+            title: 'Global Adoption',
+            description: 'Coins spread rapidly because they solved major trade problems'
+          }
+        ]
+      }
     },
     {
       id: "slide-5",
       type: "content",
       title: "Paper Money: The Dangerous Temptation",
-      content: `China invented paper money around 1000 CE, and it was brilliant - until it wasn't.
-
-Paper money was incredibly convenient: light, portable, and you could make it in different denominations. It enabled modern banking and international trade.
-
-But here's the catch: it's just paper. Its value comes from trust and the promise that you can exchange it for something real.
-
-Every government that controlled paper money eventually faced the same temptation: when they needed money for wars or expensive projects, why not just print more?
-
-France's revolutionary money became worthless. Confederate dollars weren't worth the paper they were printed on. Germany printed so much money in the 1920s that people needed wheelbarrows full of cash to buy bread.
-
-The pattern was clear: give governments a printing press, and they'll eventually use it.`
+      layout: 'comparison',
+      content: `China invented paper money around 1000 CE. It was revolutionary but came with a dangerous temptation...`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Paper Money Benefits',
+            icon: '📄',
+            items: [
+              'Incredibly lightweight and portable',
+              'Different denominations possible',
+              'Enabled modern banking systems',
+              'Facilitated international trade',
+              'Much cheaper to produce'
+            ]
+          },
+          after: {
+            title: 'The Printing Temptation',
+            icon: '⚠️',
+            items: [
+              'Governments could print more for wars',
+              'French revolutionary money became worthless',
+              'Confederate dollars lost all value',
+              'German hyperinflation in the 1920s',
+              'Pattern repeated throughout history'
+            ]
+          }
+        }
+      }
     },
     {
       id: "slide-6",
       type: "content",
       title: "The Great Experiment: Money Without Gold",
-      content: `On August 15, 1971, President Nixon made a decision that changed everything: he ended the U.S. dollar's connection to gold.
-
-For the first time in history, the world's dominant currency wasn't backed by anything except government promises. We entered the "fiat money" era (fiat means "let it be so" in Latin).
-
-This was unprecedented. Every major currency is now fiat money - it has value because governments say it does, not because it's backed by gold or silver.
-
-The results? On one hand: global trade exploded, economies became more flexible, and we got credit cards and digital payments.
-
-On the other hand: money printing accelerated, boom-bust cycles got bigger, and the dollar lost 85% of its value since 1971.
-
-We're still living through this experiment.`
+      layout: 'visual',
+      content: `On August 15, 1971, Nixon ended the dollar's connection to gold. For the first time in history, the world's dominant currency wasn't backed by anything physical.`,
+      visualElements: {
+        icon: '🏛️',
+        gradient: 'from-red-50 to-rose-100',
+        cards: [
+          {
+            title: 'Global Trade Explosion',
+            description: 'Flexible currencies enabled massive economic growth',
+            icon: '🌍',
+            color: 'green'
+          },
+          {
+            title: 'Financial Innovation',
+            description: 'Credit cards, digital payments, and modern banking',
+            icon: '💳',
+            color: 'blue'
+          },
+          {
+            title: 'Money Printing Acceleration',
+            description: 'No gold backing removed natural limits on currency creation',
+            icon: '🖨️',
+            color: 'red'
+          },
+          {
+            title: '85% Value Loss',
+            description: 'The dollar lost most of its purchasing power since 1971',
+            icon: '📉',
+            color: 'orange'
+          }
+        ]
+      }
     },
     {
       id: "slide-7",
       type: "content",
       title: "Enter the Digital Age",
-      content: `Then 2008 happened. The financial crisis shook faith in traditional banking, and something new emerged from the chaos: Bitcoin.
-
-For the first time in history, we had money that:
-• No government controls
-• Has a fixed supply that can't be increased
-• Works globally without banks
-• Is completely digital
-
-Whether Bitcoin succeeds or fails, it opened the floodgates. Now we have thousands of digital currencies, central bank digital currencies (CBDCs), and money that can be programmed with smart contracts.
-
-Money is evolving faster than ever, and we're witnessing the birth of entirely new monetary systems.`
+      layout: 'visual',
+      content: `The 2008 financial crisis shook faith in traditional banking, and something revolutionary emerged: Bitcoin.`,
+      visualElements: {
+        icon: '₿',
+        gradient: 'from-orange-50 to-amber-100',
+        cards: [
+          {
+            title: 'No Government Control',
+            description: 'Decentralized network with no central authority',
+            icon: '🏛️',
+            color: 'purple'
+          },
+          {
+            title: 'Fixed Supply',
+            description: 'Only 21 million Bitcoin will ever exist',
+            icon: '🔒',
+            color: 'orange'
+          },
+          {
+            title: 'Global & Borderless',
+            description: 'Works anywhere in the world without banks',
+            icon: '🌐',
+            color: 'blue'
+          },
+          {
+            title: 'Programmable Money',
+            description: 'Smart contracts and automated transactions',
+            icon: '⚡',
+            color: 'green'
+          }
+        ]
+      }
     },
     {
       id: "slide-8",
       type: "content",
       title: "What History Teaches Us",
-      content: `Looking back, several patterns emerge:
-
-1. **Money always evolves with technology** - from metals to coins to paper to digital
-2. **Trust is everything** - money only works when people believe in it
-3. **Convenience drives adoption** - easier-to-use money always wins
-4. **Power corrupts** - those who control money printing eventually abuse it
-5. **Innovation comes from problems** - new money systems emerge when old ones fail
-
-Understanding this history isn't just academic - it helps you navigate today's monetary landscape.
-
-When someone tells you cryptocurrency is "fake money," you can remind them that all money is a social agreement. When inflation rises, you understand it's as old as governments themselves.
-
-The story of money is far from over. You're living through the next chapter right now.`
+      layout: 'grid',
+      content: `Looking back through monetary history, several powerful patterns emerge:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Technology Drives Evolution',
+            description: 'Money always adapts to new technology - from metals to coins to paper to digital',
+            icon: '🔧',
+            color: 'blue'
+          },
+          {
+            title: 'Trust is Everything',
+            description: 'Money only works when people believe in it - confidence creates value',
+            icon: '🤝',
+            color: 'green'
+          },
+          {
+            title: 'Convenience Wins',
+            description: 'Easier-to-use money always defeats harder-to-use alternatives',
+            icon: '📱',
+            color: 'purple'
+          },
+          {
+            title: 'Power Corrupts',
+            description: 'Those who control money printing eventually abuse this power',
+            icon: '⚖️',
+            color: 'red'
+          },
+          {
+            title: 'Innovation from Crisis',
+            description: 'New monetary systems emerge when old ones fail people',
+            icon: '💡',
+            color: 'yellow'
+          },
+          {
+            title: 'You\'re Living History',
+            description: 'The story of money continues - and you\'re part of the next chapter',
+            icon: '📖',
+            color: 'indigo'
+          }
+        ]
+      }
     }
   ],
   quizPool: [
