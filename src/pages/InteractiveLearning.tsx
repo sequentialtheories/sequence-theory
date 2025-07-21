@@ -51,6 +51,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/advanced-web3-innovations') {
     actualModuleId = 'advanced-web3-innovations';
   }
+  if (!actualModuleId && currentPath === '/learn/learning-human-progress-foundation') {
+    actualModuleId = 'learning-human-progress-foundation';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);
