@@ -35,12 +35,25 @@ export function useLearningProgress() {
   }, [progress]);
 
   const completeModule = (moduleId: string, categoryIndex: number, moduleIndex: number) => {
-    setProgress(prev => ({
-      ...prev,
-      completedModules: [...prev.completedModules, moduleId],
-      currentCategory: categoryIndex,
-      currentModule: moduleIndex + 1
-    }));
+    setProgress(prev => {
+      // Avoid duplicate entries
+      const completedModules = prev.completedModules.includes(moduleId) 
+        ? prev.completedModules 
+        : [...prev.completedModules, moduleId];
+      
+      const newProgress = {
+        ...prev,
+        completedModules,
+        currentCategory: categoryIndex,
+        currentModule: moduleIndex + 1
+      };
+      
+      // Immediately save to localStorage for instant persistence
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newProgress));
+      console.log('Progress saved:', newProgress);
+      
+      return newProgress;
+    });
   };
 
   const isModuleUnlocked = (categoryIndex: number, moduleIndex: number): boolean => {

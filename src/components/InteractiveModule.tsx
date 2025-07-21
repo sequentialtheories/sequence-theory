@@ -164,7 +164,7 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
           onComplete(moduleData.id);
           toast({
             title: "🎉 Module Completed!",
-            description: "Perfect score! You've unlocked the next module.",
+            description: "Perfect score! Your progress has been saved and the next module is unlocked.",
           });
         } else {
           toast({
@@ -590,7 +590,12 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
                 {currentSlide + 1} of {moduleData.slides.length}
               </span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <div className="mb-2">
+              <Progress value={progress} className="h-3 bg-gray-200" />
+            </div>
+            <div className="text-center text-xs text-gray-500">
+              {Math.round(progress)}% Complete
+            </div>
           </div>
 
           {/* Content Card */}
