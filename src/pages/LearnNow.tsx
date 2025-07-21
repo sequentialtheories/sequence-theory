@@ -52,7 +52,7 @@ const LearnNow = () => {
       moduleIndex: 4
     }, {
       icon: Target,
-      title: "Financial Overview",
+      title: "Financial Strategy Planning",
       description: "Smart ways to grow your money over time.",
       level: "Advanced",
       slug: "financial-strategy-planning",
@@ -203,25 +203,25 @@ const LearnNow = () => {
         </div>
         
         <div className="container mx-auto px-6 text-center relative z-10">
-          
-          
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-purple-800 to-cyan-800 bg-clip-text text-transparent leading-tight">
             Get Smart About Money
           </h2>
-          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Learn money, crypto, and why education matters. Simple, practical, no confusing jargon.
+          </p>
           
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <BookOpen className="h-4 w-4 text-purple-600" />
-              <span className="font-medium text-gray-700">18 Lessons</span>
+              <span className="font-medium text-gray-700">18 Interactive Modules</span>
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Users className="h-4 w-4 text-cyan-600" />
-              <span className="font-medium text-gray-700">Made for Ease</span>
+              <span className="font-medium text-gray-700">Easy to Understand</span>
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-md">
               <Award className="h-4 w-4 text-indigo-600" />
-              <span className="font-medium text-gray-700">Quiz & Test</span>
+              <span className="font-medium text-gray-700">Quizzes & Final Exam</span>
             </div>
           </div>
         </div>
@@ -235,12 +235,11 @@ const LearnNow = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              
                 <h3 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 to-purple-800 bg-clip-text text-transparent">
                   Why Start Now?
                 </h3>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                  Money and crypto are changing fast. Get ahead while you still can.
+                  Financial education is changing everything. Don't get left behind.
                 </p>
             </div>
             
@@ -309,7 +308,7 @@ const LearnNow = () => {
                     Pick Your Path
                   </h3>
                   <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Three simple paths. Pick what interests you most.
+                    Three learning paths. Choose what interests you most, or do them all.
                   </p>
                 </div>
                 
@@ -500,10 +499,10 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Financial Overview Quiz 🧠
+                  Financial Basics Quiz 🧠
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Think you got the money stuff down? Let's find out! Quick quiz on everything from "what is money" to planning your financial future.
+                  Test your knowledge about money basics. Quick quiz covering everything from "what is money" to planning your financial future.
                 </p>
               </div>
               
@@ -513,9 +512,9 @@ const LearnNow = () => {
                     <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Target className="h-10 w-10 text-white" />
                     </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Skills?</h4>
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Knowledge?</h4>
                     <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                      15 questions about money basics. One question at a time, so no stress!
+                      15 questions about money basics. Take your time, no pressure!
                     </p>
                   </div>
 
@@ -525,12 +524,12 @@ const LearnNow = () => {
                       <p className="text-sm text-gray-600">Everything you learned</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-purple-200">
-                      <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
-                      <p className="text-sm text-gray-600">No rush, take your time</p>
+                      <h5 className="font-semibold text-cyan-700 mb-2">Take Your Time</h5>
+                      <p className="text-sm text-gray-600">No rush, one question at a time</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-purple-200">
-                      <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
-                      <p className="text-sm text-gray-600">See how you did right away</p>
+                      <h5 className="font-semibold text-green-700 mb-2">Instant Feedback</h5>
+                      <p className="text-sm text-gray-600">See your results right away</p>
                     </div>
                   </div>
 
@@ -548,7 +547,7 @@ const LearnNow = () => {
                     </div>
                     <h4 className="text-2xl font-bold text-gray-600 mb-2">Quiz Locked</h4>
                     <p className="text-gray-500 mb-6 max-w-2xl mx-auto">
-                      Complete all 6 Financial Overview modules to unlock this quiz.
+                      Complete all 6 Financial Basics modules to unlock this quiz.
                     </p>
                     <div className="bg-white p-4 rounded-lg border border-gray-200 max-w-md mx-auto">
                       <p className="text-sm text-gray-600 mb-2">Progress:</p>
@@ -572,10 +571,10 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Crypto & Digital Money Quiz 🚀
+                  Crypto & Web3 Quiz 🚀
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Ready to test your crypto knowledge? From basic crypto to advanced DeFi stuff.
+                  Test your crypto and digital money knowledge. From basic crypto concepts to advanced DeFi.
                 </p>
               </div>
               
@@ -585,23 +584,23 @@ const LearnNow = () => {
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Zap className="h-10 w-10 text-white" />
                     </div>
-                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Crypto Skills?</h4>
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Crypto Knowledge?</h4>
                     <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                      15 questions about crypto and digital money. One at a time, nice and easy!
+                      15 questions about crypto and digital money. Take your time with each question!
                     </p>
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <div className="bg-white p-4 rounded-lg border border-indigo-200">
                       <h5 className="font-semibold text-indigo-700 mb-2">15 Questions</h5>
-                      <p className="text-sm text-gray-600">All the crypto stuff you learned</p>
+                      <p className="text-sm text-gray-600">All the crypto knowledge you gained</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-indigo-200">
-                      <h5 className="font-semibold text-purple-700 mb-2">One by One</h5>
+                      <h5 className="font-semibold text-purple-700 mb-2">Take Your Time</h5>
                       <p className="text-sm text-gray-600">Questions presented individually</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-indigo-200">
-                      <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                      <h5 className="font-semibold text-green-700 mb-2">Instant Feedback</h5>
                       <p className="text-sm text-gray-600">Get your score immediately</p>
                     </div>
                   </div>
@@ -644,10 +643,10 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Why Learning Matters Quiz 🎓
+                  Education & Learning Quiz 🎓
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Time to test what you learned about learning! From why education matters to who gets to learn about money.
+                  Test what you learned about education and learning. From why education matters to financial literacy access.
                 </p>
               </div>
               
@@ -659,7 +658,7 @@ const LearnNow = () => {
                     </div>
                     <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Learning Knowledge?</h4>
                     <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                      15 questions about education and why it matters. You know the drill - one question at a time!
+                      15 questions about education and why it matters. Take your time with each question!
                     </p>
                   </div>
 
@@ -669,11 +668,11 @@ const LearnNow = () => {
                       <p className="text-sm text-gray-600">All about learning and education</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-amber-200">
-                      <h5 className="font-semibold text-orange-700 mb-2">One by One</h5>
+                      <h5 className="font-semibold text-orange-700 mb-2">Take Your Time</h5>
                       <p className="text-sm text-gray-600">Questions presented individually</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-amber-200">
-                      <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                      <h5 className="font-semibold text-green-700 mb-2">Instant Feedback</h5>
                       <p className="text-sm text-gray-600">Get your score immediately</p>
                     </div>
                   </div>
@@ -692,7 +691,7 @@ const LearnNow = () => {
                     </div>
                     <h4 className="text-2xl font-bold text-gray-600 mb-2">Quiz Locked</h4>
                     <p className="text-gray-500 mb-6 max-w-2xl mx-auto">
-                      Complete all 6 Why Learning Matters modules to unlock this quiz.
+                      Complete all 6 Education & Learning modules to unlock this quiz.
                     </p>
                     <div className="bg-white p-4 rounded-lg border border-gray-200 max-w-md mx-auto">
                       <p className="text-sm text-gray-600 mb-2">Progress:</p>
@@ -716,10 +715,10 @@ const LearnNow = () => {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                📚 The Big Final Quiz
+                📚 Comprehensive Final Exam
               </h3>
               <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                Ready for the ultimate test? This covers everything - money, crypto, and why learning matters.
+                Ready for the ultimate test? This comprehensive exam covers everything you've learned across all three learning paths.
               </p>
             </div>
             
@@ -731,28 +730,28 @@ const LearnNow = () => {
                   </div>
                   <h4 className="text-2xl font-bold text-gray-900 mb-2">The Ultimate Knowledge Test</h4>
                   <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    Questions from all three learning paths. Time to show off what you've learned!
+                    Comprehensive questions from all three learning paths. Show off everything you've learned!
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <h5 className="font-semibold text-slate-700 mb-2">35 Questions</h5>
-                    <p className="text-sm text-gray-600">Random mix from all lessons</p>
+                    <p className="text-sm text-gray-600">Comprehensive mix from all modules</p>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <h5 className="font-semibold text-gray-700 mb-2">All Topics</h5>
-                    <p className="text-sm text-gray-600">Money, crypto, and learning</p>
+                    <p className="text-sm text-gray-600">Money, crypto, and education</p>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                    <h5 className="font-semibold text-green-700 mb-2">Final Score</h5>
-                    <p className="text-sm text-gray-600">See how you did overall</p>
+                    <h5 className="font-semibold text-green-700 mb-2">Final Certificate</h5>
+                    <p className="text-sm text-gray-600">Complete your learning journey</p>
                   </div>
                 </div>
 
                 <Link to="/comprehensive-exam">
                   <Button className="bg-gradient-to-r from-slate-600 to-gray-600 text-white px-8 py-4 text-lg font-semibold hover:from-slate-700 hover:to-gray-700 hover:scale-105 transition-all">
-                    Take Exam
+                    Take Final Exam
                   </Button>
                 </Link>
               </div>
