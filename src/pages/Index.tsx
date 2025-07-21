@@ -1,37 +1,33 @@
-
 import React from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
-
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Index = () => {
   // Add document title and meta description for better SEO
   React.useEffect(() => {
     document.title = "Sequence Theory - Democratizing Financial Empowerment Through The Vault Club";
-    
+
     // Add additional meta tags dynamically
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments. Build wealth through structured investing without traditional barriers.');
     }
-    
+
     // Add keywords meta tag
     const keywordsMeta = document.createElement('meta');
     keywordsMeta.name = 'keywords';
     keywordsMeta.content = 'Sequence Theory, Vault Club, cryptocurrency investing, financial education, wealth building, community investing, digital assets, blockchain, financial literacy, DeFi, compound interest';
     document.head.appendChild(keywordsMeta);
-    
+
     // Add author meta tag
     const authorMeta = document.createElement('meta');
     authorMeta.name = 'author';
     authorMeta.content = 'Sequence Theory, Inc.';
     document.head.appendChild(authorMeta);
-    
     return () => {
       // Cleanup
       const existingKeywords = document.querySelector('meta[name="keywords"]');
@@ -40,7 +36,6 @@ const Index = () => {
       if (existingAuthor) document.head.removeChild(existingAuthor);
     };
   }, []);
-
   const scrollToSignup = () => {
     const element = document.getElementById('signup-section');
     if (element) {
@@ -49,9 +44,7 @@ const Index = () => {
       });
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+  return <div className="min-h-screen bg-background relative overflow-hidden">
       <Navigation />
       
       
@@ -75,11 +68,7 @@ const Index = () => {
                 </span>
               </h1>
             </header>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed" itemProp="description">
-              A framework for building lasting financial literacy and inclusion across digital and traditional markets. 
-              Our mission is to provide accessible financial tools and services that empower everyday users 
-              to build wealth through communal cryptocurrency investments and educational opportunities.
-            </p>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed" itemProp="description">Our mission is to provide accessible financial tools and services that empower everyday users to build wealth through communal cryptocurrency investments and educational opportunities.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/learn-more">
                 <Button size="lg" className="text-lg px-10 py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
@@ -272,8 +261,6 @@ const Index = () => {
         
         <Footer />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
