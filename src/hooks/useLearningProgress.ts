@@ -44,8 +44,8 @@ export function useLearningProgress() {
   };
 
   const isModuleUnlocked = (categoryIndex: number, moduleIndex: number): boolean => {
-    // First module of first category is always unlocked
-    if (categoryIndex === 0 && moduleIndex === 0) {
+    // First module of each category is always unlocked for better UX
+    if (moduleIndex === 0) {
       return true;
     }
 
@@ -60,25 +60,6 @@ export function useLearningProgress() {
         return progress.completedModules.includes(previousModule.id);
       }
       return false;
-    }
-
-    // For first module in any category beyond the first category
-    // Check if the last module of the previous category is completed
-    if (categoryIndex > 0 && moduleIndex === 0) {
-      // Find the last module of the previous category
-      const previousCategoryModules = allModules.filter(
-        module => module.categoryIndex === categoryIndex - 1
-      );
-      
-      if (previousCategoryModules.length > 0) {
-        const lastModuleOfPreviousCategory = previousCategoryModules.reduce((latest, current) => 
-          current.moduleIndex > latest.moduleIndex ? current : latest
-        );
-        return progress.completedModules.includes(lastModuleOfPreviousCategory.id);
-      }
-      
-      // If no previous category modules found, unlock it
-      return true;
     }
 
     return false;
