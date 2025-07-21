@@ -15,6 +15,9 @@ export default function InteractiveLearning() {
   const currentPath = window.location.pathname;
   let actualModuleId = moduleId;
   
+  if (!actualModuleId && currentPath === '/learn/what-is-money-really') {
+    actualModuleId = 'what-is-money-really';
+  }
   if (!actualModuleId && currentPath === '/learn/historical-evolution-money') {
     actualModuleId = 'historical-evolution-money';
   }

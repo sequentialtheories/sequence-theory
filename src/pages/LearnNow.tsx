@@ -12,7 +12,7 @@ const LearnNow = () => {
       title: "What is Money Really?",
       description: "Why we even have money and how it makes life easier for everyone.",
       level: "Beginner",
-      slug: "concept-purpose-money"
+      slug: "what-is-money-really"
     }, {
       icon: BookOpen,
       title: "Money Through Time",
