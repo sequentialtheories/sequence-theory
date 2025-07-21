@@ -1,7 +1,7 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { StatisticsBubbles } from "@/components/StatisticsBubbles";
+
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -20,8 +20,6 @@ const Index = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Navigation />
       
-      {/* Statistics Bubbles scattered throughout the page */}
-      <StatisticsBubbles />
       
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
