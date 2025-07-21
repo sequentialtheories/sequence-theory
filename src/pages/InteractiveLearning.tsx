@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import InteractiveModule from '@/components/InteractiveModule';
-import { whatIsMoneyModule } from '@/data/moduleData';
+import { allModules } from '@/data/moduleData';
 import { useLearningProgress } from '@/hooks/useLearningProgress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,8 @@ export default function InteractiveLearning() {
   const { moduleId } = useParams();
   const { completeModule, isModuleUnlocked } = useLearningProgress();
 
-  // For now, we only have one module. In the future, you'd fetch by moduleId
-  const moduleData = whatIsMoneyModule;
+  // Find the module by moduleId
+  const moduleData = allModules.find(module => module.id === moduleId);
 
   if (!moduleData) {
     return (

@@ -18,7 +18,7 @@ interface ContentSlide {
   id: string;
   type: 'content' | 'quiz';
   title: string;
-  content?: string;
+  content?: string | React.ReactNode;
   image?: string;
 }
 
@@ -367,11 +367,14 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
                 )}
                 
                 <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                  {moduleData.slides[currentSlide]?.content?.split('\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4">
-                      {paragraph}
-                    </p>
-                  ))}
+                  {typeof moduleData.slides[currentSlide]?.content === 'string' 
+                    ? moduleData.slides[currentSlide]?.content?.split('\n').map((paragraph, index) => (
+                        <p key={index} className="mb-4">
+                          {paragraph}
+                        </p>
+                      ))
+                    : moduleData.slides[currentSlide]?.content
+                  }
                 </div>
               </div>
             </CardContent>

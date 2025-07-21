@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface QuizQuestion {
   id: string;
   question: string;
@@ -11,7 +13,7 @@ export interface ContentSlide {
   id: string;
   type: 'content' | 'quiz';
   title: string;
-  content?: string;
+  content?: string | React.ReactNode;
   image?: string;
 }
 
@@ -170,8 +172,261 @@ Ready to test your knowledge?`
   ]
 };
 
+const moneyThroughTimeModule: ModuleData = {
+  id: "money-through-time",
+  title: "Money Through Time",
+  description: "Explore the evolution of money from barter to digital currencies",
+  level: "Beginner",
+  category: "Finance Fundamentals",
+  categoryIndex: 0,
+  moduleIndex: 1,
+  slides: [
+    {
+      id: "intro",
+      type: "content",
+      title: "The Journey of Money Through Time",
+      content: `Money's evolution reveals humanity's greatest financial triumphs and catastrophic mistakes. Understanding this history is crucial for navigating today's monetary landscape.
+
+Let's take a journey through time to see how money evolved from simple bartering to today's digital currencies.`
+    },
+    {
+      id: "barter",
+      type: "content", 
+      title: "The Barter System (Pre-3000 BCE)",
+      content: `Before money existed, people traded goods directly. This was simple in concept but had major problems:
+
+**The Double Coincidence Problem**: You want my cow, but I need your grain - not your tools!
+
+**No Fair Pricing**: How many chickens equal one cow? Pricing was inconsistent and unfair.
+
+**No Savings**: You can't store perishable goods for future use. Your wealth would literally rot away.
+
+This system severely limited trade and economic growth.`
+    },
+    {
+      id: "commodity",
+      type: "content",
+      title: "Commodity Money Era (3000-600 BCE)",
+      content: `Items with intrinsic value became the first "money":
+
+**Popular Commodities**:
+• Cattle (where "capital" comes from)
+• Salt (Roman soldiers' "salary") 
+• Shells and rare stones
+• Precious metals
+
+**The Problems**:
+• Heavy and hard to transport
+• Spoilage and deterioration
+• Difficult to divide
+• Easy to counterfeit
+
+While better than barter, commodity money had serious limitations for growing economies.`
+    },
+    {
+      id: "coins",
+      type: "content",
+      title: "The Coin Revolution (650 BCE - 1000 CE)",
+      content: `Lydia's first coins around 650 BCE revolutionized trade:
+
+**Major Innovations**:
+• Standardized weight and purity
+• Government authentication  
+• Portable and durable
+• Divisible into smaller units
+
+**The Dark Side**:
+• Coin clipping and debasement
+• Roman inflation from silver debasement
+• Still heavy for large transactions
+
+Coins solved many problems but governments quickly learned to abuse them.`
+    },
+    {
+      id: "paper",
+      type: "content",
+      title: "Paper Money & Banking (1000 CE - 1971)",
+      content: `China invented paper money, but it came with a dangerous temptation:
+
+**Revolutionary Benefits**:
+• Lightweight and portable
+• Enabled modern banking
+• Facilitated international trade
+• Gold standard provided stability
+
+**Historic Failures**:
+• France's assignats (1790s) - 99% loss
+• Confederate dollars - became worthless
+• Germany's Weimar hyperinflation
+• Government printing to fund wars
+
+⚠️ **The Pattern**: Every government that gained control of money printing eventually abused it.`
+    },
+    {
+      id: "fiat",
+      type: "content",
+      title: "The Fiat Experiment (1971 - Present)",
+      content: `Nixon ended gold backing in 1971. We're now 50+ years into the first global fiat experiment:
+
+**Fiat Advantages**:
+• Flexible monetary policy
+• Digital transactions possible
+• Quick crisis response
+• Global payment systems
+
+**The Cost**:
+• Persistent inflation erodes savings
+• Currency wars and devaluations  
+• Boom-bust cycles amplified
+• Growing wealth inequality
+
+📊 **The Numbers**: Since 1971, the US dollar has lost 85% of its purchasing power. What cost $1 then costs $6.50+ today.`
+    },
+    {
+      id: "digital",
+      type: "content",
+      title: "The Digital Revolution (2008 - Present)",
+      content: `Bitcoin emerged from the 2008 financial crisis, offering new possibilities:
+
+**Payment Innovation**: Digital wallets, instant transfers, global reach
+
+**Programmable Money**: Smart contracts, DeFi, automated systems
+
+**Monetary Choice**: Fixed supply vs. infinite printing debate
+
+The digital age has opened up entirely new possibilities for what money can be and how it can function.`
+    },
+    {
+      id: "lessons",
+      type: "content",
+      title: "Critical Lessons from History",
+      content: `**What We've Learned**:
+• Money always evolves with technology
+• Trust is the foundation of any monetary system
+• Governments can't resist printing money
+• Inflation is theft from savers
+• Monopoly money always fails eventually
+
+**Why This Matters Today**:
+• Central banks printed $20+ trillion since 2008
+• We're in the longest fiat experiment ever
+• Digital alternatives are emerging
+• Your wealth depends on these choices
+
+💡 **Key Insight**: Understanding history helps predict the future of money.`
+    }
+  ],
+  quizPool: [
+    {
+      id: "q1",
+      question: "What was the main problem with the barter system?",
+      options: [
+        "It was too complex",
+        "The double coincidence of wants problem",
+        "It required technology",
+        "It was illegal"
+      ],
+      correctAnswer: 1,
+      explanation: "The double coincidence of wants meant both parties had to want what the other offered, making trades difficult and limiting economic growth.",
+      requiresSlides: [1]
+    },
+    {
+      id: "q2", 
+      question: "Which ancient civilization is credited with creating the first coins?",
+      options: [
+        "Greece",
+        "Rome", 
+        "Lydia",
+        "Egypt"
+      ],
+      correctAnswer: 2,
+      explanation: "Lydia (modern-day Turkey) created the first official coins around 650 BCE, revolutionizing trade with standardized weight and purity.",
+      requiresSlides: [3]
+    },
+    {
+      id: "q3",
+      question: "What happened to the US dollar's purchasing power since 1971?",
+      options: [
+        "It increased by 50%",
+        "It stayed the same",
+        "It lost about 85% of its value",
+        "It doubled in value"
+      ],
+      correctAnswer: 2,
+      explanation: "Since Nixon ended the gold standard in 1971, the dollar has lost approximately 85% of its purchasing power due to persistent inflation.",
+      requiresSlides: [5]
+    },
+    {
+      id: "q4",
+      question: "Which country first invented paper money?",
+      options: [
+        "England",
+        "France",
+        "China", 
+        "Italy"
+      ],
+      correctAnswer: 2,
+      explanation: "China invented paper money during the Tang Dynasty, centuries before it appeared in Europe, revolutionizing trade and commerce.",
+      requiresSlides: [4]
+    },
+    {
+      id: "q5",
+      question: "What was salt used for in ancient Rome related to money?",
+      options: [
+        "As currency for soldiers' salaries",
+        "As backing for coins",
+        "As a trade commodity only",
+        "As a measure of wealth"
+      ],
+      correctAnswer: 0,
+      explanation: "Roman soldiers were often paid in salt, which is where the word 'salary' comes from - highlighting salt's role as commodity money.",
+      requiresSlides: [2]
+    },
+    {
+      id: "q6",
+      question: "What emerged after the 2008 financial crisis?",
+      options: [
+        "New banking regulations only",
+        "Bitcoin and digital currencies",
+        "Return to the gold standard",
+        "Elimination of paper money"
+      ],
+      correctAnswer: 1,
+      explanation: "Bitcoin was created in 2008 as a response to the financial crisis, offering an alternative to traditional banking systems and fiat currencies.",
+      requiresSlides: [6]
+    },
+    {
+      id: "q7",
+      question: "What is the most important lesson from monetary history?",
+      options: [
+        "Gold is always the best money",
+        "Technology doesn't matter",
+        "Governments tend to abuse money printing power",
+        "Inflation is always good"
+      ],
+      correctAnswer: 2,
+      explanation: "Throughout history, governments that gained control over money printing consistently abused this power, leading to inflation and currency devaluation.",
+      requiresSlides: [7]
+    },
+    {
+      id: "q8",
+      question: "What was a major problem with commodity money?",
+      options: [
+        "It was too valuable",
+        "It was heavy and hard to transport",
+        "It lasted too long",
+        "It was too easy to create"
+      ],
+      correctAnswer: 1,
+      explanation: "Commodity money like cattle or large stones was difficult to transport and impractical for everyday transactions, limiting trade efficiency.",
+      requiresSlides: [2]
+    }
+  ]
+};
+
 // You can add more modules here following the same pattern
 export const allModules: ModuleData[] = [
-  whatIsMoneyModule
+  whatIsMoneyModule,
+  moneyThroughTimeModule
   // Add more modules as they're created
 ];
