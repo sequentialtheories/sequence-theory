@@ -5767,36 +5767,30 @@ const globalEducationStatisticsModule: ModuleData = {
     {
       id: 'slide-1',
       type: 'content',
-      title: 'The Global Education Divide',
+      title: 'The Global Education Crisis',
       layout: 'visual',
-      content: `Education access varies dramatically around the world, creating vast inequality in opportunities and outcomes.`,
+      content: `Education access varies dramatically around the world. Let's look at the real numbers behind educational inequality.`,
       visualElements: {
         icon: '🌍',
-        gradient: 'from-blue-50 to-indigo-100',
+        gradient: 'from-red-50 to-orange-100',
         cards: [
           {
-            title: 'Developed Nations',
-            description: '99% primary education enrollment, extensive higher education',
-            icon: '🎓',
-            color: 'green'
-          },
-          {
-            title: 'Developing Countries',
-            description: 'Often below 70% enrollment, limited quality resources',
+            title: '244 Million',
+            description: 'Children and youth are out of school worldwide',
             icon: '📚',
-            color: 'orange'
-          },
-          {
-            title: 'Conflict Zones',
-            description: 'Education systems disrupted, generation-long gaps',
-            icon: '⚠️',
             color: 'red'
           },
           {
-            title: 'Rural vs Urban',
-            description: 'Significant disparities even within the same country',
-            icon: '🏘️',
-            color: 'purple'
+            title: '771 Million',
+            description: 'Adults lack basic literacy skills globally',
+            icon: '📝',
+            color: 'orange'
+          },
+          {
+            title: '617 Million',
+            description: 'Children can\'t read or do basic math despite being in school',
+            icon: '🧮',
+            color: 'yellow'
           }
         ]
       }
@@ -5804,34 +5798,296 @@ const globalEducationStatisticsModule: ModuleData = {
     {
       id: 'slide-2',
       type: 'content',
-      title: 'Financial Education: A Global Picture',
+      title: 'Financial Literacy: The Hidden Crisis',
       layout: 'grid',
-      content: `Financial literacy varies even more dramatically than general education worldwide:`,
+      content: `Financial education is even more scarce than basic literacy. Here's the global picture:`,
       visualElements: {
         cards: [
           {
-            title: 'Financial Literacy Leaders',
-            description: 'Nordic countries: 70-80% financial literacy rates with comprehensive school programs',
-            icon: '🇳🇴',
-            color: 'green'
-          },
-          {
             title: 'Global Average',
-            description: 'Only 33% of adults worldwide are financially literate',
+            description: 'Only 33% of adults worldwide understand basic financial concepts',
             icon: '📊',
             color: 'blue'
           },
           {
-            title: 'Developing Nations',
-            description: 'As low as 15-25% financial literacy in many African and Asian countries',
+            title: 'Developing Countries',
+            description: 'As low as 15-25% financial literacy in many regions',
             icon: '📉',
             color: 'red'
           },
           {
             title: 'Gender Gap',
-            description: 'Women score 5% lower globally, with larger gaps in developing countries',
+            description: 'Women score 5% lower globally, with bigger gaps in developing countries',
             icon: '👩‍💼',
             color: 'purple'
+          },
+          {
+            title: 'Youth Crisis',
+            description: '76% of millennials lack basic financial knowledge',
+            icon: '👨‍🎓',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Regional Education Gaps',
+      layout: 'comparison',
+      content: `Educational access isn't just about money - it varies dramatically by region and circumstances.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'High Access Regions',
+            icon: '✅',
+            items: [
+              'North America & Europe: 99% primary enrollment',
+              'Rich countries: Universal basic education',
+              'Urban areas: Better schools and resources',
+              'Stable countries: Consistent education systems',
+              'Digital access: Online learning available'
+            ]
+          },
+          after: {
+            title: 'Low Access Regions',
+            icon: '❌',
+            items: [
+              'Sub-Saharan Africa: 64% primary enrollment',
+              'Conflict zones: Schools destroyed or unsafe',
+              'Rural areas: Limited schools and teachers',
+              'Extreme poverty: Children work instead of studying',
+              'No internet: Can\'t access digital education'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'The Digital Education Divide',
+      layout: 'visual',
+      content: `The internet age has created new educational opportunities - but also new forms of inequality.`,
+      visualElements: {
+        icon: '💻',
+        gradient: 'from-blue-50 to-purple-100',
+        cards: [
+          {
+            title: 'Internet Access',
+            description: 'Developed: 87% vs Least Developed: 19%',
+            icon: '🌐',
+            color: 'blue'
+          },
+          {
+            title: 'Device Ownership',
+            description: 'Developed: 76% vs Least Developed: 22%',
+            icon: '📱',
+            color: 'green'
+          },
+          {
+            title: 'Digital Skills',
+            description: 'Developed: 70% vs Least Developed: 15%',
+            icon: '⌨️',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Gender in Education: The Numbers',
+      layout: 'feature-cards',
+      content: `Women and girls face additional barriers to education worldwide. These gaps affect entire generations.`,
+      visualElements: {
+        features: [
+          {
+            icon: '👧',
+            title: 'Girls Out of School',
+            description: '53% of out-of-school children are girls, with Chad at 74%'
+          },
+          {
+            icon: '📖',
+            title: 'Women\'s Literacy',
+            description: '83% globally vs 90% for men, with Niger at just 19% for women'
+          },
+          {
+            icon: '🏦',
+            title: 'Financial Exclusion',
+            description: '84% of women in Sub-Saharan Africa lack access to banking'
+          },
+          {
+            icon: '🔬',
+            title: 'STEM Participation',
+            description: 'Only 28% of engineering students globally are women'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Quality Crisis: In School but Not Learning',
+      layout: 'grid',
+      content: `Being in school doesn't guarantee learning. Many children attend school but don't gain basic skills.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Sub-Saharan Africa',
+            description: '89% of children can\'t read properly despite being in school',
+            icon: '📖',
+            color: 'red'
+          },
+          {
+            title: 'South Asia',
+            description: '76% lack basic reading skills, 78% struggle with math',
+            icon: '🧮',
+            color: 'orange'
+          },
+          {
+            title: 'Latin America',
+            description: '51% below reading proficiency, 62% below math standards',
+            icon: '📚',
+            color: 'yellow'
+          },
+          {
+            title: 'Global Average',
+            description: '617 million children in school but not learning basics',
+            icon: '🌍',
+            color: 'gray'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-7',
+      type: 'content',
+      title: 'The Economic Cost of Education Gaps',
+      layout: 'visual',
+      content: `Poor education doesn't just hurt individuals - it damages entire economies and societies.`,
+      visualElements: {
+        icon: '💰',
+        gradient: 'from-orange-50 to-red-100',
+        cards: [
+          {
+            title: '$5 Trillion Lost',
+            description: 'Annual global loss from educational gaps and poor productivity',
+            icon: '📉',
+            color: 'red'
+          },
+          {
+            title: '$130 Trillion',
+            description: 'Lifetime earnings lost to learning poverty for current generation',
+            icon: '⏳',
+            color: 'orange'
+          },
+          {
+            title: '1.2% GDP Loss',
+            description: 'Annual economic growth lost per country from inadequate education',
+            icon: '🏦',
+            color: 'yellow'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-8',
+      type: 'content',
+      title: 'Success Stories: What Works',
+      layout: 'feature-cards',
+      content: `Despite challenges, some countries and programs have made remarkable progress in expanding education access.`,
+      visualElements: {
+        features: [
+          {
+            icon: '🇰🇷',
+            title: 'South Korea\'s Transformation',
+            description: 'Went from war-torn to 100% literacy in just 40 years through massive education investment'
+          },
+          {
+            icon: '🇧🇷',
+            title: 'Brazil\'s Literacy Campaign',
+            description: 'Reduced adult illiteracy from 25% to 7% through nationwide programs'
+          },
+          {
+            icon: '🇷🇼',
+            title: 'Rwanda\'s Recovery',
+            description: 'Rebuilt education system after genocide, now has 85% primary enrollment'
+          },
+          {
+            icon: '📱',
+            title: 'Mobile Learning Programs',
+            description: 'Kenya\'s M-Shule uses SMS to deliver education, reaching rural areas'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-9',
+      type: 'content',
+      title: 'Solutions That Scale',
+      layout: 'comparison',
+      content: `Real solutions to global education inequality require both immediate action and long-term thinking.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'What Doesn\'t Work',
+            icon: '❌',
+            items: [
+              'Building schools without training teachers',
+              'One-size-fits-all curricula',
+              'Ignoring local languages and cultures',
+              'Technology without electricity/internet',
+              'Short-term funding cycles'
+            ]
+          },
+          after: {
+            title: 'What Actually Works',
+            icon: '✅',
+            items: [
+              'Teacher training and ongoing support',
+              'Culturally relevant, local content',
+              'Community involvement and ownership',
+              'Sustainable, long-term funding',
+              'Technology that works offline'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-10',
+      type: 'content',
+      title: 'Your Role in Global Education',
+      layout: 'visual',
+      content: `Global education inequality might seem overwhelming, but everyone can contribute to solutions.`,
+      visualElements: {
+        icon: '🤝',
+        gradient: 'from-green-50 to-blue-100',
+        cards: [
+          {
+            title: 'Support Organizations',
+            description: 'Fund groups working on education access in developing countries',
+            icon: '💝',
+            color: 'green'
+          },
+          {
+            title: 'Share Knowledge',
+            description: 'Help spread financial literacy in your own community',
+            icon: '📢',
+            color: 'blue'
+          },
+          {
+            title: 'Advocate for Policy',
+            description: 'Support politicians who prioritize education funding',
+            icon: '🗳️',
+            color: 'purple'
+          },
+          {
+            title: 'Use Your Skills',
+            description: 'Volunteer to teach, create content, or build educational tools',
+            icon: '🛠️',
+            color: 'orange'
           }
         ]
       }
@@ -5840,11 +6096,107 @@ const globalEducationStatisticsModule: ModuleData = {
   quizPool: [
     {
       id: 'q1',
-      question: 'What percentage of adults worldwide are financially literate?',
-      options: ['23%', '33%', '43%', '53%'],
+      question: 'How many children and youth are currently out of school worldwide?',
+      options: [
+        '124 million',
+        '244 million', 
+        '344 million',
+        '444 million'
+      ],
       correctAnswer: 1,
-      explanation: 'Only 33% of adults worldwide are financially literate, highlighting the massive global education gap.',
+      explanation: '244 million children and youth are out of school worldwide - roughly equivalent to the entire population of Indonesia.',
+      requiresSlides: [0]
+    },
+    {
+      id: 'q2',
+      question: 'What percentage of adults worldwide are financially literate?',
+      options: [
+        '23%',
+        '33%',
+        '43%', 
+        '53%'
+      ],
+      correctAnswer: 1,
+      explanation: 'Only 33% of adults worldwide are financially literate, highlighting the massive global education gap in financial knowledge.',
       requiresSlides: [1]
+    },
+    {
+      id: 'q3',
+      question: 'Which region has the lowest primary education enrollment rates?',
+      options: [
+        'South Asia',
+        'Latin America',
+        'Sub-Saharan Africa',
+        'Middle East'
+      ],
+      correctAnswer: 2,
+      explanation: 'Sub-Saharan Africa has the lowest primary education enrollment at just 64%, with 97.3 million children out of school.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q4',
+      question: 'What percentage of internet access do people in least developed countries have?',
+      options: [
+        '9%',
+        '19%',
+        '29%',
+        '39%'
+      ],
+      correctAnswer: 1,
+      explanation: 'Only 19% of people in least developed countries have internet access, compared to 87% in developed countries.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q5',
+      question: 'What percentage of out-of-school children globally are girls?',
+      options: [
+        '43%',
+        '48%',
+        '53%',
+        '58%'
+      ],
+      correctAnswer: 2,
+      explanation: '53% of out-of-school children are girls, with some countries like Chad reaching as high as 74%.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q6',
+      question: 'In Sub-Saharan Africa, what percentage of children in school cannot read properly?',
+      options: [
+        '69%',
+        '79%',
+        '89%',
+        '99%'
+      ],
+      correctAnswer: 2,
+      explanation: '89% of children in Sub-Saharan Africa cannot read properly despite being in school, highlighting the quality crisis.',
+      requiresSlides: [5]
+    },
+    {
+      id: 'q7',
+      question: 'How much money is lost globally each year due to educational gaps?',
+      options: [
+        '$1 trillion',
+        '$5 trillion',
+        '$10 trillion',
+        '$15 trillion'
+      ],
+      correctAnswer: 1,
+      explanation: '$5 trillion is lost annually worldwide due to educational gaps, representing massive lost productivity and innovation.',
+      requiresSlides: [6]
+    },
+    {
+      id: 'q8',
+      question: 'Which approach is most effective for sustainable education improvement?',
+      options: [
+        'Building more schools quickly',
+        'Providing tablets to all students',
+        'Training teachers and involving communities',
+        'Using only international curricula'
+      ],
+      correctAnswer: 2,
+      explanation: 'Training teachers and involving local communities has proven most effective for sustainable education improvement.',
+      requiresSlides: [8]
     }
   ]
 };

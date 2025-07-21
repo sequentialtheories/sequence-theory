@@ -66,6 +66,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/money-as-control') {
     actualModuleId = 'money-as-control';
   }
+  if (!actualModuleId && currentPath === '/learn/global-education-statistics') {
+    actualModuleId = 'global-education-statistics';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);
