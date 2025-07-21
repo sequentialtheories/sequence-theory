@@ -69,6 +69,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/global-education-statistics') {
     actualModuleId = 'global-education-statistics';
   }
+  if (!actualModuleId && currentPath === '/learn/democratizing-financial-knowledge') {
+    actualModuleId = 'democratizing-financial-knowledge';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);

@@ -6203,8 +6203,8 @@ const globalEducationStatisticsModule: ModuleData = {
 
 const democratizingFinancialKnowledgeModule: ModuleData = {
   id: 'democratizing-financial-knowledge',
-  title: 'Making Learning Free for All',
-  description: 'How to break down barriers and teach everyone about money.',
+  title: 'Democratizing Financial Knowledge',
+  description: 'Making financial education accessible to everyone, everywhere.',
   level: 'Advanced',
   category: 'Why Learning Matters',
   categoryIndex: 2,
@@ -6213,35 +6213,314 @@ const democratizingFinancialKnowledgeModule: ModuleData = {
     {
       id: 'slide-1',
       type: 'content',
-      title: 'Breaking Down Educational Barriers',
+      title: 'The Financial Knowledge Revolution',
       layout: 'visual',
-      content: `True progress means ensuring everyone has access to quality financial education, regardless of their background.`,
+      content: `Financial knowledge has been kept exclusive for too long. It's time to make it accessible to everyone, everywhere.`,
       visualElements: {
-        icon: '🚀',
-        gradient: 'from-purple-50 to-pink-100',
+        icon: '🔓',
+        gradient: 'from-emerald-50 to-green-100',
         cards: [
           {
             title: 'Universal Access',
-            description: 'Education should be available to everyone, everywhere',
+            description: 'Breaking down economic and geographic barriers',
             icon: '🌍',
             color: 'blue'
           },
           {
-            title: 'Technology Solutions',
-            description: 'Digital platforms can reach underserved populations',
-            icon: '💻',
-            color: 'green'
+            title: 'Cultural Relevance',
+            description: 'Adapting education to local contexts and values',
+            icon: '❤️',
+            color: 'red'
           },
           {
-            title: 'Community Programs',
-            description: 'Local initiatives can bridge formal education gaps',
-            icon: '🤝',
+            title: 'Practical Application',
+            description: 'Real-world skills for immediate use',
+            icon: '⚡',
+            color: 'yellow'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Traditional Barriers to Break',
+      layout: 'grid',
+      content: `These are the barriers that have kept financial education exclusive. Let's tear them down:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Economic Barriers',
+            description: 'High costs of courses and advisors lock out most people',
+            icon: '💰',
+            color: 'red'
+          },
+          {
+            title: 'Geographic Barriers',
+            description: 'Limited access in rural and remote areas worldwide',
+            icon: '🗺️',
             color: 'orange'
           },
           {
-            title: 'Policy Changes',
-            description: 'Government action can mandate financial education',
+            title: 'Language Barriers',
+            description: 'Education only available in dominant languages',
+            icon: '🗣️',
+            color: 'blue'
+          },
+          {
+            title: 'Complexity Barriers',
+            description: 'Deliberately confusing jargon keeps people out',
+            icon: '🧩',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Technology as the Great Equalizer',
+      layout: 'feature-cards',
+      content: `Modern technology can democratize financial education like never before:`,
+      visualElements: {
+        features: [
+          {
+            icon: '📱',
+            title: 'Mobile Learning Platforms',
+            description: '5.2 billion mobile users can access education anywhere, anytime'
+          },
+          {
+            icon: '🤖',
+            title: 'AI-Powered Personalization',
+            description: 'Customized learning paths adapt to individual needs and pace'
+          },
+          {
+            icon: '🔗',
+            title: 'Blockchain Credentials',
+            description: 'Tamper-proof certificates create portable, verified qualifications'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Community-Based Learning Models',
+      layout: 'comparison',
+      content: `The most effective financial education happens within communities, by communities:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Traditional Approach',
+            icon: '🏫',
+            items: [
+              'Top-down expert teaching',
+              'One-size-fits-all curriculum',
+              'Expensive courses and fees',
+              'Cultural disconnection',
+              'Limited ongoing support'
+            ]
+          },
+          after: {
+            title: 'Community Approach',
+            icon: '🤝',
+            items: [
+              'Peer-to-peer learning networks',
+              'Locally relevant examples',
+              'Free or low-cost access',
+              'Cultural integration',
+              'Continuous community support'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Success Stories: What Works',
+      layout: 'grid',
+      content: `Real examples of financial democracy in action around the world:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Village Savings Groups',
+            description: '12M+ members learning through community-led financial circles',
+            icon: '🏘️',
+            color: 'green'
+          },
+          {
+            title: 'M-Pesa Education',
+            description: 'Mobile money platform teaching 45M people financial skills',
+            icon: '📱',
+            color: 'blue'
+          },
+          {
+            title: 'Grameen Bank Model',
+            description: 'Microcredit with built-in financial education reaching 9M borrowers',
+            icon: '🏦',
+            color: 'purple'
+          },
+          {
+            title: 'Khan Academy Economics',
+            description: 'Free online courses reaching 120M learners globally',
+            icon: '🎓',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'The Six Principles of Financial Democracy',
+      layout: 'visual',
+      content: `These principles guide truly democratic financial education:`,
+      visualElements: {
+        icon: '🎯',
+        gradient: 'from-blue-50 to-indigo-100',
+        cards: [
+          {
+            title: 'Universal Access',
+            description: 'Available to everyone regardless of income or location',
+            icon: '🌐',
+            color: 'blue'
+          },
+          {
+            title: 'Plain Language',
+            description: 'Complex concepts explained simply and clearly',
+            icon: '👁️',
+            color: 'green'
+          },
+          {
+            title: 'Collaborative Learning',
+            description: 'Community-driven knowledge sharing and support',
+            icon: '👥',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-7',
+      type: 'content',
+      title: 'Breaking the Jargon Barrier',
+      layout: 'comparison',
+      content: `Financial complexity is often artificial. Here's how to cut through the noise:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Financial Jargon',
+            icon: '🎭',
+            items: [
+              '"Liquidity provision mechanisms"',
+              '"Portfolio optimization strategies"',
+              '"Risk-adjusted return metrics"',
+              '"Asset allocation frameworks"',
+              '"Capital preservation vehicles"'
+            ]
+          },
+          after: {
+            title: 'Plain English',
+            icon: '💬',
+            items: [
+              '"How to access your money quickly"',
+              '"Choosing the best mix of investments"',
+              '"Getting good returns for the risk"',
+              '"Spreading your money around wisely"',
+              '"Keeping your money safe"'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-8',
+      type: 'content',
+      title: 'Your Role in Financial Democracy',
+      layout: 'feature-cards',
+      content: `Every person can contribute to democratizing financial knowledge:`,
+      visualElements: {
+        features: [
+          {
+            icon: '📚',
+            title: 'Share What You Learn',
+            description: 'Teach others in your community using simple, relatable examples'
+          },
+          {
+            icon: '❓',
+            title: 'Challenge Complexity',
+            description: 'Demand clear explanations and call out unnecessary jargon'
+          },
+          {
+            icon: '🌱',
+            title: 'Support Open Education',
+            description: 'Choose and promote free, accessible financial education resources'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-9',
+      type: 'content',
+      title: 'Building Financial Democracy',
+      layout: 'grid',
+      content: `Creating truly democratic financial education requires systemic change:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Policy Reform',
+            description: 'Financial literacy as a human right in education systems',
             icon: '📜',
+            color: 'blue'
+          },
+          {
+            title: 'Open Source Resources',
+            description: 'Freely available, adaptable educational materials',
+            icon: '🔓',
+            color: 'green'
+          },
+          {
+            title: 'Community Networks',
+            description: 'Local support systems for continuous learning',
+            icon: '🕸️',
+            color: 'purple'
+          },
+          {
+            title: 'Technology Access',
+            description: 'Universal internet and device access for digital learning',
+            icon: '💻',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-10',
+      type: 'content',
+      title: 'The Future is Democratic',
+      layout: 'visual',
+      content: `Imagine a world where financial knowledge belongs to everyone. That future starts with each of us.`,
+      visualElements: {
+        icon: '🚀',
+        gradient: 'from-emerald-50 to-cyan-100',
+        cards: [
+          {
+            title: 'Informed Citizens',
+            description: 'Everyone makes confident financial decisions',
+            icon: '🧠',
+            color: 'blue'
+          },
+          {
+            title: 'Economic Justice',
+            description: 'Financial systems serve all people equally',
+            icon: '⚖️',
+            color: 'green'
+          },
+          {
+            title: 'Global Prosperity',
+            description: 'Wealth creation benefits entire communities',
+            icon: '🌍',
             color: 'purple'
           }
         ]
@@ -6251,16 +6530,68 @@ const democratizingFinancialKnowledgeModule: ModuleData = {
   quizPool: [
     {
       id: 'q1',
-      question: 'What is the most effective way to democratize financial education?',
+      question: 'What are the main barriers to financial education?',
       options: [
-        'Only through traditional schools',
-        'Combining technology, community programs, and policy changes',
-        'Only through government programs',
-        'Only through private companies'
+        'Economic, geographic, language, and complexity barriers',
+        'Only cost and location barriers',
+        'Just language and cultural barriers',
+        'Technology and internet barriers only'
+      ],
+      correctAnswer: 0,
+      explanation: 'Traditional financial education faces multiple barriers: high costs, geographic limitations, language restrictions, and deliberately complex jargon that excludes many people.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'q2',
+      question: 'How many mobile users can potentially access mobile learning platforms?',
+      options: [
+        '2.5 billion',
+        '3.8 billion',
+        '5.2 billion',
+        '6.1 billion'
+      ],
+      correctAnswer: 2,
+      explanation: '5.2 billion mobile users worldwide can potentially access financial education through mobile learning platforms, making technology a powerful democratizing tool.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q3',
+      question: 'What makes community-based financial education more effective?',
+      options: [
+        'It costs more money',
+        'It uses more complex language',
+        'It provides peer-to-peer learning and cultural relevance',
+        'It requires advanced technology'
+      ],
+      correctAnswer: 2,
+      explanation: 'Community-based education is more effective because it provides peer-to-peer learning, uses locally relevant examples, and creates ongoing support networks within the community.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q4',
+      question: 'Which is an example of artificial financial complexity?',
+      options: [
+        'Saying "how to access your money quickly"',
+        'Saying "liquidity provision mechanisms"',
+        'Using simple visual aids',
+        'Teaching through community examples'
       ],
       correctAnswer: 1,
-      explanation: 'Democratizing financial education requires a multi-pronged approach combining technology, community programs, and supportive policies.',
-      requiresSlides: [0]
+      explanation: '"Liquidity provision mechanisms" is jargon for "how to access your money quickly" - an example of how financial concepts are made unnecessarily complex.',
+      requiresSlides: [6]
+    },
+    {
+      id: 'q5',
+      question: 'What can individuals do to promote financial democracy?',
+      options: [
+        'Keep financial knowledge to themselves',
+        'Use complex jargon when teaching others',
+        'Share knowledge, challenge complexity, and support open education',
+        'Only rely on expensive financial advisors'
+      ],
+      correctAnswer: 2,
+      explanation: 'Individuals can promote financial democracy by sharing knowledge in simple terms, challenging unnecessary complexity, and supporting free, accessible educational resources.',
+      requiresSlides: [7]
     }
   ]
 };
