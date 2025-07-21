@@ -4769,8 +4769,8 @@ const financialLiteracyGatekeepingModule: ModuleData = {
   description: 'How financial knowledge has been deliberately restricted throughout history to maintain power structures.',
   level: 'Intermediate',
   category: 'Educational Impact',
-  categoryIndex: 4,
-  moduleIndex: 1,
+  categoryIndex: 3,
+  moduleIndex: 2,
   slides: [
     {
       id: 'slide-1',
