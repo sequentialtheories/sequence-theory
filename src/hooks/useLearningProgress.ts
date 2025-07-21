@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { allModules } from '@/data/moduleData';
 
 interface LearningProgress {
   completedModules: string[];
@@ -48,21 +49,35 @@ export function useLearningProgress() {
       return true;
     }
 
-    // For subsequent modules in the same category
+    // For subsequent modules within the same category
     if (moduleIndex > 0) {
-      // Check if previous module is completed
-      if (categoryIndex === 0 && moduleIndex === 1) {
-        return progress.completedModules.includes('what-is-money-really');
-      }
-      if (categoryIndex === 0 && moduleIndex === 2) {
-        return progress.completedModules.includes('historical-evolution-money');
+      // Find the previous module in the same category
+      const previousModule = allModules.find(
+        module => module.categoryIndex === categoryIndex && module.moduleIndex === moduleIndex - 1
+      );
+      
+      if (previousModule) {
+        return progress.completedModules.includes(previousModule.id);
       }
       return false;
     }
 
     // For first module in any category beyond the first category
-    // All first modules should be unlocked initially to allow flexible learning
-    if (moduleIndex === 0) {
+    // Check if the last module of the previous category is completed
+    if (categoryIndex > 0 && moduleIndex === 0) {
+      // Find the last module of the previous category
+      const previousCategoryModules = allModules.filter(
+        module => module.categoryIndex === categoryIndex - 1
+      );
+      
+      if (previousCategoryModules.length > 0) {
+        const lastModuleOfPreviousCategory = previousCategoryModules.reduce((latest, current) => 
+          current.moduleIndex > latest.moduleIndex ? current : latest
+        );
+        return progress.completedModules.includes(lastModuleOfPreviousCategory.id);
+      }
+      
+      // If no previous category modules found, unlock it
       return true;
     }
 
