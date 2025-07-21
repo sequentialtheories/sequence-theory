@@ -174,6 +174,12 @@ export const whatIsMoneyModule: ModuleData = {
             description: 'Compare prices and value easily. It provides a standard measurement for worth.',
             icon: '📊',
             color: 'purple'
+          },
+          {
+            title: 'Widely Accepted',
+            description: 'Must be recognized and trusted by many people. Network effects make money more valuable as more people use it.',
+            icon: '🌐',
+            color: 'orange'
           }
         ]
       }
