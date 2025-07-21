@@ -45,7 +45,7 @@ const LearnNow = () => {
       slug: "financial-strategy-planning"
     }]
   }, {
-    title: "Crypto & Digital Money",
+    title: "Web3 & Digital Ownership",
     description: "Digital money that no single person controls (The tech)",
     modules: [{
       icon: Zap,
