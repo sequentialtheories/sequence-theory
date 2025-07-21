@@ -375,7 +375,7 @@ const LearnNow = () => {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                  Money Basics Quiz 🧠
+                  Financial Overview Quiz 🧠
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
                   Think you got the money stuff down? Let's find out! Quick quiz on everything from "what is money" to planning your financial future.
