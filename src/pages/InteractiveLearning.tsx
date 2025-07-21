@@ -11,8 +11,16 @@ export default function InteractiveLearning() {
   const { moduleId } = useParams();
   const { completeModule, isModuleUnlocked } = useLearningProgress();
 
+  // Handle direct routes by extracting moduleId from the current path
+  const currentPath = window.location.pathname;
+  let actualModuleId = moduleId;
+  
+  if (!actualModuleId && currentPath === '/learn/historical-evolution-money') {
+    actualModuleId = 'historical-evolution-money';
+  }
+
   // Find the module by moduleId
-  const moduleData = allModules.find(module => module.id === moduleId);
+  const moduleData = allModules.find(module => module.id === actualModuleId);
 
   if (!moduleData) {
     return (
