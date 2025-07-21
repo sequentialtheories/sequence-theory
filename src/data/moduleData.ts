@@ -701,161 +701,286 @@ const whereMoneyLivesModule: ModuleData = {
       id: "slide-1",
       type: "content",
       title: "The Financial Universe",
-      content: `Think of financial markets as different neighborhoods where money lives. Each has its own culture, rules, and dangers.
-
-Some neighborhoods are fancy and "safe" (bonds), others are wild and exciting (crypto), and some are straight-up gambling dens (derivatives).
-
-Today we'll tour each neighborhood so you know where you're sending your money and what to expect when you get there.
-
-Ready for the grand tour?`
+      layout: 'visual',
+      content: `Think of financial markets as different neighborhoods where money lives. Each has its own culture, rules, and dangers.`,
+      visualElements: {
+        icon: '🏙️',
+        gradient: 'from-slate-50 to-gray-100',
+        cards: [
+          {
+            title: 'Safe Suburbs',
+            description: 'Bonds and savings - stable but inflation risk',
+            icon: '🏘️',
+            color: 'green'
+          },
+          {
+            title: 'Business District',
+            description: 'Stock markets - corporate ownership',
+            icon: '🏢',
+            color: 'blue'
+          },
+          {
+            title: 'Wild West',
+            description: 'Crypto markets - 24/7 frontier territory',
+            icon: '🤠',
+            color: 'orange'
+          },
+          {
+            title: 'The Casino',
+            description: 'Derivatives - high stakes gambling',
+            icon: '🎰',
+            color: 'red'
+          }
+        ]
+      }
     },
     {
       id: "slide-2",
       type: "content", 
       title: "Stock Markets: Owning Pieces of Companies",
-      content: `The most famous neighborhood - where you buy tiny pieces of companies and hope they grow.
-
-When you buy Apple stock, you're betting that Apple will make more money in the future. Simple concept, but the execution? That's where most people get destroyed.
-
-**How It Works:**
-• **Primary Markets**: IPOs - Companies going public for the first time
-• **Secondary Markets**: Daily trading - NYSE, NASDAQ, global exchanges
-
-**Reality Check:**
-• 90% of day traders lose money
-• Market can stay irrational longer than you can stay solvent  
-• Insider trading gives institutions massive advantages
-
-The stock market is less about investing and more about psychology. Fear and greed drive prices more than fundamentals.`
+      layout: 'comparison',
+      content: `The most famous neighborhood - where you buy tiny pieces of companies and hope they grow.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'The Promise',
+            icon: '📈',
+            items: [
+              'Own pieces of profitable companies',
+              'Share in business growth',
+              'Compound wealth over time',
+              'Beat inflation long-term',
+              'Build generational wealth'
+            ]
+          },
+          after: {
+            title: 'The Reality',
+            icon: '⚠️',
+            items: [
+              '90% of day traders lose money',
+              'Market psychology drives prices',
+              'Insider trading advantages institutions',
+              'Emotional trading destroys accounts',
+              'Timing is nearly impossible'
+            ]
+          }
+        }
+      }
     },
     {
       id: "slide-3",
       type: "content",
       title: "Bond Markets: The \"Safe\" Neighborhood", 
-      content: `You lend money, they pay you interest. Sounds safe until inflation or defaults happen.
-
-Bonds used to be the "safe" part of portfolios. But when governments print money faster than your bond pays interest, you're guaranteed to lose purchasing power. "Safe" becomes dangerous.
-
-**Types:**
-• **Government Bonds**: Treasuries, considered "risk-free" (until they're not)
-• **Corporate Bonds**: Higher yield, higher risk - companies can fail
-
-**The Hidden Risk:**
-When inflation rises faster than bond interest rates, fixed payments lose purchasing power. Your "safe" investment becomes a guaranteed loss against rising prices.`
+      layout: 'feature-cards',
+      content: `You lend money, they pay you interest. Sounds safe until inflation or defaults happen.`,
+      visualElements: {
+        features: [
+          {
+            icon: '🏛️',
+            title: 'Government Bonds',
+            description: 'Treasuries considered "risk-free" - until governments print too much money and inflation eats your returns'
+          },
+          {
+            icon: '🏭',
+            title: 'Corporate Bonds',
+            description: 'Higher yield but companies can fail - you\'re betting on their ability to pay you back with interest'
+          },
+          {
+            icon: '🔥',
+            title: 'Inflation Risk',
+            description: 'When prices rise faster than bond interest, your "safe" investment becomes a guaranteed loss'
+          }
+        ]
+      }
     },
     {
       id: "slide-4", 
       type: "content",
       title: "Commodity Markets: Real Stuff in a Digital World",
-      content: `Physical stuff that powers civilization - oil, gold, wheat. Real assets in an increasingly digital world.
-
-These are real things people actually need. When paper money becomes questionable, smart money often flows to commodities. Gold doesn't care about your government's fiscal policy.
-
-**The Categories:**
-🔥 **Energy**: Oil, gas, electricity
-✨ **Precious Metals**: Gold, silver, platinum  
-🌾 **Agriculture**: Wheat, corn, coffee
-⚙️ **Industrial**: Copper, steel, lumber
-
-Unlike stocks or bonds, commodities have intrinsic value. You can't eat a stock certificate, but you can eat wheat.`
+      layout: 'grid',
+      content: `Physical things that power civilization - when paper money becomes questionable, smart money flows here.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Energy',
+            description: 'Oil, gas, electricity - the fuel that powers modern civilization',
+            icon: '⚡',
+            color: 'red'
+          },
+          {
+            title: 'Precious Metals',
+            description: 'Gold, silver, platinum - store of value for thousands of years',
+            icon: '🥇',
+            color: 'yellow'
+          },
+          {
+            title: 'Agriculture',
+            description: 'Wheat, corn, coffee - you can\'t eat a stock certificate',
+            icon: '🌾',
+            color: 'green'
+          },
+          {
+            title: 'Industrial',
+            description: 'Copper, steel, lumber - the building blocks of infrastructure',
+            icon: '⚙️',
+            color: 'blue'
+          }
+        ]
+      }
     },
     {
       id: "slide-5",
       type: "content", 
       title: "Forex: Where Retail Traders Go to Die",
-      content: `The biggest, most liquid market on Earth. Also where retail traders get absolutely destroyed.
-
-$7+ trillion trades daily, making it the most liquid market ever. But that liquidity comes with a cost: you're swimming with sharks who have better information, faster computers, and deeper pockets.
-
-**Market Features:**
-• 24/7 trading across time zones
-• Major pairs: EUR/USD, GBP/USD, USD/JPY  
-• Central bank interventions move markets
-• Economic data releases cause volatility
-
-**Brutal Reality:**
-• 80%+ of retail traders lose money
-• High leverage = quick account wipeouts
-• Massive institutional advantages
-• Currency wars between nations
-
-Most forex "education" is just sophisticated gambling marketing.`
+      layout: 'visual',
+      content: `The biggest, most liquid market on Earth. Also where retail traders get absolutely destroyed.`,
+      visualElements: {
+        icon: '🦈',
+        gradient: 'from-red-50 to-rose-100',
+        cards: [
+          {
+            title: '$7+ Trillion Daily',
+            description: 'Most liquid market ever - but that comes with dangerous sharks',
+            icon: '🌊',
+            color: 'blue'
+          },
+          {
+            title: '24/7 Trading',
+            description: 'Never closes, never sleeps - emotions and FOMO run wild',
+            icon: '🌍',
+            color: 'green'
+          },
+          {
+            title: '80%+ Lose Money',
+            description: 'Retail traders are lunch for institutional sharks',
+            icon: '📉',
+            color: 'red'
+          },
+          {
+            title: 'High Leverage',
+            description: 'Quick account wipeouts with 100:1 leverage ratios',
+            icon: '💥',
+            color: 'orange'
+          }
+        ]
+      }
     },
     {
       id: "slide-6",
       type: "content",
       title: "Derivatives: The Casino Layer",
-      content: `Financial instruments derived from other assets. Useful for hedging, devastating for speculation.
-
-Derivatives are like insurance - great when you need protection, dangerous when used for gambling. Most retail investors use them for gambling.
-
-**Types:**
-• **Options**: Right to buy/sell at specific prices
-• **Futures**: Contracts for future delivery  
-• **Swaps**: Exchange different cash flows
-
-**Warning Signs:**
-• Can lose more than you invested
-• Complexity hides risks
-• Time decay works against you
-• Options expire worthless 80% of the time
-
-Warren Buffett called derivatives "financial weapons of mass destruction" for a reason.`
+      layout: 'comparison',
+      content: `Financial instruments derived from other assets. Useful for hedging, devastating for speculation.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Legitimate Uses',
+            icon: '🛡️',
+            items: [
+              'Hedge existing positions',
+              'Risk management for businesses',
+              'Portfolio insurance strategies',
+              'Professional trading tools',
+              'Institutional protection'
+            ]
+          },
+          after: {
+            title: 'Gambling Reality',
+            icon: '🎲',
+            items: [
+              '80% of options expire worthless',
+              'Can lose more than invested',
+              'Time decay works against you',
+              'Complexity hides the real risks',
+              'Most retail use = pure speculation'
+            ]
+          }
+        }
+      }
     },
     {
       id: "slide-7",
       type: "content",
       title: "Crypto: The New Wild West", 
-      content: `24/7 global markets with extreme volatility. Revolutionary technology meets speculative mania.
-
-Crypto markets never sleep, never close, and never stop surprising people. It's either the future of money or the biggest bubble in history. Probably both.
-
-**Revolutionary Features:**
-• 24/7/365 trading
-• Global, permissionless access
-• Programmable money (smart contracts)
-• No central authority control
-
-**Wild West Risks:**
-• Extreme volatility (50%+ swings)
-• Scams and rug pulls
-• Regulatory uncertainty  
-• Technical complexity
-
-The technology is revolutionary. Most of the trading is pure speculation.`
+      layout: 'visual',
+      content: `24/7 global markets with extreme volatility. Revolutionary technology meets speculative mania.`,
+      visualElements: {
+        icon: '₿',
+        gradient: 'from-orange-50 to-amber-100',
+        cards: [
+          {
+            title: 'Revolutionary Tech',
+            description: 'Programmable money, smart contracts, decentralized systems',
+            icon: '⚡',
+            color: 'purple'
+          },
+          {
+            title: '24/7/365 Markets',
+            description: 'Never close, global access, no central authority control',
+            icon: '🌐',
+            color: 'blue'
+          },
+          {
+            title: 'Extreme Volatility',
+            description: '50%+ price swings, fortunes made and lost overnight',
+            icon: '🎢',
+            color: 'red'
+          },
+          {
+            title: 'Scam Paradise',
+            description: 'Rug pulls, pump & dumps, regulatory uncertainty',
+            icon: '🚨',
+            color: 'orange'
+          }
+        ]
+      }
     },
     {
       id: "slide-8",
       type: "content",
       title: "The Truth About All Markets",
-      content: `Markets are supposed to be efficient price discovery mechanisms. The reality is more complex.
-
-**The Theory:**
-• Price discovery through supply & demand
-• Provide liquidity for easy trading  
-• Allocate capital efficiently
-• Enable risk management
-
-**The Reality:**
-• Markets can be manipulated by large players
-• Liquidity disappears when you need it most
-• Capital often flows to speculation, not productivity
-
-💡 **Key Insight**: Markets are efficient at transferring money from the impatient to the patient.
-
-**What Works:**
-• Long-term investing in productive assets
-• Diversification across uncorrelated markets
-• Understanding what you're buying
-• Position sizing and risk management
-
-**What Destroys Wealth:**
-• Trading without understanding
-• Chasing performance and hot markets  
-• Using excessive leverage
-• Believing you can time markets consistently
-
-Now you know where money lives. The question is: where will you send yours?`
+      layout: 'grid',
+      content: `Markets are efficient at one thing: transferring money from the impatient to the patient.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'What Actually Works',
+            description: 'Long-term investing in productive assets with proper position sizing',
+            icon: '⏰',
+            color: 'green'
+          },
+          {
+            title: 'Diversification',
+            description: 'Spread risk across uncorrelated markets and asset classes',
+            icon: '🎯',
+            color: 'blue'
+          },
+          {
+            title: 'Understanding',
+            description: 'Know what you\'re buying and why before risking money',
+            icon: '🧠',
+            color: 'purple'
+          },
+          {
+            title: 'Wealth Destroyers',
+            description: 'Trading without knowledge, chasing performance, excessive leverage',
+            icon: '💀',
+            color: 'red'
+          },
+          {
+            title: 'Market Reality',
+            description: 'Liquidity disappears in crises, manipulation by large players',
+            icon: '🎭',
+            color: 'orange'
+          },
+          {
+            title: 'Your Choice',
+            description: 'Now you know where money lives - where will you send yours?',
+            icon: '🤔',
+            color: 'indigo'
+          }
+        ]
+      }
     }
   ],
   quizPool: [
