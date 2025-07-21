@@ -4770,7 +4770,7 @@ const financialLiteracyGatekeepingModule: ModuleData = {
   level: 'Intermediate',
   category: 'Educational Impact',
   categoryIndex: 3,
-  moduleIndex: 2,
+  moduleIndex: 0,
   slides: [
     {
       id: 'slide-1',
