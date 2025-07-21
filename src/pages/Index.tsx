@@ -32,16 +32,18 @@ const Index = () => {
 
       <div className="pt-16 relative z-[1]">
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative">
+        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative" itemScope itemType="https://schema.org/Organization">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container mx-auto px-6 text-center relative z-10">
-            <h1 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
-              Sequence Theory, Inc.
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-2xl md:text-3xl">
-                Democratizing Financial Empowerment
-              </span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
+            <header>
+              <h1 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight" itemProp="name">
+                Sequence Theory, Inc.
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-2xl md:text-3xl" itemProp="slogan">
+                  Democratizing Financial Empowerment
+                </span>
+              </h1>
+            </header>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed" itemProp="description">
               A framework for building lasting financial literacy and inclusion across digital and traditional markets. 
               Our mission is to provide accessible financial tools and services that empower everyday users 
               to build wealth through communal cryptocurrency investments and educational opportunities.
@@ -65,22 +67,22 @@ const Index = () => {
         </section>
 
         {/* The Problem Section */}
-        <section className="py-20 relative bg-gradient-to-br from-muted/20 to-secondary/10">
+        <section className="py-20 relative bg-gradient-to-br from-muted/20 to-secondary/10" itemScope itemType="https://schema.org/Article">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16">
+              <header className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 bg-destructive/10 rounded-full px-6 py-2 mb-6">
                   <Target className="h-4 w-4 text-destructive" />
                   <span className="text-sm font-medium text-destructive">The Challenge</span>
                 </div>
-                <h2 className="text-4xl font-bold mb-4 text-foreground">The Compound Interest Problem</h2>
+                <h2 className="text-4xl font-bold mb-4 text-foreground" itemProp="headline">The Compound Interest Problem</h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-destructive to-destructive/60 mx-auto mb-8"></div>
-                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed" itemProp="description">
                   Albert Einstein called compound interest the "eighth wonder of the world," yet most people 
                   never benefit from it meaningfully. The issue isn't failure, it's friction maintaining these core principles.
                 </p>
-              </div>
+              </header>
               
               <div className="grid md:grid-cols-3 gap-8 mb-16">
                 <div className="relative group">
@@ -127,22 +129,22 @@ const Index = () => {
         </section>
 
         {/* Mission Section */}
-        <section className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden">
+        <main className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden" itemScope itemType="https://schema.org/Service">
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-16">
+              <header className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
                 </div>
-                <h2 className="text-4xl font-bold mb-4 text-foreground">Building Financial Literacy & Inclusion</h2>
+                <h2 className="text-4xl font-bold mb-4 text-foreground" itemProp="name">Building Financial Literacy & Inclusion</h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
-                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed" itemProp="description">
                   Sequence Theory is not just a financial product, it's a framework for building lasting financial 
                   literacy and inclusion across digital and traditional markets. Our primary audience is financially 
                   underserved individuals new to crypto or investing, overwhelmed by exchanges and speculation.
                 </p>
-               </div>
+               </header>
                
                {/* Financial Statistics Expander Section */}
                <FinancialStatsExpander />
@@ -231,7 +233,7 @@ const Index = () => {
               </div>
             </div>
           </div>
-        </section>
+        </main>
 
         {/* Join The Vault Club Section */}
         <PreSignup />
