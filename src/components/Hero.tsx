@@ -15,14 +15,7 @@ const Hero = () => {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-hero text-white relative overflow-hidden">
-      {/* Clean gradient background without squares */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
-        
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-accent/10"></div>
-      </div>
+      {/* No background squares - completely clean */}
       
       <div className="container mx-auto px-6 text-center relative z-10">
         <div className="max-w-4xl mx-auto animate-slide-up">

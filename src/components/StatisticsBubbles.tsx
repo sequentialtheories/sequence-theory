@@ -114,15 +114,15 @@ const BubbleCard = ({
 };
 
 export const StatisticsBubbles = () => {
-  // Positioned to avoid main content areas 
+  // Positioned in true margin areas only - no overlap with content
   const positions = [
-    { x: 15, y: 600 },   // Below hero section
-    { x: 85, y: 700 },   // Right side, clear of main text
-    { x: 20, y: 900 },   // Left side, mission area
-    { x: 75, y: 1100 },  // Right side, lower content
-    { x: 25, y: 1300 },  // Left side, bottom area
-    { x: 80, y: 1500 },  // Right side, bottom spread
-    { x: 30, y: 1700 }   // Final bottom positioning
+    { x: 5, y: 1200 },   // Far left margin, after hero completely
+    { x: 95, y: 1400 },  // Far right margin, mission section gap
+    { x: 8, y: 1700 },   // Left margin, between sections
+    { x: 92, y: 2000 },  // Right margin, lower content gap
+    { x: 6, y: 2300 },   // Left margin, bottom areas only
+    { x: 94, y: 2600 },  // Right margin, bottom spread
+    { x: 10, y: 2900 }   // Left margin, final bottom
   ];
 
   return (
