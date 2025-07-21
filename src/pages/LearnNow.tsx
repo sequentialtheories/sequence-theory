@@ -31,7 +31,7 @@ const LearnNow = () => {
       slug: "types-financial-markets"
     }, {
       icon: Coins,
-      title: "Crypto's Place in Money World",
+      title: "Crypto's Place in Money",
       description: "How digital money fits into everything else.",
       level: "Intermediate",
       slug: "crypto-market-role"
