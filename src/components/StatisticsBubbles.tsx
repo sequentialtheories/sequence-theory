@@ -79,15 +79,15 @@ const BubbleCard = ({
 };
 
 export const StatisticsBubbles = () => {
-  // Scatter positions throughout the page content using pixel positions
+  // Carefully positioned to avoid overlapping main content
   const positions = [
-    { x: 85, y: 200 },   // Hero section right
-    { x: 15, y: 450 },   // Between hero and problem
-    { x: 75, y: 650 },   // Problem section area
-    { x: 25, y: 850 },   // Problem section left
-    { x: 80, y: 1050 },  // Between sections
-    { x: 20, y: 1250 },  // Mission section left
-    { x: 70, y: 1450 }   // Mission section right
+    { x: 10, y: 120 },   // Top left margin, above hero
+    { x: 90, y: 180 },   // Top right margin, hero area
+    { x: 5, y: 380 },    // Left margin before problem section
+    { x: 95, y: 520 },   // Right margin in problem section
+    { x: 8, y: 780 },    // Left side between sections
+    { x: 92, y: 950 },   // Right side mission section
+    { x: 12, y: 1150 }   // Left margin lower mission section
   ];
 
   return (
