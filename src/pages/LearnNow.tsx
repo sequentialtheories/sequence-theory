@@ -139,14 +139,6 @@ const LearnNow = () => {
       categoryIndex: 2,
       moduleIndex: 2
     }, {
-      icon: DollarSign,
-      title: "Money as Control",
-      description: "How powerful people have used money systems to control others.",
-      level: "Intermediate",
-      slug: "colonialism-money-trade",
-      categoryIndex: 2,
-      moduleIndex: 3
-    }, {
       icon: TrendingUp,
       title: "Education Around the World",
       description: "Who gets financial education and who doesn't (the numbers might surprise you).",
