@@ -36,12 +36,14 @@ const BubbleCard = ({
   headline, 
   source, 
   delay, 
-  position 
+  position,
+  variant
 }: { 
   headline: string; 
   source: string; 
   delay: number;
   position: { x: number; y: number };
+  variant: number;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -50,27 +52,52 @@ const BubbleCard = ({
     return () => clearTimeout(timer);
   }, [delay]);
 
+  const variants = [
+    "bg-gradient-to-br from-violet-100/40 to-purple-200/30 border-violet-200/50",
+    "bg-gradient-to-br from-blue-100/40 to-indigo-200/30 border-blue-200/50",
+    "bg-gradient-to-br from-emerald-100/40 to-teal-200/30 border-emerald-200/50",
+    "bg-gradient-to-br from-rose-100/40 to-pink-200/30 border-rose-200/50",
+    "bg-gradient-to-br from-amber-100/40 to-orange-200/30 border-amber-200/50"
+  ];
+
   return (
     <div 
       className={cn(
-        "absolute transition-all duration-1000 ease-out",
-        isVisible ? "opacity-100" : "opacity-0"
+        "absolute transition-all duration-[2000ms] ease-out",
+        isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
       )}
       style={{
         left: `${position.x}%`,
         top: `${position.y}px`,
         transform: `translate(-50%, -50%)`,
+        animationDelay: `${variant * 0.8}s`
       }}
     >
-      <div className="relative group">
-        <div className="bg-card/90 backdrop-blur-sm border-2 border-primary/20 rounded-3xl p-6 max-w-xs shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-105">
+      <div 
+        className={cn(
+          "relative group cursor-default",
+          "animate-[gentle-float_12s_ease-in-out_infinite]"
+        )}
+        style={{ animationDelay: `${variant * 1.2}s` }}
+      >
+        <div className={cn(
+          "backdrop-blur-xl border rounded-3xl p-5 max-w-[280px]",
+          "shadow-[0_8px_32px_rgba(31,38,135,0.15)]",
+          "hover:shadow-[0_12px_40px_rgba(31,38,135,0.25)]",
+          "transition-all duration-700 ease-out",
+          "hover:scale-[1.02] hover:-translate-y-1",
+          variants[variant % variants.length]
+        )}>
           <div className="space-y-3">
-            <h3 className="text-foreground font-bold text-base leading-tight">
+            <h3 className="text-gray-800 font-semibold text-sm leading-snug tracking-tight">
               {headline}
             </h3>
-            <p className="text-xs text-muted-foreground/70 border-t border-border/30 pt-2">
-              Source: {source}
-            </p>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-[1px] bg-gradient-to-r from-gray-400/60 to-transparent"></div>
+              <p className="text-[10px] text-gray-500/80 font-medium uppercase tracking-wider">
+                {source}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -79,27 +106,27 @@ const BubbleCard = ({
 };
 
 export const StatisticsBubbles = () => {
-  // Carefully positioned to avoid overlapping main content
+  // Thoughtfully positioned for visual harmony
   const positions = [
-    { x: 10, y: 120 },   // Top left margin, above hero
-    { x: 90, y: 180 },   // Top right margin, hero area
-    { x: 5, y: 380 },    // Left margin before problem section
-    { x: 95, y: 520 },   // Right margin in problem section
-    { x: 8, y: 780 },    // Left side between sections
-    { x: 92, y: 950 },   // Right side mission section
-    { x: 12, y: 1150 }   // Left margin lower mission section
+    { x: 12, y: 160 },   // Top left, elegant spacing
+    { x: 88, y: 220 },   // Top right, balanced
+    { x: 8, y: 420 },    // Mid left, breathing room
+    { x: 92, y: 580 },   // Mid right, asymmetric balance
+    { x: 15, y: 740 },   // Lower left, visual flow
+    { x: 85, y: 880 },   // Lower right, clean margins
+    { x: 10, y: 1020 }   // Bottom left, final accent
   ];
 
   return (
-    <section className="relative">
-      {/* Scattered statistics bubbles */}
+    <section className="relative pointer-events-none">
       {statisticsData.map((stat, index) => (
         <BubbleCard
           key={index}
           headline={stat.headline}
           source={stat.source}
-          delay={index * 400}
+          delay={index * 600}
           position={positions[index]}
+          variant={index}
         />
       ))}
     </section>

@@ -280,4 +280,17 @@ All colors MUST be HSL.
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
+
+  /* Gentle float animation for modern aesthetic */
+  @keyframes gentle-float {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg); 
+    }
+    33% { 
+      transform: translateY(-8px) rotate(0.5deg); 
+    }
+    66% { 
+      transform: translateY(-4px) rotate(-0.3deg); 
+    }
+  }
 }
