@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle, Lock, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLearningProgress } from "@/hooks/useLearningProgress";
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const { isModuleUnlocked, isModuleCompleted } = useLearningProgress();
+  
   const learningCategories = [{
     title: "Financial Overview",
     description: "Learn how money works, from the history, function & more!",
@@ -12,37 +15,49 @@ const LearnNow = () => {
       title: "What is Money Really?",
       description: "Why we even have money and how it makes life easier for everyone.",
       level: "Beginner",
-      slug: "what-is-money-really"
+      slug: "what-is-money-really",
+      categoryIndex: 0,
+      moduleIndex: 0
     }, {
       icon: BookOpen,
       title: "Money Through Time",
       description: "From trading chickens to digital coins - money's wild journey.",
       level: "Beginner",
-      slug: "historical-evolution-money"
+      slug: "historical-evolution-money",
+      categoryIndex: 0,
+      moduleIndex: 1
     }, {
       icon: TrendingUp,
       title: "Where Money Lives",
       description: "Stock markets, bond markets, and other places your money can hang out.",
       level: "Intermediate",
-      slug: "types-financial-markets"
+      slug: "types-financial-markets",
+      categoryIndex: 0,
+      moduleIndex: 2
     }, {
       icon: Coins,
       title: "Crypto's Place in Money World",
       description: "How digital money fits into everything else.",
       level: "Intermediate",
-      slug: "crypto-market-role"
+      slug: "crypto-market-role",
+      categoryIndex: 0,
+      moduleIndex: 3
     }, {
       icon: Users,
       title: "Money = Power (Here's How)",
       description: "Why having money gives you choices and changes communities.",
       level: "Advanced",
-      slug: "wealth-societal-empowerment"
+      slug: "wealth-societal-empowerment",
+      categoryIndex: 0,
+      moduleIndex: 4
     }, {
       icon: Target,
       title: "Financial Overview",
       description: "Smart ways to grow your money over time.",
       level: "Advanced",
-      slug: "financial-strategy-planning"
+      slug: "financial-strategy-planning",
+      categoryIndex: 0,
+      moduleIndex: 5
     }]
   }, {
     title: "Web3 & Digital Ownership",
@@ -52,37 +67,49 @@ const LearnNow = () => {
       title: "Crypto 101",
       description: "What crypto is and why people are excited about it.",
       level: "Beginner",
-      slug: "cryptocurrencies-fundamentals"
+      slug: "cryptocurrencies-fundamentals",
+      categoryIndex: 1,
+      moduleIndex: 0
     }, {
       icon: Award,
       title: "Owning Digital Stuff",
       description: "How crypto lets you truly own things online.",
       level: "Beginner",
-      slug: "digital-ownership-empowerment"
+      slug: "digital-ownership-empowerment",
+      categoryIndex: 1,
+      moduleIndex: 1
     }, {
       icon: PlayCircle,
       title: "Digital Tokens Explained",
       description: "Different types of digital tokens and what they do.",
       level: "Intermediate",
-      slug: "tokens-tokenization"
+      slug: "tokens-tokenization",
+      categoryIndex: 1,
+      moduleIndex: 2
     }, {
       icon: BookOpen,
       title: "How Blockchain Works",
       description: "The technology that makes crypto possible (without the confusing tech talk).",
       level: "Intermediate",
-      slug: "blockchain-technology-deep-dive"
+      slug: "blockchain-technology-deep-dive",
+      categoryIndex: 1,
+      moduleIndex: 3
     }, {
       icon: TrendingUp,
       title: "DeFi: Banking Without Banks",
       description: "Lending, borrowing, and trading - all without traditional banks.",
       level: "Advanced",
-      slug: "decentralized-finance-defi"
+      slug: "decentralized-finance-defi",
+      categoryIndex: 1,
+      moduleIndex: 4
     }, {
       icon: AlertTriangle,
       title: "Next-Level Crypto Stuff",
       description: "Staking, yield farming, and the latest crypto innovations.",
       level: "Expert",
-      slug: "advanced-web3-innovations"
+      slug: "advanced-web3-innovations",
+      categoryIndex: 1,
+      moduleIndex: 5
     }]
   }, {
     title: "Why Learning Matters",
@@ -92,37 +119,49 @@ const LearnNow = () => {
       title: "Learning Changes the World",
       description: "How every big human achievement started with someone learning something new.",
       level: "Beginner",
-      slug: "learning-human-progress-foundation"
+      slug: "learning-human-progress-foundation",
+      categoryIndex: 2,
+      moduleIndex: 0
     }, {
       icon: AlertTriangle,
       title: "What Happens Without Education",
       description: "Why keeping people from learning hurts everyone.",
       level: "Beginner",
-      slug: "consequences-educational-absence"
+      slug: "consequences-educational-absence",
+      categoryIndex: 2,
+      moduleIndex: 1
     }, {
       icon: Target,
       title: "Who Gets to Learn About Money?",
       description: "How financial education has been kept from regular people.",
       level: "Intermediate",
-      slug: "financial-literacy-gatekeeping"
+      slug: "financial-literacy-gatekeeping",
+      categoryIndex: 2,
+      moduleIndex: 2
     }, {
       icon: DollarSign,
       title: "Money as Control",
       description: "How powerful people have used money systems to control others.",
       level: "Intermediate",
-      slug: "colonialism-money-trade"
+      slug: "colonialism-money-trade",
+      categoryIndex: 2,
+      moduleIndex: 3
     }, {
       icon: TrendingUp,
       title: "Education Around the World",
       description: "Who gets financial education and who doesn't (the numbers might surprise you).",
       level: "Advanced",
-      slug: "global-education-statistics"
+      slug: "global-education-statistics",
+      categoryIndex: 2,
+      moduleIndex: 4
     }, {
       icon: Users,
       title: "Making Learning Free for All",
       description: "How to break down barriers and teach everyone about money.",
       level: "Advanced",
-      slug: "democratizing-financial-knowledge"
+      slug: "democratizing-financial-knowledge",
+      categoryIndex: 2,
+      moduleIndex: 5
     }]
   }];
   return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50">
@@ -329,41 +368,127 @@ const LearnNow = () => {
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => <Link key={moduleIndex} to={`/learn/${module.slug}`} className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => {
+                  const isUnlocked = isModuleUnlocked(module.categoryIndex, module.moduleIndex);
+                  const isCompleted = isModuleCompleted(`${module.slug.split('-').join('-')}`);
+                  
+                  const ModuleCard = ({ children }: { children: React.ReactNode }) => {
+                    if (isUnlocked) {
+                      return (
+                        <Link 
+                          key={moduleIndex} 
+                          to={`/learn/${module.slug}`} 
+                          className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                        >
+                          {children}
+                        </Link>
+                      );
+                    }
                     
-                    <div className="relative z-10">
-                      <div className="flex items-start gap-4 mb-6">
-                        
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-3">
-                            <h5 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors leading-tight">
-                              {module.title}
-                            </h5>
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${module.level === 'Beginner' ? 'bg-green-100 text-green-700' : module.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' : module.level === 'Advanced' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>
-                              {module.level}
-                            </span>
+                    return (
+                      <div 
+                        key={moduleIndex}
+                        className="group relative block bg-gray-100 rounded-2xl p-8 border border-gray-200 shadow-lg opacity-70 cursor-not-allowed"
+                      >
+                        {children}
+                      </div>
+                    );
+                  };
+                  
+                  return (
+                    <ModuleCard key={moduleIndex}>
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="flex items-start gap-4 mb-6">
+                          <div className="flex-shrink-0 mt-1">
+                            {isCompleted ? (
+                              <CheckCircle className="h-6 w-6 text-green-500" />
+                            ) : isUnlocked ? (
+                              <PlayCircle className="h-6 w-6 text-purple-600" />
+                            ) : (
+                              <Lock className="h-6 w-6 text-gray-400" />
+                            )}
                           </div>
-                          <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-700 transition-colors">
-                            {module.description}
-                          </p>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-3">
+                              <h5 className={`text-xl font-bold transition-colors leading-tight ${
+                                isUnlocked ? 'text-gray-900 group-hover:text-purple-700' : 'text-gray-400'
+                              }`}>
+                                {module.title}
+                              </h5>
+                              <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                                module.level === 'Beginner' ? 
+                                  (isUnlocked ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500') :
+                                module.level === 'Intermediate' ? 
+                                  (isUnlocked ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-500') :
+                                module.level === 'Advanced' ? 
+                                  (isUnlocked ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-500') :
+                                  (isUnlocked ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-500')
+                              }`}>
+                                {module.level}
+                              </span>
+                            </div>
+                            <p className={`text-sm leading-relaxed transition-colors ${
+                              isUnlocked ? 'text-gray-600 group-hover:text-gray-700' : 'text-gray-400'
+                            }`}>
+                              {module.description}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className={`flex items-center gap-2 text-sm ${
+                            isUnlocked ? 'text-gray-500' : 'text-gray-400'
+                          }`}>
+                            {isCompleted ? (
+                              <>
+                                <CheckCircle className="h-4 w-4" />
+                                <span>Completed</span>
+                              </>
+                            ) : isUnlocked ? (
+                              <>
+                                <PlayCircle className="h-4 w-4" />
+                                <span>Interactive Learning</span>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="h-4 w-4" />
+                                <span>Locked</span>
+                              </>
+                            )}
+                          </div>
+                          
+                          {isUnlocked && !isCompleted && (
+                            <div className="flex items-center gap-1 text-purple-600 group-hover:gap-2 transition-all">
+                              <span className="text-sm font-medium">Start Learning</span>
+                              <ArrowLeft className="h-4 w-4 rotate-180 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          )}
+                          
+                          {isCompleted && (
+                            <div className="flex items-center gap-1 text-green-600">
+                              <span className="text-sm font-medium">Review</span>
+                              <CheckCircle className="h-4 w-4" />
+                            </div>
+                          )}
+                          
+                          {!isUnlocked && (
+                            <div className="flex items-center gap-1 text-gray-400">
+                              <span className="text-sm font-medium">Complete previous modules</span>
+                              <Lock className="h-4 w-4" />
+                            </div>
+                          )}
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <PlayCircle className="h-4 w-4" />
-                          <span>Interactive Learning</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-purple-600 group-hover:gap-2 transition-all">
-                          <span className="text-sm font-medium">Start Learning</span>
-                          <ArrowLeft className="h-4 w-4 rotate-180 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-b-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                  </Link>)}
+                      {isUnlocked && (
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-b-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                      )}
+                    </ModuleCard>
+                  );
+                })}
               </div>
             </div>
           </div>
