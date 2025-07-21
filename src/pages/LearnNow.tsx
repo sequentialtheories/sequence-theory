@@ -50,7 +50,7 @@ const LearnNow = () => {
     }]
   }, {
     title: "Web3 & Digital Money",
-    description: "Digital money that no single person controls (The tech)",
+    description: "Digital ownership that no single person controls (The tech)",
     modules: [{
       icon: Zap,
       title: "Crypto 101",
