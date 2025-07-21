@@ -1891,12 +1891,392 @@ const wealthEmpowermentModule: ModuleData = {
   ]
 };
 
+const financialStrategyModule: ModuleData = {
+  id: "financial-strategy-planning",
+  title: "Your Money Game Plan",
+  description: "Smart ways to grow your money over time.",
+  level: "Advanced",
+  category: "Financial Basics",
+  categoryIndex: 0,
+  moduleIndex: 5,
+  slides: [
+    {
+      id: "slide-1",
+      type: "content",
+      title: "Building Your Financial Fortress",
+      layout: 'visual',
+      content: `Most people drift through life financially. You're going to build a strategic plan that actually works.`,
+      visualElements: {
+        icon: '🏰',
+        gradient: 'from-emerald-50 to-teal-100',
+        cards: [
+          {
+            title: 'Clear Goals',
+            description: 'Specific, measurable targets instead of vague wishes',
+            icon: '🎯',
+            color: 'blue'
+          },
+          {
+            title: 'Smart Strategy',
+            description: 'Evidence-based approach to growing wealth',
+            icon: '🧠',
+            color: 'green'
+          },
+          {
+            title: 'Risk Management',
+            description: 'Protect what you build from life\'s surprises',
+            icon: '🛡️',
+            color: 'purple'
+          },
+          {
+            title: 'Regular Reviews',
+            description: 'Adapt and improve as your life changes',
+            icon: '🔄',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-2",
+      type: "content",
+      title: "The SMART Goals Framework That Actually Works",
+      layout: 'feature-cards',
+      content: `Forget vague "get rich" dreams. Successful wealth building starts with goals that force you to take action.`,
+      visualElements: {
+        features: [
+          {
+            icon: '📅',
+            title: 'Short-term (1-2 years)',
+            description: 'Emergency fund of 3-6 months expenses, pay off high-interest debt, establish investing habit'
+          },
+          {
+            icon: '🏠',
+            title: 'Medium-term (3-10 years)',
+            description: 'Home down payment, education funding, career transition fund, substantial investment portfolio'
+          },
+          {
+            icon: '🌅',
+            title: 'Long-term (10+ years)',
+            description: 'Retirement independence, generational wealth, legacy planning, complete financial freedom'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-3",
+      type: "content",
+      title: "Asset Allocation: Your Money's Job Assignments",
+      layout: 'grid',
+      content: `Don't put all your eggs in one basket. Smart diversification reduces risk while maintaining growth potential.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Stocks (Growth Engine)',
+            description: 'High growth potential with volatility. Young investors: 70-90%. Older: 40-60%.',
+            icon: '📈',
+            color: 'blue'
+          },
+          {
+            title: 'Bonds (Stability Anchor)',
+            description: 'Income and stability. Balances portfolio during market turbulence. 10-40% allocation.',
+            icon: '🏛️',
+            color: 'green'
+          },
+          {
+            title: 'Real Estate (Inflation Shield)',
+            description: 'Physical assets that appreciate and generate income. REITs for easy access.',
+            icon: '🏠',
+            color: 'orange'
+          },
+          {
+            title: 'Cash (Opportunity Fund)',
+            description: 'Emergency fund plus opportunities. 3-6 months expenses in high-yield savings.',
+            icon: '💰',
+            color: 'yellow'
+          },
+          {
+            title: 'Alternatives (Diversifiers)',
+            description: 'Commodities, crypto, private investments. 5-15% for diversification.',
+            icon: '💎',
+            color: 'purple'
+          },
+          {
+            title: 'International (Global Exposure)',
+            description: 'Foreign markets for geographic diversification. 20-30% of stock allocation.',
+            icon: '🌍',
+            color: 'indigo'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-4",
+      type: "content",
+      title: "Risk Management: Protecting Your Financial Fortress",
+      layout: 'comparison',
+      content: `Building wealth without protection is like building a house without insurance. One disaster wipes out years of progress.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Unprotected Wealth',
+            icon: '⚠️',
+            items: [
+              'One medical emergency = bankruptcy',
+              'Job loss = immediate financial crisis',
+              'Market crash = panic selling at losses',
+              'Disability = income disappears forever',
+              'Lawsuit = assets at risk of seizure'
+            ]
+          },
+          after: {
+            title: 'Protected Wealth',
+            icon: '🛡️',
+            items: [
+              'Health insurance covers medical costs',
+              'Emergency fund covers 6 months expenses',
+              'Diversified portfolio weathers market storms',
+              'Disability insurance replaces income',
+              'Liability insurance protects assets'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: "slide-5",
+      type: "content",
+      title: "Tax Optimization: Keep More of What You Earn",
+      layout: 'grid',
+      content: `Taxes are your largest lifetime expense. Smart tax planning can save you hundreds of thousands of dollars.`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Tax-Advantaged Accounts',
+            description: '401(k), IRA, HSA contributions reduce current taxes while building future wealth',
+            icon: '🏦',
+            color: 'blue'
+          },
+          {
+            title: 'Tax-Loss Harvesting',
+            description: 'Offset investment gains with losses to reduce taxable income annually',
+            icon: '⚖️',
+            color: 'green'
+          },
+          {
+            title: 'Asset Location Strategy',
+            description: 'Put tax-inefficient investments in tax-advantaged accounts, efficient ones in taxable',
+            icon: '📍',
+            color: 'purple'
+          },
+          {
+            title: 'Roth Conversions',
+            description: 'Convert traditional IRA to Roth during low-income years for tax-free future growth',
+            icon: '🔄',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-6",
+      type: "content",
+      title: "Investment Philosophy: Your North Star",
+      layout: 'comparison',
+      content: `Successful investing requires a consistent philosophy that keeps you disciplined during both booms and crashes.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Emotional Investing',
+            icon: '😰',
+            items: [
+              'Buy high when markets are euphoric',
+              'Sell low during market panics',
+              'Chase last year\'s hot investments',
+              'Constantly second-guess decisions',
+              'Get paralyzed by too many options'
+            ]
+          },
+          after: {
+            title: 'Strategic Investing',
+            icon: '🎯',
+            items: [
+              'Dollar-cost average consistently',
+              'Rebalance annually to target allocation',
+              'Focus on low-cost index funds',
+              'Ignore market noise and predictions',
+              'Stay the course through all cycles'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: "slide-7",
+      type: "content",
+      title: "Cash Flow Mastery: The Foundation of Wealth",
+      layout: 'feature-cards',
+      content: `You can't invest what you don't save. Optimizing cash flow is the engine that powers all wealth building.`,
+      visualElements: {
+        features: [
+          {
+            icon: '📊',
+            title: 'Track Every Dollar',
+            description: 'Use apps like Mint or YNAB to understand exactly where your money goes each month'
+          },
+          {
+            icon: '🎯',
+            title: 'Automate Savings',
+            description: 'Pay yourself first - automatic transfers to savings and investment accounts'
+          },
+          {
+            icon: '🔪',
+            title: 'Strategic Spending Cuts',
+            description: 'Eliminate subscriptions you don\'t use, negotiate bills, optimize major expenses'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-8",
+      type: "content",
+      title: "Behavioral Finance: Mastering Your Money Psychology",
+      layout: 'visual',
+      content: `Your brain is your biggest enemy in building wealth. Understanding these biases helps you make better decisions.`,
+      visualElements: {
+        icon: '🧠',
+        gradient: 'from-red-50 to-rose-100',
+        cards: [
+          {
+            title: 'Loss Aversion',
+            description: 'We hate losing $100 more than we like gaining $100. This makes us too conservative.',
+            icon: '😱',
+            color: 'red'
+          },
+          {
+            title: 'Confirmation Bias',
+            description: 'We seek information that confirms our beliefs while ignoring contradictory evidence.',
+            icon: '🙈',
+            color: 'orange'
+          },
+          {
+            title: 'Overconfidence',
+            description: 'We overestimate our ability to predict markets and pick winning investments.',
+            icon: '🦸',
+            color: 'purple'
+          },
+          {
+            title: 'Herd Mentality',
+            description: 'We follow the crowd, buying high in bubbles and selling low in crashes.',
+            icon: '🐑',
+            color: 'blue'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: "q1",
+      question: "What is the most important characteristic of effective financial goals?",
+      options: [
+        "They should be as ambitious as possible",
+        "They should be specific, measurable, and time-bound",
+        "They should focus only on short-term gains",
+        "They should be kept secret from others"
+      ],
+      correctAnswer: 1,
+      explanation: "SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound) are more likely to be achieved because they provide clear targets and deadlines.",
+      requiresSlides: [1]
+    },
+    {
+      id: "q2",
+      question: "For a young investor in their 20s, what is typically the recommended stock allocation?",
+      options: [
+        "20-30%",
+        "40-50%",
+        "70-90%",
+        "100%"
+      ],
+      correctAnswer: 2,
+      explanation: "Young investors can typically allocate 70-90% to stocks because they have decades to recover from market downturns and benefit from compound growth.",
+      requiresSlides: [2]
+    },
+    {
+      id: "q3",
+      question: "What is the primary purpose of an emergency fund?",
+      options: [
+        "To invest in high-risk opportunities",
+        "To cover 3-6 months of expenses during unexpected events",
+        "To buy luxury items",
+        "To speculate in the stock market"
+      ],
+      correctAnswer: 1,
+      explanation: "An emergency fund should cover 3-6 months of expenses in easily accessible savings to protect against job loss, medical emergencies, or other unexpected costs.",
+      requiresSlides: [3]
+    },
+    {
+      id: "q4",
+      question: "What is tax-loss harvesting?",
+      options: [
+        "Avoiding all taxes on investments",
+        "Only investing in tax-free accounts",
+        "Offsetting investment gains with losses to reduce taxable income",
+        "Hiding investment income from the IRS"
+      ],
+      correctAnswer: 2,
+      explanation: "Tax-loss harvesting involves selling investments at a loss to offset gains from other investments, reducing your overall taxable income.",
+      requiresSlides: [4]
+    },
+    {
+      id: "q5",
+      question: "Which investment approach typically produces better long-term results?",
+      options: [
+        "Timing the market perfectly",
+        "Following hot stock tips",
+        "Dollar-cost averaging with low-cost index funds",
+        "Trading frequently based on news"
+      ],
+      correctAnswer: 2,
+      explanation: "Dollar-cost averaging with low-cost index funds typically outperforms active trading because it removes emotion, reduces costs, and captures market returns over time.",
+      requiresSlides: [5]
+    },
+    {
+      id: "q6",
+      question: "What is the biggest psychological bias that hurts investors?",
+      options: [
+        "Being too conservative",
+        "Loss aversion leading to poor timing decisions",
+        "Investing too much too quickly",
+        "Not researching investments enough"
+      ],
+      correctAnswer: 1,
+      explanation: "Loss aversion causes investors to hold losing investments too long and sell winning investments too early, significantly hurting long-term returns.",
+      requiresSlides: [7]
+    },
+    {
+      id: "q7",
+      question: "What is the most important factor in building wealth over time?",
+      options: [
+        "Picking the perfect investments",
+        "Timing the market correctly",
+        "Consistently saving and investing over many years",
+        "Finding get-rich-quick opportunities"
+      ],
+      correctAnswer: 2,
+      explanation: "Consistent saving and investing over many years, combined with compound growth, is the most reliable path to building substantial wealth.",
+      requiresSlides: [6]
+    }
+  ]
+};
+
 // You can add more modules here following the same pattern
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
   whereMoneyLivesModule,
   cryptoPlaceInMoneyModule,
-  wealthEmpowermentModule
+  wealthEmpowermentModule,
+  financialStrategyModule
   // Add more modules as they're created
 ];

@@ -84,7 +84,7 @@ const App = () => (
           <Route path="/learn/types-financial-markets" element={<InteractiveLearning />} />
           <Route path="/learn/crypto-market-role" element={<InteractiveLearning />} />
           <Route path="/learn/wealth-societal-empowerment" element={<InteractiveLearning />} />
-          <Route path="/learn/financial-strategy-planning" element={<FinancialStrategyPlanning />} />
+          <Route path="/learn/financial-strategy-planning" element={<InteractiveLearning />} />
           <Route path="/learn/cryptocurrencies-fundamentals" element={<CryptocurrenciesFundamentals />} />
           <Route path="/learn/digital-ownership-empowerment" element={<DigitalOwnershipEmpowerment />} />
           <Route path="/learn/tokens-tokenization" element={<TokensTokenization />} />

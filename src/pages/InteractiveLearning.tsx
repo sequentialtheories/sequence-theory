@@ -27,6 +27,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/wealth-societal-empowerment') {
     actualModuleId = 'wealth-societal-empowerment';
   }
+  if (!actualModuleId && currentPath === '/learn/financial-strategy-planning') {
+    actualModuleId = 'financial-strategy-planning';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);
