@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const learningCategories = [{
-    title: "Financial Basics",
+    title: "Financial Overview",
     description: "Learn how money actually works (it's simpler than you think!)",
     modules: [{
       icon: DollarSign,
