@@ -6613,7 +6613,6 @@ export const allModules: ModuleData[] = [
   learningChangesWorldModule,
   consequencesEducationalAbsenceModule,
   financialLiteracyGatekeepingModule,
-  colonialismMoneyTradeModule,
   globalEducationStatisticsModule,
   democratizingFinancialKnowledgeModule
 ];
