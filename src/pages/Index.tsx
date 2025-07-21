@@ -1,4 +1,5 @@
 
+import React from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
@@ -9,6 +10,37 @@ import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "luci
 import { Link } from "react-router-dom";
 
 const Index = () => {
+  // Add document title and meta description for better SEO
+  React.useEffect(() => {
+    document.title = "Sequence Theory - Democratizing Financial Empowerment Through The Vault Club";
+    
+    // Add additional meta tags dynamically
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments. Build wealth through structured investing without traditional barriers.');
+    }
+    
+    // Add keywords meta tag
+    const keywordsMeta = document.createElement('meta');
+    keywordsMeta.name = 'keywords';
+    keywordsMeta.content = 'Sequence Theory, Vault Club, cryptocurrency investing, financial education, wealth building, community investing, digital assets, blockchain, financial literacy, DeFi, compound interest';
+    document.head.appendChild(keywordsMeta);
+    
+    // Add author meta tag
+    const authorMeta = document.createElement('meta');
+    authorMeta.name = 'author';
+    authorMeta.content = 'Sequence Theory, Inc.';
+    document.head.appendChild(authorMeta);
+    
+    return () => {
+      // Cleanup
+      const existingKeywords = document.querySelector('meta[name="keywords"]');
+      const existingAuthor = document.querySelector('meta[name="author"]');
+      if (existingKeywords) document.head.removeChild(existingKeywords);
+      if (existingAuthor) document.head.removeChild(existingAuthor);
+    };
+  }, []);
+
   const scrollToSignup = () => {
     const element = document.getElementById('signup-section');
     if (element) {
@@ -84,46 +116,46 @@ const Index = () => {
                 </p>
               </header>
               
-              <div className="grid md:grid-cols-3 gap-8 mb-16">
-                <div className="relative group">
+              <article className="grid md:grid-cols-3 gap-8 mb-16">
+                <div className="relative group" itemScope itemType="https://schema.org/Article">
                   <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
                   <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
                       <Shield className="h-8 w-8 text-destructive" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4 text-foreground">Ready Ability</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="text-xl font-bold mb-4 text-foreground" itemProp="headline">Ready Ability</h3>
+                    <p className="text-muted-foreground leading-relaxed" itemProp="description">
                       Reliable access to quality investment vehicles that don't require massive capital or institutional connections.
                     </p>
                   </div>
                 </div>
                 
-                <div className="relative group">
+                <div className="relative group" itemScope itemType="https://schema.org/Article">
                   <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform -rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
                   <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
                       <TrendingUp className="h-8 w-8 text-destructive" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4 text-foreground">Discipline</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="text-xl font-bold mb-4 text-foreground" itemProp="headline">Discipline</h3>
+                    <p className="text-muted-foreground leading-relaxed" itemProp="description">
                       Consistent, recurring contributions over time without getting distracted by market volatility or speculation.
                     </p>
                   </div>
                 </div>
                 
-                <div className="relative group">
+                <div className="relative group" itemScope itemType="https://schema.org/Article">
                   <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
                   <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
                       <Target className="h-8 w-8 text-destructive" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4 text-foreground">Long-Term Horizons</h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <h3 className="text-xl font-bold mb-4 text-foreground" itemProp="headline">Long-Term Horizons</h3>
+                    <p className="text-muted-foreground leading-relaxed" itemProp="description">
                       The patience to allow growth to compound without succumbing to short-term market pressures.
                     </p>
                   </div>
                 </div>
-              </div>
+              </article>
             </div>
           </div>
         </section>

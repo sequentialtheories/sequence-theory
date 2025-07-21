@@ -95,10 +95,28 @@
           "urlTemplate": "https://sequence-theory.lovable.app/search?q={search_term_string}"
         },
         "query-input": "required name=search_term_string"
-      }
     }
     </script>
     
+    <!-- Additional Meta for Better Indexing -->
+    <meta name="google-site-verification" content="GOOGLE_VERIFICATION_CODE_HERE" />
+    <meta name="msvalidate.01" content="BING_VERIFICATION_CODE_HERE" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Page-specific optimizations -->
+    <link rel="alternate" type="application/rss+xml" title="Sequence Theory Updates" href="/rss.xml" />
+    
+    <!-- Geographic targeting -->
+    <meta name="geo.region" content="US" />
+    <meta name="geo.placename" content="United States" />
+    
+    <!-- Business information -->
+    <meta name="rating" content="general" />
+    <meta name="distribution" content="global" />
+    <meta name="revisit-after" content="7 days" />
     <!-- Structured Data for FinancialService -->
     <script type="application/ld+json">
     {
@@ -135,6 +153,40 @@
           }
         ]
       }
+    }
+    </script>
+    
+    <!-- FAQ Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Sequence Theory?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sequence Theory is a financial technology company democratizing financial empowerment through The Vault Club, offering accessible cryptocurrency investment education and community-based investing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is The Vault Club?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Vault Club is a community-based cryptocurrency investment platform that provides structured investing opportunities and financial education for beginners and financially underserved individuals."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does Sequence Theory help with cryptocurrency investing?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We remove traditional barriers to sophisticated investment strategies by providing structured entryways into the digital asset economy, educational resources, and community support for long-term wealth building."
+          }
+        }
+      ]
     }
     </script>
   </head>

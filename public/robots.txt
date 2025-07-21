@@ -12,3 +12,22 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://sequence-theory.lovable.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /.*
+
+# Allow important pages
+Allow: /learn-more
+Allow: /learn-now
+Allow: /interactive-learning
+Allow: /about
+Allow: /white-paper
