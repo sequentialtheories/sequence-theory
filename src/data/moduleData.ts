@@ -3119,12 +3119,12 @@ export const tokensTokenizationModule: ModuleData = {
 
 const blockchainTechnologyModule: ModuleData = {
   id: "blockchain-technology-deep-dive",
-  title: "Blockchain Technology Deep Dive",
-  description: "Explore the technical foundations of blockchain, consensus mechanisms, and smart contracts that power the decentralized future.",
+  title: "How Blockchain Works",
+  description: "The technology that makes crypto possible (without the confusing tech talk).",
   level: "Intermediate",
-  category: "Technology",
-  categoryIndex: 3,
-  moduleIndex: 0,
+  category: "Web3 & Digital Ownership",
+  categoryIndex: 1,
+  moduleIndex: 3,
   slides: [
     {
       id: "slide-1",
