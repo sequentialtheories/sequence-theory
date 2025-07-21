@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle, Lock, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -370,7 +370,7 @@ const LearnNow = () => {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {learningCategories[selectedCategory].modules.map((module, moduleIndex) => {
                   const isUnlocked = isModuleUnlocked(module.categoryIndex, module.moduleIndex);
-                  const isCompleted = isModuleCompleted(`${module.slug.split('-').join('-')}`);
+                  const isCompleted = isModuleCompleted(module.slug);
                   
                   const ModuleCard = ({ children }: { children: React.ReactNode }) => {
                     if (isUnlocked) {

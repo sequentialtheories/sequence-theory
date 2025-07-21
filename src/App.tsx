@@ -79,7 +79,8 @@ const App = () => (
           <Route path="/learn/expanding-beyond-vault-club" element={<ExpandingBeyondVaultClub />} />
           <Route path="/learn/understanding-markets" element={<UnderstandingMarkets />} />
           <Route path="/learn/shortfalls-of-crypto" element={<ShortfallsOfCrypto />} />
-          <Route path="/learn/concept-purpose-money" element={<ConceptPurposeMoney />} />
+          
+          <Route path="/learn/what-is-money-really" element={<InteractiveLearning />} />
           <Route path="/learn/historical-evolution-money" element={<InteractiveLearning />} />
           <Route path="/learn/types-financial-markets" element={<InteractiveLearning />} />
           <Route path="/learn/crypto-market-role" element={<InteractiveLearning />} />
