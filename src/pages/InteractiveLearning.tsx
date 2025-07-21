@@ -33,6 +33,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/financial-strategy-planning') {
     actualModuleId = 'financial-strategy-planning';
   }
+  if (!actualModuleId && currentPath === '/learn/cryptocurrencies-fundamentals') {
+    actualModuleId = 'cryptocurrencies-fundamentals';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);

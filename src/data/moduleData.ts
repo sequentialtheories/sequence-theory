@@ -2271,12 +2271,290 @@ const financialStrategyModule: ModuleData = {
 };
 
 // You can add more modules here following the same pattern
+// Seventh module: "Cryptocurrencies Fundamentals"
+export const cryptoFundamentalsModule: ModuleData = {
+  id: 'cryptocurrencies-fundamentals',
+  title: 'Crypto 101',
+  description: 'What crypto is and why people are excited about it.',
+  level: 'Beginner',
+  category: 'Web3 & Digital Ownership',
+  categoryIndex: 1,
+  moduleIndex: 0,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'Welcome to the Crypto World',
+      layout: 'visual',
+      content: `Think of crypto as the internet's native money. Finally, money that speaks computer!`,
+      visualElements: {
+        icon: '⚡',
+        gradient: 'from-orange-50 to-purple-100',
+        cards: [
+          {
+            title: 'Digital Money',
+            description: 'Money that exists purely as computer code',
+            icon: '💻',
+            color: 'blue'
+          },
+          {
+            title: 'No Banks Needed',
+            description: 'Send money directly to anyone, anywhere',
+            icon: '🏦',
+            color: 'green'
+          },
+          {
+            title: 'Programmable',
+            description: 'Money that can follow rules automatically',
+            icon: '⚙️',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'What Makes Crypto Special?',
+      layout: 'comparison',
+      content: `Crypto isn't just digital money - it's a completely different approach to how money works.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Traditional Money',
+            icon: '🏛️',
+            items: [
+              'Controlled by governments & banks',
+              'Need permission for transactions',
+              'Closed on weekends',
+              'Slow international transfers',
+              'Lots of middlemen taking fees'
+            ]
+          },
+          after: {
+            title: 'Cryptocurrency',
+            icon: '⚡',
+            items: [
+              'Controlled by computer code',
+              'Permission-less transactions',
+              'Works 24/7 globally',
+              'Instant international transfers',
+              'Direct peer-to-peer payments'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'The Big Players',
+      layout: 'feature-cards',
+      content: `Let's meet the major cryptocurrencies and what makes each one special.`,
+      visualElements: {
+        features: [
+          {
+            icon: '₿',
+            title: 'Bitcoin (BTC)',
+            description: 'The OG cryptocurrency. Digital gold that started it all. Store of value.'
+          },
+          {
+            icon: 'Ξ',
+            title: 'Ethereum (ETH)',
+            description: 'The smart contract platform. Where most crypto apps are built.'
+          },
+          {
+            icon: '$',
+            title: 'Stablecoins',
+            description: 'Crypto pegged to dollars. All the benefits, none of the wild price swings.'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Why People Use Crypto',
+      layout: 'grid',
+      content: `From saving money to building the future - here's why crypto matters:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Protection from Inflation',
+            description: 'When governments print money, crypto can hold its value better. Bitcoin is often called "digital gold" for this reason.',
+            icon: '🛡️',
+            color: 'blue'
+          },
+          {
+            title: 'Financial Freedom',
+            description: 'Send money anywhere without asking permission. No bank hours, no geographic limits.',
+            icon: '🗽',
+            color: 'green'
+          },
+          {
+            title: 'Innovation Platform',
+            description: 'Build new financial services on programmable money. DeFi, NFTs, and more.',
+            icon: '🚀',
+            color: 'purple'
+          },
+          {
+            title: 'Investment Opportunity',
+            description: 'Early adoption of revolutionary technology. High risk, but potentially high reward.',
+            icon: '📈',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'The Real Talk: Risks & Rewards',
+      layout: 'comparison',
+      content: `Crypto isn't all rainbows and lambos. Here's what you need to know:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'The Exciting Stuff',
+            icon: '🎉',
+            items: [
+              'Potential for massive gains',
+              'Be part of financial revolution',
+              '24/7 global access',
+              'No traditional banking limits',
+              'Programmable money features'
+            ]
+          },
+          after: {
+            title: 'The Reality Check',
+            icon: '⚠️',
+            items: [
+              'Prices swing wildly',
+              'Regulation is still developing',
+              'Easy to lose your keys (and money)',
+              'Scams are everywhere',
+              'Technical complexity'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Getting Started Safely',
+      layout: 'feature-cards',
+      content: `Ready to dip your toes in? Here's how to start without getting rekt:`,
+      visualElements: {
+        features: [
+          {
+            icon: '👶',
+            title: 'Start Small',
+            description: 'Only invest what you can afford to lose. Seriously. Crypto is volatile.'
+          },
+          {
+            icon: '🔒',
+            title: 'Secure Your Stuff',
+            description: 'Learn about wallets and private keys. "Not your keys, not your crypto."'
+          },
+          {
+            icon: '📚',
+            title: 'Educate Yourself',
+            description: 'Understand what you\'re buying. Avoid FOMO and hype-driven decisions.'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What is the main difference between cryptocurrency and traditional money?',
+      options: [
+        'Crypto is always more valuable',
+        'Crypto is controlled by computer code instead of governments',
+        'Crypto can only be used online',
+        'Crypto is free to use'
+      ],
+      correctAnswer: 1,
+      explanation: 'The key difference is that cryptocurrencies are controlled by computer code and mathematical rules, while traditional money is controlled by governments and central banks.',
+      requiresSlides: [1] // Can appear after slide 2
+    },
+    {
+      id: 'q2',
+      question: 'What is Bitcoin often called and why?',
+      options: [
+        'Digital silver because it\'s shiny',
+        'Digital gold because it can store value over time',
+        'Digital cash because it\'s fast',
+        'Digital bank because it holds money'
+      ],
+      correctAnswer: 1,
+      explanation: 'Bitcoin is called "digital gold" because many people use it as a store of value, similar to how gold has been used to preserve wealth throughout history.',
+      requiresSlides: [2] // Can appear after slide 3
+    },
+    {
+      id: 'q3',
+      question: 'What makes Ethereum different from Bitcoin?',
+      options: [
+        'Ethereum is faster',
+        'Ethereum is cheaper',
+        'Ethereum can run smart contracts and apps',
+        'Ethereum is more popular'
+      ],
+      correctAnswer: 2,
+      explanation: 'Ethereum is a platform that can run smart contracts and decentralized applications (dapps), making it programmable money, while Bitcoin focuses primarily on being digital money.',
+      requiresSlides: [2] // Can appear after slide 3
+    },
+    {
+      id: 'q4',
+      question: 'What are stablecoins designed to do?',
+      options: [
+        'Increase in value over time',
+        'Stay stable in price, usually pegged to the dollar',
+        'Replace Bitcoin',
+        'Only work in certain countries'
+      ],
+      correctAnswer: 1,
+      explanation: 'Stablecoins are designed to maintain a stable value, typically by being pegged to a stable asset like the US dollar, giving you crypto benefits without the wild price swings.',
+      requiresSlides: [2] // Can appear after slide 3
+    },
+    {
+      id: 'q5',
+      question: 'What\'s the most important rule when starting with crypto?',
+      options: [
+        'Buy as much as possible immediately',
+        'Only invest what you can afford to lose',
+        'Always follow social media hype',
+        'Focus only on the cheapest coins'
+      ],
+      correctAnswer: 1,
+      explanation: 'The most important rule is to only invest what you can afford to lose, because cryptocurrency prices are highly volatile and you could lose your entire investment.',
+      requiresSlides: [5] // Can appear after slide 6
+    },
+    {
+      id: 'q6',
+      question: 'What does "not your keys, not your crypto" mean?',
+      options: [
+        'You need physical keys to use crypto',
+        'If you don\'t control the private keys, you don\'t truly own the crypto',
+        'Keys are more important than passwords',
+        'You should give your keys to exchanges'
+      ],
+      correctAnswer: 1,
+      explanation: 'This means if someone else (like an exchange) holds your private keys, they technically control your crypto. For true ownership, you should control your own private keys.',
+      requiresSlides: [5] // Can appear after slide 6
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
   whereMoneyLivesModule,
   cryptoPlaceInMoneyModule,
   wealthEmpowermentModule,
-  financialStrategyModule
+  financialStrategyModule,
+  cryptoFundamentalsModule
   // Add more modules as they're created
 ];
