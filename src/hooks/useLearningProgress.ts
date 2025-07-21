@@ -43,12 +43,12 @@ export function useLearningProgress() {
   };
 
   const isModuleUnlocked = (categoryIndex: number, moduleIndex: number): boolean => {
-    // First module is always unlocked
+    // First module of first category is always unlocked
     if (categoryIndex === 0 && moduleIndex === 0) {
       return true;
     }
 
-    // Check if previous module in same category is completed
+    // For subsequent modules in the same category
     if (moduleIndex > 0) {
       // Need previous module in same category to be completed
       const prevModuleCompleted = progress.completedModules.some(id => 
@@ -58,10 +58,10 @@ export function useLearningProgress() {
       return prevModuleCompleted;
     }
 
-    // For first module in a category (but not the very first module)
-    // Check if at least one module from previous category is completed
-    if (categoryIndex > 0 && moduleIndex === 0) {
-      return progress.completedModules.length > 0;
+    // For first module in any category beyond the first category
+    // All first modules should be unlocked initially to allow flexible learning
+    if (moduleIndex === 0) {
+      return true;
     }
 
     return false;
