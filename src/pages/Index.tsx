@@ -2,6 +2,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
+import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -141,9 +142,12 @@ const Index = () => {
                   literacy and inclusion across digital and traditional markets. Our primary audience is financially 
                   underserved individuals new to crypto or investing, overwhelmed by exchanges and speculation.
                 </p>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
+               </div>
+               
+               {/* Financial Statistics Expander Section */}
+               <FinancialStatsExpander />
+               
+               <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
                 <div className="space-y-8">
                   <div className="relative">
                     <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl blur-xl"></div>
