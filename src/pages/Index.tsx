@@ -1,6 +1,7 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import PreSignup from "@/components/PreSignup";
 
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { Button } from "@/components/ui/button";
@@ -231,6 +232,9 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Join The Vault Club Section */}
+        <PreSignup />
         
         <Footer />
       </div>
