@@ -50,12 +50,14 @@ export function useLearningProgress() {
 
     // For subsequent modules in the same category
     if (moduleIndex > 0) {
-      // Need previous module in same category to be completed
-      const prevModuleCompleted = progress.completedModules.some(id => 
-        id.includes(`category-${categoryIndex}-module-${moduleIndex - 1}`) ||
-        (categoryIndex === 0 && moduleIndex === 1 && progress.completedModules.includes('what-is-money-really'))
-      );
-      return prevModuleCompleted;
+      // Check if previous module is completed
+      if (categoryIndex === 0 && moduleIndex === 1) {
+        return progress.completedModules.includes('what-is-money-really');
+      }
+      if (categoryIndex === 0 && moduleIndex === 2) {
+        return progress.completedModules.includes('historical-evolution-money');
+      }
+      return false;
     }
 
     // For first module in any category beyond the first category
