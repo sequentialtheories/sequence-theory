@@ -94,7 +94,7 @@ const App = () => (
           <Route path="/learn/learning-human-progress-foundation" element={<InteractiveLearning />} />
           <Route path="/learn/consequences-educational-absence" element={<InteractiveLearning />} />
           <Route path="/learn/financial-literacy-gatekeeping" element={<InteractiveLearning />} />
-          <Route path="/learn/colonialism-money-trade" element={<ColonialismMoneyTrade />} />
+          <Route path="/learn/colonialism-money-trade" element={<InteractiveLearning />} />
           <Route path="/learn/global-education-statistics" element={<GlobalEducationStatistics />} />
           <Route path="/learn/democratizing-financial-knowledge" element={<DemocratizingFinancialKnowledge />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -49,6 +49,398 @@ export interface ModuleData {
   quizPool: QuizQuestion[];
 }
 
+// Money as Control Module (Interactive version of Colonialism, Money & Trade)
+export const moneyAsControlModule: ModuleData = {
+  id: 'money-as-control',
+  title: 'Money as Control',
+  description: 'Discover how monetary systems have been used as tools of control throughout history.',
+  level: 'Intermediate',
+  category: 'Financial Literacy',
+  categoryIndex: 1,
+  moduleIndex: 0,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'Money as a Tool of Control',
+      layout: 'visual',
+      content: `Throughout history, monetary systems and trade relationships have been weaponized as instruments of colonial control. Ready to uncover this hidden history?`,
+      visualElements: {
+        icon: '🚢',
+        gradient: 'from-amber-50 to-orange-100',
+        cards: [
+          {
+            title: 'Colonial Currencies',
+            description: 'How empires controlled economies through money',
+            icon: '👑',
+            color: 'amber'
+          },
+          {
+            title: 'Trade Dependencies',
+            description: 'Creating economic relationships that benefit colonizers',
+            icon: '⚓',
+            color: 'blue'
+          },
+          {
+            title: 'Modern Legacy',
+            description: 'How these systems persist in new forms today',
+            icon: '🏢',
+            color: 'red'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'The Spanish Silver Empire',
+      layout: 'feature-cards',
+      content: `Let's start with one of history's most devastating examples: Spanish colonial silver extraction from 1500-1800.`,
+      visualElements: {
+        features: [
+          {
+            icon: '⛏️',
+            title: 'Forced Extraction',
+            description: 'Indigenous people forced to mine precious metals to fund European wars'
+          },
+          {
+            icon: '💰',
+            title: 'Global Inflation',
+            description: 'Massive silver influx caused worldwide price inflation and economic disruption'
+          },
+          {
+            icon: '🔗',
+            title: 'Extractive Legacy',
+            description: 'Established patterns of resource extraction that continue today'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'British Currency Controls',
+      layout: 'comparison',
+      content: `The British Empire perfected monetary control from 1600-1947. Here's how they did it:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'What Britain Banned',
+            icon: '🚫',
+            items: [
+              'Colonies issuing their own currency',
+              'Free trade with other nations',
+              'Local banking independence',
+              'Manufacturing of finished goods',
+              'Technology development'
+            ]
+          },
+          after: {
+            title: 'What Britain Controlled',
+            icon: '🎯',
+            items: [
+              'All colonial currency and banking',
+              'Trade routes and partnerships',
+              'Raw material extraction',
+              'Manufacturing monopolies',
+              'Financial institutions'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'The CFA Franc: Modern Colonialism',
+      layout: 'visual',
+      content: `Think colonial monetary control ended with independence? Meet the CFA Franc - a system that continues today.`,
+      visualElements: {
+        icon: '🇫🇷',
+        gradient: 'from-red-50 to-pink-100',
+        cards: [
+          {
+            title: '14 African Nations',
+            description: 'Still required to use French-controlled currency',
+            icon: '🌍',
+            color: 'orange'
+          },
+          {
+            title: '50% Reserves in France',
+            description: 'Must keep half their money in French banks',
+            icon: '🏦',
+            color: 'blue'
+          },
+          {
+            title: 'Limited Sovereignty',
+            description: 'Cannot control their own monetary policy',
+            icon: '⛓️',
+            color: 'red'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'How Trade Dependencies Work',
+      layout: 'grid',
+      content: `Colonial powers created economic traps that persist long after political independence:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Raw Material Trap',
+            description: 'Colonies forced to export unprocessed goods, import expensive manufactured products',
+            icon: '🏭',
+            color: 'blue'
+          },
+          {
+            title: 'Monoculture Economics',
+            description: 'Single-crop specialization creates vulnerability to market manipulation',
+            icon: '🌾',
+            color: 'green'
+          },
+          {
+            title: 'Infrastructure Control',
+            description: 'Transportation and ports owned by colonial powers, limiting trade options',
+            icon: '🚢',
+            color: 'purple'
+          },
+          {
+            title: 'Technology Barriers',
+            description: 'Prevented industrial development to maintain dependency relationships',
+            icon: '🔧',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Modern Economic Colonialism',
+      layout: 'feature-cards',
+      content: `Today's economic control uses sophisticated new methods. Here are the main tools:`,
+      visualElements: {
+        features: [
+          {
+            icon: '🪤',
+            title: 'Debt Trap Diplomacy',
+            description: 'Unsustainable loans leading to asset seizure - like the Belt and Road Initiative'
+          },
+          {
+            icon: '💱',
+            title: 'Currency Manipulation',
+            description: 'External control of exchange rates and monetary policy'
+          },
+          {
+            icon: '🚫',
+            title: 'Financial Sanctions',
+            description: 'Blocking countries from international payment systems like SWIFT'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-7',
+      type: 'content',
+      title: 'Case Study: The DRC',
+      layout: 'visual',
+      content: `The Democratic Republic of Congo shows how monetary colonialism evolved from direct rule to corporate extraction:`,
+      visualElements: {
+        icon: '🌍',
+        gradient: 'from-green-50 to-emerald-100',
+        cards: [
+          {
+            title: 'Belgian Period',
+            description: 'Forced rubber extraction using currency controls',
+            icon: '👑',
+            color: 'amber'
+          },
+          {
+            title: 'Modern Reality',
+            description: 'Foreign corporations extract minerals with minimal local benefit',
+            icon: '⛏️',
+            color: 'red'
+          },
+          {
+            title: 'Currency Reform Blocked',
+            description: 'Attempts at monetary independence face international pressure',
+            icon: '🚫',
+            color: 'gray'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-8',
+      type: 'content',
+      title: 'The Psychological Impact',
+      layout: 'comparison',
+      content: `Economic colonialism doesn't just affect money - it changes how people think about themselves and their capabilities.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Individual Effects',
+            icon: '🧠',
+            items: [
+              'Internalized inferiority complex',
+              'Constant economic anxiety',
+              'Dependency mindset',
+              'Cultural devaluation',
+              'Learned helplessness'
+            ]
+          },
+          after: {
+            title: 'Societal Impact',
+            icon: '🏛️',
+            items: [
+              'Brain drain to dominant countries',
+              'Loss of traditional knowledge',
+              'Political instability',
+              'Elite capture of benefits',
+              'Reduced innovation capacity'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-9',
+      type: 'content',
+      title: 'Breaking Free: Paths to Independence',
+      layout: 'grid',
+      content: `Despite these challenges, there are real strategies for achieving economic independence:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Monetary Sovereignty',
+            description: 'Independent central banking, regional currencies, digital alternatives',
+            icon: '🏦',
+            color: 'blue'
+          },
+          {
+            title: 'Trade Diversification',
+            description: 'South-South trade, local manufacturing, value-added exports',
+            icon: '🔄',
+            color: 'green'
+          },
+          {
+            title: 'Financial Education',
+            description: 'Teaching economic history, promoting literacy, encouraging cooperation',
+            icon: '📚',
+            color: 'purple'
+          },
+          {
+            title: 'Technology Solutions',
+            description: 'Blockchain currencies, mobile payments, decentralized finance',
+            icon: '💻',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-10',
+      type: 'content',
+      title: 'Your Role in Economic Justice',
+      layout: 'visual',
+      content: `Understanding monetary colonialism empowers you to make informed decisions and support genuine economic justice.`,
+      visualElements: {
+        icon: '✊',
+        gradient: 'from-cyan-50 to-blue-100',
+        cards: [
+          {
+            title: 'Conscious Spending',
+            description: 'Support businesses that practice fair trade and equitable partnerships',
+            icon: '💳',
+            color: 'green'
+          },
+          {
+            title: 'Financial Independence',
+            description: 'Build wealth that doesn\'t depend on exploitative systems',
+            icon: '💰',
+            color: 'blue'
+          },
+          {
+            title: 'Spread Awareness',
+            description: 'Share this knowledge to help others understand economic realities',
+            icon: '📢',
+            color: 'purple'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What was the main purpose of Spanish colonial silver extraction?',
+      options: [
+        'To develop local economies in the Americas',
+        'To fund European wars and maintain empire',
+        'To create fair trade relationships',
+        'To establish modern banking systems'
+      ],
+      correctAnswer: 1,
+      explanation: 'Spanish colonial silver extraction was primarily used to fund European wars and maintain the Spanish Empire, devastating indigenous economies in the process.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'q2',
+      question: 'What is the CFA Franc system?',
+      options: [
+        'A cryptocurrency used in Africa',
+        'An independent African currency',
+        'A French-controlled currency still used by 14 African nations',
+        'A historical currency that no longer exists'
+      ],
+      correctAnswer: 2,
+      explanation: 'The CFA Franc is a French-controlled currency system that 14 African nations are still required to use, with 50% of their reserves held in French banks.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q3',
+      question: 'How did British currency controls create dependency?',
+      options: [
+        'By helping colonies develop their own banks',
+        'By prohibiting colonies from issuing currency or trading freely',
+        'By providing free financial education',
+        'By encouraging local manufacturing'
+      ],
+      correctAnswer: 1,
+      explanation: 'British currency controls prohibited colonies from issuing their own currency or trading freely, forcing dependence on British financial institutions and trade networks.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q4',
+      question: 'What is "debt trap diplomacy"?',
+      options: [
+        'Helping countries reduce their debt burden',
+        'Teaching financial literacy to developing nations',
+        'Providing unsustainable loans that lead to asset seizure',
+        'Creating fair trade agreements'
+      ],
+      correctAnswer: 2,
+      explanation: 'Debt trap diplomacy involves providing unsustainable loans to countries, then seizing strategic assets when they cannot repay - a modern form of economic colonialism.',
+      requiresSlides: [5]
+    },
+    {
+      id: 'q5',
+      question: 'What is one effective strategy for achieving economic independence?',
+      options: [
+        'Accepting all foreign investment unconditionally',
+        'Focusing only on raw material exports',
+        'Developing South-South trade relationships and local manufacturing',
+        'Eliminating all international trade'
+      ],
+      correctAnswer: 2,
+      explanation: 'Developing South-South trade relationships and building local manufacturing capacity helps reduce dependency on former colonial powers and creates more balanced economic relationships.',
+      requiresSlides: [8]
+    }
+  ]
+};
+
 // First module: "What is Money, Really?"
 export const whatIsMoneyModule: ModuleData = {
   id: 'what-is-money-really',
@@ -5522,6 +5914,7 @@ const democratizingFinancialKnowledgeModule: ModuleData = {
 };
 
 export const allModules: ModuleData[] = [
+  moneyAsControlModule,
   whatIsMoneyModule,
   moneyThroughTimeModule,
   whereMoneyLivesModule,
