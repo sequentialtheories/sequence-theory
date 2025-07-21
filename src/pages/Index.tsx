@@ -1,6 +1,7 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { StatisticsBubbles } from "@/components/StatisticsBubbles";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -121,6 +122,9 @@ const Index = () => {
             </div>
           </div>
         </section>
+
+        {/* Statistics Bubbles Section */}
+        <StatisticsBubbles />
 
         {/* Mission Section */}
         <section className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden">
