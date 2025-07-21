@@ -6,7 +6,7 @@ const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const learningCategories = [{
     title: "Financial Overview",
-    description: "Learn how money actually works (it's simpler than you think!)",
+    description: "Learn how money works, from the history, function & more!",
     modules: [{
       icon: DollarSign,
       title: "What is Money Really?",
