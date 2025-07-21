@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useValidation } from '@/hooks/useValidation';
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,11 +15,11 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { validateEmail, validatePassword, sanitizeInput } = useValidation();
 
   // Check if there's an email passed from early access signup
   const searchParams = new URLSearchParams(location.search);
@@ -31,13 +32,41 @@ export default function Auth() {
   });
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email);
+    const sanitizedName = sanitizeInput(name);
+    
+    // Validate email
+    if (!validateEmail(sanitizedEmail)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // For signup, validate password strength
+    if (!isLogin) {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        setPasswordErrors(passwordValidation.errors);
+        toast({
+          title: "Password Requirements Not Met",
+          description: "Please check the password requirements below.",
+          variant: "destructive"
+        });
+        return;
+      }
+      setPasswordErrors([]);
+    }
+    
     setLoading(true);
     try {
       if (isLogin) {
-        const {
-          error
-        } = await supabase.auth.signInWithPassword({
-          email,
+        const { error } = await supabase.auth.signInWithPassword({
+          email: sanitizedEmail,
           password
         });
         if (error) throw error;
@@ -47,17 +76,15 @@ export default function Auth() {
         });
         navigate('/');
       } else {
-        // For signup, include name in metadata
+        // For signup, include sanitized name in metadata
         const redirectUrl = `${window.location.origin}/`;
-        const {
-          error
-        } = await supabase.auth.signUp({
-          email,
+        const { error } = await supabase.auth.signUp({
+          email: sanitizedEmail,
           password,
           options: {
             emailRedirectTo: redirectUrl,
             data: {
-              name: name
+              name: sanitizedName
             }
           }
         });
@@ -128,6 +155,13 @@ export default function Auth() {
                   )}
                 </Button>
               </div>
+              {!isLogin && passwordErrors.length > 0 && (
+                <div className="mt-2 text-sm text-destructive space-y-1">
+                  {passwordErrors.map((error, index) => (
+                    <p key={index}>• {error}</p>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>

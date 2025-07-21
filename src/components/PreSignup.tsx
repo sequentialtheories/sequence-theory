@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useValidation } from "@/hooks/useValidation";
 import { Mail, Vault } from "lucide-react";
 
 const PreSignup = () => {
@@ -14,11 +15,7 @@ const PreSignup = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Email validation function
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  };
+  const { validateEmail, sanitizeInput } = useValidation();
 
   // Rate limiting: 1 submission per 30 seconds
   const isRateLimited = useCallback((): boolean => {
@@ -30,8 +27,9 @@ const PreSignup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate email format
-    if (!validateEmail(email)) {
+    // Sanitize and validate email
+    const sanitizedEmail = sanitizeInput(email);
+    if (!validateEmail(sanitizedEmail)) {
       toast({
         title: "Invalid Email",
         description: "Please enter a valid email address.",
@@ -54,10 +52,10 @@ const PreSignup = () => {
     setLastSubmissionTime(Date.now());
     
     try {
-      // Store email in early access signups table
+      // Store sanitized email in early access signups table
       const { error } = await supabase
         .from('early_access_signups')
-        .insert([{ email }]);
+        .insert([{ email: sanitizedEmail }]);
 
       if (error) {
         // If email already exists, that's okay - just proceed to account creation
@@ -71,8 +69,8 @@ const PreSignup = () => {
         description: "Complete your account to get early access.",
       });
 
-      // Redirect to auth page with email prefilled
-      navigate(`/auth?email=${encodeURIComponent(email)}`);
+      // Redirect to auth page with sanitized email prefilled
+      navigate(`/auth?email=${encodeURIComponent(sanitizedEmail)}`);
     } catch (error: any) {
       toast({
         title: "Error",
