@@ -143,7 +143,7 @@ const LearnNow = () => {
       title: "Money as Control",
       description: "How powerful people have used money systems to control others.",
       level: "Intermediate",
-      slug: "colonialism-money-trade",
+      slug: "money-as-control",
       categoryIndex: 2,
       moduleIndex: 3
     }, {

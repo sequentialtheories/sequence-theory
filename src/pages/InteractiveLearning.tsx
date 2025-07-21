@@ -63,6 +63,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/colonialism-money-trade') {
     actualModuleId = 'money-as-control';
   }
+  if (!actualModuleId && currentPath === '/learn/money-as-control') {
+    actualModuleId = 'money-as-control';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);
