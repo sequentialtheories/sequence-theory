@@ -96,7 +96,7 @@ const App = () => (
           <Route path="/learn/financial-literacy-gatekeeping" element={<InteractiveLearning />} />
           <Route path="/learn/colonialism-money-trade" element={<InteractiveLearning />} />
           <Route path="/learn/global-education-statistics" element={<InteractiveLearning />} />
-          <Route path="/learn/democratizing-financial-knowledge" element={<DemocratizingFinancialKnowledge />} />
+          <Route path="/learn/democratizing-financial-knowledge" element={<InteractiveLearning />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
