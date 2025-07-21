@@ -53,12 +53,15 @@ const BubbleCard = ({
   }, [delay]);
 
   const variants = [
-    "bg-gradient-to-br from-violet-100/40 to-purple-200/30 border-violet-200/50",
-    "bg-gradient-to-br from-blue-100/40 to-indigo-200/30 border-blue-200/50",
-    "bg-gradient-to-br from-emerald-100/40 to-teal-200/30 border-emerald-200/50",
-    "bg-gradient-to-br from-rose-100/40 to-pink-200/30 border-rose-200/50",
-    "bg-gradient-to-br from-amber-100/40 to-orange-200/30 border-amber-200/50"
+    "bg-gradient-to-br from-violet-200/70 to-purple-300/60 border-violet-300/80",
+    "bg-gradient-to-br from-blue-200/70 to-indigo-300/60 border-blue-300/80",
+    "bg-gradient-to-br from-emerald-200/70 to-teal-300/60 border-emerald-300/80",
+    "bg-gradient-to-br from-rose-200/70 to-pink-300/60 border-rose-300/80",
+    "bg-gradient-to-br from-amber-200/70 to-orange-300/60 border-amber-300/80"
   ];
+
+  const rotations = [-2, 1, -1, 2, -3, 1, -1];
+  const rotation = rotations[variant % rotations.length];
 
   return (
     <div 
@@ -80,14 +83,19 @@ const BubbleCard = ({
         )}
         style={{ animationDelay: `${variant * 1.2}s` }}
       >
-        <div className={cn(
-          "backdrop-blur-xl border rounded-3xl p-5 max-w-[280px]",
-          "shadow-[0_8px_32px_rgba(31,38,135,0.15)]",
-          "hover:shadow-[0_12px_40px_rgba(31,38,135,0.25)]",
-          "transition-all duration-700 ease-out",
-          "hover:scale-[1.02] hover:-translate-y-1",
-          variants[variant % variants.length]
-        )}>
+        <div 
+          className={cn(
+            "backdrop-blur-xl border-2 rounded-3xl p-5 max-w-[280px]",
+            "shadow-[0_12px_40px_rgba(0,0,0,0.25)]",
+            "hover:shadow-[0_20px_60px_rgba(0,0,0,0.35)]",
+            "transition-all duration-700 ease-out",
+            "hover:scale-[1.05] hover:-translate-y-2",
+            variants[variant % variants.length]
+          )}
+          style={{ 
+            transform: `rotate(${rotation}deg)`,
+          }}
+        >
           <div className="space-y-3">
             <h3 className="text-gray-800 font-semibold text-sm leading-snug tracking-tight">
               {headline}
@@ -106,15 +114,15 @@ const BubbleCard = ({
 };
 
 export const StatisticsBubbles = () => {
-  // Thoughtfully positioned for visual harmony
+  // More centered positioning spreading toward bottom
   const positions = [
-    { x: 12, y: 160 },   // Top left, elegant spacing
-    { x: 88, y: 220 },   // Top right, balanced
-    { x: 8, y: 420 },    // Mid left, breathing room
-    { x: 92, y: 580 },   // Mid right, asymmetric balance
-    { x: 15, y: 740 },   // Lower left, visual flow
-    { x: 85, y: 880 },   // Lower right, clean margins
-    { x: 10, y: 1020 }   // Bottom left, final accent
+    { x: 25, y: 280 },   // Top left, more centered
+    { x: 75, y: 350 },   // Top right, more centered
+    { x: 30, y: 520 },   // Mid left, centered
+    { x: 70, y: 680 },   // Mid right, centered
+    { x: 20, y: 840 },   // Lower left, spreading down
+    { x: 80, y: 1000 },  // Lower right, spreading down
+    { x: 35, y: 1160 }   // Bottom center-left, final spread
   ];
 
   return (
