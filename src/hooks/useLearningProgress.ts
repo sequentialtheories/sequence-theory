@@ -1,0 +1,89 @@
+import { useState, useEffect } from 'react';
+
+interface LearningProgress {
+  completedModules: string[];
+  currentCategory: number;
+  currentModule: number;
+}
+
+const STORAGE_KEY = 'sequenceTheory_learningProgress';
+
+export function useLearningProgress() {
+  const [progress, setProgress] = useState<LearningProgress>({
+    completedModules: [],
+    currentCategory: 0,
+    currentModule: 0
+  });
+
+  // Load progress from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsedProgress = JSON.parse(saved);
+        setProgress(parsedProgress);
+      } catch (error) {
+        console.error('Failed to parse learning progress:', error);
+      }
+    }
+  }, []);
+
+  // Save progress to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  }, [progress]);
+
+  const completeModule = (moduleId: string, categoryIndex: number, moduleIndex: number) => {
+    setProgress(prev => ({
+      ...prev,
+      completedModules: [...prev.completedModules, moduleId],
+      currentCategory: categoryIndex,
+      currentModule: moduleIndex + 1
+    }));
+  };
+
+  const isModuleUnlocked = (categoryIndex: number, moduleIndex: number): boolean => {
+    // First module is always unlocked
+    if (categoryIndex === 0 && moduleIndex === 0) {
+      return true;
+    }
+
+    // Check if previous module in same category is completed
+    if (moduleIndex > 0) {
+      // Need previous module in same category to be completed
+      const prevModuleCompleted = progress.completedModules.some(id => 
+        id.includes(`category-${categoryIndex}-module-${moduleIndex - 1}`) ||
+        (categoryIndex === 0 && moduleIndex === 1 && progress.completedModules.includes('what-is-money-really'))
+      );
+      return prevModuleCompleted;
+    }
+
+    // For first module in a category (but not the very first module)
+    // Check if at least one module from previous category is completed
+    if (categoryIndex > 0 && moduleIndex === 0) {
+      return progress.completedModules.length > 0;
+    }
+
+    return false;
+  };
+
+  const isModuleCompleted = (moduleId: string): boolean => {
+    return progress.completedModules.includes(moduleId);
+  };
+
+  const resetProgress = () => {
+    setProgress({
+      completedModules: [],
+      currentCategory: 0,
+      currentModule: 0
+    });
+  };
+
+  return {
+    progress,
+    completeModule,
+    isModuleUnlocked,
+    isModuleCompleted,
+    resetProgress
+  };
+}

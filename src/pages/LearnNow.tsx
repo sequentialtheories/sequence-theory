@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle, Lock, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLearningProgress } from "@/hooks/useLearningProgress";
+import { Progress } from "@/components/ui/progress";
 const LearnNow = () => {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(0);
+  const { isModuleUnlocked, isModuleCompleted, progress } = useLearningProgress();
   const learningCategories = [{
     title: "Financial Basics",
     description: "Learn how money actually works (it's simpler than you think!)",
@@ -12,7 +15,8 @@ const LearnNow = () => {
       title: "What is Money Really?",
       description: "Why we even have money and how it makes life easier for everyone.",
       level: "Beginner",
-      slug: "concept-purpose-money"
+      slug: "what-is-money-really",
+      interactive: true
     }, {
       icon: BookOpen,
       title: "Money Through Time",
@@ -154,6 +158,49 @@ const LearnNow = () => {
           </div>
         </div>
       </header>
+
+      {/* Progress Overview */}
+      <section className="relative py-12 bg-gradient-to-br from-slate-100 to-gray-100 border-b border-gray-200">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Learning Journey</h2>
+                  <p className="text-gray-600">Track your progress through interactive modules</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-purple-600">{progress.completedModules.length}</div>
+                  <div className="text-sm text-gray-500">modules completed</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {learningCategories.map((category, categoryIndex) => {
+                  const categoryCompleted = category.modules.filter(module => 
+                    progress.completedModules.includes(module.slug)
+                  ).length;
+                  const totalModules = category.modules.length;
+                  const progressPercent = (categoryCompleted / totalModules) * 100;
+                  
+                  return (
+                    <div key={categoryIndex} className="relative">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900">{category.title}</h3>
+                        <span className="text-sm text-gray-500">{categoryCompleted}/{totalModules}</span>
+                      </div>
+                      <Progress value={progressPercent} className="h-2 mb-2" />
+                      <div className="text-xs text-gray-500">
+                        {progressPercent === 100 ? '🎉 Complete!' : progressPercent > 0 ? 'In Progress' : 'Not Started'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-cyan-50 via-purple-50 to-indigo-50 overflow-hidden">
@@ -329,43 +376,91 @@ const LearnNow = () => {
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => <Link key={moduleIndex} to={`/learn/${module.slug}`} className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    
-                    <div className="relative z-10">
-                      <div className="flex items-start gap-4 mb-6">
-                        <div className="bg-gradient-to-br from-cyan-600 to-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform">
-                          <module.icon className="h-7 w-7 text-white" />
+                {learningCategories[selectedCategory].modules.map((module, moduleIndex) => {
+                  const unlocked = isModuleUnlocked(selectedCategory, moduleIndex);
+                  const completed = isModuleCompleted(module.slug);
+                  const linkPath = module.interactive ? `/interactive-learn/${module.slug}` : `/learn/${module.slug}`;
+                  
+                  if (!unlocked) {
+                    return (
+                      <div key={moduleIndex} className="group relative block bg-gray-50 rounded-2xl p-8 border border-gray-200 shadow-lg opacity-60">
+                        <div className="absolute inset-0 bg-gray-100/50 rounded-2xl"></div>
+                        <div className="relative z-10">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="bg-gray-300 p-4 rounded-xl">
+                              <module.icon className="h-8 w-8 text-gray-500" />
+                            </div>
+                            <div className="bg-gray-200 p-2 rounded-full">
+                              <Lock className="h-4 w-4 text-gray-500" />
+                            </div>
+                          </div>
+                          <h4 className="text-xl font-bold text-gray-500 mb-3">{module.title}</h4>
+                          <p className="text-gray-400 text-sm leading-relaxed mb-4">{module.description}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-gray-400 bg-gray-200 px-3 py-1 rounded-full">{module.level}</span>
+                            <span className="text-xs text-gray-400">Locked</span>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-3">
-                            <h5 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors leading-tight">
-                              {module.title}
-                            </h5>
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${module.level === 'Beginner' ? 'bg-green-100 text-green-700' : module.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' : module.level === 'Advanced' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}`}>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <Link key={moduleIndex} to={linkPath} className="group relative block bg-white rounded-2xl p-8 border border-gray-100 hover:border-purple-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className={`p-4 rounded-xl transition-colors ${
+                            completed 
+                              ? 'bg-gradient-to-br from-green-100 to-emerald-100' 
+                              : 'bg-gradient-to-br from-purple-100 to-cyan-100 group-hover:from-purple-200 group-hover:to-cyan-200'
+                          }`}>
+                            <module.icon className={`h-8 w-8 ${completed ? 'text-green-600' : 'text-purple-600'}`} />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {completed && (
+                              <div className="bg-green-100 p-1 rounded-full">
+                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                              </div>
+                            )}
+                            <div className={`text-xs font-medium px-3 py-1 rounded-full transition-colors ${
+                              completed 
+                                ? 'text-green-600 bg-green-100' 
+                                : 'text-purple-600 bg-purple-100 group-hover:bg-purple-200'
+                            }`}>
                               {module.level}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-800 transition-colors">
+                          {module.title}
+                        </h4>
+                        
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4 group-hover:text-gray-700 transition-colors">
+                          {module.description}
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <PlayCircle className={`h-4 w-4 ${completed ? 'text-green-600' : 'text-purple-600'}`} />
+                            <span className="text-sm font-medium text-gray-700">
+                              {completed ? 'Review' : module.interactive ? 'Start Interactive' : 'Start Learning'}
                             </span>
                           </div>
-                          <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-700 transition-colors">
-                            {module.description}
-                          </p>
+                          <ArrowLeft className="h-4 w-4 text-gray-400 transform rotate-180 group-hover:translate-x-1 transition-transform" />
                         </div>
+                        
+                        {module.interactive && !completed && (
+                          <div className="mt-3 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full inline-block">
+                            🎯 Interactive Learning
+                          </div>
+                        )}
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <PlayCircle className="h-4 w-4" />
-                          <span>Interactive Learning</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-purple-600 group-hover:gap-2 transition-all">
-                          <span className="text-sm font-medium">Start Learning</span>
-                          <ArrowLeft className="h-4 w-4 rotate-180 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-b-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                  </Link>)}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>

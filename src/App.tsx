@@ -41,6 +41,7 @@ import FinancialLiteracyGatekeeping from "./pages/FinancialLiteracyGatekeeping";
 import ColonialismMoneyTrade from "./pages/ColonialismMoneyTrade";
 import GlobalEducationStatistics from "./pages/GlobalEducationStatistics";
 import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowledge";
+import InteractiveLearning from "./pages/InteractiveLearning";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,11 @@ const App = () => (
             <Route path="/learn-now" element={
               <ProtectedRoute>
                 <LearnNow />
+              </ProtectedRoute>
+            } />
+            <Route path="/interactive-learn/:moduleId" element={
+              <ProtectedRoute>
+                <InteractiveLearning />
               </ProtectedRoute>
             } />
           <Route path="/finance-quiz" element={<FinanceQuiz />} />

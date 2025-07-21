@@ -1,0 +1,51 @@
+import { useParams } from 'react-router-dom';
+import InteractiveModule from '@/components/InteractiveModule';
+import { whatIsMoneyModule } from '@/data/moduleData';
+import { useLearningProgress } from '@/hooks/useLearningProgress';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+export default function InteractiveLearning() {
+  const { moduleId } = useParams();
+  const { completeModule, isModuleUnlocked } = useLearningProgress();
+
+  // For now, we only have one module. In the future, you'd fetch by moduleId
+  const moduleData = whatIsMoneyModule;
+
+  if (!moduleData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50 flex items-center justify-center">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Module Not Found</h2>
+            <p className="text-gray-600 mb-6">
+              The requested learning module could not be found.
+            </p>
+            <Link to="/learn-now">
+              <Button>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Learning Path
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const handleModuleComplete = (completedModuleId: string) => {
+    completeModule(completedModuleId, moduleData.categoryIndex, moduleData.moduleIndex);
+  };
+
+  const unlocked = isModuleUnlocked(moduleData.categoryIndex, moduleData.moduleIndex);
+
+  return (
+    <InteractiveModule
+      moduleData={moduleData}
+      isUnlocked={unlocked}
+      onComplete={handleModuleComplete}
+    />
+  );
+}
