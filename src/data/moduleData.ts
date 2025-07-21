@@ -55,9 +55,9 @@ export const moneyAsControlModule: ModuleData = {
   title: 'Money as Control',
   description: 'Discover how monetary systems have been used as tools of control throughout history.',
   level: 'Intermediate',
-  category: 'Financial Literacy',
-  categoryIndex: 1,
-  moduleIndex: 0,
+  category: 'Why Learning Matters',
+  categoryIndex: 2,
+  moduleIndex: 3,
   slides: [
     {
       id: 'slide-1',
