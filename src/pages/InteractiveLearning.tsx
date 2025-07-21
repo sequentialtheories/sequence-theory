@@ -42,6 +42,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/tokens-tokenization') {
     actualModuleId = 'tokens-tokenization';
   }
+  if (!actualModuleId && currentPath === '/learn/blockchain-technology-deep-dive') {
+    actualModuleId = 'blockchain-technology-deep-dive';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);

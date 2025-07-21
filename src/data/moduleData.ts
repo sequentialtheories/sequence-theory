@@ -3117,6 +3117,196 @@ export const tokensTokenizationModule: ModuleData = {
   ]
 };
 
+const blockchainTechnologyModule: ModuleData = {
+  id: "blockchain-technology-deep-dive",
+  title: "Blockchain Technology Deep Dive",
+  description: "Explore the technical foundations of blockchain, consensus mechanisms, and smart contracts that power the decentralized future.",
+  level: "Intermediate",
+  category: "Technology",
+  categoryIndex: 3,
+  moduleIndex: 0,
+  slides: [
+    {
+      id: "slide-1",
+      type: "content",
+      title: "Understanding Blockchain",
+      layout: 'visual',
+      content: `Blockchain is a revolutionary distributed ledger technology that maintains a continuously growing list of records, called blocks, which are cryptographically linked and secured across a global network.
+
+Think of blockchain as a digital ledger book that's copied across thousands of computers worldwide. Every transaction gets recorded in this book, and all computers must agree on what happened before it becomes permanent.`,
+      visualElements: {
+        icon: '🔗',
+        gradient: 'from-indigo-50 to-purple-100',
+        cards: [
+          { icon: '🌐', title: 'Distributed', description: 'No single point of control or failure', color: 'blue' },
+          { icon: '👁️', title: 'Transparent', description: 'All transactions are publicly visible', color: 'cyan' },
+          { icon: '🔒', title: 'Immutable', description: 'Once recorded, data cannot be easily changed', color: 'indigo' },
+          { icon: '🛡️', title: 'Secure', description: 'Uses advanced cryptographic protection', color: 'purple' }
+        ]
+      }
+    },
+    {
+      id: "slide-2",
+      type: "content",
+      title: "How Blocks Are Created",
+      layout: 'feature-cards',
+      content: `Understanding the process of how new blocks are added to the blockchain is crucial to grasping how the technology works. This process involves several key steps that ensure the integrity and security of the network.`,
+      visualElements: {
+        icon: '⛓️',
+        gradient: 'from-emerald-50 to-green-100',
+        features: [
+          { title: 'Transaction Pool', description: 'New transactions wait in a mempool', icon: '📥' },
+          { title: 'Block Formation', description: 'Miners/validators select transactions to include', icon: '🔧' },
+          { title: 'Consensus', description: 'Proof of Work/Stake validates the block', icon: '✅' },
+          { title: 'Block Addition', description: 'Validated block is added to the chain', icon: '⛓️' },
+          { title: 'Network Sync', description: 'All nodes update their copy', icon: '🔄' }
+        ]
+      }
+    },
+    {
+      id: "slide-3",
+      type: "content",
+      title: "Consensus Mechanisms",
+      layout: 'comparison',
+      content: `Consensus mechanisms are protocols that ensure all nodes in a blockchain network agree on the current state of the ledger. Different mechanisms have different trade-offs between security, scalability, and decentralization.`,
+      visualElements: {
+        icon: '🎯',
+        gradient: 'from-orange-50 to-red-100',
+        comparison: {
+          before: {
+            title: 'Proof of Work (PoW)',
+            items: ['High security', 'Battle-tested', 'Truly decentralized', 'High energy consumption', 'Slower transactions'],
+            icon: '⚒️'
+          },
+          after: {
+            title: 'Proof of Stake (PoS)',
+            items: ['Energy efficient', 'Faster finality', 'Economic penalties', 'Rich get richer', 'Nothing at stake problem'],
+            icon: '🎯'
+          }
+        }
+      }
+    },
+    {
+      id: "slide-4",
+      type: "content",
+      title: "Hash Functions & Cryptography",
+      layout: 'visual',
+      content: `Cryptographic hash functions are the mathematical foundation that secures blockchain networks. They create unique digital fingerprints for data and enable the tamper-evident properties of blockchain.`,
+      visualElements: {
+        icon: '🔐',
+        gradient: 'from-violet-50 to-purple-100',
+        cards: [
+          { icon: '🔐', title: 'Cryptographic Hashing', description: 'Creates unique fingerprints for data', color: 'violet' },
+          { icon: '🔢', title: 'SHA-256', description: 'The hashing algorithm used by Bitcoin', color: 'purple' },
+          { icon: '🌳', title: 'Merkle Trees', description: 'Efficiently organize and verify transactions', color: 'indigo' },
+          { icon: '✍️', title: 'Digital Signatures', description: 'Prove ownership and authorize transactions', color: 'blue' }
+        ]
+      }
+    },
+    {
+      id: "slide-5",
+      type: "content",
+      title: "Types of Blockchain Networks",
+      layout: 'visual',
+      content: `Different types of blockchain networks serve different purposes. Understanding the distinctions between public, private, consortium, and hybrid blockchains is essential for choosing the right solution.`,
+      visualElements: {
+        icon: '🌍',
+        gradient: 'from-teal-50 to-cyan-100',
+        cards: [
+          { icon: '🌍', title: 'Public Blockchains', description: 'Open to everyone (Bitcoin, Ethereum)', color: 'blue' },
+          { icon: '🏢', title: 'Private Blockchains', description: 'Restricted access for organizations', color: 'purple' },
+          { icon: '👥', title: 'Consortium Blockchains', description: 'Semi-decentralized, controlled by groups', color: 'green' },
+          { icon: '🔄', title: 'Hybrid Blockchains', description: 'Combination of public and private elements', color: 'orange' }
+        ]
+      }
+    },
+    {
+      id: "slide-6",
+      type: "content",
+      title: "Smart Contracts",
+      layout: 'visual',
+      content: `Smart contracts are self-executing contracts with terms directly written into code. They automatically execute when predetermined conditions are met, eliminating the need for intermediaries.`,
+      visualElements: {
+        icon: '📝',
+        gradient: 'from-amber-50 to-yellow-100',
+        cards: [
+          { icon: '⚡', title: 'Automated Execution', description: 'Run automatically when conditions are met', color: 'amber' },
+          { icon: '🤝', title: 'Trustless', description: 'No need to trust intermediaries', color: 'yellow' },
+          { icon: '💰', title: 'Programmable Money', description: 'Enable complex financial instruments', color: 'orange' },
+          { icon: '🔐', title: 'Immutable Logic', description: 'Contract terms cannot be changed once deployed', color: 'red' }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'blockchain-immutable',
+      question: 'What is the main characteristic that makes blockchain immutable?',
+      options: [
+        'It uses encryption',
+        'Blocks are cryptographically linked and distributed across many nodes',
+        'It runs on the internet',
+        'It stores data digitally'
+      ],
+      correctAnswer: 1,
+      explanation: 'Blockchain immutability comes from the cryptographic linking of blocks and their distribution across many nodes, making it extremely difficult to alter historical records.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'consensus-efficiency',
+      question: 'Which consensus mechanism is more energy efficient?',
+      options: [
+        'Proof of Work',
+        'Proof of Stake', 
+        'Both are equally efficient',
+        'Neither uses energy'
+      ],
+      correctAnswer: 1,
+      explanation: 'Proof of Stake is significantly more energy efficient than Proof of Work because it doesn\'t require computational mining.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'smart-contracts',
+      question: 'What is a key feature of smart contracts?',
+      options: [
+        'They require human intervention to execute',
+        'They can be easily modified after deployment',
+        'They execute automatically when conditions are met',
+        'They only work on private blockchains'
+      ],
+      correctAnswer: 2,
+      explanation: 'Smart contracts automatically execute when predetermined conditions are met, without requiring human intervention.',
+      requiresSlides: [6]
+    },
+    {
+      id: 'blockchain-trilemma',
+      question: 'The blockchain trilemma refers to the difficulty of optimizing:',
+      options: [
+        'Speed, cost, and security',
+        'Decentralization, security, and scalability',
+        'Privacy, transparency, and efficiency',
+        'Mining, staking, and voting'
+      ],
+      correctAnswer: 1,
+      explanation: 'The blockchain trilemma describes the challenge of simultaneously optimizing decentralization, security, and scalability in blockchain networks.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'blockchain-types',
+      question: 'What makes public blockchains different from private ones?',
+      options: [
+        'Public blockchains are faster',
+        'Private blockchains are more secure',
+        'Public blockchains are open to everyone, private ones have restricted access',
+        'There is no difference'
+      ],
+      correctAnswer: 2,
+      explanation: 'Public blockchains are permissionless and open to anyone, while private blockchains have restricted access and are controlled by organizations.',
+      requiresSlides: [5]
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -3126,6 +3316,7 @@ export const allModules: ModuleData[] = [
   financialStrategyModule,
   cryptoFundamentalsModule,
   digitalOwnershipModule,
-  tokensTokenizationModule
+  tokensTokenizationModule,
+  blockchainTechnologyModule
   // Add more modules as they're created
 ];
