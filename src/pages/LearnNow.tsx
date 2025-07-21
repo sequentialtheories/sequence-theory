@@ -39,7 +39,7 @@ const LearnNow = () => {
       slug: "wealth-societal-empowerment"
     }, {
       icon: Target,
-      title: "Your Money Game Plan",
+      title: "Financial Overview",
       description: "Smart ways to grow your money over time.",
       level: "Advanced",
       slug: "financial-strategy-planning"
