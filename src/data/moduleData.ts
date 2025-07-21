@@ -173,147 +173,131 @@ Ready to test your knowledge?`
 };
 
 const moneyThroughTimeModule: ModuleData = {
-  id: "money-through-time",
+  id: "historical-evolution-money",
   title: "Money Through Time",
-  description: "Explore the evolution of money from barter to digital currencies",
+  description: "Journey through the fascinating evolution of money from barter to Bitcoin",
   level: "Beginner",
-  category: "Finance Fundamentals",
+  category: "Financial Basics",
   categoryIndex: 0,
   moduleIndex: 1,
   slides: [
     {
-      id: "intro",
+      id: "slide-1",
       type: "content",
-      title: "The Journey of Money Through Time",
-      content: `Money's evolution reveals humanity's greatest financial triumphs and catastrophic mistakes. Understanding this history is crucial for navigating today's monetary landscape.
+      title: "The Greatest Invention You Never Think About",
+      content: `What if I told you that money is one of humanity's greatest inventions - right up there with the wheel, writing, and the internet?
 
-Let's take a journey through time to see how money evolved from simple bartering to today's digital currencies.`
+Think about it: money touches every aspect of our lives, yet we rarely question how it came to be. The story of money is actually the story of human civilization itself.
+
+From trading chickens for haircuts to buying coffee with your phone, let's explore how money evolved and why this history matters more than you think.`
     },
     {
-      id: "barter",
-      type: "content", 
-      title: "The Barter System (Pre-3000 BCE)",
-      content: `Before money existed, people traded goods directly. This was simple in concept but had major problems:
+      id: "slide-2", 
+      type: "content",
+      title: "Life Before Money (The Barter Days)",
+      content: `Picture this: You're a farmer in ancient times with extra grain. You need shoes, but the shoemaker doesn't want grain - he wants meat. So you need to find someone who wants grain and has meat, then trade the meat for shoes.
 
-**The Double Coincidence Problem**: You want my cow, but I need your grain - not your tools!
+This is exhausting! And what if your grain spoils while you're searching? Or the shoemaker decides he wants pottery instead?
 
-**No Fair Pricing**: How many chickens equal one cow? Pricing was inconsistent and unfair.
+The barter system worked for small communities, but it had a fatal flaw: both people had to want exactly what the other person offered. Economists call this the "double coincidence of wants" problem.
 
-**No Savings**: You can't store perishable goods for future use. Your wealth would literally rot away.
-
-This system severely limited trade and economic growth.`
+Trade was limited, and economies couldn't grow beyond tiny villages.`
     },
     {
-      id: "commodity",
+      id: "slide-3",
       type: "content",
-      title: "Commodity Money Era (3000-600 BCE)",
-      content: `Items with intrinsic value became the first "money":
+      title: "The First Money: Things People Actually Wanted",
+      content: `Humans got clever. Instead of trading goods directly, they started using items that EVERYONE wanted.
 
-**Popular Commodities**:
-• Cattle (where "capital" comes from)
-• Salt (Roman soldiers' "salary") 
-• Shells and rare stones
-• Precious metals
+Cattle became money (that's where "capital" comes from!). Salt was so valuable that Roman soldiers were paid with it (hence "salary"). Shells, stones, and precious metals all served as early money.
 
-**The Problems**:
-• Heavy and hard to transport
-• Spoilage and deterioration
-• Difficult to divide
-• Easy to counterfeit
+This was genius! Now you could trade your grain for cattle, and the shoemaker would accept cattle because everyone else did too.
 
-While better than barter, commodity money had serious limitations for growing economies.`
+But there was still a problem: Try carrying 10 cows to the market, or keeping your salt fortune from getting wet in the rain.
+
+Money needed to evolve again.`
     },
     {
-      id: "coins",
+      id: "slide-4",
       type: "content",
-      title: "The Coin Revolution (650 BCE - 1000 CE)",
-      content: `Lydia's first coins around 650 BCE revolutionized trade:
+      title: "The Coin Revolution (Money Gets Official)",
+      content: `Around 650 BCE, the kingdom of Lydia created something revolutionary: the first official coins.
 
-**Major Innovations**:
-• Standardized weight and purity
-• Government authentication  
-• Portable and durable
-• Divisible into smaller units
+These weren't just metal chunks - they were standardized pieces with guaranteed weight and purity, stamped by the government. Suddenly, you didn't need to weigh and test metal with every transaction.
 
-**The Dark Side**:
-• Coin clipping and debasement
-• Roman inflation from silver debasement
-• Still heavy for large transactions
+Coins spread like wildfire because they solved major problems:
+• Same size and value everywhere
+• Hard to fake (government stamp)
+• Easy to carry and count
+• Didn't spoil or die
 
-Coins solved many problems but governments quickly learned to abuse them.`
+But humans being human, governments quickly learned they could "cheat" by reducing the precious metal content while keeping the same face value. The first inflation was born!`
     },
     {
-      id: "paper",
+      id: "slide-5",
       type: "content",
-      title: "Paper Money & Banking (1000 CE - 1971)",
-      content: `China invented paper money, but it came with a dangerous temptation:
+      title: "Paper Money: The Dangerous Temptation",
+      content: `China invented paper money around 1000 CE, and it was brilliant - until it wasn't.
 
-**Revolutionary Benefits**:
-• Lightweight and portable
-• Enabled modern banking
-• Facilitated international trade
-• Gold standard provided stability
+Paper money was incredibly convenient: light, portable, and you could make it in different denominations. It enabled modern banking and international trade.
 
-**Historic Failures**:
-• France's assignats (1790s) - 99% loss
-• Confederate dollars - became worthless
-• Germany's Weimar hyperinflation
-• Government printing to fund wars
+But here's the catch: it's just paper. Its value comes from trust and the promise that you can exchange it for something real.
 
-⚠️ **The Pattern**: Every government that gained control of money printing eventually abused it.`
+Every government that controlled paper money eventually faced the same temptation: when they needed money for wars or expensive projects, why not just print more?
+
+France's revolutionary money became worthless. Confederate dollars weren't worth the paper they were printed on. Germany printed so much money in the 1920s that people needed wheelbarrows full of cash to buy bread.
+
+The pattern was clear: give governments a printing press, and they'll eventually use it.`
     },
     {
-      id: "fiat",
+      id: "slide-6",
       type: "content",
-      title: "The Fiat Experiment (1971 - Present)",
-      content: `Nixon ended gold backing in 1971. We're now 50+ years into the first global fiat experiment:
+      title: "The Great Experiment: Money Without Gold",
+      content: `On August 15, 1971, President Nixon made a decision that changed everything: he ended the U.S. dollar's connection to gold.
 
-**Fiat Advantages**:
-• Flexible monetary policy
-• Digital transactions possible
-• Quick crisis response
-• Global payment systems
+For the first time in history, the world's dominant currency wasn't backed by anything except government promises. We entered the "fiat money" era (fiat means "let it be so" in Latin).
 
-**The Cost**:
-• Persistent inflation erodes savings
-• Currency wars and devaluations  
-• Boom-bust cycles amplified
-• Growing wealth inequality
+This was unprecedented. Every major currency is now fiat money - it has value because governments say it does, not because it's backed by gold or silver.
 
-📊 **The Numbers**: Since 1971, the US dollar has lost 85% of its purchasing power. What cost $1 then costs $6.50+ today.`
+The results? On one hand: global trade exploded, economies became more flexible, and we got credit cards and digital payments.
+
+On the other hand: money printing accelerated, boom-bust cycles got bigger, and the dollar lost 85% of its value since 1971.
+
+We're still living through this experiment.`
     },
     {
-      id: "digital",
+      id: "slide-7",
       type: "content",
-      title: "The Digital Revolution (2008 - Present)",
-      content: `Bitcoin emerged from the 2008 financial crisis, offering new possibilities:
+      title: "Enter the Digital Age",
+      content: `Then 2008 happened. The financial crisis shook faith in traditional banking, and something new emerged from the chaos: Bitcoin.
 
-**Payment Innovation**: Digital wallets, instant transfers, global reach
+For the first time in history, we had money that:
+• No government controls
+• Has a fixed supply that can't be increased
+• Works globally without banks
+• Is completely digital
 
-**Programmable Money**: Smart contracts, DeFi, automated systems
+Whether Bitcoin succeeds or fails, it opened the floodgates. Now we have thousands of digital currencies, central bank digital currencies (CBDCs), and money that can be programmed with smart contracts.
 
-**Monetary Choice**: Fixed supply vs. infinite printing debate
-
-The digital age has opened up entirely new possibilities for what money can be and how it can function.`
+Money is evolving faster than ever, and we're witnessing the birth of entirely new monetary systems.`
     },
     {
-      id: "lessons",
+      id: "slide-8",
       type: "content",
-      title: "Critical Lessons from History",
-      content: `**What We've Learned**:
-• Money always evolves with technology
-• Trust is the foundation of any monetary system
-• Governments can't resist printing money
-• Inflation is theft from savers
-• Monopoly money always fails eventually
+      title: "What History Teaches Us",
+      content: `Looking back, several patterns emerge:
 
-**Why This Matters Today**:
-• Central banks printed $20+ trillion since 2008
-• We're in the longest fiat experiment ever
-• Digital alternatives are emerging
-• Your wealth depends on these choices
+1. **Money always evolves with technology** - from metals to coins to paper to digital
+2. **Trust is everything** - money only works when people believe in it
+3. **Convenience drives adoption** - easier-to-use money always wins
+4. **Power corrupts** - those who control money printing eventually abuse it
+5. **Innovation comes from problems** - new money systems emerge when old ones fail
 
-💡 **Key Insight**: Understanding history helps predict the future of money.`
+Understanding this history isn't just academic - it helps you navigate today's monetary landscape.
+
+When someone tells you cryptocurrency is "fake money," you can remind them that all money is a social agreement. When inflation rises, you understand it's as old as governments themselves.
+
+The story of money is far from over. You're living through the next chapter right now.`
     }
   ],
   quizPool: [
