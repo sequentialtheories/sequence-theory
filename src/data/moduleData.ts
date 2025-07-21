@@ -4387,6 +4387,382 @@ const learningChangesWorldModule: ModuleData = {
   ]
 };
 
+const consequencesEducationalAbsenceModule: ModuleData = {
+  id: 'consequences-educational-absence',
+  title: 'What Happens Without Education',
+  description: 'Why keeping people from learning hurts everyone.',
+  level: 'Beginner',
+  category: 'Why Learning Matters',
+  categoryIndex: 2,
+  moduleIndex: 1,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'When Education is Absent: The Human Cost',
+      layout: 'visual',
+      content: `The absence of quality education creates devastating ripple effects that extend far beyond individual lives, impacting families, communities, and entire nations. Understanding these consequences reveals why educational access is not just a personal benefit, but a fundamental human right essential for societal progress.`,
+      visualElements: {
+        icon: '⚠️',
+        gradient: 'from-red-50 to-orange-100',
+        cards: [
+          {
+            title: 'Individual Impact',
+            description: 'Personal costs of educational absence',
+            icon: '👤',
+            color: 'red'
+          },
+          {
+            title: 'Economic Consequences',
+            description: 'Financial impact on society and nations',
+            icon: '💰',
+            color: 'orange'
+          },
+          {
+            title: 'Social Breakdown',
+            description: 'How communities suffer without education',
+            icon: '🏘️',
+            color: 'yellow'
+          },
+          {
+            title: 'Global Crisis',
+            description: 'Worldwide implications of educational gaps',
+            icon: '🌍',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Individual Impact: The Personal Cost',
+      layout: 'grid',
+      content: `Without education, individuals face a cascade of disadvantages that affect every aspect of their lives:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Limited Economic Opportunities',
+            description: 'Adults without basic education earn 42% less on average. Restricted job prospects and lower earning potential.',
+            icon: '💸',
+            color: 'red'
+          },
+          {
+            title: 'Reduced Critical Thinking',
+            description: 'Higher susceptibility to misinformation and manipulation. Limited analytical skills and decision-making abilities.',
+            icon: '🧠',
+            color: 'blue'
+          },
+          {
+            title: 'Health Disparities',
+            description: 'Lower life expectancy and higher disease rates. Educational absence correlates with poorer health outcomes.',
+            icon: '❤️',
+            color: 'pink'
+          },
+          {
+            title: 'Social Exclusion',
+            description: 'Reduced civic engagement and community involvement. Barriers to full participation in society.',
+            icon: '🚫',
+            color: 'gray'
+          },
+          {
+            title: 'Intergenerational Poverty',
+            description: '75% of children in poverty have parents with limited education. The cycle perpetuates across generations.',
+            icon: '📉',
+            color: 'orange'
+          },
+          {
+            title: 'Digital Divide',
+            description: 'Missing out on digital economy benefits. Lack of digital literacy excludes from modern opportunities.',
+            icon: '💻',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Economic Consequences: The Financial Toll',
+      layout: 'comparison',
+      content: `Educational absence creates massive economic costs that affect entire nations:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'National Economic Losses',
+            icon: '📊',
+            items: [
+              'Countries lose 1-2% annual GDP growth due to educational gaps',
+              'Unskilled workforce limits innovation and efficiency',
+              'More social support needed for undereducated populations',
+              'Lower incomes mean less tax contribution',
+              'Fewer educated minds to solve complex problems'
+            ]
+          },
+          after: {
+            title: 'Regional Impact',
+            icon: '🏢',
+            items: [
+              'Educated individuals leave areas with poor educational systems',
+              'Reduced foreign investment in undereducated regions',
+              'Limited development of knowledge-based industries',
+              'Decreased competitiveness in global markets',
+              'Perpetual cycle of economic underdevelopment'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Social Breakdown: When Communities Suffer',
+      layout: 'feature-cards',
+      content: `Educational absence undermines the very fabric of society:`,
+      visualElements: {
+        features: [
+          {
+            icon: '🚨',
+            title: 'Increased Crime Rates',
+            description: 'Lack of education correlates with higher criminal activity and social unrest'
+          },
+          {
+            icon: '⚖️',
+            title: 'Political Instability',
+            description: 'Uneducated populations are more susceptible to extremism and authoritarian manipulation'
+          },
+          {
+            icon: '📊',
+            title: 'Social Inequality',
+            description: 'Educational gaps widen wealth and opportunity disparities, creating social tension'
+          },
+          {
+            icon: '🗳️',
+            title: 'Weakened Democracy',
+            description: 'Uninformed citizenry undermines democratic processes and civic participation'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Global Educational Crisis: By the Numbers',
+      layout: 'visual',
+      content: `The scale of educational absence worldwide is staggering:`,
+      visualElements: {
+        icon: '🌍',
+        gradient: 'from-orange-50 to-red-100',
+        cards: [
+          {
+            title: '244 Million',
+            description: 'Children and youth out of school globally',
+            icon: '🚸',
+            color: 'red'
+          },
+          {
+            title: '771 Million',
+            description: 'Adults lack basic literacy skills worldwide',
+            icon: '📖',
+            color: 'orange'
+          },
+          {
+            title: '57%',
+            description: 'Of adults cannot explain basic financial concepts',
+            icon: '💰',
+            color: 'yellow'
+          },
+          {
+            title: '$5 Trillion',
+            description: 'Annual global economic loss from educational gaps',
+            icon: '💸',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Historical Examples: When Education is Denied',
+      layout: 'grid',
+      content: `History shows us the devastating consequences when education is deliberately restricted:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Apartheid South Africa (1948-1994)',
+            description: 'Deliberate educational inequality created lasting economic and social disparities that persist today. Educational segregation perpetuates systemic inequality.',
+            icon: '🚫',
+            color: 'red'
+          },
+          {
+            title: 'Taliban Education Bans (1996-2001, 2021-present)',
+            description: 'Prohibiting female education devastated Afghanistan\'s human capital and economic development. Gender-based educational exclusion harms entire societies.',
+            icon: '👩‍🎓',
+            color: 'purple'
+          },
+          {
+            title: 'Cultural Revolution China (1966-1976)',
+            description: 'Closing schools and persecuting intellectuals created a \'lost generation\' with lasting economic impact. Anti-intellectual policies destroy societal progress.',
+            icon: '📚',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-7',
+      type: 'content',
+      title: 'Breaking the Cycle: Solutions and Hope',
+      layout: 'comparison',
+      content: `Despite the challenges, there are proven ways to address educational absence:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Immediate Interventions',
+            icon: '⚡',
+            items: [
+              'Free primary education programs',
+              'Adult literacy campaigns',
+              'Mobile education initiatives',
+              'Community learning centers',
+              'Digital literacy programs'
+            ]
+          },
+          after: {
+            title: 'Long-term Solutions',
+            icon: '🌱',
+            items: [
+              'Universal basic education policies',
+              'Teacher training and support',
+              'Educational infrastructure development',
+              'Culturally relevant curricula',
+              'Technology-enabled learning'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-8',
+      type: 'content',
+      title: 'The Urgency of Action',
+      layout: 'visual',
+      content: `We must act now because the consequences of educational absence are not inevitable. Through deliberate action and collective commitment, we can build a world where every person has the opportunity to learn, grow, and contribute to human advancement.`,
+      visualElements: {
+        icon: '🎯',
+        gradient: 'from-indigo-50 to-purple-100',
+        cards: [
+          {
+            title: 'Compounding Effects',
+            description: 'Every day of educational absence compounds future disadvantages',
+            icon: '📈',
+            color: 'red'
+          },
+          {
+            title: 'Technology Gap',
+            description: 'Technology is accelerating the gap between educated and uneducated',
+            icon: '💻',
+            color: 'blue'
+          },
+          {
+            title: 'Global Challenges',
+            description: 'Complex problems require educated populations to solve',
+            icon: '🌍',
+            color: 'green'
+          },
+          {
+            title: 'Hope and Promise',
+            description: 'Education unlocks human potential and strengthens communities',
+            icon: '✨',
+            color: 'purple'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'According to the module, how much less do adults without basic education earn on average?',
+      options: [
+        '32% less than educated adults',
+        '42% less than educated adults',
+        '52% less than educated adults',
+        '62% less than educated adults'
+      ],
+      correctAnswer: 1,
+      explanation: 'Adults without basic education earn 42% less on average, demonstrating the significant economic impact of educational absence on individual earning potential.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'q2',
+      question: 'How many children and youth are currently out of school globally?',
+      options: [
+        '144 million',
+        '244 million',
+        '344 million',
+        '444 million'
+      ],
+      correctAnswer: 1,
+      explanation: '244 million children and youth are out of school globally, representing a massive educational crisis that affects nearly a quarter of a billion young people.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q3',
+      question: 'What percentage of children in poverty have parents with limited education?',
+      options: [
+        '65%',
+        '70%',
+        '75%',
+        '80%'
+      ],
+      correctAnswer: 2,
+      explanation: '75% of children in poverty have parents with limited education, demonstrating how educational absence creates intergenerational cycles of disadvantage.',
+      requiresSlides: [1]
+    },
+    {
+      id: 'q4',
+      question: 'How much annual GDP growth do countries lose due to educational gaps?',
+      options: [
+        '0.5-1% annually',
+        '1-2% annually',
+        '2-3% annually',
+        '3-4% annually'
+      ],
+      correctAnswer: 1,
+      explanation: 'Countries lose 1-2% annual GDP growth due to educational gaps, representing a significant drag on national economic development and prosperity.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q5',
+      question: 'What is the annual global economic loss from educational gaps?',
+      options: [
+        '$3 trillion',
+        '$4 trillion',
+        '$5 trillion',
+        '$6 trillion'
+      ],
+      correctAnswer: 2,
+      explanation: 'The annual global economic loss from educational gaps is $5 trillion, highlighting the massive worldwide cost of failing to provide quality education for all.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q6',
+      question: 'Which historical example demonstrated how gender-based educational exclusion harms entire societies?',
+      options: [
+        'Apartheid South Africa',
+        'Taliban education bans in Afghanistan',
+        'Cultural Revolution in China',
+        'Jim Crow laws in the United States'
+      ],
+      correctAnswer: 1,
+      explanation: 'The Taliban\'s prohibition of female education in Afghanistan devastated the country\'s human capital and economic development, showing how gender-based educational exclusion harms entire societies.',
+      requiresSlides: [5]
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -4400,5 +4776,6 @@ export const allModules: ModuleData[] = [
   blockchainTechnologyModule,
   defiBankingModule,
   advancedWeb3Module,
-  learningChangesWorldModule
+  learningChangesWorldModule,
+  consequencesEducationalAbsenceModule
 ];

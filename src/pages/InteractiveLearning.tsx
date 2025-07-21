@@ -54,6 +54,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/learning-human-progress-foundation') {
     actualModuleId = 'learning-human-progress-foundation';
   }
+  if (!actualModuleId && currentPath === '/learn/consequences-educational-absence') {
+    actualModuleId = 'consequences-educational-absence';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);
