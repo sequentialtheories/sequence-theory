@@ -16,7 +16,7 @@ import FinancialBasics from "./pages/FinancialBasics";
 import DigitalAssetFundamentals from "./pages/DigitalAssetFundamentals";
 import VaultClubContracts from "./pages/VaultClubContracts";
 import DigitalAssetExposure from "./pages/DigitalAssetExposure";
-import DeFiProtocols from "./pages/DeFiProtocols";
+
 import ExpandingBeyondVaultClub from "./pages/ExpandingBeyondVaultClub";
 import UnderstandingMarkets from "./pages/UnderstandingMarkets";
 import ShortfallsOfCrypto from "./pages/ShortfallsOfCrypto";
@@ -75,7 +75,7 @@ const App = () => (
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
           <Route path="/learn/vault-club-contracts" element={<VaultClubContracts />} />
           <Route path="/learn/digital-asset-exposure" element={<DigitalAssetExposure />} />
-          <Route path="/learn/decentralized-finance-defi" element={<DeFiProtocols />} />
+          <Route path="/learn/decentralized-finance-defi" element={<InteractiveLearning />} />
           <Route path="/learn/expanding-beyond-vault-club" element={<ExpandingBeyondVaultClub />} />
           <Route path="/learn/understanding-markets" element={<UnderstandingMarkets />} />
           <Route path="/learn/shortfalls-of-crypto" element={<ShortfallsOfCrypto />} />
