@@ -54,7 +54,7 @@ const LearnMore = () => {
         </div>
       </header>
 
-      <div className="pt-16">
+      <div>
         <Hero />
         <VaultClubMain />
         <SupplementalOfferings />
