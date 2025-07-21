@@ -8,7 +8,7 @@ const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(0);
   const { isModuleUnlocked, isModuleCompleted, progress } = useLearningProgress();
   const learningCategories = [{
-    title: "Financial Basics",
+    title: "Finance",
     description: "Learn how money actually works (it's simpler than you think!)",
     modules: [{
       icon: DollarSign,
