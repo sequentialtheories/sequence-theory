@@ -4,6 +4,7 @@ export interface QuizQuestion {
   options: string[];
   correctAnswer: number;
   explanation: string;
+  requiresSlides: number[]; // Which slides must be completed before this question can appear
 }
 
 export interface ContentSlide {
@@ -111,7 +112,8 @@ Ready to test your knowledge?`
         'It makes governments more powerful'
       ],
       correctAnswer: 1,
-      explanation: 'Money solves the double coincidence of wants problem by eliminating the need for both parties to want what the other has. Instead, everyone accepts money as an intermediary.'
+      explanation: 'Money solves the double coincidence of wants problem by eliminating the need for both parties to want what the other has. Instead, everyone accepts money as an intermediary.',
+      requiresSlides: [1] // Can appear after slide 2 (barter problem)
     },
     {
       id: 'q2',
@@ -123,7 +125,8 @@ Ready to test your knowledge?`
         'Generator of wealth'
       ],
       correctAnswer: 3,
-      explanation: 'Money itself doesn\'t generate wealth - it\'s a tool for storing, exchanging, and measuring value. The three main functions are store of value, medium of exchange, and unit of account.'
+      explanation: 'Money itself doesn\'t generate wealth - it\'s a tool for storing, exchanging, and measuring value. The three main functions are store of value, medium of exchange, and unit of account.',
+      requiresSlides: [3] // Can appear after slide 4 (three jobs of money)
     },
     {
       id: 'q3',
@@ -135,7 +138,8 @@ Ready to test your knowledge?`
         'There were no barbers in ancient times'
       ],
       correctAnswer: 2,
-      explanation: 'The barber didn\'t want chickens; he wanted shoes. This created a chain of trades the farmer would need to make, illustrating the double coincidence of wants problem.'
+      explanation: 'The barber didn\'t want chickens; he wanted shoes. This created a chain of trades the farmer would need to make, illustrating the double coincidence of wants problem.',
+      requiresSlides: [1] // Can appear after slide 2 (barter problem)
     },
     {
       id: 'q4',
@@ -147,7 +151,8 @@ Ready to test your knowledge?`
         'It helps people understand foreign cultures'
       ],
       correctAnswer: 1,
-      explanation: 'Money acts as a universal translator because it allows people to trade without needing to directly want what the other person has. Everyone accepts money, making trade much easier.'
+      explanation: 'Money acts as a universal translator because it allows people to trade without needing to directly want what the other person has. Everyone accepts money, making trade much easier.',
+      requiresSlides: [2] // Can appear after slide 3 (universal translator)
     },
     {
       id: 'q5',
@@ -159,7 +164,8 @@ Ready to test your knowledge?`
         'Understanding money makes cryptocurrency trading easier'
       ],
       correctAnswer: 1,
-      explanation: 'Understanding money\'s core functions (store of value, medium of exchange, unit of account) helps you evaluate how well cryptocurrencies fulfill these same fundamental purposes that all money must serve.'
+      explanation: 'Understanding money\'s core functions (store of value, medium of exchange, unit of account) helps you evaluate how well cryptocurrencies fulfill these same fundamental purposes that all money must serve.',
+      requiresSlides: [4] // Can appear after slide 5 (why this matters today)
     }
   ]
 };
