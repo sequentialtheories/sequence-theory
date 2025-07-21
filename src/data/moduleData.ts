@@ -1091,10 +1091,399 @@ const whereMoneyLivesModule: ModuleData = {
   ]
 };
 
+const cryptoPlaceInMoneyModule: ModuleData = {
+  id: "crypto-market-role",
+  title: "Crypto's Place in Money",
+  description: "How digital money fits into everything else.",
+  level: "Intermediate",
+  category: "Financial Basics",
+  categoryIndex: 0,
+  moduleIndex: 3,
+  slides: [
+    {
+      id: "slide-1",
+      type: "content",
+      title: "A New Player in the Financial Game",
+      layout: 'visual',
+      content: `Cryptocurrency isn't just digital money - it's a whole new asset class reshaping finance.`,
+      visualElements: {
+        icon: '₿',
+        gradient: 'from-orange-50 to-amber-100',
+        cards: [
+          {
+            title: 'Digital Native',
+            description: 'Born in the internet age, designed for digital transactions',
+            icon: '💻',
+            color: 'blue'
+          },
+          {
+            title: 'Decentralized',
+            description: 'Not controlled by any single government or institution',
+            icon: '🌐',
+            color: 'green'
+          },
+          {
+            title: 'Programmable',
+            description: 'Can embed complex rules and automated conditions',
+            icon: '⚡',
+            color: 'purple'
+          },
+          {
+            title: 'Global Access',
+            description: 'Available 24/7 from anywhere in the world',
+            icon: '🌍',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-2",
+      type: "content",
+      title: "Crypto vs Traditional Finance",
+      layout: 'comparison',
+      content: `Rather than replacing traditional finance, crypto markets operate alongside with unique characteristics.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Traditional Finance',
+            icon: '🏦',
+            items: [
+              'Business hours (9-5, weekdays only)',
+              'Controlled by central authorities',
+              'High barriers for global access',
+              'Slow international transfers',
+              'Heavy regulatory oversight'
+            ]
+          },
+          after: {
+            title: 'Crypto Finance',
+            icon: '₿',
+            items: [
+              'Always open (24/7/365)',
+              'Decentralized networks',
+              'Anyone with internet can participate',
+              'Near-instant global transfers',
+              'Emerging regulatory frameworks'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: "slide-3",
+      type: "content",
+      title: "How Crypto Complements Traditional Markets",
+      layout: 'grid',
+      content: `Instead of replacing existing systems, crypto often fills gaps and adds new capabilities:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Portfolio Diversification',
+            description: 'Uncorrelated returns can reduce overall portfolio risk when markets move differently',
+            icon: '📊',
+            color: 'blue'
+          },
+          {
+            title: 'Inflation Hedge',
+            description: 'Fixed supply cryptocurrencies like Bitcoin serve as "digital gold" against currency debasement',
+            icon: '🛡️',
+            color: 'yellow'
+          },
+          {
+            title: 'Innovation Driver',
+            description: 'Forces traditional finance to modernize with faster, cheaper, more accessible services',
+            icon: '🚀',
+            color: 'purple'
+          },
+          {
+            title: 'Financial Inclusion',
+            description: 'Provides banking services to 1.7 billion unbanked people worldwide',
+            icon: '🌍',
+            color: 'green'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-4",
+      type: "content",
+      title: "The Institutional Adoption Wave",
+      layout: 'feature-cards',
+      content: `Traditional financial institutions are rapidly embracing cryptocurrencies:`,
+      visualElements: {
+        features: [
+          {
+            icon: '🏢',
+            title: 'Corporate Treasuries',
+            description: 'Tesla, MicroStrategy, and others hold Bitcoin as treasury assets instead of just cash'
+          },
+          {
+            icon: '📈',
+            title: 'Investment Products',
+            description: 'Bitcoin ETFs, futures contracts, and institutional-grade crypto investment vehicles'
+          },
+          {
+            icon: '🏦',
+            title: 'Banking Integration',
+            description: 'Major banks offering crypto custody, trading, and payment processing services'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-5",
+      type: "content",
+      title: "Economic Functions Crypto Serves",
+      layout: 'grid',
+      content: `Crypto markets perform several critical economic functions in the global economy:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Value Transfer',
+            description: 'Send money globally in minutes instead of days, with lower fees than traditional banking',
+            icon: '⚡',
+            color: 'blue'
+          },
+          {
+            title: 'Store of Value',
+            description: 'Alternative to traditional savings that can\'t be devalued by government money printing',
+            icon: '💎',
+            color: 'purple'
+          },
+          {
+            title: 'Capital Formation',
+            description: 'Fund innovation through ICOs, token sales, and decentralized finance protocols',
+            icon: '💡',
+            color: 'yellow'
+          },
+          {
+            title: 'Price Discovery',
+            description: 'Markets determine fair value for digital assets and new forms of programmable money',
+            icon: '🎯',
+            color: 'green'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-6",
+      type: "content",
+      title: "The Regulatory Reality Check",
+      layout: 'comparison',
+      content: `Governments worldwide are working to integrate crypto into existing regulatory frameworks.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Progress Made',
+            icon: '✅',
+            items: [
+              'Bitcoin ETFs approved in major markets',
+              'Clear tax requirements in most countries',
+              'Stablecoin regulations emerging',
+              'Central Bank Digital Currencies (CBDCs)',
+              'Consumer protection measures'
+            ]
+          },
+          after: {
+            title: 'Challenges Remain',
+            icon: '⚠️',
+            items: [
+              'Inconsistent rules across countries',
+              'Unclear guidance for new innovations',
+              'Enforcement actions create uncertainty',
+              'Complex compliance requirements',
+              'Ongoing political and policy debates'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: "slide-7",
+      type: "content",
+      title: "Reality Check: Crypto's Limitations",
+      layout: 'visual',
+      content: `Despite the potential, crypto markets face real challenges that smart investors understand:`,
+      visualElements: {
+        icon: '⚠️',
+        gradient: 'from-red-50 to-rose-100',
+        cards: [
+          {
+            title: 'Extreme Volatility',
+            description: '50%+ price swings can wipe out portfolios overnight',
+            icon: '🎢',
+            color: 'red'
+          },
+          {
+            title: 'Scam Paradise',
+            description: 'Sophisticated fraud, rug pulls, and pump & dump schemes',
+            icon: '🚨',
+            color: 'orange'
+          },
+          {
+            title: 'Technical Complexity',
+            description: 'Lost keys = lost money forever, no customer service',
+            icon: '🔐',
+            color: 'purple'
+          },
+          {
+            title: 'Environmental Impact',
+            description: 'Some networks consume massive amounts of energy',
+            icon: '🌡️',
+            color: 'yellow'
+          }
+        ]
+      }
+    },
+    {
+      id: "slide-8",
+      type: "content",
+      title: "The Future Integration",
+      layout: 'grid',
+      content: `The future of finance likely involves deeper integration between crypto and traditional systems:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Hybrid Products',
+            description: 'Financial instruments that blend crypto and traditional assets seamlessly',
+            icon: '🔗',
+            color: 'blue'
+          },
+          {
+            title: 'Blockchain Securities',
+            description: 'Stocks, bonds, and assets issued directly on blockchain networks',
+            icon: '📜',
+            color: 'green'
+          },
+          {
+            title: 'Cross-Chain Networks',
+            description: 'Different blockchain systems working together like internet protocols',
+            icon: '🌉',
+            color: 'purple'
+          },
+          {
+            title: 'Regulatory Clarity',
+            description: 'Clear rules that enable innovation while protecting consumers',
+            icon: '⚖️',
+            color: 'yellow'
+          },
+          {
+            title: 'Mainstream Adoption',
+            description: 'Crypto features built into everyday banking and payment apps',
+            icon: '📱',
+            color: 'orange'
+          },
+          {
+            title: 'Smart Everything',
+            description: 'Programmable money that automatically handles complex financial operations',
+            icon: '🤖',
+            color: 'indigo'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: "q1",
+      question: "What is cryptocurrency's primary relationship with traditional finance?",
+      options: [
+        "It completely replaces traditional finance",
+        "It complements and operates alongside traditional finance",
+        "It has no connection to traditional finance",
+        "It only works against traditional finance"
+      ],
+      correctAnswer: 1,
+      explanation: "Cryptocurrency markets complement traditional finance by filling gaps and adding new capabilities, rather than completely replacing existing systems.",
+      requiresSlides: [1]
+    },
+    {
+      id: "q2",
+      question: "Which major advantage do crypto markets have over traditional financial markets?",
+      options: [
+        "They have no volatility",
+        "They operate 24/7/365 globally",
+        "They guarantee profits",
+        "They have no risks"
+      ],
+      correctAnswer: 1,
+      explanation: "Crypto markets operate continuously 24/7/365 across the globe, unlike traditional markets that have business hours and close on weekends.",
+      requiresSlides: [1]
+    },
+    {
+      id: "q3",
+      question: "How do institutions primarily use cryptocurrency in their portfolios?",
+      options: [
+        "As their only investment",
+        "For day trading profits",
+        "As portfolio diversification and treasury assets",
+        "To replace all traditional investments"
+      ],
+      correctAnswer: 2,
+      explanation: "Institutions use cryptocurrency for portfolio diversification and as treasury assets, like companies holding Bitcoin alongside cash reserves.",
+      requiresSlides: [3]
+    },
+    {
+      id: "q4",
+      question: "What economic function does crypto serve for unbanked populations?",
+      options: [
+        "Financial inclusion and access to banking services",
+        "Guaranteed wealth creation",
+        "Elimination of all financial risks",
+        "Free money distribution"
+      ],
+      correctAnswer: 0,
+      explanation: "Cryptocurrency provides financial inclusion by offering banking-like services to the 1.7 billion unbanked people worldwide who lack access to traditional banking.",
+      requiresSlides: [2]
+    },
+    {
+      id: "q5",
+      question: "What is a major limitation of cryptocurrency markets?",
+      options: [
+        "They are too stable",
+        "Extreme volatility and security risks",
+        "They are too regulated",
+        "They are only available to institutions"
+      ],
+      correctAnswer: 1,
+      explanation: "Crypto markets face extreme volatility with 50%+ price swings and security risks including scams, lost keys, and technical complexity.",
+      requiresSlides: [6]
+    },
+    {
+      id: "q6",
+      question: "How do Central Bank Digital Currencies (CBDCs) fit into crypto's regulatory integration?",
+      options: [
+        "They ban all cryptocurrencies",
+        "They represent government adoption of digital currency technology",
+        "They replace Bitcoin entirely",
+        "They have no relation to crypto"
+      ],
+      correctAnswer: 1,
+      explanation: "CBDCs represent governments adopting digital currency technology, showing regulatory integration rather than outright rejection of crypto concepts.",
+      requiresSlides: [5]
+    },
+    {
+      id: "q7",
+      question: "What role does cryptocurrency serve as a store of value?",
+      options: [
+        "It guarantees value preservation",
+        "It provides an alternative to traditional savings that can't be devalued by money printing",
+        "It eliminates all inflation",
+        "It replaces all other stores of value"
+      ],
+      correctAnswer: 1,
+      explanation: "Cryptocurrencies with fixed supplies serve as alternatives to traditional savings that can be protected from government money printing and currency debasement.",
+      requiresSlides: [4]
+    }
+  ]
+};
+
 // You can add more modules here following the same pattern
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
-  whereMoneyLivesModule
+  whereMoneyLivesModule,
+  cryptoPlaceInMoneyModule
   // Add more modules as they're created
 ];
