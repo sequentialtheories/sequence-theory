@@ -408,9 +408,288 @@ The story of money is far from over. You're living through the next chapter righ
   ]
 };
 
+const whereMoneyLivesModule: ModuleData = {
+  id: "types-financial-markets",
+  title: "Where Money Lives",
+  description: "Stock markets, bond markets, and other places your money can hang out",
+  level: "Intermediate", 
+  category: "Financial Basics",
+  categoryIndex: 0,
+  moduleIndex: 2,
+  slides: [
+    {
+      id: "slide-1",
+      type: "content",
+      title: "The Financial Universe",
+      content: `Think of financial markets as different neighborhoods where money lives. Each has its own culture, rules, and dangers.
+
+Some neighborhoods are fancy and "safe" (bonds), others are wild and exciting (crypto), and some are straight-up gambling dens (derivatives).
+
+Today we'll tour each neighborhood so you know where you're sending your money and what to expect when you get there.
+
+Ready for the grand tour?`
+    },
+    {
+      id: "slide-2",
+      type: "content", 
+      title: "Stock Markets: Owning Pieces of Companies",
+      content: `The most famous neighborhood - where you buy tiny pieces of companies and hope they grow.
+
+When you buy Apple stock, you're betting that Apple will make more money in the future. Simple concept, but the execution? That's where most people get destroyed.
+
+**How It Works:**
+• **Primary Markets**: IPOs - Companies going public for the first time
+• **Secondary Markets**: Daily trading - NYSE, NASDAQ, global exchanges
+
+**Reality Check:**
+• 90% of day traders lose money
+• Market can stay irrational longer than you can stay solvent  
+• Insider trading gives institutions massive advantages
+
+The stock market is less about investing and more about psychology. Fear and greed drive prices more than fundamentals.`
+    },
+    {
+      id: "slide-3",
+      type: "content",
+      title: "Bond Markets: The \"Safe\" Neighborhood", 
+      content: `You lend money, they pay you interest. Sounds safe until inflation or defaults happen.
+
+Bonds used to be the "safe" part of portfolios. But when governments print money faster than your bond pays interest, you're guaranteed to lose purchasing power. "Safe" becomes dangerous.
+
+**Types:**
+• **Government Bonds**: Treasuries, considered "risk-free" (until they're not)
+• **Corporate Bonds**: Higher yield, higher risk - companies can fail
+
+**The Hidden Risk:**
+When inflation rises faster than bond interest rates, fixed payments lose purchasing power. Your "safe" investment becomes a guaranteed loss against rising prices.`
+    },
+    {
+      id: "slide-4", 
+      type: "content",
+      title: "Commodity Markets: Real Stuff in a Digital World",
+      content: `Physical stuff that powers civilization - oil, gold, wheat. Real assets in an increasingly digital world.
+
+These are real things people actually need. When paper money becomes questionable, smart money often flows to commodities. Gold doesn't care about your government's fiscal policy.
+
+**The Categories:**
+🔥 **Energy**: Oil, gas, electricity
+✨ **Precious Metals**: Gold, silver, platinum  
+🌾 **Agriculture**: Wheat, corn, coffee
+⚙️ **Industrial**: Copper, steel, lumber
+
+Unlike stocks or bonds, commodities have intrinsic value. You can't eat a stock certificate, but you can eat wheat.`
+    },
+    {
+      id: "slide-5",
+      type: "content", 
+      title: "Forex: Where Retail Traders Go to Die",
+      content: `The biggest, most liquid market on Earth. Also where retail traders get absolutely destroyed.
+
+$7+ trillion trades daily, making it the most liquid market ever. But that liquidity comes with a cost: you're swimming with sharks who have better information, faster computers, and deeper pockets.
+
+**Market Features:**
+• 24/7 trading across time zones
+• Major pairs: EUR/USD, GBP/USD, USD/JPY  
+• Central bank interventions move markets
+• Economic data releases cause volatility
+
+**Brutal Reality:**
+• 80%+ of retail traders lose money
+• High leverage = quick account wipeouts
+• Massive institutional advantages
+• Currency wars between nations
+
+Most forex "education" is just sophisticated gambling marketing.`
+    },
+    {
+      id: "slide-6",
+      type: "content",
+      title: "Derivatives: The Casino Layer",
+      content: `Financial instruments derived from other assets. Useful for hedging, devastating for speculation.
+
+Derivatives are like insurance - great when you need protection, dangerous when used for gambling. Most retail investors use them for gambling.
+
+**Types:**
+• **Options**: Right to buy/sell at specific prices
+• **Futures**: Contracts for future delivery  
+• **Swaps**: Exchange different cash flows
+
+**Warning Signs:**
+• Can lose more than you invested
+• Complexity hides risks
+• Time decay works against you
+• Options expire worthless 80% of the time
+
+Warren Buffett called derivatives "financial weapons of mass destruction" for a reason.`
+    },
+    {
+      id: "slide-7",
+      type: "content",
+      title: "Crypto: The New Wild West", 
+      content: `24/7 global markets with extreme volatility. Revolutionary technology meets speculative mania.
+
+Crypto markets never sleep, never close, and never stop surprising people. It's either the future of money or the biggest bubble in history. Probably both.
+
+**Revolutionary Features:**
+• 24/7/365 trading
+• Global, permissionless access
+• Programmable money (smart contracts)
+• No central authority control
+
+**Wild West Risks:**
+• Extreme volatility (50%+ swings)
+• Scams and rug pulls
+• Regulatory uncertainty  
+• Technical complexity
+
+The technology is revolutionary. Most of the trading is pure speculation.`
+    },
+    {
+      id: "slide-8",
+      type: "content",
+      title: "The Truth About All Markets",
+      content: `Markets are supposed to be efficient price discovery mechanisms. The reality is more complex.
+
+**The Theory:**
+• Price discovery through supply & demand
+• Provide liquidity for easy trading  
+• Allocate capital efficiently
+• Enable risk management
+
+**The Reality:**
+• Markets can be manipulated by large players
+• Liquidity disappears when you need it most
+• Capital often flows to speculation, not productivity
+
+💡 **Key Insight**: Markets are efficient at transferring money from the impatient to the patient.
+
+**What Works:**
+• Long-term investing in productive assets
+• Diversification across uncorrelated markets
+• Understanding what you're buying
+• Position sizing and risk management
+
+**What Destroys Wealth:**
+• Trading without understanding
+• Chasing performance and hot markets  
+• Using excessive leverage
+• Believing you can time markets consistently
+
+Now you know where money lives. The question is: where will you send yours?`
+    }
+  ],
+  quizPool: [
+    {
+      id: "q1",
+      question: "What percentage of day traders typically lose money?",
+      options: [
+        "50%",
+        "70%", 
+        "90%",
+        "95%"
+      ],
+      correctAnswer: 2,
+      explanation: "Studies consistently show that about 90% of day traders lose money over time, highlighting the difficulty of short-term trading.",
+      requiresSlides: [1]
+    },
+    {
+      id: "q2",
+      question: "What is the main risk with bonds during periods of high inflation?",
+      options: [
+        "They become more volatile",
+        "Fixed interest payments lose purchasing power",
+        "They stop paying interest",
+        "They become harder to sell"
+      ],
+      correctAnswer: 1,
+      explanation: "When inflation rises faster than bond interest rates, the fixed payments lose purchasing power, making bonds a poor inflation hedge.",
+      requiresSlides: [2]
+    },
+    {
+      id: "q3",
+      question: "Which market has the highest daily trading volume?",
+      options: [
+        "Stock markets",
+        "Bond markets",
+        "Forex markets", 
+        "Cryptocurrency markets"
+      ],
+      correctAnswer: 2,
+      explanation: "The foreign exchange (forex) market has over $7 trillion in daily trading volume, making it the most liquid market in the world.",
+      requiresSlides: [4]
+    },
+    {
+      id: "q4",
+      question: "What percentage of options typically expire worthless?",
+      options: [
+        "50%",
+        "65%",
+        "80%",
+        "95%"
+      ],
+      correctAnswer: 2,
+      explanation: "Approximately 80% of options expire worthless, making options trading heavily skewed against buyers and in favor of sellers.",
+      requiresSlides: [5]
+    },
+    {
+      id: "q5",
+      question: "Which type of asset represents ownership in physical things people actually need?",
+      options: [
+        "Stocks",
+        "Bonds",
+        "Commodities",
+        "Derivatives"
+      ],
+      correctAnswer: 2,
+      explanation: "Commodities like oil, gold, wheat, and copper represent ownership in physical materials that power civilization and have intrinsic value.",
+      requiresSlides: [3]
+    },
+    {
+      id: "q6",
+      question: "What is a key advantage of cryptocurrency markets?",
+      options: [
+        "They have no volatility",
+        "They are 24/7/365 and globally accessible",
+        "They are guaranteed to make profits",
+        "They have no risks"
+      ],
+      correctAnswer: 1,
+      explanation: "Cryptocurrency markets operate 24/7/365 globally without central authority control, offering unprecedented accessibility compared to traditional markets.",
+      requiresSlides: [6]
+    },
+    {
+      id: "q7",
+      question: "According to the lesson, what are markets most efficient at doing?",
+      options: [
+        "Creating wealth for everyone",
+        "Allocating capital perfectly",
+        "Transferring money from the impatient to the patient",
+        "Eliminating all risks"
+      ],
+      correctAnswer: 2,
+      explanation: "Markets are particularly efficient at transferring wealth from impatient traders to patient investors who understand the assets they buy.",
+      requiresSlides: [7]
+    },
+    {
+      id: "q8", 
+      question: "What typically happens to market liquidity during crisis periods?",
+      options: [
+        "It increases significantly",
+        "It stays the same",
+        "It disappears when you need it most",
+        "It becomes more predictable"
+      ],
+      correctAnswer: 2,
+      explanation: "During market crises, liquidity often evaporates just when investors need it most, making it difficult to exit positions at reasonable prices.",
+      requiresSlides: [7]
+    }
+  ]
+};
+
 // You can add more modules here following the same pattern
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
-  moneyThroughTimeModule
+  moneyThroughTimeModule,
+  whereMoneyLivesModule
   // Add more modules as they're created
 ];
