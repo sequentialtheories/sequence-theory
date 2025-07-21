@@ -298,10 +298,10 @@ const FinanceQuiz = () => {
                         {currentQ.options.map((option) => (
                           <label 
                             key={option.value}
-                            className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all hover:bg-gray-50 ${
+                            className={`flex items-center gap-3 p-4 cursor-pointer transition-all ${
                               answers[currentQ.id] === option.value 
-                                ? 'border-purple-500 bg-purple-50' 
-                                : 'border-gray-200'
+                                ? 'border-0 bg-transparent' 
+                                : 'border-0 bg-transparent'
                             }`}
                           >
                             <input 
@@ -310,7 +310,7 @@ const FinanceQuiz = () => {
                               value={option.value}
                               checked={answers[currentQ.id] === option.value}
                               onChange={(e) => handleAnswerSelect(currentQ.id, e.target.value)}
-                              className="w-5 h-5 text-purple-600"
+                              className="w-5 h-5 opacity-0"
                             />
                             <span className="text-base">{option.text}</span>
                           </label>

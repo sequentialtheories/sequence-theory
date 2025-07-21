@@ -298,10 +298,10 @@ const Web3Quiz = () => {
                         {currentQ.options.map((option) => (
                           <label 
                             key={option.value}
-                            className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all hover:bg-gray-50 ${
+                            className={`flex items-center gap-3 p-4 cursor-pointer transition-all ${
                               answers[currentQ.id] === option.value 
-                                ? 'border-indigo-500 bg-indigo-50' 
-                                : 'border-gray-200'
+                                ? 'border-0 bg-transparent' 
+                                : 'border-0 bg-transparent'
                             }`}
                           >
                             <input 
