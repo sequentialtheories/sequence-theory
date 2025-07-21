@@ -53,17 +53,17 @@ const BubbleCard = ({
   return (
     <div 
       className={cn(
-        "fixed transition-all duration-1000 ease-out z-10",
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        "absolute transition-all duration-1000 ease-out",
+        isVisible ? "opacity-100" : "opacity-0"
       )}
       style={{
         left: `${position.x}%`,
-        top: `${position.y}%`,
+        top: `${position.y}px`,
         transform: `translate(-50%, -50%)`,
       }}
     >
       <div className="relative group">
-        <div className="bg-card/90 backdrop-blur-sm border-2 border-primary/20 rounded-3xl p-6 max-w-xs shadow-elegant hover:shadow-glow transition-all duration-700 animate-[float_8s_ease-in-out_infinite] hover:scale-105">
+        <div className="bg-card/90 backdrop-blur-sm border-2 border-primary/20 rounded-3xl p-6 max-w-xs shadow-elegant hover:shadow-glow transition-all duration-300 hover:scale-105">
           <div className="space-y-3">
             <h3 className="text-foreground font-bold text-base leading-tight">
               {headline}
@@ -79,15 +79,15 @@ const BubbleCard = ({
 };
 
 export const StatisticsBubbles = () => {
-  // Scatter positions across the entire viewport
+  // Scatter positions throughout the page content using pixel positions
   const positions = [
-    { x: 12, y: 15 },
-    { x: 88, y: 22 },
-    { x: 25, y: 40 },
-    { x: 72, y: 60 },
-    { x: 45, y: 35 },
-    { x: 15, y: 70 },
-    { x: 82, y: 85 }
+    { x: 85, y: 200 },   // Hero section right
+    { x: 15, y: 450 },   // Between hero and problem
+    { x: 75, y: 650 },   // Problem section area
+    { x: 25, y: 850 },   // Problem section left
+    { x: 80, y: 1050 },  // Between sections
+    { x: 20, y: 1250 },  // Mission section left
+    { x: 70, y: 1450 }   // Mission section right
   ];
 
   return (

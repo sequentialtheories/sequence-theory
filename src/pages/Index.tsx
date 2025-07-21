@@ -20,6 +20,9 @@ const Index = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       <Navigation />
       
+      {/* Statistics Bubbles scattered throughout the page */}
+      <StatisticsBubbles />
+      
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-xl"></div>
@@ -27,7 +30,7 @@ const Index = () => {
         <div className="absolute bottom-40 left-20 w-40 h-40 bg-accent/5 rounded-full blur-2xl"></div>
       </div>
 
-      <div className="pt-16">
+      <div className="pt-16 relative z-[1]">
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative">
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -122,9 +125,6 @@ const Index = () => {
             </div>
           </div>
         </section>
-
-        {/* Statistics Bubbles Section */}
-        <StatisticsBubbles />
 
         {/* Mission Section */}
         <section className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden">
