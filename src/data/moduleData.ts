@@ -3307,6 +3307,297 @@ Think of blockchain as a digital ledger book that's copied across thousands of c
   ]
 };
 
+// DeFi: Banking Without Banks module
+export const defiBankingModule: ModuleData = {
+  id: 'decentralized-finance-defi',
+  title: 'DeFi: Banking Without Banks',
+  description: 'Lending, borrowing, and trading - all without traditional banks.',
+  level: 'Advanced',
+  category: 'Web3 & Digital Ownership',
+  categoryIndex: 1,
+  moduleIndex: 4,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'What Is DeFi Really?',
+      layout: 'comparison',
+      content: `DeFi stands for Decentralized Finance - it's like having all banking services run by computer programs instead of banks.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Traditional Banking',
+            icon: '🏦',
+            items: [
+              'Big building with employees handling your money',
+              'You trust them to keep savings safe',
+              'They control when you can access funds',
+              'High fees and limited access',
+              'Centralized control over your money'
+            ]
+          },
+          after: {
+            title: 'DeFi (Decentralized Finance)',
+            icon: '🌐',
+            items: [
+              'Computer programs (smart contracts) handle everything',
+              'No building, no employees - just code',
+              'You control your own money 24/7',
+              'Lower fees and global access',
+              'Transparent and open to everyone'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Why Decentralizing Banks Is Revolutionary',
+      layout: 'comparison',
+      content: `Traditional banks have several problems that DeFi solves completely.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Problems with Traditional Banks',
+            icon: '⚠️',
+            items: [
+              'They control your money and can freeze accounts',
+              'High fees with poor returns (nearly 0% savings interest)',
+              'Billions excluded due to location or documentation',
+              'Slow, expensive international transfers',
+              'Limited hours and outdated systems'
+            ]
+          },
+          after: {
+            title: 'How DeFi Solves These',
+            icon: '✅',
+            items: [
+              'You own your money with private keys - no freezing',
+              'Better returns, lower costs (no middleman markup)',
+              'Global access with just internet and smartphone',
+              'Instant, cheap transactions that work 24/7',
+              'Transparent code everyone can verify'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Real-World Impact Stories',
+      layout: 'grid',
+      content: `Here's how DeFi is already changing lives around the world:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Remittances Revolution',
+            description: 'Maria sends $200 from US to El Salvador. Traditional: $20 fees, 3 days. DeFi: Under $5, arrives in minutes.',
+            icon: '💸',
+            color: 'blue'
+          },
+          {
+            title: 'Better Savings Returns',
+            description: 'Ahmed earns 6% APY on stablecoins through DeFi vs 0.5% at his bank during 8% inflation.',
+            icon: '💰',
+            color: 'green'
+          },
+          {
+            title: 'Financial Inclusion',
+            description: 'Priya uses her crypto as collateral for business loans when banks denied her due to lack of credit history.',
+            icon: '🏪',
+            color: 'purple'
+          },
+          {
+            title: 'Innovation Without Permission',
+            description: 'Developers build new financial products without asking banks for approval, creating rapid innovation.',
+            icon: '🚀',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Staking: Earning Rewards for Helping Networks',
+      layout: 'feature-cards',
+      content: `Staking is like putting money in a special savings account that helps keep blockchain networks secure.`,
+      visualElements: {
+        features: [
+          {
+            icon: '🔒',
+            title: 'What Is Staking?',
+            description: 'Lock up your digital assets to help validate transactions. Like a time-locked safe that pays you interest for helping secure the network.'
+          },
+          {
+            icon: '🛡️',
+            title: 'Why Networks Need You',
+            description: 'Stakers verify transactions are legitimate. Put your money at risk as security deposit - honest stakers get rewarded, cheaters lose their stake.'
+          },
+          {
+            icon: '💎',
+            title: 'Types of Staking',
+            description: 'Direct staking (you do it), delegated staking (professionals do it), or liquid staking (stake but keep trading ability).'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Liquidity Farming: Being the Bank',
+      layout: 'visual',
+      content: `Liquidity farming is like starting a currency exchange booth - you provide the money for others to trade and earn fees.`,
+      visualElements: {
+        icon: '🌾',
+        gradient: 'from-yellow-50 to-orange-100',
+        cards: [
+          {
+            title: 'How It Works',
+            description: 'Deposit two tokens in equal amounts (like $100 ETH + $100 USDC) into a trading pool',
+            icon: '⚖️',
+            color: 'yellow'
+          },
+          {
+            title: 'Earn Trading Fees',
+            description: 'When people trade between your tokens, they pay small fees that get distributed to liquidity providers',
+            icon: '💰',
+            color: 'green'
+          },
+          {
+            title: 'Bonus Rewards',
+            description: 'Many protocols give extra reward tokens on top of trading fees to encourage liquidity provision',
+            icon: '🎁',
+            color: 'purple'
+          },
+          {
+            title: 'Impermanent Loss Risk',
+            description: 'If token prices change differently, you might end up with less value than just holding the tokens',
+            icon: '⚠️',
+            color: 'red'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'DeFi Protocols You Should Know',
+      layout: 'grid',
+      content: `Here are the major DeFi protocols and what they do:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Uniswap',
+            description: 'The biggest decentralized exchange - trade any token without a centralized exchange',
+            icon: '🦄',
+            color: 'pink'
+          },
+          {
+            title: 'AAVE',
+            description: 'Lending and borrowing protocol - earn interest on deposits or borrow against crypto collateral',
+            icon: '👻',
+            color: 'blue'
+          },
+          {
+            title: 'Compound',
+            description: 'Automated lending protocol that adjusts interest rates based on supply and demand',
+            icon: '🏛️',
+            color: 'green'
+          },
+          {
+            title: 'MakerDAO',
+            description: 'Creates DAI stablecoin backed by crypto collateral - decentralized dollar alternative',
+            icon: '🎭',
+            color: 'orange'
+          },
+          {
+            title: 'Curve',
+            description: 'Specialized exchange for stablecoins and similar assets with minimal slippage',
+            icon: '📈',
+            color: 'purple'
+          },
+          {
+            title: 'Yearn Finance',
+            description: 'Automated yield farming - finds the best returns and moves your money automatically',
+            icon: '🌾',
+            color: 'indigo'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What is the main difference between traditional banking and DeFi?',
+      options: [
+        'DeFi is only for wealthy people',
+        'DeFi uses computer programs (smart contracts) instead of human employees',
+        'DeFi is more expensive than traditional banking',
+        'DeFi only works in certain countries'
+      ],
+      correctAnswer: 1,
+      explanation: 'DeFi uses smart contracts (automated computer programs) to handle financial services instead of relying on human employees and centralized institutions.',
+      requiresSlides: [0]
+    },
+    {
+      id: 'q2',
+      question: 'What is staking in the context of DeFi?',
+      options: [
+        'Buying stakes in traditional companies',
+        'Locking up digital assets to help secure a blockchain network and earn rewards',
+        'A type of cryptocurrency trading strategy',
+        'Converting crypto back to traditional currency'
+      ],
+      correctAnswer: 1,
+      explanation: 'Staking involves locking up your digital assets to help validate transactions on a blockchain network. In return, you earn rewards, similar to earning interest on a savings account.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q3',
+      question: 'What is "impermanent loss" in liquidity farming?',
+      options: [
+        'A permanent loss of all your money',
+        'The risk that token prices might change differently, resulting in less value than just holding the tokens',
+        'A fee charged by DeFi protocols',
+        'The loss of internet connection during farming'
+      ],
+      correctAnswer: 1,
+      explanation: 'Impermanent loss occurs when the prices of tokens in a liquidity pool change relative to when you deposited them. You might end up with less value than if you had just held the tokens separately.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q4',
+      question: 'Which protocol is known for creating the DAI stablecoin?',
+      options: [
+        'Uniswap',
+        'AAVE',
+        'MakerDAO',
+        'Compound'
+      ],
+      correctAnswer: 2,
+      explanation: 'MakerDAO is the protocol that creates and manages DAI, a decentralized stablecoin backed by crypto collateral rather than traditional bank reserves.',
+      requiresSlides: [5]
+    },
+    {
+      id: 'q5',
+      question: 'How does DeFi solve the problem of financial exclusion?',
+      options: [
+        'By requiring more documentation than traditional banks',
+        'By only working in developed countries',
+        'By providing global access to anyone with internet and a smartphone',
+        'By charging higher fees than traditional banks'
+      ],
+      correctAnswer: 2,
+      explanation: 'DeFi provides financial services to anyone with internet access and a smartphone, eliminating geographic restrictions, documentation requirements, and minimum balance restrictions that exclude billions from traditional banking.',
+      requiresSlides: [1, 2]
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -3317,6 +3608,7 @@ export const allModules: ModuleData[] = [
   cryptoFundamentalsModule,
   digitalOwnershipModule,
   tokensTokenizationModule,
-  blockchainTechnologyModule
+  blockchainTechnologyModule,
+  defiBankingModule
   // Add more modules as they're created
 ];
