@@ -21,7 +21,7 @@ const Footer = () => {
           <div className="border-t border-primary-foreground/20 pt-8 animate-slide-up [animation-delay:0.4s]">
             <p className="text-sm opacity-80">
               © 2025 Sequence Theory, Inc. All rights reserved. | 
-              <span className="ml-2 text-primary-glow shimmer">Choreographing Capital</span>
+              <span className="ml-2 text-primary-glow shimmer">Democratizing Financial Empowerment</span>
             </p>
           </div>
         </div>
