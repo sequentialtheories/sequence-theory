@@ -2548,6 +2548,283 @@ export const cryptoFundamentalsModule: ModuleData = {
   ]
 };
 
+// Eighth module: "Digital Ownership & Empowerment"
+export const digitalOwnershipModule: ModuleData = {
+  id: 'digital-ownership-empowerment',
+  title: 'Owning Digital Stuff',
+  description: 'How crypto lets you truly own things online.',
+  level: 'Beginner',
+  category: 'Web3 & Digital Ownership',
+  categoryIndex: 1,
+  moduleIndex: 1,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'You Don\'t Own Anything Online... Yet',
+      layout: 'visual',
+      content: `Your Spotify playlists, game skins, social media - you think you own them, but you don't. You're just renting!`,
+      visualElements: {
+        icon: '👑',
+        gradient: 'from-purple-50 to-pink-100',
+        cards: [
+          {
+            title: 'Digital Rentals',
+            description: 'Everything online is actually just licensed to you',
+            icon: '📄',
+            color: 'red'
+          },
+          {
+            title: 'Platform Control',
+            description: 'Companies can take away your "stuff" anytime',
+            icon: '🏢',
+            color: 'orange'
+          },
+          {
+            title: 'True Ownership',
+            description: 'Crypto changes this - you can actually own digital things',
+            icon: '🔑',
+            color: 'green'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Web 1.0 → 2.0 → 3.0: The Evolution',
+      layout: 'feature-cards',
+      content: `The internet evolved from reading, to interacting, to owning. We're entering the ownership era!`,
+      visualElements: {
+        features: [
+          {
+            icon: '📖',
+            title: 'Web 1.0: Read Only',
+            description: 'Static websites. You could only read information. Like digital newspapers.'
+          },
+          {
+            icon: '✍️',
+            title: 'Web 2.0: Read + Write',
+            description: 'Social media born! You could create content, but platforms owned everything.'
+          },
+          {
+            icon: '👑',
+            title: 'Web 3.0: Read + Write + Own',
+            description: 'Blockchain enables true ownership. You control your data and digital assets.'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'Traditional vs. True Digital Ownership',
+      layout: 'comparison',
+      content: `The difference between renting and owning in the digital world is huge.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Traditional "Ownership"',
+            icon: '🏢',
+            items: [
+              'You get a license, not ownership',
+              'Platform can revoke access anytime',
+              'Can\'t sell or transfer your assets',
+              'Dependent on company policies',
+              'No real control over your stuff'
+            ]
+          },
+          after: {
+            title: 'True Digital Ownership',
+            icon: '🔑',
+            items: [
+              'You hold the cryptographic keys',
+              'Independent of any platform',
+              'Freely trade and transfer assets',
+              'You set the rules',
+              'Complete control and sovereignty'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'What Can You Actually Own?',
+      layout: 'grid',
+      content: `NFTs (Non-Fungible Tokens) let you own unique digital items:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Digital Art & Media',
+            description: 'Own unique artwork, music, videos. Artists sell directly to you, no middlemen taking huge cuts.',
+            icon: '🎨',
+            color: 'purple'
+          },
+          {
+            title: 'Gaming Assets',
+            description: 'Own game characters, weapons, skins that work across games. Finally, your items have real value.',
+            icon: '🎮',
+            color: 'blue'
+          },
+          {
+            title: 'Virtual Real Estate',
+            description: 'Buy land in digital worlds. Build, rent, or develop it. Some virtual plots sold for millions!',
+            icon: '🏘️',
+            color: 'green'
+          },
+          {
+            title: 'Identity & Access',
+            description: 'Own your digital identity, certificates, memberships. Prove who you are without relying on others.',
+            icon: '🎓',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'The Power of True Ownership',
+      layout: 'feature-cards',
+      content: `When you truly own digital assets, amazing things become possible:`,
+      visualElements: {
+        features: [
+          {
+            icon: '💰',
+            title: 'Make Money',
+            description: 'Sell, rent, or earn royalties from your digital assets. Turn your online activity into income.'
+          },
+          {
+            icon: '🌍',
+            title: 'Use Everywhere',
+            description: 'Take your assets between platforms and games. Your sword works in multiple games!'
+          },
+          {
+            icon: '🔧',
+            title: 'Program Them',
+            description: 'Add smart contracts to your assets. Automatic royalties, rental agreements, or special behaviors.'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Getting Started with Digital Ownership',
+      layout: 'comparison',
+      content: `There are different ways to manage your digital assets. Choose what fits your comfort level:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Custodial (Easy Mode)',
+            icon: '🏦',
+            items: [
+              'Company holds your keys for you',
+              'Like a bank account - familiar',
+              'Easy recovery if you forget password',
+              'Examples: Coinbase, Binance',
+              'Good for beginners'
+            ]
+          },
+          after: {
+            title: 'Self-Custodial (True Ownership)',
+            icon: '🔑',
+            items: [
+              'You hold your own keys',
+              'Complete control over assets',
+              'No one can freeze your account',
+              'Examples: MetaMask, Ledger',
+              'More responsibility, more freedom'
+            ]
+          }
+        }
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What\'s the key difference between Web 2.0 and Web 3.0?',
+      options: [
+        'Web 3.0 is faster',
+        'Web 3.0 adds true digital ownership',
+        'Web 3.0 has better graphics',
+        'Web 3.0 is more expensive'
+      ],
+      correctAnswer: 1,
+      explanation: 'Web 3.0 adds the concept of true digital ownership through blockchain technology, allowing users to actually own their digital assets rather than just licensing them.',
+      requiresSlides: [1] // Can appear after slide 2
+    },
+    {
+      id: 'q2',
+      question: 'In traditional digital platforms, what do you actually own?',
+      options: [
+        'Everything you create and buy',
+        'Only the content you pay for',
+        'Just a license to use things',
+        'Your account and password'
+      ],
+      correctAnswer: 2,
+      explanation: 'In traditional digital platforms, you typically only get a license to use content and services. The platforms retain actual ownership and can revoke your access.',
+      requiresSlides: [2] // Can appear after slide 3
+    },
+    {
+      id: 'q3',
+      question: 'What are NFTs primarily used for?',
+      options: [
+        'Making payments faster',
+        'Proving ownership of unique digital items',
+        'Storing large files',
+        'Mining cryptocurrency'
+      ],
+      correctAnswer: 1,
+      explanation: 'NFTs (Non-Fungible Tokens) are primarily used to prove ownership of unique digital items like art, collectibles, gaming assets, and other digital goods.',
+      requiresSlides: [3] // Can appear after slide 4
+    },
+    {
+      id: 'q4',
+      question: 'What can you do with truly owned digital assets that you can\'t with traditional "owned" digital items?',
+      options: [
+        'Use them offline',
+        'Sell and transfer them freely',
+        'Make them load faster',
+        'Change their color'
+      ],
+      correctAnswer: 1,
+      explanation: 'With true digital ownership, you can sell, transfer, and trade your assets freely, unlike traditional digital items where you only have a license that can\'t be transferred.',
+      requiresSlides: [4] // Can appear after slide 5
+    },
+    {
+      id: 'q5',
+      question: 'What\'s the main advantage of self-custodial wallets over custodial ones?',
+      options: [
+        'They\'re easier to use',
+        'They\'re completely free',
+        'You have complete control over your assets',
+        'They work faster'
+      ],
+      correctAnswer: 2,
+      explanation: 'Self-custodial wallets give you complete control over your assets because you hold the private keys. No one can freeze your account or prevent you from accessing your assets.',
+      requiresSlides: [5] // Can appear after slide 6
+    },
+    {
+      id: 'q6',
+      question: 'What does "interoperability" mean for digital assets?',
+      options: [
+        'They can be copied easily',
+        'They work across different platforms and games',
+        'They\'re cheaper to buy',
+        'They load faster'
+      ],
+      correctAnswer: 1,
+      explanation: 'Interoperability means your digital assets can work across different platforms and games. For example, a sword you own could potentially be used in multiple different games.',
+      requiresSlides: [4] // Can appear after slide 5
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -2555,6 +2832,7 @@ export const allModules: ModuleData[] = [
   cryptoPlaceInMoneyModule,
   wealthEmpowermentModule,
   financialStrategyModule,
-  cryptoFundamentalsModule
+  cryptoFundamentalsModule,
+  digitalOwnershipModule
   // Add more modules as they're created
 ];

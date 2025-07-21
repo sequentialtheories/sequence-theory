@@ -36,6 +36,9 @@ export default function InteractiveLearning() {
   if (!actualModuleId && currentPath === '/learn/cryptocurrencies-fundamentals') {
     actualModuleId = 'cryptocurrencies-fundamentals';
   }
+  if (!actualModuleId && currentPath === '/learn/digital-ownership-empowerment') {
+    actualModuleId = 'digital-ownership-empowerment';
+  }
 
   // Find the module by moduleId
   const moduleData = allModules.find(module => module.id === actualModuleId);
