@@ -4765,12 +4765,12 @@ const consequencesEducationalAbsenceModule: ModuleData = {
 
 const financialLiteracyGatekeepingModule: ModuleData = {
   id: 'financial-literacy-gatekeeping',
-  title: 'Financial Literacy Gatekeeping',
+  title: 'Who Gets to Learn About Money?',
   description: 'How financial knowledge has been deliberately restricted throughout history to maintain power structures.',
   level: 'Intermediate',
-  category: 'Educational Impact',
-  categoryIndex: 3,
-  moduleIndex: 0,
+  category: 'Why Learning Matters',
+  categoryIndex: 2,
+  moduleIndex: 2,
   slides: [
     {
       id: 'slide-1',
@@ -5078,6 +5078,449 @@ const financialLiteracyGatekeepingModule: ModuleData = {
   ]
 };
 
+const colonialismMoneyTradeModule: ModuleData = {
+  id: 'colonialism-money-trade',
+  title: 'Money as Control',
+  description: 'How powerful people have used money systems to control others throughout history.',
+  level: 'Intermediate',
+  category: 'Why Learning Matters',
+  categoryIndex: 2,
+  moduleIndex: 3,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'Money as a Tool of Control',
+      layout: 'visual',
+      content: `Throughout history, those in power have used control over money systems to maintain dominance over populations.`,
+      visualElements: {
+        icon: '⚖️',
+        gradient: 'from-red-50 to-rose-100',
+        cards: [
+          {
+            title: 'Colonial Exploitation',
+            description: 'European powers used monetary control to extract wealth from colonies',
+            icon: '🏴‍☠️',
+            color: 'red'
+          },
+          {
+            title: 'Debt Bondage',
+            description: 'Creating financial dependency to control labor and resources',
+            icon: '⛓️',
+            color: 'gray'
+          },
+          {
+            title: 'Currency Manipulation',
+            description: 'Controlling local currencies to favor occupying powers',
+            icon: '🎭',
+            color: 'purple'
+          },
+          {
+            title: 'Modern Parallels',
+            description: 'How these patterns continue in contemporary finance',
+            icon: '🌐',
+            color: 'blue'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Colonial Monetary Systems',
+      layout: 'comparison',
+      content: `Colonial powers systematically replaced local economies with extractive monetary systems designed to benefit the colonizers.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Before Colonialism',
+            icon: '🌱',
+            items: [
+              'Local trade networks and currencies',
+              'Community-controlled economic systems',
+              'Wealth stayed within communities',
+              'Diverse economic practices',
+              'Self-sufficient local economies'
+            ]
+          },
+          after: {
+            title: 'After Colonial Control',
+            icon: '🏭',
+            items: [
+              'Foreign currency systems imposed',
+              'Economies restructured for extraction',
+              'Wealth flowed to colonial powers',
+              'Monoculture cash crop economies',
+              'Dependency on foreign markets'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-3',
+      type: 'content',
+      title: 'The Mechanics of Financial Control',
+      layout: 'feature-cards',
+      content: `Colonial powers used sophisticated financial mechanisms to maintain control:`,
+      visualElements: {
+        features: [
+          {
+            icon: '🏦',
+            title: 'Central Bank Control',
+            description: 'Establishing colonial banks that controlled local currency and credit'
+          },
+          {
+            icon: '💸',
+            title: 'Tax Collection',
+            description: 'Forcing payment of taxes in colonial currency, requiring participation in colonial economy'
+          },
+          {
+            icon: '📊',
+            title: 'Trade Monopolies',
+            description: 'Controlling who could trade what, where, and for how much'
+          },
+          {
+            icon: '⚖️',
+            title: 'Legal Frameworks',
+            description: 'Creating laws that favored colonial financial interests over local needs'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-4',
+      type: 'content',
+      title: 'Case Study: British Colonial India',
+      layout: 'grid',
+      content: `The British systematically dismantled India's sophisticated economy and replaced it with an extractive system:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Before British Rule',
+            description: 'India had 25% of global GDP and sophisticated banking systems including the Hundis (bills of exchange)',
+            icon: '🕌',
+            color: 'green'
+          },
+          {
+            title: 'Currency Transformation',
+            description: 'British replaced local currencies with the rupee system controlled by British banks',
+            icon: '💱',
+            color: 'blue'
+          },
+          {
+            title: 'Wealth Extraction',
+            description: 'An estimated $45 trillion was extracted from India during British rule',
+            icon: '💰',
+            color: 'red'
+          },
+          {
+            title: 'Economic Collapse',
+            description: 'India\'s share of global GDP fell from 25% to 2% by 1947',
+            icon: '📉',
+            color: 'orange'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-5',
+      type: 'content',
+      title: 'Modern Financial Control',
+      layout: 'comparison',
+      content: `While colonialism has officially ended, many of the same financial control mechanisms persist in new forms:`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Colonial Era Control',
+            icon: '🏴‍☠️',
+            items: [
+              'Direct political control over territories',
+              'Military enforcement of economic policies',
+              'Explicit resource extraction',
+              'Overt currency manipulation',
+              'Clear colonial administration'
+            ]
+          },
+          after: {
+            title: 'Modern Financial Control',
+            icon: '🏢',
+            items: [
+              'Economic dependency through debt',
+              'Structural adjustment programs',
+              'Resource extraction through contracts',
+              'Currency manipulation through markets',
+              'International financial institutions'
+            ]
+          }
+        }
+      }
+    },
+    {
+      id: 'slide-6',
+      type: 'content',
+      title: 'Breaking Free from Financial Control',
+      layout: 'visual',
+      content: `Understanding these patterns is the first step toward financial independence and creating more equitable systems:`,
+      visualElements: {
+        icon: '🗽',
+        gradient: 'from-green-50 to-emerald-100',
+        cards: [
+          {
+            title: 'Financial Education',
+            description: 'Understanding how money systems work prevents exploitation',
+            icon: '📚',
+            color: 'blue'
+          },
+          {
+            title: 'Local Economies',
+            description: 'Supporting community-controlled economic systems',
+            icon: '🏘️',
+            color: 'green'
+          },
+          {
+            title: 'Alternative Systems',
+            description: 'Exploring cryptocurrencies and decentralized finance',
+            icon: '₿',
+            color: 'orange'
+          },
+          {
+            title: 'Economic Justice',
+            description: 'Advocating for fair and transparent financial systems',
+            icon: '⚖️',
+            color: 'purple'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What was one of the primary ways colonial powers used money to control populations?',
+      options: [
+        'By making money completely illegal',
+        'By forcing tax payment in colonial currency, requiring participation in the colonial economy',
+        'By giving away free money to everyone',
+        'By allowing only local currencies'
+      ],
+      correctAnswer: 1,
+      explanation: 'Colonial powers forced people to pay taxes in colonial currency, which meant they had to participate in the colonial economy to earn that currency, giving the colonizers control over local labor and resources.',
+      requiresSlides: [2]
+    },
+    {
+      id: 'q2',
+      question: 'How much wealth was extracted from India during British colonial rule?',
+      options: [
+        '$15 trillion',
+        '$25 trillion',
+        '$35 trillion',
+        '$45 trillion'
+      ],
+      correctAnswer: 3,
+      explanation: 'An estimated $45 trillion was extracted from India during British rule, demonstrating the massive scale of wealth transfer from colonized to colonizing nations.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q3',
+      question: 'What happened to India\'s share of global GDP during British rule?',
+      options: [
+        'It increased from 15% to 30%',
+        'It stayed the same at 25%',
+        'It fell from 25% to 2%',
+        'It doubled from 10% to 20%'
+      ],
+      correctAnswer: 2,
+      explanation: 'India\'s share of global GDP fell dramatically from 25% to just 2% by 1947, showing how colonial financial control devastated local economies.',
+      requiresSlides: [3]
+    },
+    {
+      id: 'q4',
+      question: 'Which of these is a modern form of financial control similar to colonial mechanisms?',
+      options: [
+        'Free international trade',
+        'Structural adjustment programs that force economic policy changes',
+        'Local community banks',
+        'Cryptocurrency adoption'
+      ],
+      correctAnswer: 1,
+      explanation: 'Structural adjustment programs imposed by international financial institutions often force developing countries to adopt economic policies that benefit wealthy nations, similar to colonial-era financial control.',
+      requiresSlides: [4]
+    },
+    {
+      id: 'q5',
+      question: 'What is one way individuals can help break free from exploitative financial systems?',
+      options: [
+        'Ignoring all financial systems completely',
+        'Only using cash for everything',
+        'Financial education to understand how money systems work',
+        'Moving to a different country'
+      ],
+      correctAnswer: 2,
+      explanation: 'Financial education helps people understand how money systems work, enabling them to make informed decisions and avoid exploitation while working toward more equitable systems.',
+      requiresSlides: [5]
+    }
+  ]
+};
+
+const globalEducationStatisticsModule: ModuleData = {
+  id: 'global-education-statistics',
+  title: 'Education Around the World',
+  description: 'Who gets financial education and who doesn\'t - the statistics might surprise you.',
+  level: 'Advanced',
+  category: 'Why Learning Matters',
+  categoryIndex: 2,
+  moduleIndex: 4,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'The Global Education Divide',
+      layout: 'visual',
+      content: `Education access varies dramatically around the world, creating vast inequality in opportunities and outcomes.`,
+      visualElements: {
+        icon: '🌍',
+        gradient: 'from-blue-50 to-indigo-100',
+        cards: [
+          {
+            title: 'Developed Nations',
+            description: '99% primary education enrollment, extensive higher education',
+            icon: '🎓',
+            color: 'green'
+          },
+          {
+            title: 'Developing Countries',
+            description: 'Often below 70% enrollment, limited quality resources',
+            icon: '📚',
+            color: 'orange'
+          },
+          {
+            title: 'Conflict Zones',
+            description: 'Education systems disrupted, generation-long gaps',
+            icon: '⚠️',
+            color: 'red'
+          },
+          {
+            title: 'Rural vs Urban',
+            description: 'Significant disparities even within the same country',
+            icon: '🏘️',
+            color: 'purple'
+          }
+        ]
+      }
+    },
+    {
+      id: 'slide-2',
+      type: 'content',
+      title: 'Financial Education: A Global Picture',
+      layout: 'grid',
+      content: `Financial literacy varies even more dramatically than general education worldwide:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Financial Literacy Leaders',
+            description: 'Nordic countries: 70-80% financial literacy rates with comprehensive school programs',
+            icon: '🇳🇴',
+            color: 'green'
+          },
+          {
+            title: 'Global Average',
+            description: 'Only 33% of adults worldwide are financially literate',
+            icon: '📊',
+            color: 'blue'
+          },
+          {
+            title: 'Developing Nations',
+            description: 'As low as 15-25% financial literacy in many African and Asian countries',
+            icon: '📉',
+            color: 'red'
+          },
+          {
+            title: 'Gender Gap',
+            description: 'Women score 5% lower globally, with larger gaps in developing countries',
+            icon: '👩‍💼',
+            color: 'purple'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What percentage of adults worldwide are financially literate?',
+      options: ['23%', '33%', '43%', '53%'],
+      correctAnswer: 1,
+      explanation: 'Only 33% of adults worldwide are financially literate, highlighting the massive global education gap.',
+      requiresSlides: [1]
+    }
+  ]
+};
+
+const democratizingFinancialKnowledgeModule: ModuleData = {
+  id: 'democratizing-financial-knowledge',
+  title: 'Making Learning Free for All',
+  description: 'How to break down barriers and teach everyone about money.',
+  level: 'Advanced',
+  category: 'Why Learning Matters',
+  categoryIndex: 2,
+  moduleIndex: 5,
+  slides: [
+    {
+      id: 'slide-1',
+      type: 'content',
+      title: 'Breaking Down Educational Barriers',
+      layout: 'visual',
+      content: `True progress means ensuring everyone has access to quality financial education, regardless of their background.`,
+      visualElements: {
+        icon: '🚀',
+        gradient: 'from-purple-50 to-pink-100',
+        cards: [
+          {
+            title: 'Universal Access',
+            description: 'Education should be available to everyone, everywhere',
+            icon: '🌍',
+            color: 'blue'
+          },
+          {
+            title: 'Technology Solutions',
+            description: 'Digital platforms can reach underserved populations',
+            icon: '💻',
+            color: 'green'
+          },
+          {
+            title: 'Community Programs',
+            description: 'Local initiatives can bridge formal education gaps',
+            icon: '🤝',
+            color: 'orange'
+          },
+          {
+            title: 'Policy Changes',
+            description: 'Government action can mandate financial education',
+            icon: '📜',
+            color: 'purple'
+          }
+        ]
+      }
+    }
+  ],
+  quizPool: [
+    {
+      id: 'q1',
+      question: 'What is the most effective way to democratize financial education?',
+      options: [
+        'Only through traditional schools',
+        'Combining technology, community programs, and policy changes',
+        'Only through government programs',
+        'Only through private companies'
+      ],
+      correctAnswer: 1,
+      explanation: 'Democratizing financial education requires a multi-pronged approach combining technology, community programs, and supportive policies.',
+      requiresSlides: [0]
+    }
+  ]
+};
+
 export const allModules: ModuleData[] = [
   whatIsMoneyModule,
   moneyThroughTimeModule,
@@ -5093,5 +5536,8 @@ export const allModules: ModuleData[] = [
   advancedWeb3Module,
   learningChangesWorldModule,
   consequencesEducationalAbsenceModule,
-  financialLiteracyGatekeepingModule
+  financialLiteracyGatekeepingModule,
+  colonialismMoneyTradeModule,
+  globalEducationStatisticsModule,
+  democratizingFinancialKnowledgeModule
 ];
