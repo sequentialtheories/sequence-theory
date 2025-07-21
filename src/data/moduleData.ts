@@ -15,6 +15,26 @@ export interface ContentSlide {
   title: string;
   content?: string | React.ReactNode;
   image?: string;
+  layout?: 'default' | 'visual' | 'comparison' | 'grid' | 'feature-cards';
+  visualElements?: {
+    icon?: string;
+    gradient?: string;
+    cards?: Array<{
+      title: string;
+      description: string;
+      icon?: string;
+      color?: string;
+    }>;
+    comparison?: {
+      before: { title: string; items: string[]; icon?: string };
+      after: { title: string; items: string[]; icon?: string };
+    };
+    features?: Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>;
+  };
 }
 
 export interface ModuleData {
@@ -43,64 +63,157 @@ export const whatIsMoneyModule: ModuleData = {
       id: 'slide-1',
       type: 'content',
       title: 'Welcome to Money 101',
-      content: `Ever wonder why we use money instead of trading chickens for haircuts? You're about to find out!
-
-Money seems so normal that we rarely question it. But understanding what money really is will change how you think about everything - from your salary to Bitcoin to why some countries are richer than others.
-
-Let's start with a simple question: What problem does money solve?`
+      layout: 'visual',
+      content: `Ever wonder why we use money instead of trading chickens for haircuts? You're about to find out!`,
+      visualElements: {
+        icon: '💰',
+        gradient: 'from-blue-50 to-indigo-100',
+        cards: [
+          {
+            title: 'Your Salary',
+            description: 'How you earn and what it really represents',
+            icon: '💼',
+            color: 'blue'
+          },
+          {
+            title: 'Bitcoin & Crypto',
+            description: 'Digital money and what makes it special',
+            icon: '₿',
+            color: 'orange'
+          },
+          {
+            title: 'Global Economics',
+            description: 'Why some countries are richer than others',
+            icon: '🌍',
+            color: 'green'
+          }
+        ]
+      }
     },
     {
       id: 'slide-2',
       type: 'content',
       title: 'The Barter Problem',
-      content: `Imagine you're a chicken farmer in ancient times. You need a haircut, but the barber doesn't want chickens - he wants shoes. 
-
-So you need to find someone who wants chickens AND has shoes. But that person might want grain, not chickens. So now you need to find someone with grain who wants chickens...
-
-This is called the "double coincidence of wants" problem. For trade to work, both people need to want what the other person has. This made trading incredibly difficult and limited.`
+      layout: 'comparison',
+      content: `This is called the "double coincidence of wants" problem. For trade to work, both people need to want what the other person has.`,
+      visualElements: {
+        comparison: {
+          before: {
+            title: 'Barter System Problems',
+            icon: '😤',
+            items: [
+              'Need someone who wants YOUR goods',
+              'AND has what YOU want',
+              'Complex chains of trades needed',
+              'Time-consuming negotiations',
+              'Limited trading opportunities'
+            ]
+          },
+          after: {
+            title: 'With Money',
+            icon: '✨',
+            items: [
+              'Sell to anyone for money',
+              'Buy from anyone with money',
+              'Simple two-step process',
+              'Quick and efficient trades',
+              'Unlimited possibilities'
+            ]
+          }
+        }
+      }
     },
     {
       id: 'slide-3',
       type: 'content',
       title: 'Enter Money: The Universal Translator',
-      content: `Money solves this problem by acting like a universal translator for value.
-
-Instead of trading chickens directly, you:
-1. Sell your chickens for money
-2. Use that money to buy a haircut
-
-The barber doesn't need to want chickens. They just need to trust that the money you give them can be used to buy what THEY want.
-
-Money is essentially a technology that makes trading easier and more efficient.`
+      layout: 'feature-cards',
+      content: `Money solves this problem by acting like a universal translator for value.`,
+      visualElements: {
+        features: [
+          {
+            icon: '🐔',
+            title: 'Step 1: Sell Chickens',
+            description: 'Convert your goods into money that everyone accepts'
+          },
+          {
+            icon: '💰',
+            title: 'Money Acts as Bridge',
+            description: 'Universal medium that holds value between transactions'
+          },
+          {
+            icon: '✂️',
+            title: 'Step 2: Buy Haircut',
+            description: 'Use money to purchase any service or product you need'
+          }
+        ]
+      }
     },
     {
       id: 'slide-4',
       type: 'content',
       title: 'The Three Jobs of Money',
-      content: `Good money needs to do three things well:
-
-1. **Store of Value**: You can save it for later and it won't disappear or rot (unlike chickens!)
-
-2. **Medium of Exchange**: Everyone accepts it for trade
-
-3. **Unit of Account**: It helps you compare prices and value
-
-Think about it: You can save dollars in your bank (store of value), spend them at stores (medium of exchange), and compare prices between different products (unit of account).`
+      layout: 'grid',
+      content: `Good money needs to do three things well:`,
+      visualElements: {
+        cards: [
+          {
+            title: 'Store of Value',
+            description: 'Save it for later - it won\'t disappear or rot like chickens! Your money maintains its purchasing power over time.',
+            icon: '🏦',
+            color: 'blue'
+          },
+          {
+            title: 'Medium of Exchange',
+            description: 'Everyone accepts it for trade. It\'s the common language of commerce that all parties trust.',
+            icon: '🔄',
+            color: 'green'
+          },
+          {
+            title: 'Unit of Account',
+            description: 'Compare prices and value easily. It provides a standard measurement for worth.',
+            icon: '📊',
+            color: 'purple'
+          }
+        ]
+      }
     },
     {
       id: 'slide-5',
       type: 'content',
       title: 'Why This Matters Today',
-      content: `Understanding money's core purpose helps you understand:
-
-• Why gold was money for thousands of years
-• What makes some currencies stronger than others  
-• How cryptocurrencies fit into the picture
-• Why inflation happens and what it means for you
-
-Money isn't magic - it's a tool. And like any tool, the better you understand it, the better you can use it.
-
-Ready to test your knowledge?`
+      layout: 'visual',
+      content: `Understanding money's core purpose helps you understand modern finance:`,
+      visualElements: {
+        icon: '🎯',
+        gradient: 'from-purple-50 to-pink-100',
+        cards: [
+          {
+            title: 'Gold\'s Legacy',
+            description: 'Why gold was money for thousands of years',
+            icon: '🥇',
+            color: 'yellow'
+          },
+          {
+            title: 'Currency Strength',
+            description: 'What makes some currencies stronger than others',
+            icon: '💪',
+            color: 'red'
+          },
+          {
+            title: 'Crypto\'s Role',
+            description: 'How cryptocurrencies fit into the picture',
+            icon: '🚀',
+            color: 'indigo'
+          },
+          {
+            title: 'Inflation Impact',
+            description: 'Why inflation happens and what it means for you',
+            icon: '📈',
+            color: 'orange'
+          }
+        ]
+      }
     }
   ],
   quizPool: [

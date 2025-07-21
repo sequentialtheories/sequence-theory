@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, ArrowRight, CheckCircle, X, Trophy, Target } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, X, Trophy, Target, Coins, TrendingUp, Users, Zap, Shield, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -20,6 +20,26 @@ interface ContentSlide {
   title: string;
   content?: string | React.ReactNode;
   image?: string;
+  layout?: 'default' | 'visual' | 'comparison' | 'grid' | 'feature-cards';
+  visualElements?: {
+    icon?: string;
+    gradient?: string;
+    cards?: Array<{
+      title: string;
+      description: string;
+      icon?: string;
+      color?: string;
+    }>;
+    comparison?: {
+      before: { title: string; items: string[]; icon?: string };
+      after: { title: string; items: string[]; icon?: string };
+    };
+    features?: Array<{
+      icon: string;
+      title: string;
+      description: string;
+    }>;
+  };
 }
 
 interface ModuleData {
@@ -48,7 +68,47 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [moduleCompleted, setModuleCompleted] = useState(false);
+  const [visibleCards, setVisibleCards] = useState<number>(0);
   const { toast } = useToast();
+
+  // Icon mapping for visual elements
+  const iconMap: { [key: string]: React.ReactNode } = {
+    'coins': <Coins className="h-6 w-6" />,
+    'trending': <TrendingUp className="h-6 w-6" />,
+    'users': <Users className="h-6 w-6" />,
+    'zap': <Zap className="h-6 w-6" />,
+    'shield': <Shield className="h-6 w-6" />,
+    'chart': <BarChart3 className="h-6 w-6" />,
+  };
+
+  // Color mapping for cards
+  const colorMap: { [key: string]: string } = {
+    'blue': 'from-blue-500/10 to-blue-600/20 border-blue-200',
+    'green': 'from-green-500/10 to-green-600/20 border-green-200',
+    'purple': 'from-purple-500/10 to-purple-600/20 border-purple-200',
+    'red': 'from-red-500/10 to-red-600/20 border-red-200',
+    'yellow': 'from-yellow-500/10 to-yellow-600/20 border-yellow-200',
+    'orange': 'from-orange-500/10 to-orange-600/20 border-orange-200',
+    'indigo': 'from-indigo-500/10 to-indigo-600/20 border-indigo-200',
+  };
+
+  // Animate card reveals
+  useEffect(() => {
+    const slide = moduleData.slides[currentSlide];
+    if (slide?.visualElements?.cards) {
+      setVisibleCards(0);
+      const timer = setInterval(() => {
+        setVisibleCards((prev) => {
+          if (prev < slide.visualElements!.cards!.length) {
+            return prev + 1;
+          }
+          clearInterval(timer);
+          return prev;
+        });
+      }, 200);
+      return () => clearInterval(timer);
+    }
+  }, [currentSlide, moduleData.slides]);
 
   // Generate random quiz questions on module start
   useEffect(() => {
@@ -128,6 +188,189 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
     // Generate new random questions
     const shuffled = [...moduleData.quizPool].sort(() => 0.5 - Math.random());
     setQuizQuestions(shuffled.slice(0, 3));
+  };
+
+  const renderSlideContent = (slide: ContentSlide) => {
+    if (!slide) return null;
+
+    const layout = slide.layout || 'default';
+    const elements = slide.visualElements;
+
+    switch (layout) {
+      case 'visual':
+        return (
+          <div className="mb-8">
+            <div className={`bg-gradient-to-br ${elements?.gradient || 'from-blue-50 to-indigo-100'} rounded-2xl p-8 mb-6`}>
+              <div className="text-center mb-8">
+                <div className="text-6xl mb-4">{elements?.icon}</div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">{slide.title}</h2>
+                <p className="text-lg text-gray-700 max-w-2xl mx-auto">{slide.content}</p>
+              </div>
+            </div>
+            
+            {elements?.cards && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {elements.cards.map((card, index) => (
+                  <Card 
+                    key={index}
+                    className={`hover-scale transition-all duration-300 ${
+                      index < visibleCards ? 'animate-fade-in' : 'opacity-0'
+                    } bg-gradient-to-br ${colorMap[card.color || 'blue']} border`}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="text-3xl mb-3">{card.icon}</div>
+                      <h3 className="font-semibold text-gray-900 mb-2">{card.title}</h3>
+                      <p className="text-sm text-gray-600">{card.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+
+      case 'comparison':
+        return (
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">{slide.title}</h2>
+                <p className="text-lg text-gray-700">{slide.content}</p>
+              </div>
+              
+              {elements?.comparison && (
+                <div className="grid md:grid-cols-2 gap-8">
+                  <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+                    <CardContent className="p-6">
+                      <div className="text-center mb-4">
+                        <div className="text-3xl mb-2">{elements.comparison.before.icon}</div>
+                        <h3 className="text-xl font-bold text-red-900">{elements.comparison.before.title}</h3>
+                      </div>
+                      <ul className="space-y-3">
+                        {elements.comparison.before.items.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2 text-red-800">
+                            <X className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                    <CardContent className="p-6">
+                      <div className="text-center mb-4">
+                        <div className="text-3xl mb-2">{elements.comparison.after.icon}</div>
+                        <h3 className="text-xl font-bold text-green-900">{elements.comparison.after.title}</h3>
+                      </div>
+                      <ul className="space-y-3">
+                        {elements.comparison.after.items.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2 text-green-800">
+                            <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+
+      case 'feature-cards':
+        return (
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">{slide.title}</h2>
+                <p className="text-lg text-gray-700">{slide.content}</p>
+              </div>
+              
+              {elements?.features && (
+                <div className="grid md:grid-cols-3 gap-6">
+                  {elements.features.map((feature, index) => (
+                    <Card 
+                      key={index}
+                      className={`text-center hover-scale transition-all duration-300 ${
+                        index < visibleCards ? 'animate-fade-in' : 'opacity-0'
+                      }`}
+                    >
+                      <CardContent className="p-6">
+                        <div className="text-4xl mb-4">{feature.icon}</div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                        <p className="text-sm text-gray-600">{feature.description}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+
+      case 'grid':
+        return (
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">{slide.title}</h2>
+                <p className="text-lg text-gray-700 mb-8">{slide.content}</p>
+              </div>
+              
+              {elements?.cards && (
+                <div className="grid md:grid-cols-3 gap-6">
+                  {elements.cards.map((card, index) => (
+                    <Card 
+                      key={index}
+                      className={`hover-scale transition-all duration-300 ${
+                        index < visibleCards ? 'animate-fade-in' : 'opacity-0'
+                      } bg-gradient-to-br ${colorMap[card.color || 'blue']} border`}
+                    >
+                      <CardContent className="p-6">
+                        <div className="text-center mb-4">
+                          <div className="text-3xl mb-3">{card.icon}</div>
+                          <h3 className="text-lg font-semibold text-gray-900">{card.title}</h3>
+                        </div>
+                        <p className="text-sm text-gray-700 leading-relaxed">{card.description}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+
+      default:
+        return (
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              <div className="animate-fade-in">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">{slide.title}</h2>
+                
+                {slide.image && (
+                  <img 
+                    src={slide.image} 
+                    alt={slide.title}
+                    className="w-full h-64 object-cover rounded-lg mb-6"
+                  />
+                )}
+                
+                <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                  {typeof slide.content === 'string' 
+                    ? slide.content.split('\n').map((paragraph, index) => (
+                        <p key={index} className="mb-4">{paragraph}</p>
+                      ))
+                    : slide.content
+                  }
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+    }
   };
 
   if (!isUnlocked) {
@@ -351,34 +594,7 @@ export default function InteractiveModule({ moduleData, isUnlocked, onComplete }
           </div>
 
           {/* Content Card */}
-          <Card className="mb-8">
-            <CardContent className="p-8">
-              <div className="animate-fade-in">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  {moduleData.slides[currentSlide]?.title}
-                </h2>
-                
-                {moduleData.slides[currentSlide]?.image && (
-                  <img 
-                    src={moduleData.slides[currentSlide].image} 
-                    alt={moduleData.slides[currentSlide].title}
-                    className="w-full h-64 object-cover rounded-lg mb-6"
-                  />
-                )}
-                
-                <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                  {typeof moduleData.slides[currentSlide]?.content === 'string' 
-                    ? moduleData.slides[currentSlide]?.content?.split('\n').map((paragraph, index) => (
-                        <p key={index} className="mb-4">
-                          {paragraph}
-                        </p>
-                      ))
-                    : moduleData.slides[currentSlide]?.content
-                  }
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {renderSlideContent(moduleData.slides[currentSlide])}
 
           {/* Navigation */}
           <div className="flex items-center justify-between">
