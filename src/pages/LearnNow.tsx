@@ -446,7 +446,7 @@ const LearnNow = () => {
                           <div className="flex items-center gap-2">
                             <PlayCircle className={`h-4 w-4 ${completed ? 'text-green-600' : 'text-purple-600'}`} />
                             <span className="text-sm font-medium text-gray-700">
-                              {completed ? 'Review' : module.interactive ? 'Start Interactive' : 'Start Learning'}
+                              Start Learning
                             </span>
                           </div>
                           <ArrowLeft className="h-4 w-4 text-gray-400 transform rotate-180 group-hover:translate-x-1 transition-transform" />
