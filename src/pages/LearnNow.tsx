@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useLearningProgress } from "@/hooks/useLearningProgress";
 const LearnNow = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const { isModuleUnlocked, isModuleCompleted } = useLearningProgress();
+  const { isModuleUnlocked, isModuleCompleted, isCategoryCompleted, areAllCategoriesCompleted, getCompletionStats } = useLearningProgress();
   
   const learningCategories = [{
     title: "Financial Overview",
@@ -507,39 +507,61 @@ const LearnNow = () => {
                 </p>
               </div>
               
-              <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200 text-center">
-                <div className="mb-6">
-                  <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Target className="h-10 w-10 text-white" />
+              {isCategoryCompleted(0) ? (
+                <div className="bg-gradient-to-br from-purple-50 to-cyan-50 rounded-xl p-8 border border-purple-200 text-center">
+                  <div className="mb-6">
+                    <div className="bg-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Target className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Skills?</h4>
+                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                      15 questions about money basics. One question at a time, so no stress!
+                    </p>
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Skills?</h4>
-                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    15 questions about money basics. One question at a time, so no stress!
-                  </p>
-                </div>
 
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-white p-4 rounded-lg border border-purple-200">
-                    <h5 className="font-semibold text-purple-700 mb-2">15 Questions</h5>
-                    <p className="text-sm text-gray-600">Everything you learned</p>
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white p-4 rounded-lg border border-purple-200">
+                      <h5 className="font-semibold text-purple-700 mb-2">15 Questions</h5>
+                      <p className="text-sm text-gray-600">Everything you learned</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-purple-200">
+                      <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
+                      <p className="text-sm text-gray-600">No rush, take your time</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-purple-200">
+                      <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                      <p className="text-sm text-gray-600">See how you did right away</p>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg border border-purple-200">
-                    <h5 className="font-semibold text-cyan-700 mb-2">One by One</h5>
-                    <p className="text-sm text-gray-600">No rush, take your time</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg border border-purple-200">
-                    <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
-                    <p className="text-sm text-gray-600">See how you did right away</p>
-                    
-                  </div>
-                </div>
 
-                <Link to="/finance-quiz">
-                  <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-4 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700 hover:scale-105 transition-all">
-                    Start Quiz
+                  <Link to="/finance-quiz">
+                    <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white px-8 py-4 text-lg font-semibold hover:from-purple-700 hover:to-cyan-700 hover:scale-105 transition-all">
+                      Start Quiz
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 border border-gray-300 text-center">
+                  <div className="mb-6">
+                    <div className="bg-gray-400 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Lock className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-600 mb-2">Quiz Locked</h4>
+                    <p className="text-gray-500 mb-6 max-w-2xl mx-auto">
+                      Complete all 6 Financial Overview modules to unlock this quiz.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 max-w-md mx-auto">
+                      <p className="text-sm text-gray-600 mb-2">Progress:</p>
+                      <div className="text-lg font-semibold text-gray-700">
+                        {getCompletionStats().categories[0].completedCount} / {getCompletionStats().categories[0].moduleCount} modules completed
+                      </div>
+                    </div>
+                  </div>
+                  <Button disabled className="bg-gray-400 text-white px-8 py-4 text-lg font-semibold cursor-not-allowed">
+                    Quiz Locked
                   </Button>
-                </Link>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </section>}
@@ -557,38 +579,61 @@ const LearnNow = () => {
                 </p>
               </div>
               
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-8 border border-indigo-200 text-center">
-                <div className="mb-6">
-                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="h-10 w-10 text-white" />
+              {isCategoryCompleted(1) ? (
+                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-8 border border-indigo-200 text-center">
+                  <div className="mb-6">
+                    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Zap className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Crypto Skills?</h4>
+                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                      15 questions about crypto and digital money. One at a time, nice and easy!
+                    </p>
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Crypto Skills?</h4>
-                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    15 questions about crypto and digital money. One at a time, nice and easy!
-                  </p>
-                </div>
 
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-white p-4 rounded-lg border border-indigo-200">
-                    <h5 className="font-semibold text-indigo-700 mb-2">15 Questions</h5>
-                    <p className="text-sm text-gray-600">All the crypto stuff you learned</p>
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white p-4 rounded-lg border border-indigo-200">
+                      <h5 className="font-semibold text-indigo-700 mb-2">15 Questions</h5>
+                      <p className="text-sm text-gray-600">All the crypto stuff you learned</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-indigo-200">
+                      <h5 className="font-semibold text-purple-700 mb-2">One by One</h5>
+                      <p className="text-sm text-gray-600">Questions presented individually</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-indigo-200">
+                      <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                      <p className="text-sm text-gray-600">Get your score immediately</p>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg border border-indigo-200">
-                    <h5 className="font-semibold text-purple-700 mb-2">One by One</h5>
-                    <p className="text-sm text-gray-600">Questions presented individually</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg border border-indigo-200">
-                    <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
-                    <p className="text-sm text-gray-600">Get your score immediately</p>
-                  </div>
-                </div>
 
-                <Link to="/web3-quiz">
-                  <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transition-all">
-                    Start Quiz
+                  <Link to="/web3-quiz">
+                    <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 hover:scale-105 transition-all">
+                      Start Quiz
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 border border-gray-300 text-center">
+                  <div className="mb-6">
+                    <div className="bg-gray-400 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Lock className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-600 mb-2">Quiz Locked</h4>
+                    <p className="text-gray-500 mb-6 max-w-2xl mx-auto">
+                      Complete all 6 Web3 & Digital Ownership modules to unlock this quiz.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 max-w-md mx-auto">
+                      <p className="text-sm text-gray-600 mb-2">Progress:</p>
+                      <div className="text-lg font-semibold text-gray-700">
+                        {getCompletionStats().categories[1].completedCount} / {getCompletionStats().categories[1].moduleCount} modules completed
+                      </div>
+                    </div>
+                  </div>
+                  <Button disabled className="bg-gray-400 text-white px-8 py-4 text-lg font-semibold cursor-not-allowed">
+                    Quiz Locked
                   </Button>
-                </Link>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </section>}
@@ -606,38 +651,61 @@ const LearnNow = () => {
                 </p>
               </div>
               
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-8 border border-amber-200 text-center">
-                <div className="mb-6">
-                  <div className="bg-gradient-to-r from-amber-600 to-orange-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <BookOpen className="h-10 w-10 text-white" />
+              {isCategoryCompleted(2) ? (
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-8 border border-amber-200 text-center">
+                  <div className="mb-6">
+                    <div className="bg-gradient-to-r from-amber-600 to-orange-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <BookOpen className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Learning Knowledge?</h4>
+                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                      15 questions about education and why it matters. You know the drill - one question at a time!
+                    </p>
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Ready to Test Your Learning Knowledge?</h4>
-                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    15 questions about education and why it matters. You know the drill - one question at a time!
-                  </p>
-                </div>
 
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-white p-4 rounded-lg border border-amber-200">
-                    <h5 className="font-semibold text-amber-700 mb-2">15 Questions</h5>
-                    <p className="text-sm text-gray-600">All about learning and education</p>
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white p-4 rounded-lg border border-amber-200">
+                      <h5 className="font-semibold text-amber-700 mb-2">15 Questions</h5>
+                      <p className="text-sm text-gray-600">All about learning and education</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-amber-200">
+                      <h5 className="font-semibold text-orange-700 mb-2">One by One</h5>
+                      <p className="text-sm text-gray-600">Questions presented individually</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-amber-200">
+                      <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
+                      <p className="text-sm text-gray-600">Get your score immediately</p>
+                    </div>
                   </div>
-                  <div className="bg-white p-4 rounded-lg border border-amber-200">
-                    <h5 className="font-semibold text-orange-700 mb-2">One by One</h5>
-                    <p className="text-sm text-gray-600">Questions presented individually</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg border border-amber-200">
-                    <h5 className="font-semibold text-green-700 mb-2">Instant Results</h5>
-                    <p className="text-sm text-gray-600">Get your score immediately</p>
-                  </div>
-                </div>
 
-                <Link to="/education-quiz">
-                  <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-8 py-4 text-lg font-semibold hover:from-amber-700 hover:to-orange-700 hover:scale-105 transition-all">
-                    Start Quiz
+                  <Link to="/education-quiz">
+                    <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-8 py-4 text-lg font-semibold hover:from-amber-700 hover:to-orange-700 hover:scale-105 transition-all">
+                      Start Quiz
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 border border-gray-300 text-center">
+                  <div className="mb-6">
+                    <div className="bg-gray-400 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Lock className="h-10 w-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl font-bold text-gray-600 mb-2">Quiz Locked</h4>
+                    <p className="text-gray-500 mb-6 max-w-2xl mx-auto">
+                      Complete all 6 Why Learning Matters modules to unlock this quiz.
+                    </p>
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 max-w-md mx-auto">
+                      <p className="text-sm text-gray-600 mb-2">Progress:</p>
+                      <div className="text-lg font-semibold text-gray-700">
+                        {getCompletionStats().categories[2].completedCount} / {getCompletionStats().categories[2].moduleCount} modules completed
+                      </div>
+                    </div>
+                  </div>
+                  <Button disabled className="bg-gray-400 text-white px-8 py-4 text-lg font-semibold cursor-not-allowed">
+                    Quiz Locked
                   </Button>
-                </Link>
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </section>}
@@ -655,38 +723,85 @@ const LearnNow = () => {
               </p>
             </div>
             
-            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-lg text-center">
-              <div className="mb-6">
-                <div className="bg-gradient-to-r from-slate-600 to-gray-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-10 w-10 text-white" />
+            {areAllCategoriesCompleted() ? (
+              <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-lg text-center">
+                <div className="mb-6">
+                  <div className="bg-gradient-to-r from-slate-600 to-gray-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Award className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-gray-900 mb-2">The Ultimate Knowledge Test</h4>
+                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Questions from all three learning paths. Time to show off what you've learned!
+                  </p>
                 </div>
-                <h4 className="text-2xl font-bold text-gray-900 mb-2">The Ultimate Knowledge Test</h4>
-                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Questions from all three learning paths. Time to show off what you've learned!
-                </p>
-              </div>
 
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                  <h5 className="font-semibold text-slate-700 mb-2">35 Questions</h5>
-                  <p className="text-sm text-gray-600">Random mix from all lessons</p>
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h5 className="font-semibold text-slate-700 mb-2">35 Questions</h5>
+                    <p className="text-sm text-gray-600">Random mix from all lessons</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h5 className="font-semibold text-gray-700 mb-2">All Topics</h5>
+                    <p className="text-sm text-gray-600">Money, crypto, and learning</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h5 className="font-semibold text-green-700 mb-2">Final Score</h5>
+                    <p className="text-sm text-gray-600">See how you did overall</p>
+                  </div>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                  <h5 className="font-semibold text-gray-700 mb-2">All Topics</h5>
-                  <p className="text-sm text-gray-600">Money, crypto, and learning</p>
-                </div>
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                  <h5 className="font-semibold text-green-700 mb-2">Final Score</h5>
-                  <p className="text-sm text-gray-600">See how you did overall</p>
-                </div>
-              </div>
 
-              <Link to="/comprehensive-exam">
-                <Button className="bg-gradient-to-r from-slate-600 to-gray-600 text-white px-8 py-4 text-lg font-semibold hover:from-slate-700 hover:to-gray-700 hover:scale-105 transition-all">
-                  Take Exam
+                <Link to="/comprehensive-exam">
+                  <Button className="bg-gradient-to-r from-slate-600 to-gray-600 text-white px-8 py-4 text-lg font-semibold hover:from-slate-700 hover:to-gray-700 hover:scale-105 transition-all">
+                    Take Exam
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-8 border border-gray-300 shadow-lg text-center">
+                <div className="mb-6">
+                  <div className="bg-gray-400 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Lock className="h-10 w-10 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-gray-600 mb-2">Final Exam Locked</h4>
+                  <p className="text-gray-500 mb-6 max-w-2xl mx-auto">
+                    Complete all modules in all 3 categories to unlock the comprehensive final exam.
+                  </p>
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 max-w-lg mx-auto">
+                    <p className="text-sm text-gray-600 mb-4">Overall Progress:</p>
+                    <div className="space-y-3">
+                      {getCompletionStats().categories.map((category, index) => (
+                        <div key={index} className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-700">
+                            {learningCategories[index].title}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">
+                              {category.completedCount}/{category.moduleCount}
+                            </span>
+                            {category.completed ? (
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <Lock className="h-4 w-4 text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="text-lg font-semibold text-gray-700">
+                        {getCompletionStats().completedModules} / {getCompletionStats().totalModules} modules completed
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {getCompletionStats().completionPercentage}% Complete
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <Button disabled className="bg-gray-400 text-white px-8 py-4 text-lg font-semibold cursor-not-allowed">
+                  Final Exam Locked
                 </Button>
-              </Link>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

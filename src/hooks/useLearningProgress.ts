@@ -82,6 +82,35 @@ export function useLearningProgress() {
     return progress.completedModules.includes(moduleId);
   };
 
+  const isCategoryCompleted = (categoryIndex: number): boolean => {
+    // Check if all 6 modules in a category are completed
+    const categoryModules = allModules.filter(module => module.categoryIndex === categoryIndex);
+    return categoryModules.every(module => progress.completedModules.includes(module.id));
+  };
+
+  const areAllCategoriesCompleted = (): boolean => {
+    // Check if all 3 categories (0, 1, 2) are completed
+    return [0, 1, 2].every(categoryIndex => isCategoryCompleted(categoryIndex));
+  };
+
+  const getCompletionStats = () => {
+    const totalModules = allModules.length;
+    const completedModules = progress.completedModules.length;
+    const completionPercentage = Math.round((completedModules / totalModules) * 100);
+    
+    return {
+      totalModules,
+      completedModules,
+      completionPercentage,
+      categories: [0, 1, 2].map(categoryIndex => ({
+        categoryIndex,
+        completed: isCategoryCompleted(categoryIndex),
+        moduleCount: allModules.filter(m => m.categoryIndex === categoryIndex).length,
+        completedCount: allModules.filter(m => m.categoryIndex === categoryIndex && progress.completedModules.includes(m.id)).length
+      }))
+    };
+  };
+
   const resetProgress = () => {
     setProgress({
       completedModules: [],
@@ -95,6 +124,9 @@ export function useLearningProgress() {
     completeModule,
     isModuleUnlocked,
     isModuleCompleted,
+    isCategoryCompleted,
+    areAllCategoriesCompleted,
+    getCompletionStats,
     resetProgress
   };
 }
