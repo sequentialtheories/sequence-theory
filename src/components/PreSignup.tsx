@@ -52,21 +52,9 @@ const PreSignup = () => {
     setLastSubmissionTime(Date.now());
     
     try {
-      // Store sanitized email in early access signups table
-      const { error } = await supabase
-        .from('early_access_signups')
-        .insert([{ email: sanitizedEmail }]);
-
-      if (error) {
-        // If email already exists, that's okay - just proceed to account creation
-        if (error.code !== '23505') { // 23505 is unique constraint violation
-          throw error;
-        }
-      }
-
       toast({
         title: "Welcome to The Vault Club!",
-        description: "Complete your account to get early access.",
+        description: "Complete your account to get early access and your Web3 wallet.",
       });
 
       // Redirect to auth page with sanitized email prefilled

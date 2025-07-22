@@ -14,24 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      early_access_signups: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string
@@ -56,6 +38,36 @@ export type Database = {
           name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_wallets: {
+        Row: {
+          created_at: string
+          id: string
+          network: string
+          updated_at: string
+          user_id: string
+          wallet_address: string
+          wallet_config: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          network?: string
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+          wallet_config: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          network?: string
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+          wallet_config?: Json
         }
         Relationships: []
       }
