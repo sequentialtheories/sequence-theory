@@ -174,82 +174,17 @@ const Index = () => {
                 <div className="space-y-8">
                   <div className="relative">
                     <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl blur-xl"></div>
-                    <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-primary/20">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-primary/60 rounded-full mt-2"></div>
-                          <div>
-                            <p className="font-semibold text-foreground">MISSION:</p>
-                            <p className="text-muted-foreground">Democratize Financial Empowerment</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-secondary/60 rounded-full mt-2"></div>
-                          <div>
-                            <p className="font-semibold text-foreground">METHOD:</p>
-                            <p className="text-muted-foreground">Community-based Investment and Education</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    
                   </div>
                   <div className="relative">
                     <div className="absolute -inset-4 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
-                    <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-secondary/20">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{
-                        animationDelay: '0.5s'
-                      }}></div>
-                        <span className="text-sm font-medium text-secondary">Our Audience</span>
-                      </div>
-                      <p className="text-lg text-muted-foreground leading-relaxed">
-                        In our world, poverty isn't systemic — it's optional. We provide structured investing, 
-                        financial education, and a social ecosystem to make wealth building accessible. 
-                        Our secondary audience is anyone seeking disciplined, long-term exposure to crypto 
-                        without the chaos of trading or DeFi management.
-                      </p>
-                    </div>
+                    
                   </div>
                 </div>
                 
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl transform rotate-3"></div>
-                  <div className="relative bg-card border border-primary/20 p-10 rounded-2xl shadow-2xl">
-                    <h3 className="text-2xl font-bold mb-8 text-foreground flex items-center gap-3">
-                      Core Principles
-                      <div className="w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
-                    </h3>
-                    <ul className="space-y-5">
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          Remove traditional barriers to sophisticated investment strategies
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-secondary to-secondary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          Create structured entryway into the digital asset economy
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-accent to-accent/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          Build wealth through communal cryptocurrency investments
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
+                  
                 </div>
               </div>
             </div>
