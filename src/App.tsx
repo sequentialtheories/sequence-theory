@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
 import Index from "./pages/Index";
 import LearnMore from "./pages/LearnMore";
 import LearnNow from "./pages/LearnNow";
@@ -58,6 +59,11 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
             <Route path="/learn-now" element={
               <ProtectedRoute>
                 <LearnNow />

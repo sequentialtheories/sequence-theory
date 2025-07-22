@@ -1,35 +1,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, GraduationCap, LogOut } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Signed out",
-        description: "You've been signed out successfully",
-      });
-      navigate('/');
-    }
-  };
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -93,15 +74,7 @@ const Navigation = () => {
               
               {!loading && (
                 user ? (
-                  <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    size="sm"
-                    className="px-4 py-2 rounded-full transition-spring hover:scale-105"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
+                  <ProfileDropdown />
                 ) : (
                   <Button
                     onClick={() => navigate('/auth')}
@@ -159,18 +132,9 @@ const Navigation = () => {
                 
                 {!loading && (
                   user ? (
-                    <Button
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        handleLogout();
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
-                    </Button>
+                    <div onClick={() => setIsMenuOpen(false)}>
+                      <ProfileDropdown />
+                    </div>
                   ) : (
                     <Button
                       onClick={() => {

@@ -1,0 +1,316 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/components/AuthProvider';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ArrowLeft, Save, User, Mail, Wallet, Eye, EyeOff, Copy, Shield } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+interface WalletConfig {
+  private_key: string;
+  public_key?: string;
+}
+
+const Profile = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [name, setName] = useState('');
+  const [showPrivateKey, setShowPrivateKey] = useState(false);
+
+  // Fetch user profile
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Update name state when profile data changes
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name || '');
+    }
+  }, [profile]);
+
+  // Fetch user wallet
+  const { data: wallet } = useQuery({
+    queryKey: ['wallet', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('user_wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (updates: { name: string }) => {
+      if (!user?.id) throw new Error('No user ID');
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error updating profile",
+        description: "There was an error updating your profile. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSave = () => {
+    updateProfileMutation.mutate({ name });
+  };
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied to clipboard",
+        description: `${label} has been copied to your clipboard.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy to clipboard.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <p>Please sign in to view your profile.</p>
+            <Button onClick={() => navigate('/auth')} className="mt-4">
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const userInitials = profile?.name 
+    ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : profile?.email[0].toUpperCase() || 'U';
+
+  return (
+    <div className="min-h-screen bg-gray-50/50 py-8">
+      <div className="container mx-auto px-6 max-w-4xl">
+        {/* Header */}
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+          
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-16 w-16">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl font-bold">Profile Settings</h1>
+              <p className="text-muted-foreground">Manage your account information and wallet details</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-6">
+          {/* Personal Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="h-5 w-5" />
+                <span>Personal Information</span>
+              </CardTitle>
+              <CardDescription>
+                Update your personal details
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  value={profile?.email || ''}
+                  disabled
+                  className="bg-muted"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Email cannot be changed. Contact support if needed.
+                </p>
+              </div>
+
+              <Button 
+                onClick={handleSave}
+                disabled={updateProfileMutation.isPending || profileLoading}
+                className="w-fit"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Wallet Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Wallet className="h-5 w-5" />
+                <span>Wallet Information</span>
+              </CardTitle>
+              <CardDescription>
+                Your blockchain wallet details
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {wallet ? (
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label>Wallet Address</Label>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        value={wallet.wallet_address}
+                        readOnly
+                        className="bg-muted font-mono text-sm"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(wallet.wallet_address, 'Wallet address')}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label>Network</Label>
+                    <Input
+                      value={wallet.network.charAt(0).toUpperCase() + wallet.network.slice(1)}
+                      readOnly
+                      className="bg-muted"
+                    />
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-red-600 flex items-center space-x-2">
+                        <Shield className="h-4 w-4" />
+                        <span>Private Key</span>
+                      </Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowPrivateKey(!showPrivateKey)}
+                      >
+                        {showPrivateKey ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        value={showPrivateKey 
+                          ? (wallet.wallet_config as unknown as WalletConfig).private_key 
+                          : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'
+                        }
+                        readOnly
+                        className="bg-red-50 border-red-200 font-mono text-sm"
+                      />
+                      {showPrivateKey && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard((wallet.wallet_config as unknown as WalletConfig).private_key, 'Private key')}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <p className="text-xs text-red-600 flex items-center space-x-1">
+                      <Shield className="h-3 w-3" />
+                      <span>Never share your private key with anyone. Keep it secure.</span>
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No wallet found for this account.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Wallets are automatically created during signup.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;
