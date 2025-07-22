@@ -3,10 +3,14 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
+import { WalletInfo } from "@/components/WalletInfo";
+import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 const Index = () => {
+  const { user } = useAuth();
+  
   // Add document title and meta description for better SEO
   React.useEffect(() => {
     document.title = "Sequence Theory - Democratizing Financial Empowerment Through The Vault Club";
@@ -86,6 +90,17 @@ const Index = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl -rotate-12"></div>
           </div>
         </section>
+
+        {/* Wallet Info Section - Only shown for authenticated users */}
+        {user && (
+          <section className="py-12 bg-gradient-to-br from-accent/5 to-primary/5 relative">
+            <div className="container mx-auto px-6">
+              <div className="flex justify-center">
+                <WalletInfo />
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* The Problem Section */}
         <section className="py-20 relative bg-gradient-to-br from-muted/20 to-secondary/10" itemScope itemType="https://schema.org/Article">
