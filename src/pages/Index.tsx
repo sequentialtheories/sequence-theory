@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { WalletInfo } from "@/components/WalletInfo";
+import { WalletManager } from "@/components/WalletManager";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
@@ -97,6 +98,17 @@ const Index = () => {
             <div className="container mx-auto px-6">
               <div className="flex justify-center">
                 <WalletInfo />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Wallet Manager Section - Admin tool for wallet management */}
+        {user && (
+          <section className="py-12 bg-gradient-to-br from-primary/5 to-secondary/5 relative">
+            <div className="container mx-auto px-6">
+              <div className="flex justify-center">
+                <WalletManager />
               </div>
             </div>
           </section>
