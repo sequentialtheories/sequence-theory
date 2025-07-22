@@ -8,7 +8,6 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, FileText, ArrowLeft, Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const LearnMore = () => {
   const features = [{
     icon: Shield,
@@ -27,9 +26,7 @@ const LearnMore = () => {
     title: "Strategic Approach",
     description: "Investment contracts based on proven financial principles, adapted for digital assets."
   }];
-
-  return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+  return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-xl"></div>
@@ -66,25 +63,15 @@ const LearnMore = () => {
           <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
           <div className="container mx-auto px-6 text-center relative z-10">
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
-              <a
-                href="https://claude.ai/public/artifacts/97b71d10-3256-49a0-82d1-d1b62e6c4543?fullscreen=true"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button 
-                  variant="outline" 
-                  className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
-                >
+              <a href="https://claude.ai/public/artifacts/97b71d10-3256-49a0-82d1-d1b62e6c4543?fullscreen=true" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium">
                   View Preview
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </a>
               
               <Link to="/white-paper">
-                <Button 
-                  variant="outline" 
-                  className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
-                >
+                <Button variant="outline" className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium">
                   Read White Paper
                   <FileText className="h-4 w-4" />
                 </Button>
@@ -101,18 +88,7 @@ const LearnMore = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-destructive/10 rounded-full px-6 py-2 mb-6">
-                <Target className="h-4 w-4 text-destructive" />
-                <span className="text-sm font-medium text-destructive">The Challenge</span>
-              </div>
-              <h3 className="text-4xl font-bold mb-4 text-foreground">The Compound Interest Problem</h3>
-              <div className="w-24 h-1 bg-gradient-to-r from-destructive to-destructive/60 mx-auto mb-8"></div>
-              <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                Albert Einstein called compound interest the "eighth wonder of the world," yet most people 
-                never benefit from it meaningfully. The issue isn't failure—it's friction.
-              </p>
-            </div>
+            
             
             <div className="grid md:grid-cols-3 gap-8 mb-16">
               <div className="relative group">
@@ -535,8 +511,6 @@ const LearnMore = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default LearnMore;
