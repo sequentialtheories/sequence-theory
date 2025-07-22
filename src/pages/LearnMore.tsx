@@ -68,54 +68,6 @@ const LearnMore = () => {
         <Footer />
       </div>
 
-      {/* The Problem Section */}
-      <section className="py-20 relative bg-gradient-to-br from-muted/20 to-secondary/10">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
-                    <Shield className="h-8 w-8 text-destructive" />
-                  </div>
-                  <h4 className="text-xl font-bold mb-4 text-foreground">Ready Ability</h4>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Reliable access to quality investment vehicles that don't require massive capital or institutional connections.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform -rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
-                    <TrendingUp className="h-8 w-8 text-destructive" />
-                  </div>
-                  <h4 className="text-xl font-bold mb-4 text-foreground">Discipline</h4>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Consistent, recurring contributions over time without getting distracted by market volatility or speculation.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
-                    <Target className="h-8 w-8 text-destructive" />
-                  </div>
-                  <h4 className="text-xl font-bold mb-4 text-foreground">Long-Term Horizons</h4>
-                  <p className="text-muted-foreground leading-relaxed">
-                    The patience to allow growth to compound without succumbing to short-term market pressures.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
