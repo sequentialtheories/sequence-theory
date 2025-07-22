@@ -81,13 +81,13 @@ serve(async (req) => {
     
     console.log(`Created wallet address: ${walletData.wallet.address}`);
 
-    // Store wallet in database
+    // Store wallet in database with proper JSON handling
     const { error: insertError } = await supabase
       .from('user_wallets')
       .insert({
         user_id,
         wallet_address: walletData.wallet.address,
-        wallet_config: walletData.wallet.config,
+        wallet_config: walletData.wallet.config, // This is already a JSON object
         network: 'polygon'
       });
 
