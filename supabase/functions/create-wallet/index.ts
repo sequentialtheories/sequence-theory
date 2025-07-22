@@ -35,11 +35,11 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Check if user already has a wallet
-    const { data: existingWallet } = await supabase
+    const { data: existingWallet, error: checkError } = await supabase
       .from('user_wallets')
       .select('*')
       .eq('user_id', user_id)
-      .single();
+      .maybeSingle();
 
     if (existingWallet) {
       console.log(`User ${user_id} already has a wallet`);
