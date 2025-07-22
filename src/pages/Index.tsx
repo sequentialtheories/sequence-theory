@@ -191,6 +191,168 @@ const Index = () => {
           </div>
         </main>
 
+        {/* What We Do */}
+        <section className="py-20 relative">
+          <div className="container mx-auto px-6">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
+                  <Target className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Our Solution</span>
+                </div>
+                <h3 className="text-4xl font-bold mb-4 text-foreground">How The Vault Club Solves This</h3>
+                <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto"></div>
+              </div>
+              
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl transform rotate-1"></div>
+                <div className="relative bg-card border border-primary/10 rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1">
+                  <div className="flex items-start gap-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg">
+                        <Shield className="h-8 w-8 text-primary-foreground" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-3">
+                        Structured Investment Contracts
+                        <div className="w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
+                      </h4>
+                      <div className="space-y-4">
+                        <p className="text-lg text-muted-foreground leading-relaxed">
+                          When you join The Vault Club, you enter a subclub that has its own structured investment contract. 
+                          These contracts are created at the start to set fixed parameters such as member amount, rigor, and length.
+                          All participants are immediately placed in our secure Mega Vault, which provides instant diversification 
+                          and professional-grade risk management.
+                        </p>
+                        <div className="border-l-4 border-primary/30 pl-6 py-2 bg-primary/5 rounded-r-lg">
+                          <p className="text-lg text-muted-foreground leading-relaxed">
+                            Over time, contracts gradually exit the Mega Vault to independently accumulate wBTC through strategic market timing. 
+                            At contract completion, you have full control over your accumulated wBTC - hold it, liquidate it, or transfer it as you choose.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Mission Section */}
+        <section className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Sequence Theory's Broader Mission</span>
+                </div>
+                <h3 className="text-4xl font-bold mb-4 text-foreground">Building Financial Literacy & Inclusion</h3>
+                <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
+                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                  Sequence Theory is not just a financial product, it's a framework for building lasting financial 
+                  literacy and inclusion across digital and traditional markets. Our primary audience is financially 
+                  underserved individuals new to crypto or investing, overwhelmed by exchanges and speculation.
+                </p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
+                <div className="space-y-8">
+                  <div className="relative">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl blur-xl"></div>
+                    <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-primary/20">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 bg-primary/60 rounded-full mt-2"></div>
+                          <div>
+                            <p className="font-semibold text-foreground">MISSION:</p>
+                            <p className="text-muted-foreground">Democratize Financial Empowerment</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-2 h-2 bg-secondary/60 rounded-full mt-2"></div>
+                          <div>
+                            <p className="font-semibold text-foreground">METHOD:</p>
+                            <p className="text-muted-foreground">Community-based Investment and Education</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
+                    <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-secondary/20">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{
+                        animationDelay: '0.5s'
+                      }}></div>
+                        <span className="text-sm font-medium text-secondary">Our Audience</span>
+                      </div>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        In our world, poverty isn't systemic — it's optional. We provide structured investing, 
+                        financial education, and a social ecosystem to make wealth building accessible. 
+                        Our secondary audience is anyone seeking disciplined, long-term exposure to crypto 
+                        without the chaos of trading or DeFi management.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl transform rotate-3"></div>
+                  <div className="relative bg-card border border-primary/20 p-10 rounded-2xl shadow-2xl">
+                    <h4 className="text-2xl font-bold mb-8 text-foreground flex items-center gap-3">
+                      Key Features of The Vault Club
+                      <div className="w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
+                    </h4>
+                    <ul className="space-y-5">
+                      <li className="flex items-start gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
+                          Quantitative strategies modeled after hedge funds via Routed Reinvestment Logic
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
+                          Built-in wrapped Bitcoin accumulation for long-term retention
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
+                          Multi-strand reinvestment across risk tiers
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
+                          User-controlled parameters with minimal active management
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Join The Vault Club Section */}
         <PreSignup />
         
