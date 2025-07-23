@@ -103,6 +103,9 @@ serve(async (req) => {
     const walletData: SequenceWalletResponse = await walletResponse.json();
     console.log('Created wallet with address:', walletData.address);
 
+    // Generate a private key for the wallet (this is a placeholder - in production you'd get this from Sequence)
+    const privateKey = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')}`;
+
     // Insert wallet into database
     const { error: insertError } = await supabase
       .from('user_wallets')
@@ -112,7 +115,8 @@ serve(async (req) => {
         wallet_config: {
           email: profile.email,
           chainId: walletData.chainId,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          private_key: privateKey
         },
         network: 'polygon'
       });
