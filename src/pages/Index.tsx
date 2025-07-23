@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 const Index = () => {
-  const { user } = useAuth();
-  
+  const {
+    user
+  } = useAuth();
+
   // Add document title and meta description for better SEO
   React.useEffect(() => {
     document.title = "Sequence Theory - Democratizing Financial Empowerment Through The Vault Club";
@@ -92,15 +94,7 @@ const Index = () => {
         </section>
 
         {/* Wallet Info Section - Only shown for authenticated users */}
-        {user && (
-          <section className="py-12 bg-gradient-to-br from-accent/5 to-primary/5 relative">
-            <div className="container mx-auto px-6">
-              <div className="flex justify-center">
-                <WalletInfo />
-              </div>
-            </div>
-          </section>
-        )}
+        {user}
 
 
         {/* The Problem Section */}
