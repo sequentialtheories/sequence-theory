@@ -34,7 +34,7 @@ export const WalletInfo = () => {
         .from('user_wallets')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching wallet:', error);
