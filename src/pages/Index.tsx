@@ -3,7 +3,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
-import { WalletInfo } from "@/components/WalletInfo";
+
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
@@ -93,16 +93,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Wallet Info Section - Only shown for authenticated users */}
-        {user && (
-          <section className="py-10 bg-muted/50">
-            <div className="container mx-auto px-6">
-              <div className="flex justify-center">
-                <WalletInfo />
-              </div>
-            </div>
-          </section>
-        )}
 
 
         {/* The Problem Section */}
