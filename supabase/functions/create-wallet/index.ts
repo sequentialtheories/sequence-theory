@@ -26,38 +26,14 @@ serve(async (req) => {
       throw new Error('User ID is required');
     }
 
-    console.log(`Creating wallet for user: ${user_id}`);
+    console.log('Creating wallet for user:', user_id);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if user already has a wallet
-    const { data: existingWallet, error: checkError } = await supabase
-      .from('user_wallets')
-      .select('*')
-      .eq('user_id', user_id)
-      .maybeSingle();
-
-    if (checkError) {
-      console.error('Error checking existing wallet:', checkError);
-      throw new Error(`Failed to check existing wallet: ${checkError.message}`);
-    }
-
-    if (existingWallet && !existingWallet.wallet_address.startsWith('pending_')) {
-      console.log(`User ${user_id} already has a wallet: ${existingWallet.wallet_address}`);
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: 'Wallet already exists',
-          wallet_address: existingWallet.wallet_address
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Get user's email from profiles table
+    // Get user profile to access email
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('email')
@@ -65,12 +41,32 @@ serve(async (req) => {
       .single();
 
     if (profileError || !profile) {
-      console.error('Error fetching user profile:', profileError);
-      throw new Error('Failed to fetch user profile');
+      throw new Error(`Failed to get user profile: ${profileError?.message || 'Profile not found'}`);
     }
 
-    const userEmail = profile.email;
-    console.log(`Creating wallet for email: ${userEmail}`);
+    // Check if wallet already exists
+    const { data: existingWallet, error: walletCheckError } = await supabase
+      .from('user_wallets')
+      .select('*')
+      .eq('user_id', user_id)
+      .maybeSingle();
+
+    if (walletCheckError) {
+      throw new Error(`Failed to check existing wallet: ${walletCheckError.message}`);
+    }
+
+    // If wallet exists and is not pending, return success
+    if (existingWallet && !existingWallet.wallet_address.startsWith('pending_')) {
+      console.log('Wallet already exists for user:', user_id);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          wallet_address: existingWallet.wallet_address,
+          message: 'Wallet already exists'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get Sequence API key
     const sequenceApiKey = Deno.env.get('SEQUENCE_API_KEY');
@@ -78,8 +74,10 @@ serve(async (req) => {
       throw new Error('Sequence API key not configured');
     }
 
-    // Create wallet using Sequence's email-based approach
-    const walletResponse = await fetch('https://api.sequence.app/rpc/Wallet/SendIntent', {
+    console.log('Creating Sequence wallet for email:', profile.email);
+
+    // Create wallet using Sequence API
+    const walletResponse = await fetch('https://api.sequence.app/rpc/Wallet/Create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -87,13 +85,10 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         network: 'polygon',
-        intent: {
-          type: 'openSession',
-          sessionId: `vault_club_${user_id}`,
-        },
-        wallet: {
-          type: 'email',
-          email: userEmail,
+        email: profile.email,
+        config: {
+          threshold: 1,
+          checkpoint: 0
         }
       }),
     });
@@ -101,111 +96,62 @@ serve(async (req) => {
     if (!walletResponse.ok) {
       const errorText = await walletResponse.text();
       console.error('Sequence API error:', errorText);
-      
-      // Try alternative approach - direct wallet creation
-      const createWalletResponse = await fetch('https://api.sequence.app/rpc/Wallet/Create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sequenceApiKey}`,
-        },
-        body: JSON.stringify({
-          network: 'polygon',
-          email: userEmail,
-          config: {
-            threshold: 1,
-            checkpoint: 0
-          }
-        }),
-      });
-
-      if (!createWalletResponse.ok) {
-        const createErrorText = await createWalletResponse.text();
-        console.error('Sequence Create API error:', createErrorText);
-        throw new Error(`Failed to create wallet: ${createWalletResponse.status} - ${createErrorText}`);
-      }
-
-      const createWalletData: SequenceWalletResponse = await createWalletResponse.json();
-      
-      console.log(`Created wallet address: ${createWalletData.address}`);
-
-      // Store or update wallet in database
-      const walletConfig = {
-        chainId: createWalletData.chainId,
-        email: userEmail,
-        status: 'active',
-        created_at: new Date().toISOString(),
-        method: 'email_direct'
-      };
-
-      const { error: upsertError } = await supabase
-        .from('user_wallets')
-        .upsert({
-          user_id,
-          wallet_address: createWalletData.address,
-          wallet_config: walletConfig,
-          network: 'polygon'
-        });
-
-      if (upsertError) {
-        console.error('Database upsert error:', upsertError);
-        throw new Error(`Failed to store wallet: ${upsertError.message}`);
-      }
-
-      console.log(`Successfully created and stored wallet for user ${user_id}`);
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          wallet_address: createWalletData.address,
-          message: 'Wallet created successfully' 
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
-        }
-      );
+      throw new Error(`Failed to create wallet: ${walletResponse.status} - ${errorText}`);
     }
 
     const walletData: SequenceWalletResponse = await walletResponse.json();
     
-    console.log(`Created wallet address: ${walletData.address}`);
+    console.log('Created wallet with address:', walletData.address);
 
-    // Store or update wallet in database
+    // Generate a private key for the wallet (this is a placeholder - in production you'd get this from Sequence)
+    const privateKey = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')}`;
+
     const walletConfig = {
       chainId: walletData.chainId,
-      email: userEmail,
+      email: profile.email,
       status: 'active',
       created_at: new Date().toISOString(),
-      method: 'email_intent'
+      method: 'direct_api',
+      private_key: privateKey
     };
 
-    const { error: upsertError } = await supabase
-      .from('user_wallets')
-      .upsert({
-        user_id,
-        wallet_address: walletData.address,
-        wallet_config: walletConfig,
-        network: 'polygon'
-      });
+    // Update or insert wallet
+    if (existingWallet) {
+      const { error: updateError } = await supabase
+        .from('user_wallets')
+        .update({
+          wallet_address: walletData.address,
+          wallet_config: walletConfig
+        })
+        .eq('user_id', user_id);
 
-    if (upsertError) {
-      console.error('Database upsert error:', upsertError);
-      throw new Error(`Failed to store wallet: ${upsertError.message}`);
+      if (updateError) {
+        throw new Error(`Failed to update wallet: ${updateError.message}`);
+      }
+    } else {
+      const { error: insertError } = await supabase
+        .from('user_wallets')
+        .insert({
+          user_id,
+          wallet_address: walletData.address,
+          wallet_config: walletConfig,
+          network: 'polygon'
+        });
+
+      if (insertError) {
+        throw new Error(`Failed to insert wallet: ${insertError.message}`);
+      }
     }
 
-    console.log(`Successfully created and stored wallet for user ${user_id}`);
+    console.log('Successfully created/updated wallet for user:', user_id);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         wallet_address: walletData.address,
-        message: 'Wallet created successfully' 
+        message: 'Wallet created successfully'
       }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {

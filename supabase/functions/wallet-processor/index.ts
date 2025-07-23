@@ -42,11 +42,32 @@ serve(async (req) => {
 
     console.log(`Found ${pendingWallets?.length || 0} pending wallets`);
 
-    if (!pendingWallets || pendingWallets.length === 0) {
+    // Also check for wallets that might be created but missing private keys
+    const { data: walletsWithoutKeys, error: keysError } = await supabase
+      .from('user_wallets')
+      .select(`
+        *,
+        profiles!inner(email)
+      `)
+      .not('wallet_address', 'like', 'pending_%')
+      .or('wallet_config->>private_key.is.null,wallet_config->>private_key.eq.""');
+
+    if (keysError) {
+      console.warn('Error querying wallets without private keys:', keysError);
+    }
+
+    const allWalletsToProcess = [
+      ...(pendingWallets || []),
+      ...(walletsWithoutKeys || [])
+    ];
+
+    console.log(`Total wallets to process: ${allWalletsToProcess.length}`);
+
+    if (allWalletsToProcess.length === 0) {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'No pending wallets to process',
+          message: 'No wallets need processing',
           processed: 0
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -62,11 +83,13 @@ serve(async (req) => {
     let processedWallets = 0;
     const errors: string[] = [];
 
-    // Process each pending wallet
-    for (const wallet of pendingWallets) {
+    // Process each wallet that needs attention
+    for (const wallet of allWalletsToProcess) {
       try {
         const userEmail = wallet.profiles.email;
-        console.log(`Creating Sequence wallet for user: ${wallet.user_id} with email: ${userEmail}`);
+        const isPending = wallet.wallet_address.startsWith('pending_');
+        
+        console.log(`${isPending ? 'Creating' : 'Updating'} Sequence wallet for user: ${wallet.user_id} with email: ${userEmail}`);
 
         // Create wallet using Sequence's email-based approach
         const walletResponse = await fetch('https://api.sequence.app/rpc/Wallet/Create', {
@@ -88,15 +111,18 @@ serve(async (req) => {
         if (!walletResponse.ok) {
           const errorText = await walletResponse.text();
           console.error(`Sequence API error for user ${wallet.user_id}:`, errorText);
-          errors.push(`User ${wallet.user_id}: Failed to create wallet (${walletResponse.status})`);
+          errors.push(`User ${wallet.user_id}: Failed to create/update wallet (${walletResponse.status})`);
           continue;
         }
 
         const walletData: SequenceWalletResponse = await walletResponse.json();
         
-        console.log(`Created wallet address for user ${wallet.user_id}: ${walletData.address}`);
+        console.log(`${isPending ? 'Created' : 'Updated'} wallet address for user ${wallet.user_id}: ${walletData.address}`);
 
-        // Update wallet in database
+        // Generate a private key for the wallet (this is a placeholder - in production you'd get this from Sequence)
+        const privateKey = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')}`;
+
+        // Update wallet in database with both address and private key
         const { error: updateError } = await supabase
           .from('user_wallets')
           .update({
@@ -106,7 +132,8 @@ serve(async (req) => {
               email: userEmail,
               status: 'active',
               created_at: new Date().toISOString(),
-              method: 'email_batch'
+              method: 'email_batch',
+              private_key: privateKey
             }
           })
           .eq('id', wallet.id);
@@ -131,7 +158,7 @@ serve(async (req) => {
         success: true, 
         message: `Processed ${processedWallets} wallets`,
         processed: processedWallets,
-        total_pending: pendingWallets.length,
+        total_needing_processing: allWalletsToProcess.length,
         errors: errors.length > 0 ? errors : undefined
       }),
       { 

@@ -14,11 +14,7 @@ interface UserWallet {
   wallet_address: string;
   network: string;
   created_at: string;
-  wallet_config: {
-    status?: string;
-    email?: string;
-    method?: string;
-  };
+  wallet_config: any; // Changed to any to handle the Json type from Supabase
 }
 
 export const WalletInfo = () => {
