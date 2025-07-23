@@ -94,7 +94,15 @@ const Index = () => {
         </section>
 
         {/* Wallet Info Section - Only shown for authenticated users */}
-        {user}
+        {user && (
+          <section className="py-10 bg-muted/50">
+            <div className="container mx-auto px-6">
+              <div className="flex justify-center">
+                <WalletInfo />
+              </div>
+            </div>
+          </section>
+        )}
 
 
         {/* The Problem Section */}
