@@ -1,10 +1,11 @@
+
 import { useEffect, useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Wallet, Copy, CheckCircle, Loader2 } from 'lucide-react';
+import { Wallet, Copy, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +14,11 @@ interface UserWallet {
   wallet_address: string;
   network: string;
   created_at: string;
+  wallet_config: {
+    status?: string;
+    email?: string;
+    method?: string;
+  };
 }
 
 export const WalletInfo = () => {
@@ -21,6 +27,7 @@ export const WalletInfo = () => {
   const [wallet, setWallet] = useState<UserWallet | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -49,6 +56,34 @@ export const WalletInfo = () => {
     }
   };
 
+  const createWallet = async () => {
+    setCreating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-wallet', {
+        body: { user_id: user?.id },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Wallet created successfully!",
+      });
+
+      // Refresh wallet info
+      await fetchWallet();
+    } catch (error) {
+      console.error('Error creating wallet:', error);
+      toast({
+        title: "Error",
+        description: `Failed to create wallet: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const copyAddress = async () => {
     if (wallet?.wallet_address) {
       await navigator.clipboard.writeText(wallet.wallet_address);
@@ -73,23 +108,89 @@ export const WalletInfo = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Loading wallet information...</p>
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-muted-foreground">Loading wallet information...</span>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // No wallet exists yet
   if (!wallet) {
-    return null; // Don't show anything if no wallet exists yet
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Create Your Wallet
+          </CardTitle>
+          <CardDescription>
+            Get started with your secure Sequence wallet
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={createWallet} disabled={creating} className="w-full">
+            {creating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Creating Wallet...
+              </>
+            ) : (
+              <>
+                <Wallet className="h-4 w-4 mr-2" />
+                Create Wallet
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
   }
 
-  // Check if wallet is still pending - don't show anything until ready
+  // Wallet is pending
   const isPending = wallet.wallet_address.startsWith('pending_');
   
   if (isPending) {
-    return null; // Hide completely while wallet is being created
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Wallet Setup
+          </CardTitle>
+          <CardDescription>
+            Your wallet is being created...
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            <span className="text-sm">Creating your secure wallet</span>
+          </div>
+          <div className="text-xs text-muted-foreground">
+            This may take a few moments. Your wallet will be ready soon!
+          </div>
+          <Button onClick={createWallet} disabled={creating} variant="outline" className="w-full">
+            {creating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Retrying...
+              </>
+            ) : (
+              <>
+                <AlertCircle className="h-4 w-4 mr-2" />
+                Retry Creation
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
   }
 
+  // Wallet is ready
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -135,6 +236,15 @@ export const WalletInfo = () => {
             <span className="text-xs text-green-600">Wallet ready</span>
           </div>
         </div>
+
+        {wallet.wallet_config?.email && (
+          <div>
+            <Label className="text-sm font-medium text-muted-foreground">Linked Email</Label>
+            <div className="mt-1 text-sm text-muted-foreground">
+              {wallet.wallet_config.email}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -8,10 +9,8 @@ const corsHeaders = {
 };
 
 interface SequenceWalletResponse {
-  wallet: {
-    address: string;
-    config: Record<string, any>;
-  };
+  address: string;
+  chainId: number;
 }
 
 serve(async (req) => {
@@ -28,10 +27,13 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get users with pending wallets
+    // Get users with pending wallets and their email addresses
     const { data: pendingWallets, error: queryError } = await supabase
       .from('user_wallets')
-      .select('*')
+      .select(`
+        *,
+        profiles!inner(email)
+      `)
       .like('wallet_address', 'pending_%');
 
     if (queryError) {
@@ -63,10 +65,11 @@ serve(async (req) => {
     // Process each pending wallet
     for (const wallet of pendingWallets) {
       try {
-        console.log(`Creating Sequence wallet for user: ${wallet.user_id}`);
+        const userEmail = wallet.profiles.email;
+        console.log(`Creating Sequence wallet for user: ${wallet.user_id} with email: ${userEmail}`);
 
-        // Create a new Sequence wallet
-        const walletResponse = await fetch('https://api.sequence.app/rpc/Relayer/CreateWallet', {
+        // Create wallet using Sequence's email-based approach
+        const walletResponse = await fetch('https://api.sequence.app/rpc/Wallet/Create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -74,6 +77,7 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             network: 'polygon',
+            email: userEmail,
             config: {
               threshold: 1,
               checkpoint: 0
@@ -90,17 +94,19 @@ serve(async (req) => {
 
         const walletData: SequenceWalletResponse = await walletResponse.json();
         
-        console.log(`Created wallet address for user ${wallet.user_id}: ${walletData.wallet.address}`);
+        console.log(`Created wallet address for user ${wallet.user_id}: ${walletData.address}`);
 
         // Update wallet in database
         const { error: updateError } = await supabase
           .from('user_wallets')
           .update({
-            wallet_address: walletData.wallet.address,
+            wallet_address: walletData.address,
             wallet_config: {
-              ...walletData.wallet.config,
+              chainId: walletData.chainId,
+              email: userEmail,
               status: 'active',
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
+              method: 'email_batch'
             }
           })
           .eq('id', wallet.id);
