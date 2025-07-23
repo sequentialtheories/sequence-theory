@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { allModules } from '@/data/moduleData';
+import { useAuth } from '@/components/AuthProvider';
 
 interface LearningProgress {
   completedModules: string[];
@@ -7,32 +8,65 @@ interface LearningProgress {
   currentModule: number;
 }
 
-const STORAGE_KEY = 'sequenceTheory_learningProgress';
+const STORAGE_KEY_PREFIX = 'sequenceTheory_learningProgress';
 
 export function useLearningProgress() {
+  const { user } = useAuth();
   const [progress, setProgress] = useState<LearningProgress>({
     completedModules: [],
     currentCategory: 0,
     currentModule: 0
   });
 
-  // Load progress from localStorage on mount
+  // Get user-specific storage key
+  const getStorageKey = () => {
+    return user?.id ? `${STORAGE_KEY_PREFIX}_${user.id}` : STORAGE_KEY_PREFIX;
+  };
+
+  // Load progress from localStorage on mount and when user changes
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!user) {
+      // Reset to empty progress if no user is logged in
+      setProgress({
+        completedModules: [],
+        currentCategory: 0,
+        currentModule: 0
+      });
+      return;
+    }
+
+    const storageKey = getStorageKey();
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
         const parsedProgress = JSON.parse(saved);
         setProgress(parsedProgress);
       } catch (error) {
         console.error('Failed to parse learning progress:', error);
+        // Reset to empty progress on error
+        setProgress({
+          completedModules: [],
+          currentCategory: 0,
+          currentModule: 0
+        });
       }
+    } else {
+      // Reset to empty progress if no saved data for this user
+      setProgress({
+        completedModules: [],
+        currentCategory: 0,
+        currentModule: 0
+      });
     }
-  }, []);
+  }, [user?.id]);
 
   // Save progress to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  }, [progress]);
+    if (user?.id) {
+      const storageKey = getStorageKey();
+      localStorage.setItem(storageKey, JSON.stringify(progress));
+    }
+  }, [progress, user?.id]);
 
   const completeModule = (moduleId: string, categoryIndex: number, moduleIndex: number) => {
     setProgress(prev => {
@@ -49,7 +83,10 @@ export function useLearningProgress() {
       };
       
       // Immediately save to localStorage for instant persistence
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newProgress));
+      if (user?.id) {
+        const storageKey = user.id ? `${STORAGE_KEY_PREFIX}_${user.id}` : STORAGE_KEY_PREFIX;
+        localStorage.setItem(storageKey, JSON.stringify(newProgress));
+      }
       console.log('Progress saved:', newProgress);
       
       return newProgress;
