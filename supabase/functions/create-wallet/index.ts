@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -63,42 +62,85 @@ serve(async (req) => {
       throw new Error('Sequence API key not configured');
     }
 
-    // Try to create wallet with Sequence
-    console.log('Calling Sequence API to create/connect wallet for:', profile.email);
-    
-    const walletResponse = await fetch('https://api.sequence.app/rpc/Wallet/Create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sequenceApiKey}`,
-      },
-      body: JSON.stringify({
-        network: 'polygon',
-        email: profile.email
-      }),
-    });
-
-    const responseText = await walletResponse.text();
-    console.log('Sequence API response:', walletResponse.status, responseText);
-
     let walletAddress: string;
     
-    if (walletResponse.ok) {
-      // Successfully created new wallet
-      const walletData = JSON.parse(responseText);
-      walletAddress = walletData.address;
-      console.log('New wallet created:', walletAddress);
-    } else if (responseText.includes('already exists') || responseText.includes('duplicate')) {
-      // Wallet already exists - need to get the existing wallet address
-      // This is where we'd typically make another API call to get the existing wallet
-      // For now, we'll extract from error or make a separate call
-      console.log('Wallet already exists for this email, connecting to existing wallet');
-      
-      // Try to get existing wallet info (this might need a different API endpoint)
-      // For now, we'll use a placeholder approach
-      throw new Error('Email already has a Sequence wallet. Please contact support to link existing wallet.');
-    } else {
-      throw new Error(`Sequence API error: ${responseText}`);
+    // First, try to get existing wallet using Sequence API
+    console.log('Checking for existing wallet with Sequence API for:', profile.email);
+    
+    try {
+      const getWalletResponse = await fetch('https://api.sequence.app/rpc/Wallet/GetWallet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sequenceApiKey}`,
+        },
+        body: JSON.stringify({
+          network: 'polygon',
+          email: profile.email
+        }),
+      });
+
+      const getWalletText = await getWalletResponse.text();
+      console.log('Get wallet response:', getWalletResponse.status, getWalletText);
+
+      if (getWalletResponse.ok) {
+        // Existing wallet found
+        const existingWalletData = JSON.parse(getWalletText);
+        walletAddress = existingWalletData.address;
+        console.log('Found existing wallet:', walletAddress);
+      } else {
+        // No existing wallet, create a new one
+        console.log('No existing wallet found, creating new one');
+        
+        const createWalletResponse = await fetch('https://api.sequence.app/rpc/Wallet/Create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sequenceApiKey}`,
+          },
+          body: JSON.stringify({
+            network: 'polygon',
+            email: profile.email
+          }),
+        });
+
+        const createWalletText = await createWalletResponse.text();
+        console.log('Create wallet response:', createWalletResponse.status, createWalletText);
+
+        if (createWalletResponse.ok) {
+          const walletData = JSON.parse(createWalletText);
+          walletAddress = walletData.address;
+          console.log('New wallet created:', walletAddress);
+        } else if (createWalletText.includes('already exists') || createWalletText.includes('duplicate')) {
+          // Wallet was created between our get and create calls, try to get it again
+          console.log('Wallet was created concurrently, attempting to retrieve it');
+          
+          const retryResponse = await fetch('https://api.sequence.app/rpc/Wallet/GetWallet', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${sequenceApiKey}`,
+            },
+            body: JSON.stringify({
+              network: 'polygon',
+              email: profile.email
+            }),
+          });
+
+          if (retryResponse.ok) {
+            const retryData = JSON.parse(await retryResponse.text());
+            walletAddress = retryData.address;
+            console.log('Retrieved wallet after concurrent creation:', walletAddress);
+          } else {
+            throw new Error('Failed to retrieve wallet after concurrent creation');
+          }
+        } else {
+          throw new Error(`Failed to create wallet: ${createWalletText}`);
+        }
+      }
+    } catch (apiError) {
+      console.error('Sequence API error:', apiError);
+      throw new Error(`Sequence API error: ${apiError.message}`);
     }
 
     // Save or update wallet in database

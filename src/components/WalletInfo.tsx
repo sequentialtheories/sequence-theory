@@ -14,7 +14,7 @@ interface UserWallet {
   wallet_address: string;
   network: string;
   created_at: string;
-  wallet_config: any; // Changed to any to handle the Json type from Supabase
+  wallet_config: any;
 }
 
 export const WalletInfo = () => {
@@ -61,18 +61,22 @@ export const WalletInfo = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Wallet created successfully!",
-      });
-
-      // Refresh wallet info
-      await fetchWallet();
+      if (data.success) {
+        toast({
+          title: "Success",
+          description: data.message || "Wallet connected successfully!",
+        });
+        
+        // Refresh wallet info
+        await fetchWallet();
+      } else {
+        throw new Error(data.error || 'Failed to connect wallet');
+      }
     } catch (error) {
       console.error('Error creating wallet:', error);
       toast({
         title: "Error",
-        description: `Failed to create wallet: ${error.message}`,
+        description: `Failed to connect wallet: ${error.message}`,
         variant: "destructive",
       });
     } finally {
@@ -120,10 +124,10 @@ export const WalletInfo = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            Create Your Wallet
+            Connect Your Wallet
           </CardTitle>
           <CardDescription>
-            Get started with your secure Sequence wallet
+            Connect to your secure Sequence wallet
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -131,12 +135,12 @@ export const WalletInfo = () => {
             {creating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Creating Wallet...
+                Connecting Wallet...
               </>
             ) : (
               <>
                 <Wallet className="h-4 w-4 mr-2" />
-                Create Wallet
+                Connect Wallet
               </>
             )}
           </Button>
@@ -145,6 +149,43 @@ export const WalletInfo = () => {
     );
   }
 
+  // Check if wallet is still pending
+  const isPending = wallet.wallet_address.startsWith('pending_');
+  
+  if (isPending) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Wallet Connection
+          </CardTitle>
+          <CardDescription>
+            There seems to be an issue with your wallet connection
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2 text-amber-600">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm">Wallet connection incomplete</span>
+          </div>
+          <Button onClick={createWallet} disabled={creating} className="w-full">
+            {creating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Reconnecting...
+              </>
+            ) : (
+              <>
+                <Wallet className="h-4 w-4 mr-2" />
+                Reconnect Wallet
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Wallet is ready
   return (
@@ -155,7 +196,7 @@ export const WalletInfo = () => {
           Your Sequence Wallet
         </CardTitle>
         <CardDescription>
-          Created on {new Date(wallet.created_at).toLocaleDateString()}
+          Connected on {new Date(wallet.created_at).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -189,7 +230,7 @@ export const WalletInfo = () => {
           </div>
           <div className="flex items-center gap-1 mt-2">
             <CheckCircle className="h-3 w-3 text-green-600" />
-            <span className="text-xs text-green-600">Wallet ready</span>
+            <span className="text-xs text-green-600">Wallet connected</span>
           </div>
         </div>
 
