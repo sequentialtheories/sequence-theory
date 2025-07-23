@@ -80,38 +80,15 @@ export const WalletInfo = () => {
   }
 
   if (!wallet) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5" />
-            Your Wallet
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4">
-            <div className="flex items-center justify-center gap-2 text-orange-600 mb-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Creating your Sequence wallet...</span>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              This usually takes a few moments. Your wallet will appear automatically.
-            </p>
-            <Button 
-              onClick={() => window.location.reload()} 
-              variant="outline"
-              size="sm"
-            >
-              Check Status
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null; // Don't show anything if no wallet exists yet
   }
 
-  // Check if wallet is still pending
+  // Check if wallet is still pending - don't show anything until ready
   const isPending = wallet.wallet_address.startsWith('pending_');
+  
+  if (isPending) {
+    return null; // Hide completely while wallet is being created
+  }
 
   return (
     <Card className="w-full max-w-md">
@@ -120,11 +97,9 @@ export const WalletInfo = () => {
           <Wallet className="h-5 w-5" />
           Your Sequence Wallet
         </CardTitle>
-        {!isPending && (
-          <CardDescription>
-            Created on {new Date(wallet.created_at).toLocaleDateString()}
-          </CardDescription>
-        )}
+        <CardDescription>
+          Created on {new Date(wallet.created_at).toLocaleDateString()}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
@@ -136,49 +111,30 @@ export const WalletInfo = () => {
           </div>
         </div>
         
-        {isPending ? (
-          <div className="text-center py-4">
-            <div className="flex items-center justify-center gap-2 text-orange-600 mb-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Creating your Sequence wallet...</span>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              Your wallet is being processed. This usually takes a few moments.
-            </p>
-            <Button 
-              onClick={() => window.location.reload()} 
+        <div>
+          <Label className="text-sm font-medium text-muted-foreground">Wallet Address</Label>
+          <div className="mt-1 flex items-center gap-2">
+            <code className="flex-1 p-2 bg-muted rounded text-sm font-mono break-all">
+              {wallet.wallet_address}
+            </code>
+            <Button
               variant="outline"
               size="sm"
+              onClick={copyAddress}
+              className="shrink-0"
             >
-              Check Status
+              {copied ? (
+                <CheckCircle className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </Button>
           </div>
-        ) : (
-          <div>
-            <Label className="text-sm font-medium text-muted-foreground">Wallet Address</Label>
-            <div className="mt-1 flex items-center gap-2">
-              <code className="flex-1 p-2 bg-muted rounded text-sm font-mono break-all">
-                {wallet.wallet_address}
-              </code>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={copyAddress}
-                className="shrink-0"
-              >
-                {copied ? (
-                  <CheckCircle className="h-4 w-4" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-            <div className="flex items-center gap-1 mt-2">
-              <CheckCircle className="h-3 w-3 text-green-600" />
-              <span className="text-xs text-green-600">Wallet ready</span>
-            </div>
+          <div className="flex items-center gap-1 mt-2">
+            <CheckCircle className="h-3 w-3 text-green-600" />
+            <span className="text-xs text-green-600">Wallet ready</span>
           </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );
