@@ -36,15 +36,15 @@ export const WalletInfo = () => {
       const { data, error } = await supabase
         .from('user_wallets')
         .select('*')
-        .eq('user_id', user?.id)
-        .maybeSingle();
+        .eq('user_id', user?.id);
 
       if (error) {
         console.error('Error fetching wallet:', error);
         return;
       }
 
-      setWallet(data);
+      // Set the first wallet if any exist, otherwise null
+      setWallet(data && data.length > 0 ? data[0] : null);
     } catch (error) {
       console.error('Error:', error);
     } finally {
