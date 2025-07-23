@@ -55,10 +55,12 @@ export const WalletInfo = () => {
   const createWallet = async () => {
     setCreating(true);
     try {
+      console.log('Creating wallet for user:', user?.id);
       const { data, error } = await supabase.functions.invoke('create-wallet', {
         body: { user_id: user?.id },
       });
 
+      console.log('Create wallet response:', { data, error });
       if (error) throw error;
 
       if (data.success) {
