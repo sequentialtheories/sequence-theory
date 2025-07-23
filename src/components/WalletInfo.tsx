@@ -145,46 +145,6 @@ export const WalletInfo = () => {
     );
   }
 
-  // Wallet is pending
-  const isPending = wallet.wallet_address.startsWith('pending_');
-  
-  if (isPending) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5" />
-            Wallet Setup
-          </CardTitle>
-          <CardDescription>
-            Your wallet is being created...
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-            <span className="text-sm">Creating your secure wallet</span>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            This may take a few moments. Your wallet will be ready soon!
-          </div>
-          <Button onClick={createWallet} disabled={creating} variant="outline" className="w-full">
-            {creating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Retrying...
-              </>
-            ) : (
-              <>
-                <AlertCircle className="h-4 w-4 mr-2" />
-                Retry Creation
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
 
   // Wallet is ready
   return (
