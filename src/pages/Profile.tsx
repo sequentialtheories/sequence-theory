@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, User, Mail, Wallet, Eye, EyeOff, Copy, Shield } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ArrowLeft, Save, User, Mail, Wallet, Eye, EyeOff, Copy, Shield, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -115,6 +116,44 @@ const Profile = () => {
         variant: "destructive",
       });
     }
+  };
+
+  // Delete account mutation
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error('No user ID');
+      
+      // Call delete-account edge function
+      const { data, error } = await supabase.functions.invoke('delete-account', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+      
+      if (error) throw error;
+      if (!data.success) throw new Error(data.error || 'Failed to delete account');
+      
+      // Sign out after successful deletion
+      await supabase.auth.signOut();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Account deleted",
+        description: "Your account has been permanently deleted.",
+      });
+      navigate('/');
+    },
+    onError: (error) => {
+      toast({
+        title: "Error deleting account",
+        description: "There was an error deleting your account. Please try again or contact support.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate();
   };
 
   if (!user) {
@@ -305,6 +344,67 @@ const Profile = () => {
                   </p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Delete Account */}
+          <Card className="border-red-200">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-red-600">
+                <Trash2 className="h-5 w-5" />
+                <span>Delete Account</span>
+              </CardTitle>
+              <CardDescription>
+                Permanently delete your account and all associated data
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-800">
+                    <strong>Warning:</strong> This action cannot be undone. This will permanently delete your account, 
+                    profile information, wallet data, and learning progress. You will not be able to recover this data.
+                  </p>
+                </div>
+                
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="destructive" 
+                      className="w-fit"
+                      disabled={deleteAccountMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {deleteAccountMutation.isPending ? 'Deleting...' : 'Delete Account'}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your account
+                        and remove all your data from our servers including:
+                        <ul className="mt-2 ml-4 list-disc">
+                          <li>Your profile information</li>
+                          <li>Your wallet and blockchain data</li>
+                          <li>Your learning progress</li>
+                          <li>All associated account data</li>
+                        </ul>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteAccount}
+                        className="bg-red-600 hover:bg-red-700"
+                        disabled={deleteAccountMutation.isPending}
+                      >
+                        {deleteAccountMutation.isPending ? 'Deleting...' : 'Yes, delete my account'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </CardContent>
           </Card>
         </div>
