@@ -68,63 +68,21 @@ serve(async (req) => {
       );
     }
 
-    const waasConfigKey = Deno.env.get('SEQUENCE_WAAS_CONFIG_KEY');
-    if (!waasConfigKey) {
-      throw new Error('Sequence WaaS config key not configured');
-    }
+    // For now, let's just create a deterministic wallet address based on email
+    // Since the Sequence WaaS SDK should be used on the frontend, not backend
+    // This is a placeholder until we implement the frontend SDK approach
+    const emailHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(userEmail));
+    const hashArray = Array.from(new Uint8Array(emailHash));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const walletAddress = '0x' + hashHex.substring(0, 40);
 
-    let walletAddress: string;
-    
-    console.log('Using WaaS approach for user:', userEmail);
-    
-    try {
-      // Using the WaaS approach instead of direct API calls
-      const waasResponse = await fetch('https://waas.sequence.app/rpc/WaaS/RegisterSession', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Access-Key': waasConfigKey,
-        },
-        body: JSON.stringify({
-          email: userEmail,
-          idToken: '', // For embedded wallets, this can be empty initially
-        }),
-      });
-
-      const waasText = await waasResponse.text();
-      console.log('WaaS response:', waasResponse.status, waasText.substring(0, 200));
-
-      if (waasResponse.ok) {
-        try {
-          const waasData = JSON.parse(waasText);
-          if (waasData.wallet && waasData.wallet.address) {
-            walletAddress = waasData.wallet.address;
-            console.log('WaaS wallet created/found:', walletAddress);
-          } else {
-            throw new Error('No wallet address in WaaS response');
-          }
-        } catch (parseError) {
-          console.error('Failed to parse WaaS response:', parseError);
-          throw new Error('Invalid response from Sequence WaaS');
-        }
-      } else {
-        throw new Error(`WaaS request failed: ${waasText}`);
-      }
-    } catch (waasError) {
-      console.error('Sequence WaaS error:', waasError);
-      throw new Error(`Sequence WaaS error: ${waasError.message}`);
-    }
-
-    // Validate wallet address
-    if (!walletAddress || walletAddress.length < 10) {
-      throw new Error('Invalid wallet address received from Sequence WaaS');
-    }
+    console.log('Generated placeholder wallet address for:', userEmail);
 
     // Save or update wallet in database
     const walletConfig = {
       email: userEmail,
       network: 'polygon',
-      waas_session: true,
+      placeholder: true, // Mark as placeholder until real wallet is connected
       created_at: new Date().toISOString()
     };
 
@@ -164,13 +122,14 @@ serve(async (req) => {
       console.log('Created new wallet record');
     }
 
-    console.log('Wallet successfully connected for user:', user_id, 'Address:', walletAddress);
+    console.log('Placeholder wallet created for user:', user_id, 'Address:', walletAddress);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         wallet_address: walletAddress,
-        message: 'Wallet connected successfully via WaaS'
+        message: 'Placeholder wallet created - please connect via frontend',
+        placeholder: true
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
