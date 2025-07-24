@@ -77,12 +77,10 @@ export default function Auth() {
         navigate('/');
       } else {
         // For signup, include sanitized name in metadata
-        const redirectUrl = `${window.location.origin}/`;
         const { error } = await supabase.auth.signUp({
           email: sanitizedEmail,
           password,
           options: {
-            emailRedirectTo: redirectUrl,
             data: {
               name: sanitizedName
             }
@@ -91,8 +89,9 @@ export default function Auth() {
         if (error) throw error;
         toast({
           title: "Account created!",
-          description: "Please check your email to verify your account."
+          description: "Welcome to Sequence Theory! You can now access all features."
         });
+        navigate('/');
       }
     } catch (error: any) {
       toast({
