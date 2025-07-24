@@ -1,28 +1,97 @@
-import { useState } from 'react';
-import { useConnect, useAccount, useDisconnect } from 'wagmi';
-import { useAddFundsModal } from '@0xsequence/react-checkout';
+import { useEffect, useState } from 'react';
+import { useAuth } from './AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Wallet, Copy, CheckCircle, Plus, LogOut } from 'lucide-react';
+import { Wallet, Copy, CheckCircle, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
+interface UserWallet {
+  id: string;
+  wallet_address: string;
+  network: string;
+  created_at: string;
+  wallet_config: any;
+}
+
 export const WalletInfo = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
+  const [wallet, setWallet] = useState<UserWallet | null>(null);
+  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  
-  // Wagmi hooks for wallet connection
-  const { connect, connectors } = useConnect();
-  const { address, isConnected, chain } = useAccount();
-  const { disconnect } = useDisconnect();
-  
-  // Sequence checkout for adding funds
-  const { triggerAddFunds } = useAddFundsModal();
+  const [retrying, setRetrying] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchWallet();
+    }
+  }, [user]);
+
+  const fetchWallet = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching wallet:', error);
+        return;
+      }
+
+      setWallet(data);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const retryWalletCreation = async () => {
+    if (!user?.id) return;
+    
+    setRetrying(true);
+    try {
+      console.log('Manually retrying wallet creation for user:', user.id);
+      const { data, error } = await supabase.functions.invoke('create-wallet-waas', {
+        body: { user_id: user.id },
+      });
+
+      console.log('Retry wallet response:', { data, error });
+      if (error) throw error;
+
+      if (data.success) {
+        toast({
+          title: "Success",
+          description: data.message || "Wallet connected successfully!",
+        });
+        
+        // Refresh wallet info
+        await fetchWallet();
+      } else {
+        throw new Error(data.error || 'Failed to connect wallet');
+      }
+    } catch (error) {
+      console.error('Error retrying wallet creation:', error);
+      toast({
+        title: "Error",
+        description: `Failed to connect wallet: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   const copyAddress = async () => {
-    if (address) {
-      await navigator.clipboard.writeText(address);
+    if (wallet?.wallet_address) {
+      await navigator.clipboard.writeText(wallet.wallet_address);
       setCopied(true);
       toast({
         title: "Address copied!",
@@ -32,48 +101,105 @@ export const WalletInfo = () => {
     }
   };
 
-  const handleConnect = () => {
-    const sequenceConnector = connectors.find(c => c.name.includes('Sequence'));
-    if (sequenceConnector) {
-      connect({ connector: sequenceConnector });
-    }
-  };
+  if (!user) return null;
 
-  const handleAddFunds = () => {
-    if (address) {
-      triggerAddFunds({
-        walletAddress: address,
-      });
-    }
-  };
-
-  // Not connected state
-  if (!isConnected) {
+  if (loading) {
     return (
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            Connect Your Wallet
+            Your Wallet
           </CardTitle>
-          <CardDescription>
-            Connect your Sequence wallet to get started
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Button onClick={handleConnect} className="w-full">
-            <Wallet className="h-4 w-4 mr-2" />
-            Connect Sequence Wallet
-          </Button>
-          <p className="text-sm text-muted-foreground text-center">
-            New to crypto? Don't worry - Sequence will create a wallet for you automatically!
-          </p>
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="text-muted-foreground">Loading wallet information...</span>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
-  // Connected state
+  // No wallet exists yet
+  if (!wallet) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Your Wallet
+          </CardTitle>
+          <CardDescription>
+            Your wallet is being set up automatically
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2 text-amber-600">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm">Wallet setup in progress...</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            If this is taking too long, you can try refreshing or click retry below.
+          </p>
+          <Button onClick={retryWalletCreation} disabled={retrying} variant="outline" className="w-full">
+            {retrying ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Setting up wallet...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Retry Wallet Setup
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Check if wallet is still pending
+  const isPending = wallet.wallet_address.startsWith('pending_');
+  
+  if (isPending) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Wallet Setup
+          </CardTitle>
+          <CardDescription>
+            There seems to be an issue with your wallet setup
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2 text-amber-600">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm">Wallet setup incomplete</span>
+          </div>
+          <Button onClick={retryWalletCreation} disabled={retrying} className="w-full">
+            {retrying ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Completing setup...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Complete Setup
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Wallet is ready
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -82,7 +208,7 @@ export const WalletInfo = () => {
           Your Sequence Wallet
         </CardTitle>
         <CardDescription>
-          Connected and ready to use
+          Connected on {new Date(wallet.created_at).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -90,7 +216,7 @@ export const WalletInfo = () => {
           <Label className="text-sm font-medium text-muted-foreground">Network</Label>
           <div className="mt-1">
             <Badge variant="outline" className="capitalize">
-              {chain?.name || 'Unknown'}
+              {wallet.network}
             </Badge>
           </div>
         </div>
@@ -99,7 +225,7 @@ export const WalletInfo = () => {
           <Label className="text-sm font-medium text-muted-foreground">Wallet Address</Label>
           <div className="mt-1 flex items-center gap-2">
             <code className="flex-1 p-2 bg-muted rounded text-sm font-mono break-all">
-              {address}
+              {wallet.wallet_address}
             </code>
             <Button
               variant="outline"
@@ -116,20 +242,18 @@ export const WalletInfo = () => {
           </div>
           <div className="flex items-center gap-1 mt-2">
             <CheckCircle className="h-3 w-3 text-green-600" />
-            <span className="text-xs text-green-600">Wallet connected successfully</span>
+            <span className="text-xs text-green-600">Wallet connected automatically</span>
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <Button onClick={handleAddFunds} variant="outline" className="flex-1">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Funds
-          </Button>
-          <Button onClick={() => disconnect()} variant="outline" className="flex-1">
-            <LogOut className="h-4 w-4 mr-2" />
-            Disconnect
-          </Button>
-        </div>
+        {wallet.wallet_config?.email && (
+          <div>
+            <Label className="text-sm font-medium text-muted-foreground">Linked Email</Label>
+            <div className="mt-1 text-sm text-muted-foreground">
+              {wallet.wallet_config.email}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

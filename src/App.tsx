@@ -3,12 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider } from 'wagmi';
-import { SequenceConnectProvider } from '@0xsequence/connect';
-import { SequenceCheckoutProvider } from '@0xsequence/react-checkout';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/AuthProvider";
-import { config, sequenceConfig } from "./lib/wagmi";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import Auth from "./pages/Auth";
@@ -53,16 +49,13 @@ import InteractiveLearning from "./pages/InteractiveLearning";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <WagmiProvider config={config}>
-    <QueryClientProvider client={queryClient}>
-      <SequenceConnectProvider config={sequenceConfig}>
-        <SequenceCheckoutProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <SecurityHeaders />
-              <AuthProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <SecurityHeaders />
+        <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
@@ -124,10 +117,7 @@ const App = () => (
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
-        </SequenceCheckoutProvider>
-      </SequenceConnectProvider>
-    </QueryClientProvider>
-  </WagmiProvider>
+  </QueryClientProvider>
 );
 
 export default App;

@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Create or fix wallet
       console.log('Creating/fixing wallet for user:', userId);
-      const { data, error } = await supabase.functions.invoke('create-wallet', {
+      const { data, error } = await supabase.functions.invoke('create-wallet-waas', {
         body: { user_id: userId },
       });
 
