@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Wallet, Copy, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { Wallet, Copy, CheckCircle, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,7 +23,7 @@ export const WalletInfo = () => {
   const [wallet, setWallet] = useState<UserWallet | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [creating, setCreating] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -32,19 +32,21 @@ export const WalletInfo = () => {
   }, [user]);
 
   const fetchWallet = async () => {
+    if (!user?.id) return;
+    
     try {
       const { data, error } = await supabase
         .from('user_wallets')
         .select('*')
-        .eq('user_id', user?.id);
+        .eq('user_id', user.id)
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching wallet:', error);
         return;
       }
 
-      // Set the first wallet if any exist, otherwise null
-      setWallet(data && data.length > 0 ? data[0] : null);
+      setWallet(data);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -52,15 +54,17 @@ export const WalletInfo = () => {
     }
   };
 
-  const createWallet = async () => {
-    setCreating(true);
+  const retryWalletCreation = async () => {
+    if (!user?.id) return;
+    
+    setRetrying(true);
     try {
-      console.log('Creating wallet for user:', user?.id);
+      console.log('Manually retrying wallet creation for user:', user.id);
       const { data, error } = await supabase.functions.invoke('create-wallet', {
-        body: { user_id: user?.id },
+        body: { user_id: user.id },
       });
 
-      console.log('Create wallet response:', { data, error });
+      console.log('Retry wallet response:', { data, error });
       if (error) throw error;
 
       if (data.success) {
@@ -75,14 +79,14 @@ export const WalletInfo = () => {
         throw new Error(data.error || 'Failed to connect wallet');
       }
     } catch (error) {
-      console.error('Error creating wallet:', error);
+      console.error('Error retrying wallet creation:', error);
       toast({
         title: "Error",
         description: `Failed to connect wallet: ${error.message}`,
         variant: "destructive",
       });
     } finally {
-      setCreating(false);
+      setRetrying(false);
     }
   };
 
@@ -126,23 +130,30 @@ export const WalletInfo = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            Connect Your Wallet
+            Your Wallet
           </CardTitle>
           <CardDescription>
-            Connect to your secure Sequence wallet
+            Your wallet is being set up automatically
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button onClick={createWallet} disabled={creating} className="w-full">
-            {creating ? (
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2 text-amber-600">
+            <AlertCircle className="h-4 w-4" />
+            <span className="text-sm">Wallet setup in progress...</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            If this is taking too long, you can try refreshing or click retry below.
+          </p>
+          <Button onClick={retryWalletCreation} disabled={retrying} variant="outline" className="w-full">
+            {retrying ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Connecting Wallet...
+                Setting up wallet...
               </>
             ) : (
               <>
-                <Wallet className="h-4 w-4 mr-2" />
-                Connect Wallet
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Retry Wallet Setup
               </>
             )}
           </Button>
@@ -160,27 +171,27 @@ export const WalletInfo = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5" />
-            Wallet Connection
+            Wallet Setup
           </CardTitle>
           <CardDescription>
-            There seems to be an issue with your wallet connection
+            There seems to be an issue with your wallet setup
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-2 text-amber-600">
             <AlertCircle className="h-4 w-4" />
-            <span className="text-sm">Wallet connection incomplete</span>
+            <span className="text-sm">Wallet setup incomplete</span>
           </div>
-          <Button onClick={createWallet} disabled={creating} className="w-full">
-            {creating ? (
+          <Button onClick={retryWalletCreation} disabled={retrying} className="w-full">
+            {retrying ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Reconnecting...
+                Completing setup...
               </>
             ) : (
               <>
-                <Wallet className="h-4 w-4 mr-2" />
-                Reconnect Wallet
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Complete Setup
               </>
             )}
           </Button>
@@ -232,7 +243,7 @@ export const WalletInfo = () => {
           </div>
           <div className="flex items-center gap-1 mt-2">
             <CheckCircle className="h-3 w-3 text-green-600" />
-            <span className="text-xs text-green-600">Wallet connected</span>
+            <span className="text-xs text-green-600">Wallet connected automatically</span>
           </div>
         </div>
 
