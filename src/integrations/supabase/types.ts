@@ -76,7 +76,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_sequence_wallet: {
+        Args: { user_email: string; user_id: string }
+        Returns: {
+          wallet_address: string
+          success: boolean
+          error_message: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
