@@ -3,10 +3,7 @@ import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
-interface WalletConfig {
-  private_key: string;
-  public_key?: string;
-}
+// Private keys are no longer stored in wallet_config for security
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User, Wallet, LogOut, Eye, EyeOff, Copy } from 'lucide-react';
+import { User, Wallet, LogOut, Copy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +29,6 @@ export const ProfileDropdown = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showWalletDialog, setShowWalletDialog] = useState(false);
-  const [showPrivateKey, setShowPrivateKey] = useState(false);
 
   // Fetch user profile
   const { data: profile } = useQuery({
@@ -188,40 +184,14 @@ export const ProfileDropdown = () => {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-red-600">Private Key</label>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setShowPrivateKey(!showPrivateKey)}
-                  >
-                    {showPrivateKey ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="text-sm font-medium text-blue-800">Private Key Security</span>
+                  </div>
+                  <p className="text-xs text-blue-700">
+                    Your private key is securely stored server-side and not accessible through this interface for enhanced security.
+                  </p>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <code className="flex-1 p-2 bg-red-50 border border-red-200 rounded text-xs break-all">
-                    {showPrivateKey 
-                      ? (wallet.wallet_config as unknown as WalletConfig).private_key 
-                      : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'
-                    }
-                  </code>
-                  {showPrivateKey && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => copyToClipboard((wallet.wallet_config as unknown as WalletConfig).private_key, 'Private key')}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-                <p className="text-xs text-red-600">
-                  ⚠️ Never share your private key with anyone. Keep it secure.
-                </p>
               </div>
             </div>
           ) : (

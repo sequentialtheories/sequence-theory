@@ -6,8 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Loader2 } from 'lucide-react';
 
-const ADMIN_EMAILS = ['deathrider1215@gmail.com']; // Add admin emails here
-
 export const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -23,15 +21,14 @@ export const Admin = () => {
 
   const checkAdminStatus = async () => {
     try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('user_id', user?.id)
-        .single();
+      // Use the secure has_role function instead of hardcoded emails
+      const { data, error } = await supabase.rpc('has_role', {
+        _user_id: user?.id,
+        _role: 'admin'
+      });
 
-      if (profile && ADMIN_EMAILS.includes(profile.email)) {
-        setIsAdmin(true);
-      }
+      if (error) throw error;
+      setIsAdmin(data === true);
     } catch (error) {
       console.error('Error checking admin status:', error);
     } finally {

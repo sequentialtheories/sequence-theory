@@ -8,15 +8,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Save, User, Mail, Wallet, Eye, EyeOff, Copy, Shield, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface WalletConfig {
-  private_key: string;
-  public_key?: string;
-}
+// Private keys are no longer stored in wallet_config for security
 
 const Profile = () => {
   const { user } = useAuth();
@@ -24,7 +21,6 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const [showPrivateKey, setShowPrivateKey] = useState(false);
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -293,46 +289,16 @@ const Profile = () => {
                   <Separator />
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-red-600 flex items-center space-x-2">
-                        <Shield className="h-4 w-4" />
-                        <span>Private Key</span>
-                      </Label>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setShowPrivateKey(!showPrivateKey)}
-                      >
-                        {showPrivateKey ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Shield className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Private Key Security</span>
+                      </div>
+                      <p className="text-xs text-blue-700">
+                        Your private key is now securely stored server-side and is not accessible through the web interface for enhanced security. 
+                        Contact support if you need assistance with wallet operations.
+                      </p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        value={showPrivateKey 
-                          ? (wallet.wallet_config as unknown as WalletConfig).private_key 
-                          : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'
-                        }
-                        readOnly
-                        className="bg-red-50 border-red-200 font-mono text-sm"
-                      />
-                      {showPrivateKey && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => copyToClipboard((wallet.wallet_config as unknown as WalletConfig).private_key, 'Private key')}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                    <p className="text-xs text-red-600 flex items-center space-x-1">
-                      <Shield className="h-3 w-3" />
-                      <span>Never share your private key with anyone. Keep it secure.</span>
-                    </p>
                   </div>
                 </div>
               ) : (
