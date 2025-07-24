@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { sequenceWalletService } from '@/lib/sequenceWallet';
 
 interface AuthContextType {
   user: User | null;
@@ -28,9 +29,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const ensureUserHasWallet = async (userId: string) => {
+  const ensureUserHasWallet = async (userId: string, userEmail: string) => {
     try {
-      console.log('Checking wallet for user:', userId);
+      console.log('Auto-creating wallet for user:', userId, userEmail);
       
       // Check if user already has a wallet
       const { data: existingWallet, error: walletError } = await supabase
@@ -44,24 +45,60 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      // If wallet exists and is not pending, we're good
-      if (existingWallet && !existingWallet.wallet_address.startsWith('pending_')) {
+      // If wallet exists and is not a placeholder, we're good
+      if (existingWallet && existingWallet.wallet_address && !existingWallet.wallet_address.startsWith('0x0000')) {
         console.log('User already has a valid wallet:', existingWallet.wallet_address);
         return;
       }
 
-      // Create or fix wallet
-      console.log('Creating/fixing wallet for user:', userId);
-      const { data, error } = await supabase.functions.invoke('create-wallet-waas', {
-        body: { user_id: userId },
-      });
+      // Create wallet using Sequence service
+      const walletResult = await sequenceWalletService.createWalletForUser(userEmail, userId);
+      
+      if (!walletResult.success) {
+        console.error('Failed to create wallet:', walletResult.error);
+        return;
+      }
 
-      if (error) {
-        console.error('Error creating wallet:', error);
-      } else if (data?.success) {
-        console.log('Wallet created/connected successfully:', data.wallet_address);
+      // Save wallet to database
+      const walletConfig = {
+        email: userEmail,
+        network: 'polygon',
+        auto_created: true,
+        created_at: new Date().toISOString()
+      };
+
+      if (existingWallet) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from('user_wallets')
+          .update({
+            wallet_address: walletResult.address,
+            wallet_config: walletConfig,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', userId);
+
+        if (updateError) {
+          console.error('Failed to update wallet:', updateError);
+        } else {
+          console.log('Wallet updated successfully for user:', userId);
+        }
       } else {
-        console.error('Wallet creation failed:', data?.error);
+        // Create new record
+        const { error: insertError } = await supabase
+          .from('user_wallets')
+          .insert({
+            user_id: userId,
+            wallet_address: walletResult.address,
+            wallet_config: walletConfig,
+            network: 'polygon'
+          });
+
+        if (insertError) {
+          console.error('Failed to insert wallet:', insertError);
+        } else {
+          console.log('Wallet created successfully for user:', userId);
+        }
       }
     } catch (error) {
       console.error('Error in ensureUserHasWallet:', error);
@@ -78,11 +115,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading(false);
 
         // Automatically ensure wallet exists for authenticated users
-        if (session?.user?.id && event === 'SIGNED_IN') {
+        if (session?.user?.id && session?.user?.email && event === 'SIGNED_IN') {
           // Use setTimeout to avoid blocking the auth state change
           setTimeout(() => {
-            ensureUserHasWallet(session.user.id);
-          }, 1000);
+            ensureUserHasWallet(session.user.id, session.user.email!);
+          }, 500);
         }
       }
     );
@@ -95,10 +132,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
 
       // Ensure existing authenticated users have wallets
-      if (session?.user?.id) {
+      if (session?.user?.id && session?.user?.email) {
         setTimeout(() => {
-          ensureUserHasWallet(session.user.id);
-        }, 1000);
+          ensureUserHasWallet(session.user.id, session.user.email!);
+        }, 500);
       }
     });
 
