@@ -1,43 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
-
 const VaultClubMain = () => {
   const scrollToSignup = () => {
-    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('signup')?.scrollIntoView({
+      behavior: 'smooth'
+    });
   };
-
-  const features = [
-    {
-      icon: Shield,
-      title: "Risk Management First",
-      description: "Capital protection through proven institutional techniques"
-    },
-    {
-      icon: TrendingUp,
-      title: "Steady Growth Focus", 
-      description: "Consistent returns over volatile speculation"
-    },
-    {
-      icon: Target,
-      title: "Automated Strategies",
-      description: "Smart contracts handle investment decisions"
-    },
-    {
-      icon: Users,
-      title: "Group Contracts",
-      description: "Small groups with shared commitment levels"
-    }
-  ];
-
-  const benefits = [
-    "Structured investment contracts for steady growth",
-    "Professional DeFi strategies for individuals",
-    "Automated diversification across established protocols",
-    "Built-in risk management and capital protection"
-  ];
-
-  return (
-    <section className="py-20 bg-gradient-secondary relative overflow-hidden">
+  const features = [{
+    icon: Shield,
+    title: "Risk Management First",
+    description: "Capital protection through proven institutional techniques"
+  }, {
+    icon: TrendingUp,
+    title: "Steady Growth Focus",
+    description: "Consistent returns over volatile speculation"
+  }, {
+    icon: Target,
+    title: "Automated Strategies",
+    description: "Smart contracts handle investment decisions"
+  }, {
+    icon: Users,
+    title: "Group Contracts",
+    description: "Small groups with shared commitment levels"
+  }];
+  const benefits = ["Structured investment contracts for steady growth", "Professional DeFi strategies for individuals", "Automated diversification across established protocols", "Built-in risk management and capital protection"];
+  return <section className="py-20 bg-gradient-secondary relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
@@ -51,10 +38,8 @@ const VaultClubMain = () => {
               The Vault Club
             </span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-slide-up [animation-delay:0.2s]">
-            DeFi investment contracts bringing hedge fund strategies 
-            to individual investors through automated smart contracts.
-          </p>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 animate-slide-up [animation-delay:0.2s]">DeFi investment contracts:
+ Bringing hedge fund strategies to investors through automated smart contracts.</p>
         </div>
 
         {/* How It Works */}
@@ -104,15 +89,15 @@ const VaultClubMain = () => {
         <div className="mb-16 animate-slide-up [animation-delay:0.4s]">
           <h3 className="text-2xl font-bold text-center mb-12 text-foreground">Key Features</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center group animate-slide-up" style={{ animationDelay: `${0.5 + index * 0.1}s` }}>
+            {features.map((feature, index) => <div key={index} className="text-center group animate-slide-up" style={{
+            animationDelay: `${0.5 + index * 0.1}s`
+          }}>
                 <div className="bg-gradient-primary w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-medium transition-spring group-hover:scale-110 group-hover:shadow-glow animate-glow">
                   <feature.icon className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <h4 className="text-lg font-semibold mb-3 text-foreground group-hover:text-primary transition-smooth">{feature.title}</h4>
                 <p className="text-muted-foreground group-hover:text-foreground transition-smooth">{feature.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
 
@@ -121,12 +106,12 @@ const VaultClubMain = () => {
           <h3 className="text-2xl font-bold text-center mb-8 text-foreground">What You Get</h3>
           <div className="bg-gradient-card backdrop-blur-sm border border-primary/10 rounded-xl p-8 shadow-medium transition-spring hover:shadow-strong">
             <ul className="space-y-4">
-              {benefits.map((benefit, index) => (
-                <li key={index} className="flex items-start gap-3 group animate-slide-left" style={{ animationDelay: `${0.6 + index * 0.1}s` }}>
+              {benefits.map((benefit, index) => <li key={index} className="flex items-start gap-3 group animate-slide-left" style={{
+              animationDelay: `${0.6 + index * 0.1}s`
+            }}>
                   <CheckCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0 transition-spring group-hover:scale-110" />
                   <span className="text-muted-foreground text-lg group-hover:text-foreground transition-smooth">{benefit}</span>
-                </li>
-              ))}
+                </li>)}
             </ul>
           </div>
         </div>
@@ -138,18 +123,12 @@ const VaultClubMain = () => {
             <p className="text-lg mb-6 opacity-90">
               Join The Vault Club and let automated DeFi work for you.
             </p>
-            <Button 
-              onClick={scrollToSignup}
-              size="lg" 
-              className="bg-background text-primary hover:bg-secondary px-8 py-3 rounded-full text-lg font-semibold transition-bounce hover:scale-110 shadow-medium hover:shadow-strong"
-            >
+            <Button onClick={scrollToSignup} size="lg" className="bg-background text-primary hover:bg-secondary px-8 py-3 rounded-full text-lg font-semibold transition-bounce hover:scale-110 shadow-medium hover:shadow-strong">
               Get Priority Access
             </Button>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default VaultClubMain;
