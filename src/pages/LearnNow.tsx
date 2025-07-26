@@ -182,7 +182,7 @@ const LearnNow = () => {
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute inset-0 bg-white/20 rounded-2xl blur-lg"></div>
-              <img src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" alt="Sequence Theory Logo" className="h-20 relative z-10 drop-shadow-2xl" />
+              <img src="/lovable-uploads/22e8418f-d8fd-4cd1-8b21-8654423a51a6.png" alt="ST Logo" className="h-20 relative z-10 drop-shadow-2xl" />
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent">

@@ -247,8 +247,8 @@ const Web3Quiz = () => {
           </Link>
           <div className="flex items-center gap-4">
             <img 
-              src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
-              alt="Sequence Theory Logo" 
+              src="/lovable-uploads/22e8418f-d8fd-4cd1-8b21-8654423a51a6.png" 
+              alt="ST Logo" 
               className="h-16"
             />
             <div>
