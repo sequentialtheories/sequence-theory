@@ -22,8 +22,8 @@ const Hero = () => {
           {/* Logo with glow effect */}
           <div className="mb-8">
             <img 
-              src="/lovable-uploads/22e8418f-d8fd-4cd1-8b21-8654423a51a6.png" 
-              alt="ST Logo" 
+              src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
+              alt="Sequence Theory Logo" 
               className="h-24 md:h-32 mx-auto transition-spring hover:scale-110 animate-glow cursor-pointer"
               onClick={scrollToSignup}
             />
