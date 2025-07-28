@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Wallet, Copy, CheckCircle, Loader2 } from 'lucide-react';
+import { Wallet, Copy, CheckCircle, Loader2, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -88,6 +88,10 @@ export const WalletInfo = () => {
     );
   }
 
+  // Check if wallet is pending
+  const isPending = wallet?.wallet_address?.startsWith('pending_');
+  const hasError = wallet?.wallet_config?.error;
+
   // No wallet exists yet - wallet is being created
   if (!wallet) {
     return (
@@ -109,6 +113,39 @@ export const WalletInfo = () => {
           <p className="text-sm text-muted-foreground">
             This happens automatically when you sign up. Please wait a moment.
           </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Wallet is pending
+  if (isPending) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-yellow-600" />
+            Wallet Creation Pending
+          </CardTitle>
+          <CardDescription>
+            Your wallet creation is in progress
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-yellow-600" />
+            <span className="text-sm">Wallet creation is pending for {user.email}</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Please visit your profile page to retry wallet creation if this persists.
+          </p>
+          {hasError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">
+                <strong>Error:</strong> {wallet.wallet_config.error}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     );

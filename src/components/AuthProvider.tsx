@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const ensureUserHasWallet = async (userId: string, userEmail: string) => {
     try {
-      console.log('Auto-creating wallet for user:', userId, userEmail);
+      console.log('🚀 Starting wallet check for user:', userId, userEmail);
       
       // Check if user already has a wallet
       const { data: existingWallet, error: walletError } = await supabase
@@ -41,29 +41,70 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .maybeSingle();
 
       if (walletError) {
-        console.error('Error checking existing wallet:', walletError);
+        console.error('❌ Error checking existing wallet:', walletError);
         return;
       }
 
-      // If wallet exists and is not a placeholder, we're good
-      if (existingWallet && existingWallet.wallet_address && !existingWallet.wallet_address.startsWith('0x0000')) {
-        console.log('User already has a valid wallet:', existingWallet.wallet_address);
+      // If wallet exists and is not a placeholder or pending, we're good
+      if (existingWallet && 
+          existingWallet.wallet_address && 
+          !existingWallet.wallet_address.startsWith('0x0000') && 
+          !existingWallet.wallet_address.startsWith('pending_')) {
+        console.log('✅ User already has a valid wallet:', existingWallet.wallet_address);
         return;
       }
 
+      // If wallet is pending, try to retry it
+      if (existingWallet && existingWallet.wallet_address.startsWith('pending_')) {
+        console.log('🔄 Found pending wallet, attempting retry...');
+        await sequenceWalletService.retryPendingWallets();
+        return;
+      }
+
+      console.log('📝 Creating new wallet for user...');
+      
       // Create wallet using Sequence service
       const walletResult = await sequenceWalletService.createWalletForUser(userEmail, userId);
       
       if (!walletResult.success) {
-        console.error('Failed to create wallet:', walletResult.error);
+        console.error('❌ Failed to create wallet:', walletResult.error);
+        
+        // Create a pending wallet record for manual retry
+        const pendingWalletConfig = {
+          email: userEmail,
+          status: 'pending',
+          created_at: Date.now(),
+          error: walletResult.error
+        };
+
+        if (existingWallet) {
+          await supabase
+            .from('user_wallets')
+            .update({
+              wallet_address: `pending_${userId}`,
+              wallet_config: pendingWalletConfig,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId);
+        } else {
+          await supabase
+            .from('user_wallets')
+            .insert({
+              user_id: userId,
+              wallet_address: `pending_${userId}`,
+              wallet_config: pendingWalletConfig,
+              network: 'polygon'
+            });
+        }
         return;
       }
 
-      // Save wallet to database
+      // Save successful wallet to database
       const walletConfig = {
         email: userEmail,
         network: 'polygon',
         auto_created: true,
+        status: 'active',
         created_at: new Date().toISOString()
       };
 
@@ -79,9 +120,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .eq('user_id', userId);
 
         if (updateError) {
-          console.error('Failed to update wallet:', updateError);
+          console.error('❌ Failed to update wallet:', updateError);
         } else {
-          console.log('Wallet updated successfully for user:', userId);
+          console.log('✅ Wallet updated successfully for user:', userId);
         }
       } else {
         // Create new record
@@ -95,13 +136,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           });
 
         if (insertError) {
-          console.error('Failed to insert wallet:', insertError);
+          console.error('❌ Failed to insert wallet:', insertError);
         } else {
-          console.log('Wallet created successfully for user:', userId);
+          console.log('✅ Wallet created successfully for user:', userId);
         }
       }
     } catch (error) {
-      console.error('Error in ensureUserHasWallet:', error);
+      console.error('💥 Error in ensureUserHasWallet:', error);
     }
   };
 

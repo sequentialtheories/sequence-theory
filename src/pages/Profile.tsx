@@ -12,6 +12,7 @@ import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2 } from 'lucid
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { WalletManager } from '@/components/WalletManager';
 
 // Private keys are no longer stored in wallet_config for security
 
@@ -310,6 +311,22 @@ const Profile = () => {
                   </p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Wallet Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Wallet className="h-5 w-5" />
+                <span>Wallet Management</span>
+              </CardTitle>
+              <CardDescription>
+                Monitor and manage your wallet creation status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WalletManager />
             </CardContent>
           </Card>
 
