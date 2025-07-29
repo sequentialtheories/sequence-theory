@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { SequenceWaaS } from 'https://esm.sh/@0xsequence/waas@2.3.23'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -49,69 +50,26 @@ serve(async (req) => {
 
     console.log('Creating Sequence wallet for user:', { userId, email })
 
-    // Create wallet using Sequence WaaS API
-    // First, create a session for the user
-    const sessionResponse = await fetch('https://waas.sequence.app/rpc/WaaS/CreateSession', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Access-Key': sequenceApiKey,
-      },
-      body: JSON.stringify({
-        projectId: sequenceWaasConfigKey,
-        email: email,
-        externalUserId: userId
-      })
+    // Initialize Sequence WaaS client
+    const waas = new SequenceWaaS({
+      projectAccessKey: sequenceApiKey,
+      waasConfigKey: sequenceWaasConfigKey,
+      network: 'polygon'
     })
 
-    if (!sessionResponse.ok) {
-      const errorText = await sessionResponse.text()
-      console.error('Session creation failed:', { 
-        status: sessionResponse.status, 
-        statusText: sessionResponse.statusText,
-        error: errorText
-      })
-      return new Response(
-        JSON.stringify({ 
-          error: `Failed to create session: ${sessionResponse.status} ${sessionResponse.statusText}`,
-          details: errorText
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    const sessionData = await sessionResponse.json()
-    console.log('Session created successfully:', { sessionId: sessionData.sessionId })
-
-    // Now create/get the wallet for this session
-    const walletResponse = await fetch('https://waas.sequence.app/rpc/WaaS/GetWallet', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Access-Key': sequenceApiKey,
-        'X-Session-Token': sessionData.sessionToken
-      },
-      body: JSON.stringify({})
+    // Create a session for the user
+    console.log('Creating session...')
+    const session = await waas.signIn({
+      email: email,
+      idToken: userId // Using userId as idToken for external user identification
     })
 
-    if (!walletResponse.ok) {
-      const errorText = await walletResponse.text()
-      console.error('Wallet retrieval failed:', { 
-        status: walletResponse.status, 
-        statusText: walletResponse.statusText,
-        error: errorText
-      })
-      return new Response(
-        JSON.stringify({ 
-          error: `Failed to get wallet: ${walletResponse.status} ${walletResponse.statusText}`,
-          details: errorText
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
+    console.log('Session created successfully:', { sessionHash: session.sessionHash })
 
-    const walletData: SequenceWalletResponse = await walletResponse.json()
-    console.log('Wallet retrieved successfully:', { address: walletData.address })
+    // Get the wallet address
+    console.log('Getting wallet address...')
+    const address = await session.getAddress()
+    console.log('Wallet retrieved successfully:', { address })
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -123,11 +81,10 @@ serve(async (req) => {
       .from('user_wallets')
       .upsert({
         user_id: userId,
-        wallet_address: walletData.address,
+        wallet_address: address,
         network: 'polygon',
         wallet_config: {
-          sessionToken: sessionData.sessionToken,
-          sessionId: sessionData.sessionId,
+          sessionHash: session.sessionHash,
           provider: 'sequence-waas'
         }
       }, {
@@ -146,7 +103,7 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ 
-        walletAddress: walletData.address,
+        walletAddress: address,
         success: true,
         network: 'polygon'
       }),
