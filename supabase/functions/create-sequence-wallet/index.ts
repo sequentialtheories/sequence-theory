@@ -49,66 +49,95 @@ serve(async (req) => {
     }
 
     console.log('Creating Sequence wallet for user:', { userId, email })
-
-    // Initialize Sequence WaaS client
-    const waas = new SequenceWaaS({
-      projectAccessKey: sequenceApiKey,
-      waasConfigKey: sequenceWaasConfigKey,
-      network: 'polygon'
+    console.log('Environment check:', { 
+      hasApiKey: !!sequenceApiKey,
+      hasConfigKey: !!sequenceWaasConfigKey,
+      apiKeyLength: sequenceApiKey?.length,
+      configKeyLength: sequenceWaasConfigKey?.length
     })
 
-    // Create a session for the user
-    console.log('Creating session...')
-    const session = await waas.signIn({
-      email: email,
-      idToken: userId // Using userId as idToken for external user identification
-    })
-
-    console.log('Session created successfully:', { sessionHash: session.sessionHash })
-
-    // Get the wallet address
-    console.log('Getting wallet address...')
-    const address = await session.getAddress()
-    console.log('Wallet retrieved successfully:', { address })
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
-
-    // Store wallet in database
-    const { error: insertError } = await supabase
-      .from('user_wallets')
-      .upsert({
-        user_id: userId,
-        wallet_address: address,
-        network: 'polygon',
-        wallet_config: {
-          sessionHash: session.sessionHash,
-          provider: 'sequence-waas'
-        }
-      }, {
-        onConflict: 'user_id'
+    try {
+      // Initialize Sequence WaaS client
+      const waas = new SequenceWaaS({
+        projectAccessKey: sequenceApiKey,
+        waasConfigKey: sequenceWaasConfigKey,
+        network: 'polygon'
       })
 
-    if (insertError) {
-      console.error('Database insert failed:', insertError)
+      // Create a session for the user
+      console.log('Creating session...')
+      const session = await waas.signIn({
+        email: email,
+        idToken: userId // Using userId as idToken for external user identification
+      })
+
+      console.log('Session created successfully:', { sessionHash: session.sessionHash })
+
+      // Get the wallet address
+      console.log('Getting wallet address...')
+      const address = await session.getAddress()
+      console.log('Wallet retrieved successfully:', { address })
+
+      // Initialize Supabase client
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+      // Store wallet in database
+      const { error: insertError } = await supabase
+        .from('user_wallets')
+        .upsert({
+          user_id: userId,
+          wallet_address: address,
+          network: 'polygon',
+          wallet_config: {
+            sessionHash: session.sessionHash,
+            provider: 'sequence-waas'
+          }
+        }, {
+          onConflict: 'user_id'
+        })
+
+      if (insertError) {
+        console.error('Database insert failed:', insertError)
+        return new Response(
+          JSON.stringify({ error: 'Failed to save wallet to database', details: insertError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+
+      console.log('Wallet saved to database successfully')
+
       return new Response(
-        JSON.stringify({ error: 'Failed to save wallet to database', details: insertError.message }),
+        JSON.stringify({ 
+          walletAddress: address,
+          success: true,
+          network: 'polygon'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+
+    } catch (sequenceError) {
+      console.error('Sequence WaaS initialization or operation failed:', sequenceError)
+      
+      if (sequenceError.message?.includes('Failed to decode base64')) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Invalid Sequence API credentials format. Please check that your SEQUENCE_API_KEY and SEQUENCE_WAAS_CONFIG_KEY are correctly formatted.',
+            details: 'The API keys appear to be malformed or not properly base64 encoded.'
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to create Sequence wallet', 
+          details: sequenceError.message 
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
-
-    console.log('Wallet saved to database successfully')
-
-    return new Response(
-      JSON.stringify({ 
-        walletAddress: address,
-        success: true,
-        network: 'polygon'
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
 
   } catch (error) {
     console.error('Error in create-sequence-wallet function:', error)
