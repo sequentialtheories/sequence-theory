@@ -1,23 +1,76 @@
 import { supabase } from '@/integrations/supabase/client'
 
 export class SequenceWalletService {
-  async createWalletForUser(email: string, userId: string): Promise<{ address: string; success: boolean; error?: string }> {
+  async initiateWalletCreation(email: string, userId: string): Promise<{ instance: string; sessionHash: string; success: boolean; error?: string }> {
     try {
-      console.log('🚀 Starting wallet creation for user:', { userId, email });
+      console.log('🚀 Initiating wallet creation for user:', { userId, email });
 
-      // Call the edge function to create a real Sequence wallet
-      console.log('📞 Calling create-sequence-wallet edge function...');
       const { data, error } = await supabase.functions.invoke('create-sequence-wallet', {
         body: {
           email,
-          userId
+          userId,
+          flowStage: 'initiate'
         }
       });
 
-      console.log('📋 Edge function response:', { data, error });
+      console.log('📋 Initiate response:', { data, error });
 
       if (error) {
-        console.error('❌ Error calling create-sequence-wallet function:', error);
+        console.error('❌ Error initiating wallet creation:', error);
+        return {
+          instance: '',
+          sessionHash: '',
+          success: false,
+          error: error.message
+        };
+      }
+
+      if (!data || !data.instance) {
+        const errorMsg = data?.error || 'No instance returned from initiate stage';
+        console.error('❌ Wallet initiation failed:', errorMsg);
+        return {
+          instance: '',
+          sessionHash: '',
+          success: false,
+          error: errorMsg
+        };
+      }
+
+      console.log('✅ Successfully initiated wallet creation');
+      return {
+        instance: data.instance,
+        sessionHash: data.sessionHash,
+        success: true
+      };
+    } catch (error) {
+      console.error('💥 Exception in initiateWalletCreation:', error);
+      return {
+        instance: '',
+        sessionHash: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  async finalizeWalletCreation(email: string, userId: string, otp: string, instance: string): Promise<{ address: string; success: boolean; error?: string }> {
+    try {
+      console.log('🚀 Finalizing wallet creation for user:', { userId, email });
+
+      const { data, error } = await supabase.functions.invoke('create-sequence-wallet', {
+        body: {
+          email,
+          userId,
+          otp,
+          instance,
+          flowStage: 'final'
+        }
+      });
+
+      console.log('📋 Finalize response:', { data, error });
+
+      if (error) {
+        console.error('❌ Error finalizing wallet creation:', error);
         return {
           address: '',
           success: false,
@@ -26,8 +79,8 @@ export class SequenceWalletService {
       }
 
       if (!data || !data.success) {
-        const errorMsg = data?.error || 'Unknown error from edge function';
-        console.error('❌ Wallet creation failed:', errorMsg);
+        const errorMsg = data?.error || 'Unknown error from finalize stage';
+        console.error('❌ Wallet finalization failed:', errorMsg);
         return {
           address: '',
           success: false,
@@ -35,19 +88,29 @@ export class SequenceWalletService {
         };
       }
 
-      console.log('✅ Successfully created Sequence wallet:', data.walletAddress);
+      console.log('✅ Successfully finalized wallet creation:', data.walletAddress);
       return {
         address: data.walletAddress,
         success: true
       };
     } catch (error) {
-      console.error('💥 Exception in createWalletForUser:', error);
+      console.error('💥 Exception in finalizeWalletCreation:', error);
       return {
         address: '',
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
+  }
+
+  // Legacy method for backward compatibility - now uses the two-stage flow
+  async createWalletForUser(email: string, userId: string): Promise<{ address: string; success: boolean; error?: string }> {
+    // This method would need user interaction for OTP, so it returns an error
+    return {
+      address: '',
+      success: false,
+      error: 'Please use the new two-stage wallet creation flow with OTP verification'
+    };
   }
 
   async retryPendingWallets(): Promise<void> {
