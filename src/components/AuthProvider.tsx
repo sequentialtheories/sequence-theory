@@ -54,9 +54,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      // If wallet is pending, try to retry it
-      if (existingWallet && existingWallet.wallet_address.startsWith('pending_')) {
-        console.log('🔄 Found pending wallet, attempting retry...');
+      // If wallet is missing or pending, create one immediately
+      if (!existingWallet || existingWallet.wallet_address.startsWith('pending_')) {
+        console.log('🔄 Creating wallet for user immediately...');
+        
+        try {
+          // Use the auto-create function to guarantee wallet creation
+          const { data, error: functionError } = await supabase.functions.invoke('auto-create-wallets', {
+            body: {
+              userId: userId,
+              email: userEmail
+            }
+          })
+          
+          if (functionError) {
+            console.error('❌ Auto-create function error:', functionError)
+          } else if (data?.success) {
+            console.log('✅ Auto-created wallet:', data.walletAddress)
+            return // Wallet created successfully, exit early
+          } else {
+            console.error('❌ Auto-create failed:', data?.error)
+          }
+        } catch (createError) {
+          console.error('❌ Error calling auto-create function:', createError)
+        }
+        
+        // Also run the retry for any other pending wallets
         await sequenceWalletService.retryPendingWallets();
         return;
       }

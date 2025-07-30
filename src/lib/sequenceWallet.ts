@@ -105,12 +105,24 @@ export class SequenceWalletService {
 
   // Legacy method for backward compatibility - now uses the two-stage flow
   async createWalletForUser(email: string, userId: string): Promise<{ address: string; success: boolean; error?: string }> {
-    // This method would need user interaction for OTP, so it returns an error
-    return {
-      address: '',
-      success: false,
-      error: 'Please use the new two-stage wallet creation flow with OTP verification'
-    };
+    // Use the auto-create function for guaranteed wallet creation
+    try {
+      const { data, error } = await supabase.functions.invoke('auto-create-wallets', {
+        body: { userId, email }
+      })
+      
+      if (error) {
+        return { address: '', success: false, error: error.message }
+      }
+      
+      return { 
+        address: data.walletAddress, 
+        success: data.success,
+        error: data.error 
+      }
+    } catch (error) {
+      return { address: '', success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    }
   }
 
   async retryPendingWallets(): Promise<void> {
@@ -148,7 +160,7 @@ export class SequenceWalletService {
             continue;
           }
 
-          console.log(`🔄 Retrying wallet creation for user ${wallet.user_id}...`);
+          console.log(`🔄 Auto-creating wallet for user ${wallet.user_id}...`);
           const result = await this.createWalletForUser(profile.email, wallet.user_id);
 
           if (result.success) {
