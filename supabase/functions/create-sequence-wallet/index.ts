@@ -64,18 +64,31 @@ serve(async (req) => {
         network: 'polygon'
       })
 
-      // Create a session for the user
-      console.log('Creating session...')
-      const session = await waas.signIn({
+      console.log('Initiating email auth...')
+      // Step 1: Initiate email authentication
+      const authInstance = await waas.email.initiateAuth({ email })
+      console.log('Email auth initiated:', { instanceId: authInstance.instance })
+
+      // Step 2: Get session hash (no OTP needed for server-side)
+      const sessionHash = await waas.getSessionHash()
+      console.log('Session hash obtained:', { sessionHash })
+
+      // Step 3: Finalize auth with the instance and email
+      const authResponse = await waas.email.finalizeAuth({
+        instance: authInstance.instance,
+        answer: '', // Empty for server-side flow
         email: email,
-        idToken: userId // Using userId as idToken for external user identification
+        sessionHash
       })
+      console.log('Auth finalized:', { success: !!authResponse.idToken })
 
-      console.log('Session created successfully:', { sessionHash: session.sessionHash })
+      // Step 4: Sign in with the ID token
+      await waas.signIn({ idToken: authResponse.idToken })
+      console.log('Sign in successful')
 
-      // Get the wallet address
+      // Step 5: Get the wallet address
       console.log('Getting wallet address...')
-      const address = await session.getAddress()
+      const address = await waas.getAddress()
       console.log('Wallet retrieved successfully:', { address })
 
       // Initialize Supabase client
@@ -91,7 +104,7 @@ serve(async (req) => {
           wallet_address: address,
           network: 'polygon',
           wallet_config: {
-            sessionHash: session.sessionHash,
+            sessionHash: sessionHash,
             provider: 'sequence-waas'
           }
         }, {
