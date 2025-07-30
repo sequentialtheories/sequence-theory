@@ -12,7 +12,7 @@ import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2 } from 'lucid
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { WalletManager } from '@/components/WalletManager';
+
 
 // Private keys are no longer stored in wallet_config for security
 
@@ -307,28 +307,13 @@ const Profile = () => {
                   <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No wallet found for this account.</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Wallets are automatically created during signup.
+                    Your wallet is being created automatically. Please check back in a moment.
                   </p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Wallet Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Wallet className="h-5 w-5" />
-                <span>Wallet Management</span>
-              </CardTitle>
-              <CardDescription>
-                Monitor and manage your wallet creation status
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <WalletManager />
-            </CardContent>
-          </Card>
 
           {/* Delete Account */}
           <Card className="border-red-200">
