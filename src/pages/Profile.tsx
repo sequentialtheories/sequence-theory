@@ -12,7 +12,7 @@ import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2 } from 'lucid
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MassWalletCreator } from '@/components/MassWalletCreator';
+
 
 
 // Private keys are no longer stored in wallet_config for security
@@ -315,8 +315,6 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* Emergency Wallet Fix */}
-          <MassWalletCreator />
 
           {/* Delete Account */}
           <Card className="border-red-200">
