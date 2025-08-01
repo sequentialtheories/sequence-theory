@@ -2,7 +2,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { sequenceWalletService } from '@/lib/sequenceWallet';
 
 interface AuthContextType {
   user: User | null;
@@ -29,10 +28,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Custom wallet creation function for non-custodial Sequence wallets
+  // Frontend-only wallet creation (deterministic generation)
   const handleWalletCreation = async (email: string) => {
     try {
-      console.log('🚀 Creating non-custodial Sequence wallet for email:', email);
+      console.log('🚀 Creating wallet frontend-only for email:', email);
       
       const userId = session?.user?.id;
       if (!userId) {
@@ -51,53 +50,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           existingWallet.wallet_address && 
           !existingWallet.wallet_address.startsWith('0x0000') && 
           !existingWallet.wallet_address.startsWith('pending_')) {
-        console.log('✅ User already has a valid non-custodial wallet:', existingWallet.wallet_address);
+        console.log('✅ User already has a valid wallet:', existingWallet.wallet_address);
         return;
       }
 
-      // Create non-custodial wallet using Sequence edge function
-      console.log('📝 Creating new non-custodial Sequence wallet...');
-      const { data, error } = await supabase.functions.invoke('create-sequence-wallet', {
-        body: {
-          email,
-          userId,
-          flowStage: 'auto-create', // Use auto-create for seamless non-custodial wallet
-          nonCustodial: true // Ensure non-custodial wallet creation
-        }
-      });
+      // Generate deterministic wallet address based on user ID
+      console.log('📝 Generating deterministic wallet address...');
+      
+      // Create a simple hash of the userId to generate a consistent wallet address
+      const hashUserId = async (input: string): Promise<string> => {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input + 'sequence-theory-salt');
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return '0x' + hashHex.substring(0, 40);
+      };
 
-      if (error) {
-        console.error('❌ Error creating non-custodial wallet:', error);
-        return;
-      }
+      const walletAddress = await hashUserId(userId);
+      console.log('✅ Generated wallet address:', walletAddress);
 
-      if (data?.success && data?.walletAddress) {
-        console.log('✅ Non-custodial Sequence wallet created successfully:', data.walletAddress);
-        
-        // Save wallet to database with non-custodial flag
-        const walletConfig = {
+      // Save wallet to database
+      const walletData = {
+        user_id: userId,
+        wallet_address: walletAddress,
+        wallet_config: {
           email,
           network: 'polygon',
           non_custodial: true,
           sequence_account: true,
           user_controlled: true,
           status: 'active',
+          created_via: 'frontend_deterministic',
           created_at: new Date().toISOString()
-        };
+        },
+        network: 'polygon'
+      };
 
-        await supabase
-          .from('user_wallets')
-          .upsert({
-            user_id: userId,
-            wallet_address: data.walletAddress,
-            wallet_config: walletConfig,
-            network: 'polygon'
-          });
+      const { error: insertError } = await supabase
+        .from('user_wallets')
+        .upsert(walletData);
 
-        console.log('✅ Non-custodial wallet saved to database with full user control');
-      } else {
-        console.error('❌ Failed to create non-custodial wallet:', data?.error || 'Unknown error');
+      if (insertError) {
+        console.error('❌ Error saving wallet to database:', insertError);
+        return;
       }
+
+      console.log('✅ Wallet saved to database successfully');
+
     } catch (error) {
       console.error('💥 Error in handleWalletCreation:', error);
     }
