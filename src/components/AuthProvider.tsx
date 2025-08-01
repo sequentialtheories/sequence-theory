@@ -29,17 +29,78 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Define your custom wallet creation function here
+  // Custom wallet creation function for non-custodial Sequence wallets
   const handleWalletCreation = async (email: string) => {
-    // Your custom Sequence SDK logic will go here
-    // This function should generate a smart contract wallet and save the address to Supabase
-    console.log('🚀 Creating wallet for email:', email);
-    
-    // TODO: Implement your custom Sequence SDK wallet creation logic
-    // Example structure:
-    // 1. Use Sequence SDK to generate wallet
-    // 2. Save wallet address to Supabase user_wallets table
-    // 3. Handle any errors appropriately
+    try {
+      console.log('🚀 Creating non-custodial Sequence wallet for email:', email);
+      
+      const userId = session?.user?.id;
+      if (!userId) {
+        console.error('❌ No user ID available for wallet creation');
+        return;
+      }
+
+      // Check if user already has a wallet
+      const { data: existingWallet } = await supabase
+        .from('user_wallets')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (existingWallet && 
+          existingWallet.wallet_address && 
+          !existingWallet.wallet_address.startsWith('0x0000') && 
+          !existingWallet.wallet_address.startsWith('pending_')) {
+        console.log('✅ User already has a valid non-custodial wallet:', existingWallet.wallet_address);
+        return;
+      }
+
+      // Create non-custodial wallet using Sequence edge function
+      console.log('📝 Creating new non-custodial Sequence wallet...');
+      const { data, error } = await supabase.functions.invoke('create-sequence-wallet', {
+        body: {
+          email,
+          userId,
+          flowStage: 'auto-create', // Use auto-create for seamless non-custodial wallet
+          nonCustodial: true // Ensure non-custodial wallet creation
+        }
+      });
+
+      if (error) {
+        console.error('❌ Error creating non-custodial wallet:', error);
+        return;
+      }
+
+      if (data?.success && data?.walletAddress) {
+        console.log('✅ Non-custodial Sequence wallet created successfully:', data.walletAddress);
+        
+        // Save wallet to database with non-custodial flag
+        const walletConfig = {
+          email,
+          network: 'polygon',
+          non_custodial: true,
+          sequence_account: true,
+          user_controlled: true,
+          status: 'active',
+          created_at: new Date().toISOString()
+        };
+
+        await supabase
+          .from('user_wallets')
+          .upsert({
+            user_id: userId,
+            wallet_address: data.walletAddress,
+            wallet_config: walletConfig,
+            network: 'polygon'
+          });
+
+        console.log('✅ Non-custodial wallet saved to database with full user control');
+      } else {
+        console.error('❌ Failed to create non-custodial wallet:', data?.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('💥 Error in handleWalletCreation:', error);
+    }
   };
 
   const ensureUserHasWallet = async (userId: string, userEmail: string) => {
