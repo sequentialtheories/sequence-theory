@@ -100,7 +100,18 @@ export const ProfileDropdown = () => {
     }
   };
 
-  if (!user || !profile) return null;
+  // Debug logging
+  console.log('ProfileDropdown - State:', { 
+    hasUser: !!user, 
+    userId: user?.id, 
+    hasProfile: !!profile, 
+    profileLoading: profile === undefined 
+  });
+  
+  if (!user || !profile) {
+    console.log('ProfileDropdown - Not rendering because:', { noUser: !user, noProfile: !profile });
+    return null;
+  }
 
   const userInitials = profile.name 
     ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase()

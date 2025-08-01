@@ -11,6 +11,9 @@ const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  
+  // Debug logging
+  console.log('Navigation - Auth state:', { user: user?.id, loading, hasUser: !!user });
 
   const navItems = [
     { label: "Home", href: "/" },
