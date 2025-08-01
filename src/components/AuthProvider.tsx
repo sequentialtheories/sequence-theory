@@ -29,6 +29,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Define your custom wallet creation function here
+  const handleWalletCreation = async (email: string) => {
+    // Your custom Sequence SDK logic will go here
+    // This function should generate a smart contract wallet and save the address to Supabase
+    console.log('🚀 Creating wallet for email:', email);
+    
+    // TODO: Implement your custom Sequence SDK wallet creation logic
+    // Example structure:
+    // 1. Use Sequence SDK to generate wallet
+    // 2. Save wallet address to Supabase user_wallets table
+    // 3. Handle any errors appropriately
+  };
+
   const ensureUserHasWallet = async (userId: string, userEmail: string) => {
     try {
       console.log('🚀 Starting wallet check for user:', userId, userEmail);
@@ -54,116 +67,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      // If wallet is missing or pending, create one immediately
-      if (!existingWallet || existingWallet.wallet_address.startsWith('pending_')) {
-        console.log('🔄 Creating wallet for user immediately...');
-        
-        try {
-          // Use the auto-create function to guarantee wallet creation
-          const { data, error: functionError } = await supabase.functions.invoke('auto-create-wallets', {
-            body: {
-              userId: userId,
-              email: userEmail
-            }
-          })
-          
-          if (functionError) {
-            console.error('❌ Auto-create function error:', functionError)
-          } else if (data?.success) {
-            console.log('✅ Auto-created wallet:', data.walletAddress)
-            return // Wallet created successfully, exit early
-          } else {
-            console.error('❌ Auto-create failed:', data?.error)
-          }
-        } catch (createError) {
-          console.error('❌ Error calling auto-create function:', createError)
-        }
-        
-        // Also run the retry for any other pending wallets
-        await sequenceWalletService.retryPendingWallets();
-        return;
-      }
-
-      console.log('📝 Creating new wallet for user...');
+      // Call your custom wallet creation function
+      console.log('📝 Calling custom handleWalletCreation function...');
+      await handleWalletCreation(userEmail);
       
-      // Create wallet using Sequence service
-      const walletResult = await sequenceWalletService.createWalletForUser(userEmail, userId);
-      
-      if (!walletResult.success) {
-        console.error('❌ Failed to create wallet:', walletResult.error);
-        
-        // Create a pending wallet record for manual retry
-        const pendingWalletConfig = {
-          email: userEmail,
-          status: 'pending',
-          created_at: Date.now(),
-          error: walletResult.error
-        };
-
-        if (existingWallet) {
-          await supabase
-            .from('user_wallets')
-            .update({
-              wallet_address: `pending_${userId}`,
-              wallet_config: pendingWalletConfig,
-              updated_at: new Date().toISOString()
-            })
-            .eq('user_id', userId);
-        } else {
-          await supabase
-            .from('user_wallets')
-            .insert({
-              user_id: userId,
-              wallet_address: `pending_${userId}`,
-              wallet_config: pendingWalletConfig,
-              network: 'polygon'
-            });
-        }
-        return;
-      }
-
-      // Save successful wallet to database
-      const walletConfig = {
-        email: userEmail,
-        network: 'polygon',
-        auto_created: true,
-        status: 'active',
-        created_at: new Date().toISOString()
-      };
-
-      if (existingWallet) {
-        // Update existing record
-        const { error: updateError } = await supabase
-          .from('user_wallets')
-          .update({
-            wallet_address: walletResult.address,
-            wallet_config: walletConfig,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', userId);
-
-        if (updateError) {
-          console.error('❌ Failed to update wallet:', updateError);
-        } else {
-          console.log('✅ Wallet updated successfully for user:', userId);
-        }
-      } else {
-        // Create new record
-        const { error: insertError } = await supabase
-          .from('user_wallets')
-          .insert({
-            user_id: userId,
-            wallet_address: walletResult.address,
-            wallet_config: walletConfig,
-            network: 'polygon'
-          });
-
-        if (insertError) {
-          console.error('❌ Failed to insert wallet:', insertError);
-        } else {
-          console.log('✅ Wallet created successfully for user:', userId);
-        }
-      }
     } catch (error) {
       console.error('💥 Error in ensureUserHasWallet:', error);
     }
