@@ -65,7 +65,7 @@ serve(async (req) => {
       const waas = new SequenceWaaS({
         projectAccessKey: sequenceApiKey,
         waasConfigKey: sequenceWaasConfigKey,
-        network: 'arbitrum-nova'
+        network: 'polygon'
       })
 
       if (flowStage === "initiate") {
@@ -105,7 +105,7 @@ serve(async (req) => {
           .upsert({
             user_id: userId,
             wallet_address: address,
-            network: 'arbitrum-nova',
+            network: 'polygon',
             wallet_config: {
               provider: 'sequence-waas'
             }
@@ -127,7 +127,7 @@ serve(async (req) => {
           JSON.stringify({ 
             walletAddress: address,
             success: true,
-            network: 'arbitrum-nova'
+            network: 'polygon'
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
@@ -160,7 +160,7 @@ serve(async (req) => {
           .upsert({
             user_id: userId,
             wallet_address: address,
-            network: 'arbitrum-nova',
+            network: 'polygon',
             wallet_config: {
               provider: 'sequence-waas',
               non_custodial: true,
@@ -186,7 +186,7 @@ serve(async (req) => {
           JSON.stringify({ 
             walletAddress: address,
             success: true,
-            network: 'arbitrum-nova',
+            network: 'polygon',
             non_custodial: true,
             user_controlled: true
           }),

@@ -1,8 +1,6 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { SequenceWaaS } from '@0xsequence/waas';
 
 interface AuthContextType {
   user: User | null;
@@ -29,10 +27,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Frontend-only wallet creation using Sequence WaaS SDK
+  // Use Supabase edge function for proper Sequence WaaS wallet creation
   const handleWalletCreation = async (email: string) => {
     try {
-      console.log('🚀 Creating wallet using Sequence WaaS for email:', email);
+      console.log('🚀 Creating wallet using Sequence WaaS via edge function for email:', email);
       
       const userId = session?.user?.id;
       if (!userId) {
@@ -55,88 +53,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      // Initialize Sequence WaaS
-      console.log('📝 Initializing Sequence WaaS...');
-      const waas = new SequenceWaaS({
-        projectAccessKey: 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE',
-        waasConfigKey: 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0=',
-        network: 'polygon'
+      // Use Supabase edge function for proper WaaS wallet creation
+      console.log('📝 Calling Sequence WaaS edge function...');
+      const { data, error } = await supabase.functions.invoke('create-sequence-wallet', {
+        body: {
+          email,
+          userId,
+          flowStage: 'auto-create'
+        }
       });
 
-      // Try using Sequence WaaS SDK with fallback
-      console.log('💫 Attempting Sequence WaaS wallet creation...');
-      
-      let walletAddress: string;
-      
-      try {
-        // Attempt to use the actual Sequence WaaS SDK
-        // Note: This may require additional setup or configuration
-        const authInstance = await waas.email.initiateAuth({ email });
-        const sessionHash = await waas.getSessionHash();
-        
-        // For demo purposes, use a simple OTP
-        const demoOtp = "123456";
-        const authResp = await waas.email.finalizeAuth({ 
-          email, 
-          answer: demoOtp, 
-          instance: authInstance.instance,
-          sessionHash: sessionHash
-        });
-        
-        // Try to sign in and get address (using correct parameters)
-        await waas.signIn({ idToken: authResp.idToken }, sessionHash);
-        walletAddress = await waas.getAddress();
-        
-        console.log('✅ Sequence WaaS wallet created:', walletAddress);
-      } catch (sequenceError) {
-        console.warn('⚠️ Sequence WaaS failed, using deterministic fallback:', sequenceError);
-        
-        // Fallback to deterministic wallet creation
-        const createDeterministicWallet = async (userEmail: string, userIdParam: string) => {
-          const encoder = new TextEncoder();
-          const data = encoder.encode(`${userEmail}-${userIdParam}-sequence-fallback`);
-          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-          return '0x' + hashHex.substring(0, 40);
-        };
-        
-        walletAddress = await createDeterministicWallet(email, userId);
-        console.log('✅ Fallback wallet created:', walletAddress);
+      if (error) {
+        console.error('❌ Edge function error:', error);
+        throw new Error(`Wallet creation failed: ${error.message}`);
       }
 
-      console.log('✅ Wallet created successfully:', walletAddress);
-
-      // Save wallet to database
-      const walletData = {
-        user_id: userId,
-        wallet_address: walletAddress,
-        wallet_config: {
-          email,
-          user_id: userId,
-          network: 'polygon',
-          provider: 'sequence-compatible',
-          non_custodial: true,
-          sequence_account: true,
-          user_controlled: true,
-          status: 'active',
-          created_via: 'frontend_deterministic',
-          created_at: new Date().toISOString()
-        },
-        network: 'polygon',
-        created_at: new Date().toISOString()
-      };
-
-      const { error: insertError } = await supabase
-        .from('user_wallets')
-        .upsert(walletData);
-
-      if (insertError) {
-        console.error('❌ Error saving wallet to database:', insertError);
-        return;
+      if (!data?.success) {
+        console.error('❌ Wallet creation failed:', data?.error);
+        throw new Error(`Wallet creation failed: ${data?.error || 'Unknown error'}`);
       }
 
-      console.log('✅ Wallet saved to database successfully');
+      console.log('✅ Wallet created successfully via edge function:', data.walletAddress);
 
     } catch (error) {
       console.error('💥 Error in handleWalletCreation:', error);
