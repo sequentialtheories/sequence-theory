@@ -58,8 +58,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Initialize Sequence WaaS
       console.log('📝 Initializing Sequence WaaS...');
       const waas = new SequenceWaaS({
-        projectAccessKey: 'YOUR_ACTUAL_PROJECT_ACCESS_KEY',
-        waasConfigKey: 'YOUR_ACTUAL_WAAS_CONFIG_KEY',
+        projectAccessKey: 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE',
+        waasConfigKey: 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0=',
         network: 'polygon'
       });
 
