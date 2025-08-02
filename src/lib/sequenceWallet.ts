@@ -8,9 +8,9 @@ export class SequenceWalletService {
 
       // Initialize Sequence WaaS
       const waas = new SequenceWaaS({
-        projectAccessKey: 'AQAAAAAAAFMKx5M9p4SdH9kLWKjC3KQ8_Zf',
-        waasConfigKey: 'eyJwcm9qZWN0SWQiOjI3NTQxLCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIiwiZW1haWxSZWdpb24iOiJ1cy1lYXN0LTEiLCJlbWFpbEFjY2Vzc0tleUlkIjoiQVFBQUFBQUFBRk1LeDVNOXA0U2RIOWtMV0tqQzNLUThfWmYiLCJlbWFpbFNlY3JldEFjY2Vzc0tleSI6IldvZ0JrWVdYV2Y5bUZOMmIrSGdUWko4WFlJbmx3bWhKd1pVNUEvZDBCZTh3dFZRbHdoa2lOQkdSUDk0L0VaQ1QwTEJ1UFc4bUtseWYiLCJlbmNyeXB0aW9uS2V5IjoiQVFBQUFBQUFBRk1LeDVNOXA0U2RIOWtMV0tqQzNLUThfWmY6QjJtN0JrZXl1bXRaMHp1K3NzSWI1QT09In0=',
-        network: 'arbitrum-nova'
+        projectAccessKey: 'YOUR_ACTUAL_PROJECT_ACCESS_KEY',
+        waasConfigKey: 'YOUR_ACTUAL_WAAS_CONFIG_KEY',
+        network: 'polygon'
       });
 
       const authInstance = await waas.email.initiateAuth({ email });
@@ -39,9 +39,9 @@ export class SequenceWalletService {
 
       // Initialize Sequence WaaS
       const waas = new SequenceWaaS({
-        projectAccessKey: 'AQAAAAAAAFMKx5M9p4SdH9kLWKjC3KQ8_Zf',
-        waasConfigKey: 'eyJwcm9qZWN0SWQiOjI3NTQxLCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIiwiZW1haWxSZWdpb24iOiJ1cy1lYXN0LTEiLCJlbWFpbEFjY2Vzc0tleUlkIjoiQVFBQUFBQUFBRk1LeDVNOXA0U2RIOWtMV0tqQzNLUThfWmYiLCJlbWFpbFNlY3JldEFjY2Vzc0tleSI6IldvZ0JrWVdYV2Y5bUZOMmIrSGdUWko4WFlJbmx3bWhKd1pVNUEvZDBCZTh3dFZRbHdoa2lOQkdSUDk0L0VaQ1QwTEJ1UFc4bUtseWYiLCJlbmNyeXB0aW9uS2V5IjoiQVFBQUFBQUFBRk1LeDVNOXA0U2RIOWtMV0tqQzNLUThfWmY6QjJtN0JrZXl1bXRaMHp1K3NzSWI1QT09In0=',
-        network: 'arbitrum-nova'
+        projectAccessKey: 'YOUR_ACTUAL_PROJECT_ACCESS_KEY',
+        waasConfigKey: 'YOUR_ACTUAL_WAAS_CONFIG_KEY',
+        network: 'polygon'
       });
 
       const sessionHash = await waas.getSessionHash();
@@ -61,7 +61,7 @@ export class SequenceWalletService {
         .upsert({
           user_id: userId,
           wallet_address: address,
-          network: 'arbitrum-nova',
+          network: 'polygon',
           wallet_config: {
             provider: 'sequence-waas',
             non_custodial: true,
@@ -138,7 +138,7 @@ export class SequenceWalletService {
         .upsert({
           user_id: userId,
           wallet_address: walletAddress,
-          network: 'arbitrum-nova',
+          network: 'polygon',
           wallet_config: {
             provider: 'sequence-compatible',
             non_custodial: true,
