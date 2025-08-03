@@ -41,7 +41,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (session?.user?.email && event === 'SIGNED_IN') {
           setTimeout(() => {
             sequenceWaas.signIn({ email: session.user.email }, 'Vault Club Academy')
-              .then(res => console.log("✅ Wallet created", res))
+              .then(res => {
+                console.log("✅ Wallet created", res);
+                return sequenceWaas.getAddress();
+              })
+              .then(address => console.log("✅ Wallet address:", address))
               .catch(err => console.error("❌ Wallet error", err));
           }, 0);
         }

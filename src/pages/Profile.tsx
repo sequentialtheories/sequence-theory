@@ -12,7 +12,7 @@ import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2 } fr
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCurrentWallet } from '@/lib/sequenceWaas';
+import { sequenceWaas } from '@/lib/sequenceWaas';
 
 
 
@@ -58,10 +58,21 @@ const Profile = () => {
       
       try {
         setWalletLoading(true);
-        const wallet = await getCurrentWallet();
-        setWalletAddress(wallet?.address || null);
-      } catch (error) {
-        console.error('Error fetching wallet:', error);
+        const sessionId = sequenceWaas.getSessionId();
+        if (sessionId) {
+          const address = await sequenceWaas.getAddress();
+          if (address) {
+            setWalletAddress(address);
+          } else {
+            console.warn('No wallet address found.');
+            setWalletAddress(null);
+          }
+        } else {
+          console.warn('No active session found.');
+          setWalletAddress(null);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching wallet:", err);
         setWalletAddress(null);
       } finally {
         setWalletLoading(false);
