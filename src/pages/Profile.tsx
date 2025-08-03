@@ -8,10 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentWallet } from '@/lib/sequenceWaas';
 
 
 
@@ -23,6 +24,8 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [walletLoading, setWalletLoading] = useState(true);
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -48,22 +51,28 @@ const Profile = () => {
     }
   }, [profile]);
 
-  // Fetch user wallet
-  const { data: wallet } = useQuery({
-    queryKey: ['wallet', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data, error } = await supabase
-        .from('user_wallets')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+  // Fetch wallet from Sequence SDK
+  useEffect(() => {
+    const fetchWallet = async () => {
+      if (!user) return;
       
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
+      try {
+        setWalletLoading(true);
+        const wallet = await getCurrentWallet();
+        setWalletAddress(wallet?.address || null);
+      } catch (error) {
+        console.error('Error fetching wallet:', error);
+        setWalletAddress(null);
+      } finally {
+        setWalletLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchWallet();
+    }
+  }, [user]);
+
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -259,20 +268,25 @@ const Profile = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {wallet ? (
+              {walletLoading ? (
+                <div className="text-center py-8">
+                  <Loader2 className="h-8 w-8 mx-auto animate-spin text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Loading wallet...</p>
+                </div>
+              ) : walletAddress ? (
                 <div className="space-y-4">
                   <div className="grid gap-2">
                     <Label>Wallet Address</Label>
                     <div className="flex items-center space-x-2">
                       <Input
-                        value={wallet.wallet_address}
+                        value={walletAddress}
                         readOnly
                         className="bg-muted font-mono text-sm"
                       />
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copyToClipboard(wallet.wallet_address, 'Wallet address')}
+                        onClick={() => copyToClipboard(walletAddress, 'Wallet address')}
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -282,7 +296,7 @@ const Profile = () => {
                   <div className="grid gap-2">
                     <Label>Network</Label>
                     <Input
-                      value={wallet.network.charAt(0).toUpperCase() + wallet.network.slice(1)}
+                      value="Polygon"
                       readOnly
                       className="bg-muted"
                     />
@@ -294,11 +308,10 @@ const Profile = () => {
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
                         <Shield className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium text-blue-800">Private Key Security</span>
+                        <span className="text-sm font-medium text-blue-800">Sequence Embedded Wallet</span>
                       </div>
                       <p className="text-xs text-blue-700">
-                        Your private key is now securely stored server-side and is not accessible through the web interface for enhanced security. 
-                        Contact support if you need assistance with wallet operations.
+                        Your wallet is secured by Sequence's infrastructure. Private keys are managed securely and are not accessible through this interface.
                       </p>
                     </div>
                   </div>
@@ -308,7 +321,7 @@ const Profile = () => {
                   <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No wallet found for this account.</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Your wallet is being created automatically. Please check back in a moment.
+                    Your wallet should be created automatically after signing in. Please refresh the page.
                   </p>
                 </div>
               )}

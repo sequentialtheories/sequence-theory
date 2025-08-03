@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { sequenceWaas } from '@/lib/sequenceWaas';
 
 interface AuthContextType {
   user: User | null;
@@ -27,10 +28,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Note: Wallet creation is now handled manually through the UI
-  // This ensures users have full control over the embedded wallet creation process
-
-
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -39,6 +36,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Create Sequence wallet after authentication
+        if (session?.user?.email && event === 'SIGNED_IN') {
+          setTimeout(() => {
+            sequenceWaas.signIn({ email: session.user.email }, 'Vault Club Academy')
+              .then(res => console.log("✅ Wallet created", res))
+              .catch(err => console.error("❌ Wallet error", err));
+          }, 0);
+        }
       }
     );
 
