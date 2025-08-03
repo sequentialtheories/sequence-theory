@@ -65,7 +65,8 @@ serve(async (req) => {
       const waas = new SequenceWaaS({
         projectAccessKey: sequenceApiKey,
         waasConfigKey: sequenceWaasConfigKey,
-        network: 'polygon'
+        network: 'polygon',
+        emailRegion: 'us'
       })
 
       if (flowStage === "initiate") {

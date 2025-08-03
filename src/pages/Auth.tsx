@@ -83,7 +83,8 @@ export default function Auth() {
           options: {
             data: {
               name: sanitizedName
-            }
+            },
+            emailRedirectTo: `${window.location.origin}/`
           }
         });
         if (error) throw error;
