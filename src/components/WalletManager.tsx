@@ -6,14 +6,14 @@ import { sequenceWalletService } from '@/lib/sequenceWallet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, RefreshCw, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Loader2, RefreshCw, CheckCircle, AlertCircle, Clock, Wallet } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const WalletManager = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [isRetrying, setIsRetrying] = useState(false);
+  
 
   // Query wallet data
   const { data: wallet, isLoading, error } = useQuery({
@@ -31,7 +31,7 @@ export const WalletManager = () => {
       return data;
     },
     enabled: !!user?.id,
-    refetchInterval: 5000 // Refetch every 5 seconds to check for updates
+    refetchInterval: 10000 // Refetch every 10 seconds
   });
 
   // Query user profile for email
@@ -52,39 +52,19 @@ export const WalletManager = () => {
     enabled: !!user?.id
   });
 
-  // Mutation to retry wallet creation
-  const retryWalletMutation = useMutation({
+  // Mutation to create embedded wallet
+  const createWalletMutation = useMutation({
     mutationFn: async () => {
       if (!user?.id || !profile?.email) {
         throw new Error('Missing user ID or email');
       }
 
-      console.log('🔄 Manual wallet retry initiated...');
-      const result = await sequenceWalletService.createWalletForUser(profile.email, user.id);
+      console.log('🔄 Creating Sequence Embedded Wallet...');
+      const result = await sequenceWalletService.createEmbeddedWallet(profile.email, user.id);
       
       if (!result.success) {
         throw new Error(result.error || 'Failed to create wallet');
       }
-
-      // Update the wallet record
-      const walletConfig = {
-        email: profile.email,
-        network: 'polygon',
-        status: 'active',
-        manual_retry: true,
-        created_at: new Date().toISOString()
-      };
-
-      const { error } = await supabase
-        .from('user_wallets')
-        .upsert({
-          user_id: user.id,
-          wallet_address: result.address,
-          wallet_config: walletConfig,
-          network: 'polygon'
-        });
-
-      if (error) throw error;
 
       return result;
     },
@@ -92,11 +72,11 @@ export const WalletManager = () => {
       queryClient.invalidateQueries({ queryKey: ['user-wallet'] });
       toast({
         title: 'Wallet Created Successfully',
-        description: 'Your Sequence wallet has been created and is ready to use.',
+        description: 'Your Sequence Embedded Wallet has been created and is ready to use.',
       });
     },
     onError: (error) => {
-      console.error('❌ Manual wallet retry failed:', error);
+      console.error('❌ Wallet creation failed:', error);
       toast({
         title: 'Wallet Creation Failed',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -105,38 +85,8 @@ export const WalletManager = () => {
     }
   });
 
-  // Mutation to retry all pending wallets (admin function)
-  const retryAllPendingMutation = useMutation({
-    mutationFn: async () => {
-      setIsRetrying(true);
-      await sequenceWalletService.retryPendingWallets();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-wallet'] });
-      toast({
-        title: 'Retry Complete',
-        description: 'All pending wallets have been processed.',
-      });
-    },
-    onError: (error) => {
-      console.error('❌ Retry all pending failed:', error);
-      toast({
-        title: 'Retry Failed',
-        description: 'Failed to retry pending wallets',
-        variant: 'destructive',
-      });
-    },
-    onSettled: () => {
-      setIsRetrying(false);
-    }
-  });
-
   const getWalletStatus = () => {
     if (!wallet) return { status: 'none', color: 'secondary', icon: AlertCircle };
-    
-    if (wallet.wallet_address.startsWith('pending_')) {
-      return { status: 'pending', color: 'secondary', icon: Clock };
-    }
     
     if (wallet.wallet_address.startsWith('0x')) {
       return { status: 'active', color: 'default', icon: CheckCircle };
@@ -213,34 +163,20 @@ export const WalletManager = () => {
             )}
 
             <div className="flex gap-2 pt-4">
-              {status === 'pending' || status === 'error' || status === 'none' ? (
+              {status === 'error' || status === 'none' ? (
                 <Button
-                  onClick={() => retryWalletMutation.mutate()}
-                  disabled={retryWalletMutation.isPending}
+                  onClick={() => createWalletMutation.mutate()}
+                  disabled={createWalletMutation.isPending}
                   className="flex items-center gap-2"
                 >
-                  {retryWalletMutation.isPending ? (
+                  {createWalletMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-4 w-4" />
+                    <Wallet className="h-4 w-4" />
                   )}
-                  {status === 'none' ? 'Create Wallet' : 'Retry Creation'}
+                  Create Embedded Wallet
                 </Button>
               ) : null}
-
-              <Button
-                variant="outline"
-                onClick={() => retryAllPendingMutation.mutate()}
-                disabled={isRetrying || retryAllPendingMutation.isPending}
-                className="flex items-center gap-2"
-              >
-                {(isRetrying || retryAllPendingMutation.isPending) ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-                Retry All Pending
-              </Button>
             </div>
           </div>
         )}
