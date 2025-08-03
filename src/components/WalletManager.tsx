@@ -13,6 +13,10 @@ export const WalletManager = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [authInstance, setAuthInstance] = useState<string | null>(null);
+  const [sessionHash, setSessionHash] = useState<string | null>(null);
   
 
   // Query wallet data
@@ -61,19 +65,26 @@ export const WalletManager = () => {
 
       console.log('🔄 Creating Sequence Embedded Wallet...');
       const result = await sequenceWalletService.createEmbeddedWallet(profile.email, user.id);
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to create wallet');
-      }
-
       return result;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-wallet'] });
-      toast({
-        title: 'Wallet Created Successfully',
-        description: 'Your Sequence Embedded Wallet has been created and is ready to use.',
-      });
+    onSuccess: (result: any) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ['user-wallet'] });
+        toast({
+          title: 'Wallet Created Successfully',
+          description: 'Your Sequence Embedded Wallet has been created and is ready to use.',
+        });
+      } else if (result.error === 'OTP_REQUIRED') {
+        setAuthInstance(result.authInstance);
+        setSessionHash(result.sessionHash);
+        setShowOTPInput(true);
+        toast({
+          title: 'OTP Required',
+          description: 'Please check your email for the verification code.',
+        });
+      } else {
+        throw new Error(result.error || 'Failed to create wallet');
+      }
     },
     onError: (error) => {
       console.error('❌ Wallet creation failed:', error);
@@ -83,6 +94,49 @@ export const WalletManager = () => {
         variant: 'destructive',
       });
     }
+  });
+
+  // Mutation to complete wallet creation with OTP
+  const completeWalletMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id || !profile?.email || !otp || !authInstance || !sessionHash) {
+        throw new Error('Missing required information');
+      }
+      return sequenceWalletService.completeWalletCreation(
+        profile.email, 
+        user.id, 
+        otp, 
+        authInstance, 
+        sessionHash
+      );
+    },
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ['user-wallet'] });
+        setShowOTPInput(false);
+        setOtp('');
+        setAuthInstance(null);
+        setSessionHash(null);
+        toast({
+          title: 'Wallet Created Successfully',
+          description: `Your embedded wallet has been created: ${result.address}`,
+        });
+      } else {
+        toast({
+          title: 'Wallet Creation Failed',
+          description: result.error || 'Unknown error occurred',
+          variant: 'destructive',
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('Wallet completion error:', error);
+      toast({
+        title: 'Wallet Creation Failed',
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
+        variant: 'destructive',
+      });
+    },
   });
 
   const getWalletStatus = () => {
@@ -162,8 +216,8 @@ export const WalletManager = () => {
               </>
             )}
 
-            <div className="flex gap-2 pt-4">
-              {status === 'error' || status === 'none' ? (
+            <div className="space-y-4 pt-4">
+              {(status === 'error' || status === 'none') && !showOTPInput && (
                 <Button
                   onClick={() => createWalletMutation.mutate()}
                   disabled={createWalletMutation.isPending}
@@ -176,7 +230,40 @@ export const WalletManager = () => {
                   )}
                   Create Embedded Wallet
                 </Button>
-              ) : null}
+              )}
+
+              {showOTPInput && (
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="otp" className="block text-sm font-medium mb-2">
+                      Enter OTP from your email
+                    </label>
+                    <input
+                      id="otp"
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter 6-digit code"
+                      className="w-full px-3 py-2 border border-border rounded-md"
+                      maxLength={6}
+                    />
+                  </div>
+                  <Button 
+                    onClick={() => completeWalletMutation.mutate()}
+                    disabled={completeWalletMutation.isPending || otp.length !== 6}
+                    className="w-full"
+                  >
+                    {completeWalletMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Completing...
+                      </>
+                    ) : (
+                      'Complete Wallet Creation'
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}

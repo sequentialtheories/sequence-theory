@@ -22,7 +22,7 @@ export class SequenceWalletService {
 
   /**
    * Create an embedded wallet for the user using email authentication
-   * This is the main method that follows Sequence's seamless wallet creation pattern
+   * Follows Sequence's seamless wallet creation pattern
    */
   async createEmbeddedWallet(email: string, userId: string): Promise<{ address: string; success: boolean; error?: string }> {
     try {
@@ -45,23 +45,62 @@ export class SequenceWalletService {
 
       const waas = this.initializeWaaS();
 
-      // Initiate email authentication
-      const authInstance = await waas.email.initiateAuth({ email });
-      
-      // For seamless experience, we'll use a simplified auth flow
-      // In production, you might want to implement the full OTP flow
+      // Get session hash first
       const sessionHash = await waas.getSessionHash();
       
-      // For demo purposes, we'll simulate the auth completion
-      // In a real implementation, this would be handled by your UI flow
+      // Initiate email authentication
+      const authResult = await waas.email.initiateAuth({ 
+        email
+      });
+
+      // Return intermediate state for OTP collection
+      if (authResult.instance) {
+        return {
+          address: '',
+          success: false,
+          error: 'OTP_REQUIRED',
+          authInstance: authResult.instance,
+          sessionHash
+        } as any;
+      }
+
+      throw new Error('Failed to initiate email authentication');
+
+    } catch (error) {
+      console.error('💥 Error creating Sequence Embedded Wallet:', error);
+      return {
+        address: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  /**
+   * Complete wallet creation with OTP
+   */
+  async completeWalletCreation(
+    email: string, 
+    userId: string, 
+    otp: string, 
+    authInstance: string, 
+    sessionHash: string
+  ): Promise<{ address: string; success: boolean; error?: string }> {
+    try {
+      const waas = this.initializeWaaS();
+
+      // Finalize authentication with OTP
       const authResp = await waas.email.finalizeAuth({ 
         email, 
-        answer: '123456', // This would come from user input in a real app
-        instance: authInstance.instance,
-        sessionHash: sessionHash
+        answer: otp,
+        instance: authInstance,
+        sessionHash
       });
       
+      // Sign in with the ID token
       await waas.signIn({ idToken: authResp.idToken }, sessionHash);
+      
+      // Get the wallet address
       const address = await waas.getAddress();
 
       // Store the wallet in database
@@ -96,7 +135,7 @@ export class SequenceWalletService {
       };
 
     } catch (error) {
-      console.error('💥 Error creating Sequence Embedded Wallet:', error);
+      console.error('💥 Error completing wallet creation:', error);
       return {
         address: '',
         success: false,

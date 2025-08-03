@@ -39,8 +39,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-
-        // Users can now create embedded wallets through the UI when needed
       }
     );
 
@@ -50,8 +48,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
-      // Wallet creation is now user-initiated through the UI
     });
 
     return () => subscription.unsubscribe();
