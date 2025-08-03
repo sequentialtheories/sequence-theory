@@ -12,19 +12,17 @@ import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2 } fr
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAccount } from 'wagmi';
-
-
+import { useWallet } from '@/components/WalletProvider';
 
 // Private keys are no longer stored in wallet_config for security
 
 const Profile = () => {
-  const { user, connectWallet } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const { address, isConnected } = useAccount();
+  const { wallet, loading: walletLoading } = useWallet();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -50,10 +48,10 @@ const Profile = () => {
     }
   }, [profile]);
 
-  // Log wallet connection status for debugging
+  // Log wallet status for debugging
   useEffect(() => {
-    console.log('Wallet connection status:', { isConnected, address });
-  }, [isConnected, address]);
+    console.log('Wallet status:', { wallet, walletLoading });
+  }, [wallet, walletLoading]);
 
 
   // Update profile mutation
@@ -250,28 +248,25 @@ const Profile = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {!isConnected ? (
+              {walletLoading ? (
                 <div className="text-center py-8">
-                  <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">No wallet connected.</p>
-                  <Button onClick={connectWallet}>
-                    Connect Wallet
-                  </Button>
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Loading wallet information...</p>
                 </div>
-              ) : address ? (
+              ) : wallet ? (
                 <div className="space-y-4">
                   <div className="grid gap-2">
                     <Label>Wallet Address</Label>
                     <div className="flex items-center space-x-2">
                       <Input
-                        value={address}
+                        value={wallet.address}
                         readOnly
                         className="bg-muted font-mono text-sm"
                       />
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copyToClipboard(address, 'Wallet address')}
+                        onClick={() => copyToClipboard(wallet.address, 'Wallet address')}
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -281,9 +276,18 @@ const Profile = () => {
                   <div className="grid gap-2">
                     <Label>Network</Label>
                     <Input
-                      value="Mainnet"
+                      value={wallet.network}
                       readOnly
-                      className="bg-muted"
+                      className="bg-muted capitalize"
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label>Provider</Label>
+                    <Input
+                      value={wallet.provider}
+                      readOnly
+                      className="bg-muted capitalize"
                     />
                   </div>
 
@@ -293,10 +297,15 @@ const Profile = () => {
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
                         <Shield className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium text-blue-800">Sequence Embedded Wallet</span>
+                        <span className="text-sm font-medium text-blue-800">
+                          {wallet.autoCreated ? 'Auto-Created Wallet' : 'Sequence Embedded Wallet'}
+                        </span>
                       </div>
                       <p className="text-xs text-blue-700">
-                        Your wallet is secured by Sequence's infrastructure. Private keys are managed securely and are not accessible through this interface.
+                        {wallet.autoCreated 
+                          ? 'This wallet was automatically created for you when you signed up. Your private key is securely managed by Sequence.'
+                          : 'Your wallet is secured by Sequence\'s infrastructure. Private keys are managed securely and are not accessible through this interface.'
+                        }
                       </p>
                     </div>
                   </div>
@@ -304,10 +313,10 @@ const Profile = () => {
               ) : (
                 <div className="text-center py-8">
                   <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">Wallet connection pending...</p>
-                  <Button onClick={connectWallet}>
-                    Connect Wallet
-                  </Button>
+                  <p className="text-muted-foreground mb-4">No wallet found for your account.</p>
+                  <p className="text-xs text-muted-foreground">
+                    A wallet should have been created automatically when you signed up. Try refreshing the page or contact support.
+                  </p>
                 </div>
               )}
             </CardContent>

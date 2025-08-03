@@ -1,21 +1,17 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useOpenConnectModal } from '@0xsequence/connect';
-import { useAccount } from 'wagmi';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  connectWallet: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
-  connectWallet: () => {},
 });
 
 export const useAuth = () => {
@@ -26,17 +22,31 @@ export const useAuth = () => {
   return context;
 };
 
+const createWalletForUser = async (userId: string, email: string) => {
+  try {
+    console.log('Auto-creating wallet for user:', userId);
+    
+    const { data, error } = await supabase.functions.invoke('auto-create-wallets', {
+      body: { userId, email }
+    });
+
+    if (error) {
+      console.error('Error creating wallet:', error);
+      return;
+    }
+
+    if (data?.success) {
+      console.log('✅ Wallet auto-created:', data.walletAddress);
+    }
+  } catch (error) {
+    console.error('Failed to auto-create wallet:', error);
+  }
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  const { setOpenConnectModal } = useOpenConnectModal();
-  const { isConnected, address } = useAccount();
-
-  const connectWallet = () => {
-    setOpenConnectModal(true);
-  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -47,11 +57,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Trigger wallet connection after successful authentication
+        // Auto-create wallet after successful authentication
         if (session?.user?.email && event === 'SIGNED_IN') {
-          console.log('User authenticated, triggering wallet connection...');
+          console.log('User authenticated, auto-creating wallet...');
           setTimeout(() => {
-            connectWallet();
+            createWalletForUser(session.user.id, session.user.email!);
           }, 1000);
         }
       }
@@ -68,15 +78,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Log wallet connection status
-  useEffect(() => {
-    if (isConnected && address) {
-      console.log("✅ Wallet connected:", address);
-    }
-  }, [isConnected, address]);
-
   return (
-    <AuthContext.Provider value={{ user, session, loading, connectWallet }}>
+    <AuthContext.Provider value={{ user, session, loading }}>
       {children}
     </AuthContext.Provider>
   );

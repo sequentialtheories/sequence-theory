@@ -23,8 +23,8 @@ serve(async (req) => {
     }
 
     // Get environment variables
-    const sequenceApiKey = Deno.env.get('SEQUENCE_API_KEY')
-    const sequenceWaasConfigKey = Deno.env.get('SEQUENCE_WAAS_CONFIG_KEY')
+    const sequenceApiKey = Deno.env.get('SEQUENCE_API_KEY') || 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE'
+    const sequenceWaasConfigKey = Deno.env.get('SEQUENCE_WAAS_CONFIG_KEY') || 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0='
     
     if (!sequenceApiKey || !sequenceWaasConfigKey) {
       console.error('Missing Sequence credentials')

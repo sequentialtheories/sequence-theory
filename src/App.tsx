@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/AuthProvider";
+import { WalletProvider } from "@/components/WalletProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import Auth from "./pages/Auth";
@@ -56,7 +57,8 @@ const App = () => (
       <BrowserRouter>
         <SecurityHeaders />
         <AuthProvider>
-          <Routes>
+          <WalletProvider>
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
             <Route path="/auth" element={<Auth />} />
@@ -113,7 +115,8 @@ const App = () => (
           <Route path="/learn/democratizing-financial-knowledge" element={<InteractiveLearning />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </WalletProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

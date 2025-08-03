@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useAccount } from 'wagmi';
 
 // Private keys are no longer stored in wallet_config for security
 import {
@@ -24,13 +23,14 @@ import { User, Wallet, LogOut, Copy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { useWallet } from './WalletProvider';
 
 export const ProfileDropdown = () => {
-  const { user, connectWallet } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showWalletDialog, setShowWalletDialog] = useState(false);
-  const { address, isConnected } = useAccount();
+  const { wallet, loading: walletLoading } = useWallet();
 
   // Fetch user profile
   const { data: profile } = useQuery({
@@ -157,18 +157,22 @@ export const ProfileDropdown = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {isConnected && address ? (
+          {walletLoading ? (
+            <div className="text-center py-4">
+              <p className="text-muted-foreground">Loading wallet information...</p>
+            </div>
+          ) : wallet ? (
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Wallet Address</label>
                 <div className="flex items-center space-x-2">
                   <code className="flex-1 p-2 bg-muted rounded text-xs break-all">
-                    {address}
+                    {wallet.address}
                   </code>
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => copyToClipboard(address, 'Wallet address')}
+                    onClick={() => copyToClipboard(wallet.address, 'Wallet address')}
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -177,26 +181,31 @@ export const ProfileDropdown = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Network</label>
-                <p className="text-sm text-muted-foreground">Mainnet</p>
+                <p className="text-sm text-muted-foreground capitalize">{wallet.network}</p>
               </div>
 
               <div className="space-y-2">
+                <label className="text-sm font-medium">Provider</label>
+                <p className="text-sm text-muted-foreground capitalize">{wallet.provider}</p>
+              </div>
+
+              {wallet.autoCreated && (
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded">
                   <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-sm font-medium text-blue-800">Private Key Security</span>
+                    <span className="text-sm font-medium text-blue-800">Auto-Created Wallet</span>
                   </div>
                   <p className="text-xs text-blue-700">
-                    Your private key is securely stored by Sequence and not accessible through this interface for enhanced security.
+                    This wallet was automatically created for you when you signed up. Your private key is securely managed by Sequence.
                   </p>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-4">
-              <p className="text-muted-foreground mb-4">No wallet connected.</p>
-              <Button onClick={connectWallet}>
-                Connect Wallet
-              </Button>
+              <p className="text-muted-foreground mb-4">No wallet found for your account.</p>
+              <p className="text-xs text-muted-foreground">
+                A wallet should have been created automatically. Try refreshing the page or contact support.
+              </p>
             </div>
           )}
         </DialogContent>
