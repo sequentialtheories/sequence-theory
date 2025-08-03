@@ -1,9 +1,13 @@
-import { validateEmail, validatePassword, sanitizeInput } from '@/utils/validation';
+import { validateEmail, validatePassword, sanitizeInput, sanitizeEmail, validateUUID } from '@/utils/validation';
+import { isRateLimited } from '@/utils/security';
 
 export const useValidation = () => {
   return {
     validateEmail,
     validatePassword,
-    sanitizeInput
+    sanitizeInput,
+    sanitizeEmail,
+    validateUUID,
+    isRateLimited
   };
 };

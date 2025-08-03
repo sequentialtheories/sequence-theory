@@ -73,8 +73,13 @@ serve(async (req) => {
         } catch (finalizeError) {
           // If that doesn't work, try alternative server creation
           console.log('Trying alternative wallet creation method...')
-          // Generate a deterministic wallet based on user ID
-          address = `0x${userId.replace(/-/g, '').substring(0, 40)}`
+          // SECURITY FIX: Use proper cryptographic hash instead of substring
+          const encoder = new TextEncoder()
+          const data = encoder.encode(userId + email + Date.now().toString())
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+          const hashArray = Array.from(new Uint8Array(hashBuffer))
+          const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+          address = `0x${hashHex.substring(0, 40)}`
         }
       }
 
@@ -126,8 +131,13 @@ serve(async (req) => {
     } catch (sequenceError) {
       console.error('Sequence wallet creation failed, using fallback:', sequenceError)
       
-      // Fallback: Create a deterministic wallet address
-      const fallbackAddress = `0x${userId.replace(/-/g, '').substring(0, 40)}`
+      // SECURITY FIX: Use proper cryptographic hash for fallback
+      const encoder = new TextEncoder()
+      const data = encoder.encode(userId + email + 'fallback' + Date.now().toString())
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+      const fallbackAddress = `0x${hashHex.substring(0, 40)}`
       
       // Initialize Supabase client
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!
