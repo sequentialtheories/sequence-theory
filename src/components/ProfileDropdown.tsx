@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useAccount } from 'wagmi';
 
 // Private keys are no longer stored in wallet_config for security
 import {
@@ -25,10 +26,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 
 export const ProfileDropdown = () => {
-  const { user } = useAuth();
+  const { user, connectWallet } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showWalletDialog, setShowWalletDialog] = useState(false);
+  const { address, isConnected } = useAccount();
 
   // Fetch user profile
   const { data: profile } = useQuery({
@@ -47,22 +49,6 @@ export const ProfileDropdown = () => {
     enabled: !!user?.id,
   });
 
-  // Fetch user wallet
-  const { data: wallet } = useQuery({
-    queryKey: ['wallet', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const { data, error } = await supabase
-        .from('user_wallets')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
 
   const handleLogout = async () => {
     try {
@@ -171,18 +157,18 @@ export const ProfileDropdown = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {wallet ? (
+          {isConnected && address ? (
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Wallet Address</label>
                 <div className="flex items-center space-x-2">
                   <code className="flex-1 p-2 bg-muted rounded text-xs break-all">
-                    {wallet.wallet_address}
+                    {address}
                   </code>
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => copyToClipboard(wallet.wallet_address, 'Wallet address')}
+                    onClick={() => copyToClipboard(address, 'Wallet address')}
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -191,7 +177,7 @@ export const ProfileDropdown = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Network</label>
-                <p className="text-sm text-muted-foreground capitalize">{wallet.network}</p>
+                <p className="text-sm text-muted-foreground">Mainnet</p>
               </div>
 
               <div className="space-y-2">
@@ -200,14 +186,17 @@ export const ProfileDropdown = () => {
                     <span className="text-sm font-medium text-blue-800">Private Key Security</span>
                   </div>
                   <p className="text-xs text-blue-700">
-                    Your private key is securely stored server-side and not accessible through this interface for enhanced security.
+                    Your private key is securely stored by Sequence and not accessible through this interface for enhanced security.
                   </p>
                 </div>
               </div>
             </div>
           ) : (
             <div className="text-center py-4">
-              <p className="text-muted-foreground">No wallet found for this account.</p>
+              <p className="text-muted-foreground mb-4">No wallet connected.</p>
+              <Button onClick={connectWallet}>
+                Connect Wallet
+              </Button>
             </div>
           )}
         </DialogContent>

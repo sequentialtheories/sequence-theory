@@ -1,18 +1,21 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { sequenceWaas } from '@/lib/sequenceWaas';
+import { useOpenConnectModal } from '@0xsequence/connect';
+import { useAccount } from 'wagmi';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  connectWallet: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
+  connectWallet: () => {},
 });
 
 export const useAuth = () => {
@@ -27,9 +30,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const { setOpenConnectModal } = useOpenConnectModal();
+  const { isConnected, address } = useAccount();
+
+  const connectWallet = () => {
+    setOpenConnectModal(true);
+  };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
@@ -37,22 +47,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Create Sequence wallet after authentication
+        // Trigger wallet connection after successful authentication
         if (session?.user?.email && event === 'SIGNED_IN') {
+          console.log('User authenticated, triggering wallet connection...');
           setTimeout(() => {
-            sequenceWaas.signIn({ email: session.user.email }, 'Vault Club Academy')
-              .then(res => {
-                console.log("✅ Wallet created", res);
-                return sequenceWaas.getAddress();
-              })
-              .then(address => console.log("✅ Wallet address:", address))
-              .catch(err => console.error("❌ Wallet error", err));
-          }, 0);
+            connectWallet();
+          }, 1000);
         }
       }
     );
 
-    // THEN check for existing session
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('Initial session check:', session?.user?.id);
       setSession(session);
@@ -63,8 +68,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Log wallet connection status
+  useEffect(() => {
+    if (isConnected && address) {
+      console.log("✅ Wallet connected:", address);
+    }
+  }, [isConnected, address]);
+
   return (
-    <AuthContext.Provider value={{ user, session, loading }}>
+    <AuthContext.Provider value={{ user, session, loading, connectWallet }}>
       {children}
     </AuthContext.Provider>
   );

@@ -12,20 +12,19 @@ import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2 } fr
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { sequenceWaas } from '@/lib/sequenceWaas';
+import { useAccount } from 'wagmi';
 
 
 
 // Private keys are no longer stored in wallet_config for security
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, connectWallet } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [walletLoading, setWalletLoading] = useState(true);
+  const { address, isConnected } = useAccount();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -51,38 +50,10 @@ const Profile = () => {
     }
   }, [profile]);
 
-  // Fetch wallet from Sequence SDK
+  // Log wallet connection status for debugging
   useEffect(() => {
-    const fetchWallet = async () => {
-      if (!user) return;
-      
-      try {
-        setWalletLoading(true);
-        const sessionId = sequenceWaas.getSessionId();
-        if (sessionId) {
-          const address = await sequenceWaas.getAddress();
-          if (address) {
-            setWalletAddress(address);
-          } else {
-            console.warn('No wallet address found.');
-            setWalletAddress(null);
-          }
-        } else {
-          console.warn('No active session found.');
-          setWalletAddress(null);
-        }
-      } catch (err) {
-        console.error("❌ Error fetching wallet:", err);
-        setWalletAddress(null);
-      } finally {
-        setWalletLoading(false);
-      }
-    };
-
-    if (user) {
-      fetchWallet();
-    }
-  }, [user]);
+    console.log('Wallet connection status:', { isConnected, address });
+  }, [isConnected, address]);
 
 
   // Update profile mutation
@@ -279,25 +250,28 @@ const Profile = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {walletLoading ? (
+              {!isConnected ? (
                 <div className="text-center py-8">
-                  <Loader2 className="h-8 w-8 mx-auto animate-spin text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Loading wallet...</p>
+                  <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">No wallet connected.</p>
+                  <Button onClick={connectWallet}>
+                    Connect Wallet
+                  </Button>
                 </div>
-              ) : walletAddress ? (
+              ) : address ? (
                 <div className="space-y-4">
                   <div className="grid gap-2">
                     <Label>Wallet Address</Label>
                     <div className="flex items-center space-x-2">
                       <Input
-                        value={walletAddress}
+                        value={address}
                         readOnly
                         className="bg-muted font-mono text-sm"
                       />
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copyToClipboard(walletAddress, 'Wallet address')}
+                        onClick={() => copyToClipboard(address, 'Wallet address')}
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -307,7 +281,7 @@ const Profile = () => {
                   <div className="grid gap-2">
                     <Label>Network</Label>
                     <Input
-                      value="Polygon"
+                      value="Mainnet"
                       readOnly
                       className="bg-muted"
                     />
@@ -330,10 +304,10 @@ const Profile = () => {
               ) : (
                 <div className="text-center py-8">
                   <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No wallet found for this account.</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Your wallet should be created automatically after signing in. Please refresh the page.
-                  </p>
+                  <p className="text-muted-foreground mb-4">Wallet connection pending...</p>
+                  <Button onClick={connectWallet}>
+                    Connect Wallet
+                  </Button>
                 </div>
               )}
             </CardContent>
