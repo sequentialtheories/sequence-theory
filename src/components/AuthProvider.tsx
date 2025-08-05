@@ -26,17 +26,14 @@ const createWalletForUser = async (userId: string, email: string) => {
   try {
     console.log('Auto-creating wallet for user:', userId);
     
-    const { data, error } = await supabase.functions.invoke('auto-create-wallets', {
-      body: { userId, email }
-    });
+    // Import the frontend wallet creation function
+    const { getOrCreateWallet } = await import('@/lib/sequenceWaas');
+    const result = await getOrCreateWallet(userId, email);
 
-    if (error) {
-      console.error('Error creating wallet:', error);
-      return;
-    }
-
-    if (data?.success) {
-      console.log('✅ Wallet auto-created:', data.walletAddress);
+    if (result.success) {
+      console.log('✅ Wallet auto-created:', result.walletAddress);
+    } else {
+      console.error('Failed to auto-create wallet:', result.error);
     }
   } catch (error) {
     console.error('Failed to auto-create wallet:', error);

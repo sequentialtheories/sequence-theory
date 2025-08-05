@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
+import { getOrCreateWallet } from '@/lib/sequenceWaas';
 
 interface WalletInfo {
   address: string;
   network: string;
-  provider: string;
-  autoCreated: boolean;
+  email: string;
 }
 
 interface WalletContextType {
@@ -48,28 +48,30 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
-        .from('user_wallets')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // Try to get or create wallet
+      const result = await getOrCreateWallet(user.id, user.email!);
+      
+      if (result.success) {
+        // Fetch the wallet data from database
+        const { data, error: fetchError } = await supabase
+          .from('user_wallets')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
 
-      if (fetchError) {
-        if (fetchError.code === 'PGRST116') {
-          // No wallet found, this is normal
-          setWallet(null);
-        } else {
-          console.error('Error fetching wallet:', fetchError);
+        if (fetchError) {
+          console.error('Error fetching wallet after creation:', fetchError);
           setError('Failed to fetch wallet information');
+        } else if (data) {
+          setWallet({
+            address: data.wallet_address,
+            network: data.network,
+            email: data.email || user.email!,
+          });
         }
-      } else if (data) {
-        const walletConfig = data.wallet_config as any;
-        setWallet({
-          address: data.wallet_address,
-          network: data.network,
-          provider: walletConfig?.provider || 'unknown',
-          autoCreated: walletConfig?.auto_created || false,
-        });
+      } else {
+        console.error('Failed to get or create wallet:', result.error);
+        setError(result.error || 'Failed to create wallet');
       }
     } catch (err) {
       console.error('Unexpected error fetching wallet:', err);

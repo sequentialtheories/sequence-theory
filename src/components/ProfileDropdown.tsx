@@ -186,19 +186,17 @@ export const ProfileDropdown = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Provider</label>
-                <p className="text-sm text-muted-foreground capitalize">{wallet.provider}</p>
+                <p className="text-sm text-muted-foreground capitalize">Sequence WaaS</p>
               </div>
 
-              {wallet.autoCreated && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-sm font-medium text-blue-800">Auto-Created Wallet</span>
-                  </div>
-                  <p className="text-xs text-blue-700">
-                    This wallet was automatically created for you when you signed up. Your private key is securely managed by Sequence.
-                  </p>
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                <div className="flex items-center space-x-2 mb-1">
+                  <span className="text-sm font-medium text-blue-800">Sequence Embedded Wallet</span>
                 </div>
-              )}
+                <p className="text-xs text-blue-700">
+                  Your wallet is secured by Sequence's infrastructure and created deterministically from your user data.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="text-center py-4">

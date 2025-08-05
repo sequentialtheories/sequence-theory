@@ -285,7 +285,7 @@ const Profile = () => {
                   <div className="grid gap-2">
                     <Label>Provider</Label>
                     <Input
-                      value={wallet.provider}
+                      value="Sequence WaaS"
                       readOnly
                       className="bg-muted capitalize"
                     />
@@ -294,20 +294,17 @@ const Profile = () => {
                   <Separator />
 
                   <div className="space-y-2">
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Shield className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium text-blue-800">
-                          {wallet.autoCreated ? 'Auto-Created Wallet' : 'Sequence Embedded Wallet'}
-                        </span>
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Shield className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-800">
+                            Sequence Embedded Wallet
+                          </span>
+                        </div>
+                        <p className="text-xs text-blue-700">
+                          Your wallet is secured by Sequence's infrastructure and created deterministically from your user data. All wallet operations are handled on the frontend using the Sequence WaaS SDK.
+                        </p>
                       </div>
-                      <p className="text-xs text-blue-700">
-                        {wallet.autoCreated 
-                          ? 'This wallet was automatically created for you when you signed up. Your private key is securely managed by Sequence.'
-                          : 'Your wallet is secured by Sequence\'s infrastructure. Private keys are managed securely and are not accessible through this interface.'
-                        }
-                      </p>
-                    </div>
                   </div>
                 </div>
               ) : (

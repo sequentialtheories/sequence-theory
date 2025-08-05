@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
+import { createWalletForUser } from '@/lib/sequenceWaas'
 import { Loader2, Zap } from 'lucide-react'
 
 export const MassWalletCreator = () => {
@@ -15,33 +16,62 @@ export const MassWalletCreator = () => {
     setResult(null)
     
     try {
-      console.log('🚀 Starting mass wallet creation...')
+      console.log('🚀 Starting frontend mass wallet creation...')
       
-      const { data, error } = await supabase.functions.invoke('ensure-all-users-have-wallets', {
-        body: {}
-      })
+      // Get all users without wallets
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, email')
       
-      if (error) {
-        console.error('❌ Error in mass wallet creation:', error)
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        })
-        return
+      if (profilesError) throw profilesError
+      
+      const { data: existingWallets, error: walletsError } = await supabase
+        .from('user_wallets')
+        .select('user_id')
+      
+      if (walletsError) throw walletsError
+      
+      const existingUserIds = new Set(existingWallets.map(w => w.user_id))
+      const usersNeedingWallets = profiles.filter(p => !existingUserIds.has(p.user_id))
+      
+      console.log(`Found ${usersNeedingWallets.length} users needing wallets`)
+      
+      let walletsCreated = 0
+      let errors = 0
+      
+      // Create wallets for users who don't have them
+      for (const profile of usersNeedingWallets) {
+        try {
+          const result = await createWalletForUser(profile.user_id, profile.email)
+          if (result.success) {
+            walletsCreated++
+          } else {
+            errors++
+            console.error('Failed to create wallet for user:', profile.user_id, result.error)
+          }
+        } catch (error) {
+          errors++
+          console.error('Exception creating wallet for user:', profile.user_id, error)
+        }
       }
       
-      console.log('✅ Mass wallet creation result:', data)
-      setResult(data)
+      const resultData = {
+        walletsCreated,
+        errors,
+        totalProcessed: usersNeedingWallets.length
+      }
+      
+      console.log('✅ Frontend mass wallet creation result:', resultData)
+      setResult(resultData)
       
       toast({
         title: "Success!",
-        description: `Created ${data.walletsCreated} wallets successfully!`,
+        description: `Created ${walletsCreated} wallets successfully!`,
         variant: "default"
       })
       
     } catch (error) {
-      console.error('💥 Exception in mass wallet creation:', error)
+      console.error('💥 Exception in frontend mass wallet creation:', error)
       toast({
         title: "Error",
         description: "Failed to create wallets",

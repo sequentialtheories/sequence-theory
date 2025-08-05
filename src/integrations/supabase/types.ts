@@ -101,54 +101,30 @@ export type Database = {
       user_wallets: {
         Row: {
           created_at: string
+          email: string | null
           id: string
           network: string
           updated_at: string
           user_id: string
           wallet_address: string
-          wallet_config: Json
         }
         Insert: {
           created_at?: string
+          email?: string | null
           id?: string
           network?: string
           updated_at?: string
           user_id: string
           wallet_address: string
-          wallet_config: Json
         }
         Update: {
           created_at?: string
+          email?: string | null
           id?: string
           network?: string
           updated_at?: string
           user_id?: string
           wallet_address?: string
-          wallet_config?: Json
-        }
-        Relationships: []
-      }
-      wallet_private_keys: {
-        Row: {
-          created_at: string
-          encrypted_private_key: string
-          id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          encrypted_private_key: string
-          id?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          encrypted_private_key?: string
-          id?: string
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -157,14 +133,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_sequence_wallet: {
-        Args: { user_email: string; user_id: string }
-        Returns: {
-          wallet_address: string
-          success: boolean
-          error_message: string
-        }[]
-      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
@@ -184,10 +152,6 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
-      }
-      migrate_private_keys: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
       }
       save_learning_progress: {
         Args: {
