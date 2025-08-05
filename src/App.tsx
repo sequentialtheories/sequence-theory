@@ -48,6 +48,7 @@ import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowl
 import InteractiveLearning from "./pages/InteractiveLearning";
 import ApiKeys from "./pages/ApiKeys";
 import TestApiCreation from "./components/TestApiCreation";
+import ApiKeyTester from "./components/ApiKeyTester";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/test-api" element={<TestApiCreation />} />
+            <Route path="/api-test" element={<ApiKeyTester />} />
             <Route path="/learn-now" element={
               <ProtectedRoute>
                 <LearnNow />
