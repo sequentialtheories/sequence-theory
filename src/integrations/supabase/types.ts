@@ -441,7 +441,7 @@ export type Database = {
         Returns: undefined
       }
       validate_api_key: {
-        Args: { api_key: string }
+        Args: { input_api_key: string }
         Returns: {
           key_id: string
           user_id: string

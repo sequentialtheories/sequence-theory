@@ -47,6 +47,7 @@ import GlobalEducationStatistics from "./pages/GlobalEducationStatistics";
 import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowledge";
 import InteractiveLearning from "./pages/InteractiveLearning";
 import ApiKeys from "./pages/ApiKeys";
+import TestApiCreation from "./components/TestApiCreation";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
                 <ApiKeys />
               </ProtectedRoute>
             } />
+            <Route path="/test-api" element={<TestApiCreation />} />
             <Route path="/learn-now" element={
               <ProtectedRoute>
                 <LearnNow />
