@@ -97,6 +97,161 @@ export type Database = {
         }
         Relationships: []
       }
+      contract_deposits: {
+        Row: {
+          amount: number
+          contract_id: string
+          created_at: string
+          deposit_date: string
+          id: string
+          participant_id: string
+          status: string
+          transaction_hash: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          amount: number
+          contract_id: string
+          created_at?: string
+          deposit_date?: string
+          id?: string
+          participant_id: string
+          status?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          amount?: number
+          contract_id?: string
+          created_at?: string
+          deposit_date?: string
+          id?: string
+          participant_id?: string
+          status?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_deposits_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contract_deposits_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "contract_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_participants: {
+        Row: {
+          contract_id: string
+          contribution_amount: number
+          created_at: string
+          id: string
+          joined_at: string
+          status: string
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          contract_id: string
+          contribution_amount: number
+          created_at?: string
+          id?: string
+          joined_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          contract_id?: string
+          contribution_amount?: number
+          created_at?: string
+          id?: string
+          joined_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_participants_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracts: {
+        Row: {
+          contract_type: string
+          created_at: string
+          current_amount: number
+          current_participants: number
+          description: string | null
+          end_date: string | null
+          id: string
+          maximum_participants: number
+          minimum_contribution: number
+          name: string
+          start_date: string | null
+          status: string
+          target_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contract_type?: string
+          created_at?: string
+          current_amount?: number
+          current_participants?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          maximum_participants?: number
+          minimum_contribution?: number
+          name: string
+          start_date?: string | null
+          status?: string
+          target_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contract_type?: string
+          created_at?: string
+          current_amount?: number
+          current_participants?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          maximum_participants?: number
+          minimum_contribution?: number
+          name?: string
+          start_date?: string | null
+          status?: string
+          target_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       learning_progress: {
         Row: {
           category_index: number
@@ -224,6 +379,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_user_contracts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          contract_id: string
+          contract_name: string
+          contract_type: string
+          target_amount: number
+          current_amount: number
+          status: string
+          is_creator: boolean
+          is_participant: boolean
+          created_at: string
+        }[]
+      }
       get_user_progress: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -243,6 +412,14 @@ export type Database = {
       hash_api_key: {
         Args: { api_key: string }
         Returns: string
+      }
+      join_contract: {
+        Args: {
+          p_contract_id: string
+          p_contribution_amount: number
+          p_wallet_address?: string
+        }
+        Returns: boolean
       }
       save_learning_progress: {
         Args: {

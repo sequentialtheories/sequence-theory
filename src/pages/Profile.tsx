@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWallet } from '@/components/WalletProvider';
+import { ContractDashboard } from '@/components/ContractDashboard';
 
 // Private keys are no longer stored in wallet_config for security
 
@@ -319,6 +320,8 @@ const Profile = () => {
             </CardContent>
           </Card>
 
+          {/* Investment Contracts */}
+          <ContractDashboard />
 
           {/* Delete Account */}
           <Card className="border-red-200">
