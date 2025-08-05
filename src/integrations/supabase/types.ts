@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      learning_progress: {
+        Row: {
+          category_index: number
+          completed_at: string
+          created_at: string
+          id: string
+          module_id: string
+          module_index: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_index: number
+          completed_at?: string
+          created_at?: string
+          id?: string
+          module_id: string
+          module_index: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_index?: number
+          completed_at?: string
+          created_at?: string
+          id?: string
+          module_id?: string
+          module_index?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -136,6 +169,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_user_progress: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          module_id: string
+          category_index: number
+          module_index: number
+          completed_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _user_id: string
@@ -145,6 +187,14 @@ export type Database = {
       }
       migrate_private_keys: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      save_learning_progress: {
+        Args: {
+          p_module_id: string
+          p_category_index: number
+          p_module_index: number
+        }
         Returns: undefined
       }
     }

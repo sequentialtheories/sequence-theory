@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { allModules } from '@/data/moduleData';
 import { useAuth } from '@/components/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LearningProgress {
   completedModules: string[];
@@ -23,7 +24,7 @@ export function useLearningProgress() {
     return user?.id ? `${STORAGE_KEY_PREFIX}_${user.id}` : STORAGE_KEY_PREFIX;
   };
 
-  // Load progress from localStorage on mount and when user changes
+  // Load progress from database and localStorage on mount and when user changes
   useEffect(() => {
     if (!user) {
       // Reset to empty progress if no user is logged in
@@ -35,6 +36,47 @@ export function useLearningProgress() {
       return;
     }
 
+    loadUserProgress();
+  }, [user?.id]);
+
+  // Automatically load user progress from database
+  const loadUserProgress = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data, error } = await supabase.rpc('get_user_progress');
+      
+      if (error) {
+        console.error('Error loading progress from database:', error);
+        // Fallback to localStorage
+        loadFromLocalStorage();
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const completedModules = data.map((item: any) => item.module_id);
+        const newProgress = {
+          completedModules,
+          currentCategory: 0,
+          currentModule: 0
+        };
+        setProgress(newProgress);
+        
+        // Also save to localStorage for offline access
+        const storageKey = getStorageKey();
+        localStorage.setItem(storageKey, JSON.stringify(newProgress));
+      } else {
+        // No progress in database, check localStorage
+        loadFromLocalStorage();
+      }
+    } catch (error) {
+      console.error('Error loading progress:', error);
+      loadFromLocalStorage();
+    }
+  }, [user?.id]);
+
+  // Fallback to localStorage loading
+  const loadFromLocalStorage = useCallback(() => {
     const storageKey = getStorageKey();
     const saved = localStorage.getItem(storageKey);
     if (saved) {
@@ -43,7 +85,6 @@ export function useLearningProgress() {
         setProgress(parsedProgress);
       } catch (error) {
         console.error('Failed to parse learning progress:', error);
-        // Reset to empty progress on error
         setProgress({
           completedModules: [],
           currentCategory: 0,
@@ -51,7 +92,6 @@ export function useLearningProgress() {
         });
       }
     } else {
-      // Reset to empty progress if no saved data for this user
       setProgress({
         completedModules: [],
         currentCategory: 0,
@@ -68,13 +108,16 @@ export function useLearningProgress() {
     }
   }, [progress, user?.id]);
 
-  const completeModule = (moduleId: string, categoryIndex: number, moduleIndex: number) => {
+  // Automatically save progress to database and localStorage
+  const completeModule = useCallback(async (moduleId: string, categoryIndex: number, moduleIndex: number) => {
+    // First update local state for immediate UI feedback
     setProgress(prev => {
       // Avoid duplicate entries
-      const completedModules = prev.completedModules.includes(moduleId) 
-        ? prev.completedModules 
-        : [...prev.completedModules, moduleId];
+      if (prev.completedModules.includes(moduleId)) {
+        return prev;
+      }
       
+      const completedModules = [...prev.completedModules, moduleId];
       const newProgress = {
         ...prev,
         completedModules,
@@ -82,16 +125,28 @@ export function useLearningProgress() {
         currentModule: moduleIndex + 1
       };
       
-      // Immediately save to localStorage for instant persistence
-      if (user?.id) {
-        const storageKey = user.id ? `${STORAGE_KEY_PREFIX}_${user.id}` : STORAGE_KEY_PREFIX;
-        localStorage.setItem(storageKey, JSON.stringify(newProgress));
-      }
-      console.log('Progress saved:', newProgress);
-      
       return newProgress;
     });
-  };
+
+    // Automatically save to database if user is authenticated
+    if (user?.id) {
+      try {
+        const { error } = await supabase.rpc('save_learning_progress', {
+          p_module_id: moduleId,
+          p_category_index: categoryIndex,
+          p_module_index: moduleIndex
+        });
+
+        if (error) {
+          console.error('Error saving progress to database:', error);
+        } else {
+          console.log('Progress automatically saved to database:', moduleId);
+        }
+      } catch (error) {
+        console.error('Error calling save_learning_progress:', error);
+      }
+    }
+  }, [user?.id]);
 
   const isModuleUnlocked = (categoryIndex: number, moduleIndex: number): boolean => {
     // First module of each category is always unlocked for better UX

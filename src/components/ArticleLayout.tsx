@@ -31,21 +31,26 @@ const ArticleLayout = ({ title, level, children }: ArticleLayoutProps) => {
     }
   }, [moduleId, isModuleCompleted]);
 
-  // Simulate reading progress
+  // Automatically track reading progress and complete module
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = Math.min((scrollTop / docHeight) * 100, 95); // Max 95% until completion
+      const scrollPercent = Math.min((scrollTop / docHeight) * 100, 100);
       
       if (!hasCompletedModule) {
         setProgress(scrollPercent);
+        
+        // Automatically complete module when user reaches 90% of content
+        if (scrollPercent >= 90 && moduleId && currentModule) {
+          handleCompleteModule();
+        }
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasCompletedModule]);
+  }, [hasCompletedModule, moduleId, currentModule]);
 
   const handleCompleteModule = () => {
     if (moduleId && currentModule && !hasCompletedModule) {
