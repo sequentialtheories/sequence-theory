@@ -421,6 +421,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_api_access: {
+        Args: {
+          p_api_key_id: string
+          p_endpoint: string
+          p_ip_address: unknown
+          p_user_agent: string
+          p_request_data: Json
+          p_response_status: number
+        }
+        Returns: undefined
+      }
       save_learning_progress: {
         Args: {
           p_module_id: string
