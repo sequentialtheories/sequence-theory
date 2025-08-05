@@ -14,3 +14,12 @@ verify_jwt = false
 
 [functions.create-test-api-key]
 verify_jwt = false
+
+[functions.vault-club-user-creation]
+verify_jwt = false
+
+[functions.vault-club-auth-sync]
+verify_jwt = false
+
+[functions.vault-club-user-sync]
+verify_jwt = false

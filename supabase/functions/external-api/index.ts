@@ -112,14 +112,77 @@ serve(async (req) => {
         );
       }
 
-      // Get user's wallet data
-      const { data: walletData, error: walletError } = await supabase
-        .from('user_wallets')
-        .select('wallet_address, email, network')
-        .eq('user_id', validatedKey.user_id)
-        .single();
+      const email = url.searchParams.get('email');
+      const userId = url.searchParams.get('user_id');
 
-      if (walletError) {
+      let walletQuery = supabase
+        .from('user_wallets')
+        .select('wallet_address, network, email, created_at, updated_at, user_id');
+
+      // If specific email or user_id is requested, filter accordingly
+      if (email) {
+        walletQuery = walletQuery.eq('email', email);
+      } else if (userId) {
+        walletQuery = walletQuery.eq('user_id', userId);
+      } else {
+        // Default: return wallets for the API key owner
+        walletQuery = walletQuery.eq('user_id', validatedKey.user_id);
+      }
+
+      const { data: wallets, error: walletsError } = await walletQuery;
+
+      if (walletsError) {
+        console.error('Error fetching wallets:', walletsError);
+        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 500);
+        return new Response(
+          JSON.stringify({ error: 'Failed to fetch wallet data' }), 
+          { 
+            status: 500, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+
+      // For Vault Club integration, also include user profile data
+      if (validatedKey.permissions?.vault_club_access && wallets && wallets.length > 0) {
+        const userIds = wallets.map(w => w.user_id);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, name, email')
+          .in('user_id', userIds);
+
+        // Merge profile data with wallet data
+        const enrichedWallets = wallets.map(wallet => {
+          const profile = profiles?.find(p => p.user_id === wallet.user_id);
+          return {
+            ...wallet,
+            user_name: profile?.name || 'Unknown User'
+          };
+        });
+
+        // Update last used timestamp
+        await supabase
+          .from('api_keys')
+          .update({ last_used_at: new Date().toISOString() })
+          .eq('id', validatedKey.key_id);
+
+        // Log successful access
+        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), { email, user_id: userId }, 200);
+
+        return new Response(
+          JSON.stringify({ 
+            success: true,
+            data: enrichedWallets 
+          }), 
+          { 
+            status: 200, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+
+      // Standard response for non-Vault Club requests
+      if (!wallets || wallets.length === 0) {
         await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 404);
         return new Response(
           JSON.stringify({ error: 'Wallet not found' }), 
@@ -137,16 +200,12 @@ serve(async (req) => {
         .eq('id', validatedKey.key_id);
 
       // Log successful access
-      await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 200);
+      await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), { email, user_id: userId }, 200);
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          data: {
-            wallet_address: walletData.wallet_address,
-            email: walletData.email,
-            network: walletData.network
-          }
+          data: wallets.length === 1 ? wallets[0] : wallets
         }), 
         { 
           status: 200, 
