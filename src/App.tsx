@@ -46,6 +46,7 @@ import ColonialismMoneyTrade from "./pages/ColonialismMoneyTrade";
 import GlobalEducationStatistics from "./pages/GlobalEducationStatistics";
 import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowledge";
 import InteractiveLearning from "./pages/InteractiveLearning";
+import ApiKeys from "./pages/ApiKeys";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,11 @@ const App = () => (
             <Route path="/admin" element={
               <ProtectedRoute>
                 <Admin />
+              </ProtectedRoute>
+            } />
+            <Route path="/api-keys" element={
+              <ProtectedRoute>
+                <ApiKeys />
               </ProtectedRoute>
             } />
             <Route path="/learn-now" element={
