@@ -57,7 +57,7 @@ serve(async (req) => {
     }
 
     // Validate API key
-    const { data: keyData, error: keyError } = await supabase.rpc('validate_api_key', { api_key: apiKey });
+    const { data: keyData, error: keyError } = await supabase.rpc('validate_api_key', { input_api_key: apiKey });
     
     if (keyError || !keyData || keyData.length === 0 || !keyData[0].is_valid) {
       console.log('Invalid API key attempt:', { apiKey: apiKey.substring(0, 8) + '...', error: keyError });
