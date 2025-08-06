@@ -89,6 +89,150 @@ serve(async (req) => {
       return await handleDeposit(supabase, requestData, clientIP, req.headers.get('user-agent'));
     }
     
+    if (endpoint === '/vault-operations/create-contract' && req.method === 'POST') {
+      if (!requestData) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Request body is required' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const { name, description, target_amount, minimum_contribution, maximum_participants, start_date, end_date } = requestData;
+      
+      if (!name || !target_amount || !minimum_contribution || !maximum_participants) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Missing required contract fields' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const token = req.headers.get('authorization')?.replace('Bearer ', '');
+      if (!token) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Authentication required' 
+        }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const { data: userData, error: userError } = await supabase.auth.getUser(token);
+      if (userError || !userData.user) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Invalid authentication token' 
+        }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const { data: contract, error: contractError } = await supabase
+        .from('contracts')
+        .insert({
+          user_id: userData.user.id,
+          contract_type: 'vault_club',
+          name,
+          description,
+          target_amount,
+          minimum_contribution,
+          maximum_participants,
+          start_date,
+          end_date
+        })
+        .select()
+        .single();
+      
+      if (contractError) {
+        console.error('Contract creation error:', contractError);
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: `Failed to create contract: ${contractError.message}` 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      await logAccess(supabase, 'vault-operations', req.url, clientIP, req.headers.get('user-agent'), userData.user.id, 200);
+      
+      return new Response(JSON.stringify({ 
+        success: true,
+        data: { contract }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (endpoint === '/vault-operations/harvest' && req.method === 'POST') {
+      const token = req.headers.get('authorization')?.replace('Bearer ', '');
+      if (!token) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Authentication required' 
+        }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const { data: userData, error: userError } = await supabase.auth.getUser(token);
+      if (userError || !userData.user) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Invalid authentication token' 
+        }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      const { data: transaction, error: txError } = await supabase
+        .from('vault_transactions')
+        .insert({
+          user_id: userData.user.id,
+          transaction_type: 'harvest',
+          amount: 0,
+          status: 'completed',
+          metadata: { 
+            timestamp: new Date().toISOString(),
+            harvest_type: 'yield_routing'
+          }
+        })
+        .select()
+        .single();
+      
+      if (txError) {
+        console.error('Harvest transaction error:', txError);
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Failed to record harvest transaction' 
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      await logAccess(supabase, 'vault-operations', req.url, clientIP, req.headers.get('user-agent'), userData.user.id, 200);
+      
+      return new Response(JSON.stringify({ 
+        success: true,
+        data: { 
+          transaction_id: transaction.id,
+          transaction_hash: `0x${Math.random().toString(16).substr(2, 64)}`
+        }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     if (endpoint === '/vault-operations/progress' && req.method === 'GET') {
       const userId = url.searchParams.get('user_id');
       return await handleProgress(supabase, userId, clientIP, req.headers.get('user-agent'));
