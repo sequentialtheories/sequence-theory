@@ -33,7 +33,7 @@ const createWalletForUser = async (userId: string, email: string) => {
     if (result.success) {
       console.log('✅ Wallet auto-created:', result.walletAddress);
     } else {
-      console.error('Failed to auto-create wallet:', result.error);
+      console.error('Failed to auto-create wallet:', result);
     }
   } catch (error) {
     console.error('Failed to auto-create wallet:', error);
