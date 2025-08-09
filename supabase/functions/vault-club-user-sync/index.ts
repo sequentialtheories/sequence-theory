@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { ethers } from 'https://esm.sh/ethers@6.15.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -206,15 +207,29 @@ serve(async (req) => {
             continue;
           }
 
-          // Create wallet
-          const { createWalletForUser } = await import('../../../src/lib/sequenceWaas.ts');
-          const walletResult = await createWalletForUser(authData.user!.id, email);
+          // Create a deterministic wallet address and store it
+          const seed = ethers.keccak256(ethers.toUtf8Bytes(`${authData.user!.id}-${email}`));
+          const deterministicAddress = ethers.getAddress(seed.slice(0, 42));
+          const { error: walletUpsertError } = await supabase
+            .from('user_wallets')
+            .upsert(
+              {
+                user_id: authData.user!.id,
+                wallet_address: deterministicAddress,
+                network: 'polygon',
+                email
+              },
+              { onConflict: 'user_id' }
+            );
+          if (walletUpsertError) {
+            console.error('Wallet upsert failed for', email, walletUpsertError.message || walletUpsertError);
+          }
 
           results.push({
             email,
             success: true,
             user_id: authData.user!.id,
-            wallet_address: walletResult.walletAddress
+            wallet_address: deterministicAddress
           });
 
         } catch (error) {

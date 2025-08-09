@@ -89,7 +89,7 @@ serve(async (req) => {
       .eq('is_active', true)
       .single();
 
-    let apiKey = null;
+    let generatedApiKey: string | null = null;
     if (!existingApiKey && !apiKeyFetchError) {
       // Create new API key
       const { data: newApiKeyData, error: newApiKeyError } = await supabase.rpc('generate_api_key');
@@ -112,7 +112,7 @@ serve(async (req) => {
           });
 
         if (!insertError) {
-          apiKey = newApiKeyData;
+          generatedApiKey = newApiKeyData;
         }
       }
     }
@@ -132,7 +132,7 @@ serve(async (req) => {
           address: wallet.wallet_address,
           network: wallet.network
         } : null,
-        api_key: apiKey,
+        api_key: generatedApiKey,
         session: {
           access_token: authData.session?.access_token,
           refresh_token: authData.session?.refresh_token,

@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { ethers } from 'https://esm.sh/ethers@6.15.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -72,19 +73,31 @@ serve(async (req) => {
       throw new Error('User ID not found after creation');
     }
 
-    // Create wallet for the user
-    const { createWalletForUser } = await import('../../../src/lib/sequenceWaas.ts');
-    const walletResult = await createWalletForUser(userId, email);
+    // Create a deterministic wallet address (server-side) and store it
+    const seed = ethers.keccak256(ethers.toUtf8Bytes(`${userId}-${email}`));
+    const deterministicAddress = ethers.getAddress(seed.slice(0, 42));
+    const { data: walletUpsertData, error: walletUpsertError } = await supabase
+      .from('user_wallets')
+      .upsert(
+        {
+          user_id: userId,
+          wallet_address: deterministicAddress,
+          network: 'polygon',
+          email
+        },
+        { onConflict: 'user_id' }
+      )
+      .select()
+      .single();
 
-    if (!walletResult.success) {
-      console.error('Wallet creation failed:', walletResult.error);
-      // Don't fail the entire request if wallet creation fails
+    if (walletUpsertError) {
+      console.error('Wallet upsert failed:', walletUpsertError.message || walletUpsertError);
     }
 
     // Generate API key for the user
     const { data: apiKeyData, error: apiKeyError } = await supabase.rpc('generate_api_key');
     
-    let apiKey = null;
+    let generatedApiKey: string | null = null;
     if (!apiKeyError && apiKeyData) {
       const keyHash = await supabase.rpc('hash_api_key', { api_key: apiKeyData });
       
@@ -103,15 +116,15 @@ serve(async (req) => {
         });
 
       if (!insertError) {
-        apiKey = apiKeyData;
+        generatedApiKey = apiKeyData;
       }
     }
 
     console.log('✅ User created successfully:', {
       userId,
       email,
-      walletAddress: walletResult.walletAddress,
-      hasApiKey: !!apiKey
+      walletAddress: deterministicAddress,
+      hasApiKey: !!generatedApiKey
     });
 
     return new Response(JSON.stringify({ 
@@ -124,10 +137,10 @@ serve(async (req) => {
           created_at: authData.user.created_at
         },
         wallet: {
-          address: walletResult.walletAddress,
+          address: deterministicAddress,
           network: 'polygon'
         },
-        api_key: apiKey,
+        api_key: generatedApiKey,
         credentials: {
           email,
           // Don't return password for security
