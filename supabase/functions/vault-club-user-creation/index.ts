@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
@@ -18,8 +19,8 @@ serve(async (req) => {
     const vaultClubApiKey = Deno.env.get('VAULT_CLUB_API_KEY');
     
     // Validate Vault Club API key
-    const apiKey = req.headers.get('x-vault-club-api-key');
-    if (!vaultClubApiKey || apiKey !== vaultClubApiKey) {
+    const requestApiKey = req.headers.get('x-vault-club-api-key');
+    if (!vaultClubApiKey || requestApiKey !== vaultClubApiKey) {
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Unauthorized: Invalid Vault Club API key' 
@@ -84,7 +85,7 @@ serve(async (req) => {
     // Generate API key for the user
     const { data: apiKeyData, error: apiKeyError } = await supabase.rpc('generate_api_key');
     
-    let apiKey = null;
+    let generatedApiKey = null;
     if (!apiKeyError && apiKeyData) {
       const keyHash = await supabase.rpc('hash_api_key', { api_key: apiKeyData });
       
@@ -103,7 +104,7 @@ serve(async (req) => {
         });
 
       if (!insertError) {
-        apiKey = apiKeyData;
+        generatedApiKey = apiKeyData;
       }
     }
 
@@ -111,7 +112,7 @@ serve(async (req) => {
       userId,
       email,
       walletAddress: walletResult.walletAddress,
-      hasApiKey: !!apiKey
+      hasApiKey: !!generatedApiKey
     });
 
     return new Response(JSON.stringify({ 
@@ -127,7 +128,7 @@ serve(async (req) => {
           address: walletResult.walletAddress,
           network: 'polygon'
         },
-        api_key: apiKey,
+        api_key: generatedApiKey,
         credentials: {
           email,
           // Don't return password for security
