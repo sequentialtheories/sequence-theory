@@ -43,7 +43,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('Creating Sequence Theory user for Vault Club:', email);
+    console.log('Creating Sequence Theory user:', email);
 
     // Create user in Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
@@ -108,7 +108,7 @@ serve(async (req) => {
       }
     }
 
-    console.log('✅ User created successfully:', {
+    console.log('✅ Sequence Theory user created successfully:', {
       userId,
       email,
       walletAddress: walletResult.walletAddress,

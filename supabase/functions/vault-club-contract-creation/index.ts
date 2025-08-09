@@ -52,7 +52,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('Creating Vault Club contract for:', creator);
+    console.log('Creating Sequence Theory contract for:', creator);
 
     const { data: wallet, error: walletError } = await supabase
       .from('user_wallets')
@@ -83,8 +83,8 @@ serve(async (req) => {
       .insert({
         user_id: wallet.user_id,
         contract_type: 'vault_club',
-        name: `Vault Club - ${rigorLevel} Rigor`,
-        description: `${rigorLevel} rigor vault club with ${maxMembers} max members, ${lockupPeriod} lockup period`,
+        name: `Sequence Theory Vault - ${rigorLevel} Rigor`,
+        description: `${rigorLevel} rigor Sequence Theory vault with ${maxMembers} max members, ${lockupPeriod} lockup period`,
         target_amount: targetAmount,
         current_amount: 0,
         minimum_contribution: weeklyAmount,
