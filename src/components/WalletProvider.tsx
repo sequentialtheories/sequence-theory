@@ -50,28 +50,29 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Try to get or create wallet
       const result = await getOrCreateWallet(user.id, user.email!);
-      
-      if (result.success) {
-        // Fetch the wallet data from database
-        const { data, error: fetchError } = await supabase
-          .from('user_wallets')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (fetchError) {
-          console.error('Error fetching wallet after creation:', fetchError);
-          setError('Failed to fetch wallet information');
-        } else if (data) {
-          setWallet({
-            address: data.wallet_address,
-            network: data.network,
-            email: data.email || user.email!,
-          });
-        }
-      } else {
+      // If wallet creation failed, handle error early
+      if ('error' in result) {
         console.error('Failed to get or create wallet:', result.error);
         setError(result.error || 'Failed to create wallet');
+        return;
+      }
+
+      // Fetch the wallet data from database
+      const { data, error: fetchError } = await supabase
+        .from('user_wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('Error fetching wallet after creation:', fetchError);
+        setError('Failed to fetch wallet information');
+      } else if (data) {
+        setWallet({
+          address: data.wallet_address,
+          network: data.network,
+          email: data.email || user.email!,
+        });
       }
     } catch (err) {
       console.error('Unexpected error fetching wallet:', err);

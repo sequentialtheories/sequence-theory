@@ -77,13 +77,13 @@ serve(async (req) => {
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       const { data: wallet } = await supabase
         .from('user_wallets')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       return new Response(JSON.stringify({ 
         success: true,

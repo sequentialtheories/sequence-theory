@@ -88,7 +88,7 @@ serve(async (req) => {
         { onConflict: 'user_id' }
       )
       .select()
-      .single();
+      .maybeSingle();
 
     if (walletUpsertError) {
       console.error('Wallet upsert failed:', walletUpsertError.message || walletUpsertError);

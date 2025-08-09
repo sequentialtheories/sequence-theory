@@ -71,14 +71,14 @@ serve(async (req) => {
       .from('profiles')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     // Get user wallet
     const { data: wallet, error: walletError } = await supabase
       .from('user_wallets')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     // Get or create API key for Vault Club access
     let { data: existingApiKey, error: apiKeyFetchError } = await supabase
@@ -87,7 +87,7 @@ serve(async (req) => {
       .eq('user_id', userId)
       .eq('name', 'Vault Club Access Key')
       .eq('is_active', true)
-      .single();
+      .maybeSingle();
 
     let generatedApiKey: string | null = null;
     if (!existingApiKey && !apiKeyFetchError) {

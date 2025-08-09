@@ -31,7 +31,7 @@ export const createWalletForUser = async (userId: string, email: string) => {
         onConflict: 'user_id'
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('Error storing wallet:', error)
@@ -54,7 +54,7 @@ export const getOrCreateWallet = async (userId: string, email: string) => {
       .from('user_wallets')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (existingWallet && !fetchError) {
       console.log('Found existing wallet:', existingWallet.wallet_address)
