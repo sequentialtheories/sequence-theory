@@ -55,6 +55,81 @@ export type Database = {
           },
         ]
       }
+      api_audit_logs: {
+        Row: {
+          api_key_id: string | null
+          created_at: string
+          endpoint: string
+          id: string
+          idempotency_key: string | null
+          method: string
+          request_hash: string | null
+          request_meta: Json | null
+          response_meta: Json | null
+          status_code: number
+          user_id: string | null
+        }
+        Insert: {
+          api_key_id?: string | null
+          created_at?: string
+          endpoint: string
+          id?: string
+          idempotency_key?: string | null
+          method: string
+          request_hash?: string | null
+          request_meta?: Json | null
+          response_meta?: Json | null
+          status_code: number
+          user_id?: string | null
+        }
+        Update: {
+          api_key_id?: string | null
+          created_at?: string
+          endpoint?: string
+          id?: string
+          idempotency_key?: string | null
+          method?: string
+          request_hash?: string | null
+          request_meta?: Json | null
+          response_meta?: Json | null
+          status_code?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      api_idempotency: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          idempotency_key: string
+          method: string
+          response_body: Json
+          status_code: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          idempotency_key: string
+          method: string
+          response_body: Json
+          status_code: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          idempotency_key?: string
+          method?: string
+          response_body?: Json
+          status_code?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
@@ -252,6 +327,65 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_posts: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      forum_replies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_progress: {
         Row: {
           category_index: number
@@ -363,6 +497,100 @@ export type Database = {
           updated_at?: string
           user_id?: string
           wallet_address?: string
+        }
+        Relationships: []
+      }
+      vault_epoch_deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          epoch_number: number
+          id: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          epoch_number: number
+          id?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          epoch_number?: number
+          id?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vault_epoch_deposits_epoch_number_fkey"
+            columns: ["epoch_number"]
+            isOneToOne: false
+            referencedRelation: "vault_epochs"
+            referencedColumns: ["epoch_number"]
+          },
+        ]
+      }
+      vault_epoch_harvests: {
+        Row: {
+          created_at: string
+          epoch_number: number
+          executed_by: string | null
+          id: string
+          yield_amount: number
+        }
+        Insert: {
+          created_at?: string
+          epoch_number: number
+          executed_by?: string | null
+          id?: string
+          yield_amount?: number
+        }
+        Update: {
+          created_at?: string
+          epoch_number?: number
+          executed_by?: string | null
+          id?: string
+          yield_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vault_epoch_harvests_epoch_number_fkey"
+            columns: ["epoch_number"]
+            isOneToOne: false
+            referencedRelation: "vault_epochs"
+            referencedColumns: ["epoch_number"]
+          },
+        ]
+      }
+      vault_epochs: {
+        Row: {
+          created_at: string
+          ends_at: string
+          epoch_number: number
+          id: string
+          starts_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          epoch_number: number
+          id?: string
+          starts_at: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          epoch_number?: number
+          id?: string
+          starts_at?: string
+          status?: string
         }
         Relationships: []
       }
