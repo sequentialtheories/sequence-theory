@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key',
 };
 
 serve(async (req) => {
@@ -30,6 +30,15 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const idk = req.headers.get('Idempotency-Key') || null;
+    const endpoint = 'vault-club-auth-sync';
+    const method = 'POST';
+    if (idk) {
+      const { data: idem } = await supabase.from('api_idempotency').select('*').eq('idempotency_key', idk).eq('endpoint', endpoint).eq('method', method).limit(1).maybeSingle();
+      if (idem) {
+        return new Response(JSON.stringify(idem.response_body), { status: idem.status_code, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
     const { email, password } = await req.json();
 
     if (!email || !password) {
@@ -119,7 +128,7 @@ serve(async (req) => {
 
     console.log('✅ Authentication successful for:', email);
 
-    return new Response(JSON.stringify({ 
+    const body = { 
       success: true,
       data: {
         user: {
@@ -139,7 +148,12 @@ serve(async (req) => {
           expires_at: authData.session?.expires_at
         }
       }
-    }), {
+    };
+    if (idk) {
+      await supabase.from('api_idempotency').insert({ idempotency_key: idk, user_id: userId, endpoint, method, status_code: 200, response_body: body });
+    }
+    await supabase.from('api_audit_logs').insert({ user_id: userId, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
+    return new Response(JSON.stringify(body), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
