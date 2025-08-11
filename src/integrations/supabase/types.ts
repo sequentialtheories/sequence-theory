@@ -327,6 +327,38 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_messages: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string
+          id: string
+          topic_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by: string
+          id?: string
+          topic_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_messages_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forum_posts: {
         Row: {
           category: string
@@ -386,6 +418,27 @@ export type Database = {
           },
         ]
       }
+      forum_topics: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       learning_progress: {
         Row: {
           category_index: number
@@ -419,6 +472,35 @@ export type Database = {
         }
         Relationships: []
       }
+      memberships: {
+        Row: {
+          joined_at: string
+          role: string
+          subclub_id: string
+          user_id: string
+        }
+        Insert: {
+          joined_at?: string
+          role?: string
+          subclub_id: string
+          user_id: string
+        }
+        Update: {
+          joined_at?: string
+          role?: string
+          subclub_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_subclub_id_fkey"
+            columns: ["subclub_id"]
+            isOneToOne: false
+            referencedRelation: "subclubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -445,6 +527,77 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      subclubs: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          lock_months: number
+          name: string
+          rigor: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          lock_months: number
+          name: string
+          rigor: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          lock_months?: number
+          name?: string
+          rigor?: string
+        }
+        Relationships: []
+      }
+      tx_ledger: {
+        Row: {
+          amount_usdc: number | null
+          created_at: string
+          details: Json
+          id: string
+          idempotency_key: string
+          kind: string
+          status: string
+          subclub_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_usdc?: number | null
+          created_at?: string
+          details?: Json
+          id?: string
+          idempotency_key: string
+          kind: string
+          status: string
+          subclub_id: string
+          user_id: string
+        }
+        Update: {
+          amount_usdc?: number | null
+          created_at?: string
+          details?: Json
+          id?: string
+          idempotency_key?: string
+          kind?: string
+          status?: string
+          subclub_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tx_ledger_subclub_id_fkey"
+            columns: ["subclub_id"]
+            isOneToOne: false
+            referencedRelation: "subclubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -594,6 +747,44 @@ export type Database = {
         }
         Relationships: []
       }
+      vault_states: {
+        Row: {
+          epoch_week: number
+          p1_usdc: number
+          p2_usdc: number
+          p3_usdc: number
+          subclub_id: string
+          tvl_usdc: number
+          wbtc_sats: number
+        }
+        Insert: {
+          epoch_week: number
+          p1_usdc: number
+          p2_usdc: number
+          p3_usdc: number
+          subclub_id: string
+          tvl_usdc: number
+          wbtc_sats?: number
+        }
+        Update: {
+          epoch_week?: number
+          p1_usdc?: number
+          p2_usdc?: number
+          p3_usdc?: number
+          subclub_id?: string
+          tvl_usdc?: number
+          wbtc_sats?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vault_states_subclub_id_fkey"
+            columns: ["subclub_id"]
+            isOneToOne: false
+            referencedRelation: "subclubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -640,6 +831,10 @@ export type Database = {
       hash_api_key: {
         Args: { api_key: string }
         Returns: string
+      }
+      is_owner_of_subclub: {
+        Args: { p_subclub_id: string }
+        Returns: boolean
       }
       join_contract: {
         Args: {
