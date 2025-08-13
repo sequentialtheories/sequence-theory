@@ -27,8 +27,8 @@ const createWalletForUser = async (userId: string, email: string) => {
     console.log('Auto-creating wallet for user:', userId);
     
     // Import the frontend wallet creation function
-    const { getOrCreateWallet } = await import('@/lib/sequenceWaas');
-    const result = await getOrCreateWallet(userId, email);
+    const { getOrCreateSequenceWallet } = await import('@/lib/sequenceWaas');
+    const result = await getOrCreateSequenceWallet(userId, email);
 
     if (result.success) {
       console.log('✅ Wallet auto-created:', result.walletAddress);

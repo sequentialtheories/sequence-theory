@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { getOrCreateWallet } from '@/lib/sequenceWaas';
+import { getOrCreateSequenceWallet } from '@/lib/sequenceWaas';
 
 interface WalletInfo {
   address: string;
@@ -49,7 +49,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       setError(null);
 
       // Try to get or create wallet
-      const result = await getOrCreateWallet(user.id, user.email!);
+      const result = await getOrCreateSequenceWallet(user.id, user.email!);
       // If wallet creation failed, handle error early
       if ('error' in result) {
         console.error('Failed to get or create wallet:', result.error);
