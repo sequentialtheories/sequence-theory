@@ -3,17 +3,9 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 
 const corsHeaders = {
-<<<<<<< Updated upstream
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key',
-||||||| constructed merge base
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
-=======
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key, Idempotency-Key, x-idempotency-key, X-Idempotency-Key',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Max-Age': '86400'
->>>>>>> Stashed changes
 };
 
 serve(async (req) => {
@@ -186,13 +178,7 @@ serve(async (req) => {
 
     console.log('✅ Authentication successful for:', email);
 
-<<<<<<< Updated upstream
-    const body = { 
-||||||| constructed merge base
-    return new Response(JSON.stringify({ 
-=======
     const responsePayload = { 
->>>>>>> Stashed changes
       success: true,
       request_id,
       data: {
@@ -213,18 +199,6 @@ serve(async (req) => {
           expires_at: authData.session?.expires_at
         }
       }
-<<<<<<< Updated upstream
-    };
-    if (idk) {
-      await supabase.from('api_idempotency').insert({ idempotency_key: idk, user_id: userId, endpoint, method, status_code: 200, response_body: body });
-    }
-    await supabase.from('api_audit_logs').insert({ user_id: userId, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
-    return new Response(JSON.stringify(responsePayload), {
-      headers: { ...headers, 'Content-Type': 'application/json' },
-||||||| constructed merge base
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-=======
     };
 
     if (existingIdempotent) {
@@ -265,7 +239,6 @@ serve(async (req) => {
 
     return new Response(JSON.stringify(responsePayload), {
       headers: { ...headers, 'Content-Type': 'application/json' },
->>>>>>> Stashed changes
     });
 
   } catch (error) {

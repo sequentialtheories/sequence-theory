@@ -3,13 +3,25 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.52.0";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key, Idempotency-Key, x-idempotency-key, X-Idempotency-Key",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
 serve(async (req) => {
+  const origin = req.headers.get("origin") || "";
+  const allowedOrigins = new Set([
+    "https://staging.sequencetheory.com",
+    "https://staging.vaultclub.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+  ]);
+  const allowOrigin = allowedOrigins.has(origin) ? origin : "null";
+  const headers = { ...corsHeaders, "Access-Control-Allow-Origin": allowOrigin, Vary: "Origin" };
+  const request_id = crypto.randomUUID();
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers });
   }
 
   try {
@@ -18,16 +30,16 @@ serve(async (req) => {
     const vaultClubApiKey = Deno.env.get("VAULT_CLUB_API_KEY");
     const apiKey = req.headers.get("x-vault-club-api-key");
     if (!vaultClubApiKey || apiKey !== vaultClubApiKey) {
-      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ success: false, error: "Unauthorized", request_id }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...headers, "Content-Type": "application/json" },
       });
     }
 
     if (req.method !== "POST") {
-      return new Response(JSON.stringify({ success: false, error: "Method not allowed" }), {
+      return new Response(JSON.stringify({ success: false, error: "Method not allowed", request_id }), {
         status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...headers, "Content-Type": "application/json" },
       });
     }
 
@@ -64,7 +76,28 @@ serve(async (req) => {
 
     let epochNumber = epoch?.epoch_number || null;
     if (!epochNumber) {
-      return new Response(JSON.stringify({ success: false, error: "No epoch to harvest" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ success: false, error: "No epoch to harvest", request_id }), { status: 400, headers: { ...headers, "Content-Type": "application/json" } });
+    }
+
+    if (idk) {
+      const { data: idemRow } = await supabase
+        .from("idempotency_keys")
+        .select("status, response_snapshot")
+        .eq("function_name", endpoint)
+        .eq("key", idk)
+        .eq("request_hash", String(epochNumber))
+        .maybeSingle();
+
+      if (idemRow && (idemRow as any).status === "in_flight") {
+        return new Response(JSON.stringify({ success: false, error: "conflict_idempotency_in_flight", request_id }), { status: 409, headers: { ...headers, "Content-Type": "application/json" } });
+      }
+      if (idemRow && (idemRow as any).status === "success" && (idemRow as any).response_snapshot) {
+        return new Response(JSON.stringify((idemRow as any).response_snapshot), { headers: { ...headers, "Content-Type": "application/json" } });
+      }
+
+      await supabase
+        .from("idempotency_keys")
+        .upsert({ function_name: endpoint, key: idk, user_id: authUser.user.id, request_hash: String(epochNumber), status: "in_flight" }, { onConflict: "function_name,key" });
     }
 
     const { data: depositsAgg } = await supabase
@@ -121,11 +154,11 @@ serve(async (req) => {
 
     await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: responsePayload });
 
-    return new Response(JSON.stringify(responsePayload), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(responsePayload), { headers: { ...headers, "Content-Type": "application/json" } });
   } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: String(error && error.message || error) }), {
+    return new Response(JSON.stringify({ success: false, error: String(error && error.message || error), request_id }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...headers, "Content-Type": "application/json" },
     });
   }
 });
