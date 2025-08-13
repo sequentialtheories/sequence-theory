@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWallet } from '@/components/WalletProvider';
 import { ContractDashboard } from '@/components/ContractDashboard';
+import { NonCustodialWalletManager } from '@/components/NonCustodialWalletManager';
 
 // Private keys are no longer stored in wallet_config for security
 
@@ -319,6 +320,9 @@ const Profile = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Non-Custodial Wallet Management */}
+          <NonCustodialWalletManager />
 
           {/* Investment Contracts */}
           <ContractDashboard />

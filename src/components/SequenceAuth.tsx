@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { signInWithSequence, submitOtpCode } from '@/lib/sequenceWaas';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Shield } from 'lucide-react';
 
 interface SequenceAuthProps {
   email: string;
@@ -117,10 +118,16 @@ export const SequenceAuth = ({ email, onSuccess, onError }: SequenceAuthProps) =
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Create Sequence Wallet</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-green-600" />
+          Create Non-Custodial Wallet
+        </CardTitle>
         <CardDescription>
-          Create a secure wallet for {email}
+          Create a secure, non-custodial wallet for {email}
         </CardDescription>
+        <Badge variant="outline" className="w-fit bg-green-50 text-green-700 border-green-200">
+          Non-Custodial - You Control Your Keys
+        </Badge>
       </CardHeader>
       <CardContent className="space-y-4">
         {error && (
