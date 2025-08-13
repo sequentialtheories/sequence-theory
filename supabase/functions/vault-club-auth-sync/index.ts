@@ -219,8 +219,8 @@ serve(async (req) => {
       await supabase.from('api_idempotency').insert({ idempotency_key: idk, user_id: userId, endpoint, method, status_code: 200, response_body: body });
     }
     await supabase.from('api_audit_logs').insert({ user_id: userId, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
-    return new Response(JSON.stringify(body), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    return new Response(JSON.stringify(responsePayload), {
+      headers: { ...headers, 'Content-Type': 'application/json' },
 ||||||| constructed merge base
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

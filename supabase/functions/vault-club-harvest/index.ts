@@ -98,13 +98,30 @@ serve(async (req) => {
       status: "open",
     });
 
+    const request_id = crypto.randomUUID();
     const body = { success: true, data: { accepted: true, executed: true, epoch_number: epochNumber, yield_amount: yieldAmount, network: "testnet" } };
-    if (idk) {
-      await supabase.from("api_idempotency").insert({ idempotency_key: idk, user_id: authUser.user.id, endpoint, method, status_code: 200, response_body: body });
-    }
-    await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
+    const responsePayload = { ...body, request_id };
 
-    return new Response(JSON.stringify(body), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (idk) {
+      await supabase.from("api_idempotency").insert({ idempotency_key: idk, user_id: authUser.user.id, endpoint, method, status_code: 200, response_body: responsePayload });
+      await supabase
+        .from("idempotency_keys")
+        .upsert(
+          {
+            function_name: "vault-club-harvest",
+            key: idk,
+            user_id: authUser.user.id,
+            request_hash: String(epochNumber),
+            status: "success",
+            response_snapshot: responsePayload,
+          },
+          { onConflict: "function_name,key" }
+        );
+    }
+
+    await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: responsePayload });
+
+    return new Response(JSON.stringify(responsePayload), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error) {
     return new Response(JSON.stringify({ success: false, error: String(error && error.message || error) }), {
       status: 500,

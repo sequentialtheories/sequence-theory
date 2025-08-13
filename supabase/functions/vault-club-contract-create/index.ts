@@ -80,13 +80,34 @@ serve(async (req) => {
       });
     }
 
-    const body = { success: true, data };
-    if (idk) {
-      await supabase.from("api_idempotency").insert({ idempotency_key: idk, user_id: authUser.user.id, endpoint, method, status_code: 200, response_body: body });
-    }
-    await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
+    const request_id = crypto.randomUUID();
+    const responsePayload = { success: true, request_id, data };
 
-    return new Response(JSON.stringify(body), {
+    if (idk) {
+      await supabase
+        .from("api_idempotency")
+        .insert({ idempotency_key: idk, user_id: authUser.user.id, endpoint, method, status_code: 200, response_body: responsePayload });
+
+      const enc = new TextEncoder();
+      const hashInput = `${authUser.user.id}:${JSON.stringify(payload)}`;
+      const digest = await crypto.subtle.digest("SHA-256", enc.encode(hashInput));
+      const request_hash = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+      await supabase
+        .from("idempotency_keys")
+        .upsert({
+          function_name: endpoint,
+          key: idk,
+          user_id: authUser.user.id,
+          request_hash,
+          status: "success",
+          response_snapshot: responsePayload,
+        }, { onConflict: "function_name,key" });
+    }
+
+    await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: responsePayload });
+
+    return new Response(JSON.stringify(responsePayload), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

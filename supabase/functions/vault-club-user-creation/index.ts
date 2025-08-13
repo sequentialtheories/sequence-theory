@@ -6,17 +6,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import { ethers } from 'https://esm.sh/ethers@6.15.0';
 
 const corsHeaders = {
-<<<<<<< Updated upstream
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key',
-||||||| constructed merge base
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
-=======
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key, Idempotency-Key, x-idempotency-key, X-Idempotency-Key',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Max-Age': '86400'
->>>>>>> Stashed changes
 };
 
 serve(async (req) => {
@@ -54,15 +46,6 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const idk = req.headers.get('Idempotency-Key') || null;
-    const endpoint = 'vault-club-user-creation';
-    const method = 'POST';
-    if (idk) {
-      const { data: idem } = await supabase.from('api_idempotency').select('*').eq('idempotency_key', idk).eq('endpoint', endpoint).eq('method', method).limit(1).maybeSingle();
-      if (idem) {
-        return new Response(JSON.stringify(idem.response_body), { status: idem.status_code, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      }
-    }
     const { email, password, name, metadata = {} } = await req.json();
 
     const idempotencyKey = req.headers.get('idempotency-key') || req.headers.get('Idempotency-Key') || req.headers.get('x-idempotency-key') || req.headers.get('X-Idempotency-Key');
@@ -196,13 +179,7 @@ serve(async (req) => {
       hasApiKey: !!generatedApiKey
     });
 
-<<<<<<< Updated upstream
-    const body = { 
-||||||| constructed merge base
-    return new Response(JSON.stringify({ 
-=======
     const responsePayload = { 
->>>>>>> Stashed changes
       success: true,
       request_id,
       data: {
@@ -222,20 +199,8 @@ serve(async (req) => {
           user_id: userId
         }
       }
-<<<<<<< Updated upstream
     };
-    if (idk) {
-      await supabase.from('api_idempotency').insert({ idempotency_key: idk, user_id: userId, endpoint, method, status_code: 200, response_body: body });
-    }
-    await supabase.from('api_audit_logs').insert({ user_id: userId, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
-    return new Response(JSON.stringify(body), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-||||||| constructed merge base
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-=======
-    };
-
+    
     if (_idem) {
       await supabase
         .from('idempotency_keys')
@@ -248,7 +213,7 @@ serve(async (req) => {
           response_snapshot: responsePayload
         }, { onConflict: 'function_name,key' });
     }
-
+    
     const clientIP = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
     const userAgent = req.headers.get('user-agent');
     try {
@@ -260,10 +225,9 @@ serve(async (req) => {
         response_status: 200
       });
     } catch (_e) {}
-
+    
     return new Response(JSON.stringify(responsePayload), {
       headers: { ...headers, 'Content-Type': 'application/json' },
->>>>>>> Stashed changes
     });
 
   } catch (error) {

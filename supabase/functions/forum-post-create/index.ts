@@ -61,10 +61,11 @@ serve(async (req) => {
       return new Response(JSON.stringify(body), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const body = { success: true, data };
-    if (idk) await supabase.from("api_idempotency").insert({ idempotency_key: idk, user_id: authUser.user.id, endpoint, method, status_code: 200, response_body: body });
-    await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
-    return new Response(JSON.stringify(body), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const request_id = crypto.randomUUID();
+    const responsePayload = { success: true, request_id, data };
+    if (idk) await supabase.from("idempotency_keys").upsert({ function_name: "forum-post-create", key: idk, user_id: authUser.user.id, request_hash: `post:${authUser.user.id}:${t || ""}:${c || ""}:${cat || ""}`, status: "success", response_snapshot: responsePayload }, { onConflict: "function_name,key" });
+    await supabase.from("api_audit_logs").insert({ user_id: authUser.user.id, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: responsePayload });
+    return new Response(JSON.stringify(responsePayload), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error) {
     return new Response(JSON.stringify({ success: false, error: String(error && error.message || error) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
