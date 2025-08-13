@@ -23,3 +23,18 @@ verify_jwt = false
 
 [functions.vault-club-user-sync]
 verify_jwt = false
+
+[functions.vault-create]
+verify_jwt = true
+
+[functions.vault-join]
+verify_jwt = true
+
+[functions.vault-balance]
+verify_jwt = true
+
+[functions.vault-deposit]
+verify_jwt = true
+
+[functions.vault-harvest]
+verify_jwt = true
