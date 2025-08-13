@@ -1,0 +1,25 @@
+### Health check (CORS preflight)
+OPTIONS https://qldjhlnsphlixmzzrdwi.functions.supabase.co/vault-club-user-creation
+
+### Create user
+POST https://qldjhlnsphlixmzzrdwi.functions.supabase.co/vault-club-user-creation
+Content-Type: application/json
+x-vault-club-api-key: {{VAULT_CLUB_API_KEY}}
+Idempotency-Key: 00000000-0000-0000-0000-000000000001
+
+{
+  "email": "tvc.user+{{timestamp}}@example.com",
+  "password": "Test1234!",
+  "name": "Vault User"
+}
+
+### Login / Auth Sync
+POST https://qldjhlnsphlixmzzrdwi.functions.supabase.co/vault-club-auth-sync
+Content-Type: application/json
+x-vault-club-api-key: {{VAULT_CLUB_API_KEY}}
+Idempotency-Key: 00000000-0000-0000-0000-000000000002
+
+{
+  "email": "tvc.user@example.com",
+  "password": "Test1234!"
+}
