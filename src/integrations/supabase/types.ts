@@ -832,6 +832,14 @@ export type Database = {
         Args: { api_key: string }
         Returns: string
       }
+      is_contract_owner: {
+        Args: { contract_id: string }
+        Returns: boolean
+      }
+      is_contract_participant: {
+        Args: { contract_id: string }
+        Returns: boolean
+      }
       is_owner_of_subclub: {
         Args: { p_subclub_id: string }
         Returns: boolean
