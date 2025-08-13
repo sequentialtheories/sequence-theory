@@ -71,3 +71,43 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Vault Club integration: env, functions, and migrations
+
+Environment variables expected by Edge Functions:
+- SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY
+- VAULT_CLUB_API_KEY
+- Optional: VAULT_CLUB_EDGE_KEY
+
+CORS and headers:
+- Edge Functions allow: authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key
+
+Idempotency and audit logging:
+- Table: public.idempotency_keys
+- Edge Functions vault-club-user-creation and vault-club-auth-sync accept Idempotency-Key and cache responses
+- Audit entries are written to api_access_logs
+
+Epoch-based simulation:
+- contract_deposits has a generated epoch_id based on date_trunc('week', created_at)
+- current_epoch() returns the current weekly epoch as bigint
+- contract_epoch_stats view summarizes totals per contract_id, epoch_id
+- process_epoch(contract_id uuid, epoch_id bigint) confirms pending deposits for that epoch
+
+How to apply migrations:
+1) Apply SQL files in supabase/migrations:
+   - 20250811113000_idempotency.sql
+   - 20250811113500_epochs.sql
+   - 20250811114000_indices.sql
+2) Deploy functions:
+   - supabase functions deploy vault-club-user-creation
+   - supabase functions deploy vault-club-auth-sync
+   - supabase functions deploy external-api
+
+Deployment via Git connection:
+- Repository: sequentialtheories/sequence-theory
+- Branch: devin/1754825321-edge-contracts or main
+- Root: supabase/functions
+
+Staging/runtime config for TVC
+- window.__TVC_CONFIG.functionsBase = "https://qldjhlnsphlixmzzrdwi.functions.supabase.co"
+- window.__TVC_CONFIG.vaultClubApiKey = "&lt;VAULT_CLUB_API_KEY&gt;"

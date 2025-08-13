@@ -3,13 +3,32 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 
 const corsHeaders = {
+<<<<<<< Updated upstream
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key',
+||||||| constructed merge base
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
+=======
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, idempotency-key, Idempotency-Key, x-idempotency-key, X-Idempotency-Key',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Max-Age': '86400'
+>>>>>>> Stashed changes
 };
 
 serve(async (req) => {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigins = new Set([
+    'https://staging.sequencetheory.com',
+    'https://staging.vaultclub.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+  ]);
+  const allowOrigin = allowedOrigins.has(origin) ? origin : 'null';
+  const headers = { ...corsHeaders, 'Access-Control-Allow-Origin': allowOrigin, Vary: 'Origin' };
+
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers });
   }
 
   try {
@@ -19,13 +38,15 @@ serve(async (req) => {
     
     // Validate Vault Club API key
     const apiKey = req.headers.get('x-vault-club-api-key');
+    const request_id = crypto.randomUUID();
     if (!vaultClubApiKey || apiKey !== vaultClubApiKey) {
       return new Response(JSON.stringify({ 
         success: false, 
-        error: 'Unauthorized: Invalid Vault Club API key' 
+        error: 'Unauthorized: Invalid Vault Club API key',
+        request_id
       }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -40,14 +61,50 @@ serve(async (req) => {
       }
     }
     const { email, password } = await req.json();
+    const idempotencyKey = req.headers.get('idempotency-key') || req.headers.get('Idempotency-Key') || req.headers.get('x-idempotency-key') || req.headers.get('X-Idempotency-Key');
+
+    let existingIdempotent: { key: string; request_hash: string } | null = null;
+    if (idempotencyKey) {
+      const enc = new TextEncoder();
+      const digest = await crypto.subtle.digest('SHA-256', enc.encode(`${email}`));
+      const hashHex = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+      const { data: idem, error: idemErr } = await supabase
+        .from('idempotency_keys')
+        .select('status, response_snapshot')
+        .eq('function_name', 'vault-club-auth-sync')
+        .eq('key', idempotencyKey)
+        .eq('request_hash', hashHex)
+        .maybeSingle();
+
+      if (!idemErr && idem && (idem as any).status === 'in_flight') {
+        return new Response(JSON.stringify({ success: false, error: 'conflict_idempotency_in_flight', request_id }), { status: 409, headers: { ...headers, 'Content-Type': 'application/json' } });
+      }
+      if (!idemErr && idem && (idem as any).status === 'success' && (idem as any).response_snapshot) {
+        return new Response(JSON.stringify((idem as any).response_snapshot), { headers: { ...headers, 'Content-Type': 'application/json' } });
+      }
+
+      await supabase
+        .from('idempotency_keys')
+        .upsert({
+          function_name: 'vault-club-auth-sync',
+          key: idempotencyKey,
+          user_id: null,
+          request_hash: hashHex,
+          status: 'in_flight'
+        }, { onConflict: 'function_name,key' });
+
+      existingIdempotent = { key: idempotencyKey, request_hash: hashHex };
+    }
 
     if (!email || !password) {
       return new Response(JSON.stringify({ 
         success: false, 
-        error: 'Email and password are required' 
+        error: 'Email and password are required',
+        request_id
       }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -63,10 +120,11 @@ serve(async (req) => {
       console.log('Authentication failed:', authError.message);
       return new Response(JSON.stringify({ 
         success: false, 
-        error: 'Invalid credentials' 
+        error: 'Invalid credentials',
+        request_id
       }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...headers, 'Content-Type': 'application/json' },
       });
     }
 
@@ -128,8 +186,15 @@ serve(async (req) => {
 
     console.log('✅ Authentication successful for:', email);
 
+<<<<<<< Updated upstream
     const body = { 
+||||||| constructed merge base
+    return new Response(JSON.stringify({ 
+=======
+    const responsePayload = { 
+>>>>>>> Stashed changes
       success: true,
+      request_id,
       data: {
         user: {
           id: userId,
@@ -148,6 +213,7 @@ serve(async (req) => {
           expires_at: authData.session?.expires_at
         }
       }
+<<<<<<< Updated upstream
     };
     if (idk) {
       await supabase.from('api_idempotency').insert({ idempotency_key: idk, user_id: userId, endpoint, method, status_code: 200, response_body: body });
@@ -155,6 +221,51 @@ serve(async (req) => {
     await supabase.from('api_audit_logs').insert({ user_id: userId, api_key_id: null, endpoint, method, status_code: 200, idempotency_key: idk, request_meta: {}, response_meta: body });
     return new Response(JSON.stringify(body), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+||||||| constructed merge base
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+=======
+    };
+
+    if (existingIdempotent) {
+      await supabase
+        .from('idempotency_keys')
+        .upsert({
+          function_name: 'vault-club-auth-sync',
+          key: existingIdempotent.key,
+          user_id: userId,
+          request_hash: existingIdempotent.request_hash,
+          status: 'success',
+          response_snapshot: responsePayload
+        }, { onConflict: 'function_name,key' });
+    }
+
+    const clientIP = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent');
+    try {
+      await supabase.from('api_access_logs').insert({
+        endpoint: '/vault-club-auth-sync',
+        ip_address: clientIP,
+        user_agent: userAgent,
+        request_data: { email },
+        response_status: 200
+      });
+    } catch (_e) {}
+
+    await supabase
+      .from('idempotency_keys')
+      .upsert({
+        function_name: 'vault-club-auth-sync',
+        key: idempotencyKey || '',
+        user_id: userId,
+        request_hash: null,
+        status: 'success',
+        response_snapshot: responsePayload
+      }, { onConflict: 'function_name,key' });
+
+    return new Response(JSON.stringify(responsePayload), {
+      headers: { ...headers, 'Content-Type': 'application/json' },
+>>>>>>> Stashed changes
     });
 
   } catch (error) {
@@ -164,7 +275,7 @@ serve(async (req) => {
       error: error.message 
     }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { ...headers, 'Content-Type': 'application/json' },
     });
   }
 });
