@@ -83,14 +83,14 @@ const PreSignup = () => {
             <Vault className="h-10 w-10 text-primary-foreground" />
           </div>
           
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 animate-slide-up shadow-glow">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl mobile-text-2xl font-bold mb-4 sm:mb-6 animate-slide-up shadow-glow">
             Join The Vault Club
           </h2>
-          <p className="text-xl mb-8 opacity-90 animate-slide-up [animation-delay:0.2s]">
+          <p className="text-lg sm:text-xl mobile-text-base mb-6 sm:mb-8 opacity-90 animate-slide-up [animation-delay:0.2s] px-4">
             Ready to ease into digital assets smartly? Get priority access to our investment platform - earn and learn before token madness.
           </p>
           
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto animate-slide-up [animation-delay:0.4s]">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto animate-slide-up [animation-delay:0.4s] mobile-px-4">
             <div className="relative flex-1">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
@@ -105,7 +105,7 @@ const PreSignup = () => {
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="bg-background text-primary hover:bg-secondary px-8 py-3 font-semibold transition-bounce hover:scale-105 shadow-medium hover:shadow-strong"
+              className="bg-background text-primary hover:bg-secondary px-6 sm:px-8 py-3 font-semibold transition-bounce hover:scale-105 shadow-medium hover:shadow-strong mobile-text-sm w-full sm:w-auto"
             >
               {isLoading ? "Registering..." : "Register for Early Access"}
             </Button>

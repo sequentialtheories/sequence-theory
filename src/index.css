@@ -301,4 +301,28 @@ All colors MUST be HSL.
       transform: translateY(-4px) rotate(-0.3deg); 
     }
   }
+
+  /* Mobile-specific utilities */
+  @media (max-width: 768px) {
+    .mobile-text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+    .mobile-text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+    .mobile-text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+    .mobile-text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+    .mobile-text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+    .mobile-text-3xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+    .mobile-text-4xl { font-size: 2.25rem !important; line-height: 2.5rem !important; }
+    .mobile-py-8 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+    .mobile-py-12 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+    .mobile-px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+    .mobile-mb-4 { margin-bottom: 1rem !important; }
+    .mobile-mb-6 { margin-bottom: 1.5rem !important; }
+    .mobile-gap-4 { gap: 1rem !important; }
+    .mobile-gap-6 { gap: 1.5rem !important; }
+    .mobile-h-12 { height: 3rem !important; }
+    .mobile-h-16 { height: 4rem !important; }
+    .mobile-w-12 { width: 3rem !important; }
+    .mobile-w-16 { width: 4rem !important; }
+    .mobile-p-6 { padding: 1.5rem !important; }
+    .mobile-rounded-lg { border-radius: 0.5rem !important; }
+  }
 }

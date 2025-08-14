@@ -67,14 +67,14 @@ const Index = () => {
           <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
           <div className="container mx-auto px-6 text-center relative z-10">
             <header>
-              <h1 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight" itemProp="name">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl mobile-text-2xl font-bold mb-6 sm:mb-8 text-foreground leading-tight" itemProp="name">
                 Sequence Theory, Inc.
-                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-2xl md:text-3xl" itemProp="slogan">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-lg sm:text-2xl md:text-3xl mobile-text-lg" itemProp="slogan">
                   Democratizing Financial Empowerment
                 </span>
               </h1>
             </header>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed" itemProp="description">Our mission is to provide accessible financial tools and services that empower everyday users to build wealth through communal cryptocurrency investments and educational opportunities.</p>
+            <p className="text-lg sm:text-xl mobile-text-base text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed px-4" itemProp="description">Our mission is to provide accessible financial tools and services that empower everyday users to build wealth through communal cryptocurrency investments and educational opportunities.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/learn-more">
                 <Button size="lg" className="text-lg px-10 py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
@@ -105,9 +105,9 @@ const Index = () => {
                   <Target className="h-4 w-4 text-destructive" />
                   <span className="text-sm font-medium text-destructive">The Challenge</span>
                 </div>
-                <h2 className="text-4xl font-bold mb-4 text-foreground" itemProp="headline">The Compound Interest Problem</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl mobile-text-xl font-bold mb-4 text-foreground" itemProp="headline">The Compound Interest Problem</h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-destructive to-destructive/60 mx-auto mb-8"></div>
-                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed" itemProp="description">
+                <p className="text-lg sm:text-xl mobile-text-base text-muted-foreground max-w-4xl mx-auto leading-relaxed px-4" itemProp="description">
                   Albert Einstein called compound interest the "eighth wonder of the world," yet most people 
                   never benefit from it meaningfully. The issue isn't failure, it's friction maintaining these core principles.
                 </p>

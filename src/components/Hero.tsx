@@ -24,12 +24,12 @@ const Hero = () => {
             <img 
               src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
               alt="Sequence Theory Logo" 
-              className="h-24 md:h-32 mx-auto transition-spring hover:scale-110 animate-glow cursor-pointer"
+              className="h-16 sm:h-20 md:h-32 mobile-h-12 mx-auto transition-spring hover:scale-110 animate-glow cursor-pointer"
               onClick={scrollToSignup}
             />
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white animate-slide-up shadow-glow">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl mobile-text-2xl font-bold mb-4 sm:mb-6 text-white animate-slide-up shadow-glow">
             <span className="bg-gradient-to-r from-white via-primary-glow to-white bg-clip-text text-transparent">
               Easing Into Investing
             </span>

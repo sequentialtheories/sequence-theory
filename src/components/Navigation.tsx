@@ -103,14 +103,14 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-primary/20 bg-gradient-secondary/50 backdrop-blur-sm animate-slide-up">
-            <div className="flex flex-col space-y-4">
+          <div className="md:hidden py-6 border-t border-primary/20 bg-gradient-secondary/50 backdrop-blur-sm animate-slide-up mobile-py-8">
+            <div className="flex flex-col space-y-6 mobile-gap-6">
               {navItems.map((item, index) => (
                 <Link
                   key={item.href}
                   to={item.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm font-medium transition-bounce animate-slide-left ${
+                  className={`text-base font-medium transition-bounce animate-slide-left mobile-text-lg py-2 ${
                     isActive(item.href)
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -121,14 +121,14 @@ const Navigation = () => {
                 </Link>
               ))}
               
-              <div className="flex flex-col space-y-3 pt-2">
+              <div className="flex flex-col space-y-4 pt-4 mobile-gap-6">
                 <Button 
                   onClick={() => {
                     setIsMenuOpen(false);
                     document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  size="sm"
-                  className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
+                  size="lg"
+                  className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-3 rounded-full transition-spring hover:scale-105 w-full mobile-text-base"
                 >
                   Join The Vault Club
                 </Button>
@@ -145,8 +145,8 @@ const Navigation = () => {
                         navigate('/auth');
                       }}
                       variant="outline"
-                      size="sm"
-                      className="px-4 py-2 rounded-full transition-spring hover:scale-105 w-fit"
+                      size="lg"
+                      className="px-6 py-3 rounded-full transition-spring hover:scale-105 w-full mobile-text-base"
                     >
                       Sign In
                     </Button>
