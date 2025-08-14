@@ -35,10 +35,6 @@ const Hero = () => {
             </span>
           </h1>
           
-          <p className="text-lg md:text-xl mb-8 text-gray-200 max-w-3xl mx-auto animate-slide-up [animation-delay:0.2s] opacity-0 animate-fade-in">
-            Institutional-grade investment approaches for individual investors through 
-            <span className="text-primary-glow font-semibold shimmer"> The Vault Club</span> - our DeFi investment platform.
-          </p>
         </div>
         
         <button 
