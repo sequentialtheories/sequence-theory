@@ -3,6 +3,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, x-idempotency-key',
+};
+
+function redactToken(value?: string | null): string {
+  if (!value) return '';
+  const s = String(value);
+  if (s.length <= 8) return '****';
+  return s.slice(0,4) + '****' + s.slice(-4);
+}
+
+function audit(evt: string, meta: Record<string,unknown> = {}) {
+  console.log(JSON.stringify({ evt, ts: new Date().toISOString(), ...meta }));
 }
 
 Deno.serve(async (req) => {
@@ -143,7 +154,7 @@ Deno.serve(async (req) => {
       tvl_usdc_share: parseFloat(vaultState.tvl_usdc) / memberCount,
     } : null;
 
-    console.log(`Balance requested for subclub ${subclub_id} by user ${user.id}`);
+    audit('vault.balance.request', { subclub_id, user_id: redactToken(user.id) });
 
     return new Response(JSON.stringify({
       success: true,

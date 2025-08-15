@@ -4,6 +4,16 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, x-idempotency-key',
 }
+function redactToken(value?: string | null): string {
+  if (!value) return '';
+  const s = String(value);
+  if (s.length <= 8) return '****';
+  return s.slice(0,4) + '****' + s.slice(-4);
+}
+function audit(evt: string, meta: Record<string,unknown> = {}) {
+  console.log(JSON.stringify({ evt, ts: new Date().toISOString(), ...meta }));
+}
+
 
 // Helper function to calculate deposit split (60/10/30)
 function calculateDepositSplit(amount: number) {
@@ -126,7 +136,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (existingTx) {
-      console.log(`Idempotent request detected: ${idempotencyKey}`);
+      audit('vault.deposit.idempotent', { subclub_id, user_id: redactToken(user.id), idem: redactToken(idempotencyKey) });
       return new Response(JSON.stringify({
         success: true,
         data: {
@@ -244,7 +254,7 @@ Deno.serve(async (req) => {
       }), { status: 500, headers: corsHeaders });
     }
 
-    console.log(`Deposit of ${amount} USDC processed for subclub ${subclub_id} by user ${user.id}`);
+    audit('vault.deposit.ok', { subclub_id, user_id: redactToken(user.id), idem: redactToken(idempotencyKey), amount_usdc: amount });
 
     return new Response(JSON.stringify({
       success: true,

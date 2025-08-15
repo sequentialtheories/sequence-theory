@@ -3,6 +3,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, x-idempotency-key',
+};
+
+function redactToken(value?: string | null): string {
+  if (!value) return '';
+  const s = String(value);
+  if (s.length <= 8) return '****';
+  return s.slice(0,4) + '****' + s.slice(-4);
+}
+
+function audit(evt: string, meta: Record<string,unknown> = {}) {
+  console.log(JSON.stringify({ evt, ts: new Date().toISOString(), ...meta }));
 }
 
 // RRL constants
@@ -152,7 +163,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (existingTx) {
-      console.log(`Idempotent request detected: ${idempotencyKey}`);
+      audit('vault.harvest.idempotent', { subclub_id, user_id: redactToken(user.id), idem: redactToken(idempotencyKey) });
       return new Response(JSON.stringify({
         success: true,
         data: {
@@ -279,7 +290,7 @@ Deno.serve(async (req) => {
       }), { status: 500, headers: corsHeaders });
     }
 
-    console.log(`Harvest of ${totalYield} USDC yield processed for subclub ${subclub_id} by user ${user.id}`);
+    audit('vault.harvest.ok', { subclub_id, user_id: redactToken(user.id), idem: redactToken(idempotencyKey), total_yield_usdc: totalYield });
 
     return new Response(JSON.stringify({
       success: true,
