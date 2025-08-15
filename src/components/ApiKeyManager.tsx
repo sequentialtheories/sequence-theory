@@ -338,7 +338,7 @@ export const ApiKeyManager = () => {
         <AlertDescription>
           <strong>API Endpoint:</strong> Use your API key with the header `x-api-key` to access 
           <code className="mx-1 px-1 bg-muted rounded">GET /external-api/user-wallets</code>
-          at <code className="mx-1 px-1 bg-muted rounded">https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/external-api/user-wallets</code>
+          at <code className="mx-1 px-1 bg-muted rounded">${VITE_SUPABASE_URL}/functions/v1/external-api/user-wallets</code>
         </AlertDescription>
       </Alert>
     </div>

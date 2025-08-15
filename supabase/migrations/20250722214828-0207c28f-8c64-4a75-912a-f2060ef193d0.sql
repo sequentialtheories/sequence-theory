@@ -35,7 +35,7 @@ BEGIN
   -- Call edge function to create wallet with proper authentication
   SELECT INTO wallet_result
     net.http_post(
-      url := 'https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/create-wallet',
+      url := current_setting('app.supabase_url', true) || '/functions/v1/create-wallet',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
         'Authorization', 'Bearer ' || COALESCE(service_role_key, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsZGpobG5zcGhsaXhtenpyZHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMTQyNjgsImV4cCI6MjA2ODU5MDI2OH0.mIYpRjdBedu6VQl4wBUIbNM1WwOAN_vHdKNhF5l4g9o')

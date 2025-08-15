@@ -19,7 +19,7 @@ BEGIN
   -- Call the edge function to create wallet
   SELECT INTO function_result
     net.http_post(
-      url := 'https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/create-sequence-wallet',
+      url := current_setting('app.settings.supabase_url', true) || '/functions/v1/create-sequence-wallet',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
         'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)

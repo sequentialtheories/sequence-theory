@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -24,19 +25,19 @@ export const useAuth = () => {
 
 const createWalletForUser = async (userId: string, email: string) => {
   try {
-    console.log('Auto-creating wallet for user:', userId);
+    logger.info('Auto-creating wallet for user', { userId });
     
     // Import the frontend wallet creation function
     const { getOrCreateSequenceWallet } = await import('@/lib/sequenceWaas');
     const result = await getOrCreateSequenceWallet(userId, email);
 
     if (result.success) {
-      console.log('✅ Wallet auto-created:', result.walletAddress);
+      logger.info('Wallet auto-created successfully', { walletAddress: result.walletAddress });
     } else {
-      console.error('Failed to auto-create wallet:', result.error);
+      logger.error('Failed to auto-create wallet', { error: result.error });
     }
   } catch (error) {
-    console.error('Failed to auto-create wallet:', error);
+    logger.error('Failed to auto-create wallet', error);
   }
 };
 
@@ -49,14 +50,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
+        logger.info('Auth state changed', { event, userId: session?.user?.id });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
         // Auto-create wallet after successful authentication
         if (session?.user?.email && event === 'SIGNED_IN') {
-          console.log('User authenticated, auto-creating wallet...');
+          logger.info('User authenticated, auto-creating wallet');
           setTimeout(() => {
             createWalletForUser(session.user.id, session.user.email!);
           }, 1000);
@@ -66,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.id);
+      logger.info('Initial session check', { userId: session?.user?.id });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
