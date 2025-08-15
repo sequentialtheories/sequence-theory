@@ -47,15 +47,9 @@ ADD CONSTRAINT wallet_address_format
 CHECK (wallet_address ~ '^0x[a-fA-F0-9]{40}$');
 
 -- 7. Add indexes for better performance on security-critical lookups
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_api_keys_key_hash 
-ON api_keys (key_hash);
-
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_api_keys_user_active 
-ON api_keys (user_id, is_active) 
-WHERE is_active = true;
-
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_api_access_logs_timestamp 
-ON api_access_logs (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash ON public.api_keys (key_hash);
+CREATE INDEX IF NOT EXISTS idx_api_keys_user_active ON public.api_keys (user_id, is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_api_access_logs_timestamp ON public.api_access_logs (created_at DESC);
 
 -- 8. Add function to log API access attempts for security monitoring
 CREATE OR REPLACE FUNCTION log_api_access(
