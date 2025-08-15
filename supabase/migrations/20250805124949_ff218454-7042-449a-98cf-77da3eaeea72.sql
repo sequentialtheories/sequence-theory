@@ -1,50 +1,140 @@
 -- Security hardening measures (without strict wallet validation due to existing data)
 
 -- 1. Add constraints to ensure data integrity
-ALTER TABLE api_keys 
-ADD CONSTRAINT api_keys_name_not_empty 
-CHECK (length(trim(name)) > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'api_keys_name_not_empty' 
+      AND conrelid = 'public.api_keys'::regclass
+  ) THEN
+    ALTER TABLE public.api_keys 
+    ADD CONSTRAINT api_keys_name_not_empty 
+    CHECK (length(trim(name)) > 0);
+  END IF;
+END $$;
 
-ALTER TABLE api_keys 
-ADD CONSTRAINT api_keys_key_prefix_format 
-CHECK (key_prefix ~ '^st_[A-Za-z0-9]{4,}$');
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'api_keys_key_prefix_format' 
+      AND conrelid = 'public.api_keys'::regclass
+  ) THEN
+    ALTER TABLE public.api_keys 
+    ADD CONSTRAINT api_keys_key_prefix_format 
+    CHECK (key_prefix ~ '^st_[A-Za-z0-9]{4,}$');
+  END IF;
+END $$;
 
 -- 2. Add validation for contracts
-ALTER TABLE contracts 
-ADD CONSTRAINT contracts_name_not_empty 
-CHECK (length(trim(name)) > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'contracts_name_not_empty' 
+      AND conrelid = 'public.contracts'::regclass
+  ) THEN
+    ALTER TABLE public.contracts 
+    ADD CONSTRAINT contracts_name_not_empty 
+    CHECK (length(trim(name)) > 0);
+  END IF;
+END $$;
 
-ALTER TABLE contracts 
-ADD CONSTRAINT contracts_positive_amounts 
-CHECK (target_amount > 0 AND current_amount >= 0 AND minimum_contribution > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'contracts_positive_amounts' 
+      AND conrelid = 'public.contracts'::regclass
+  ) THEN
+    ALTER TABLE public.contracts 
+    ADD CONSTRAINT contracts_positive_amounts 
+    CHECK (target_amount > 0 AND current_amount >= 0 AND minimum_contribution > 0);
+  END IF;
+END $$;
 
-ALTER TABLE contracts 
-ADD CONSTRAINT contracts_participant_limits 
-CHECK (maximum_participants > 0 AND current_participants >= 0 AND current_participants <= maximum_participants);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'contracts_participant_limits' 
+      AND conrelid = 'public.contracts'::regclass
+  ) THEN
+    ALTER TABLE public.contracts 
+    ADD CONSTRAINT contracts_participant_limits 
+    CHECK (maximum_participants > 0 AND current_participants >= 0 AND current_participants <= maximum_participants);
+  END IF;
+END $$;
 
 -- 3. Add validation for contract participants
-ALTER TABLE contract_participants 
-ADD CONSTRAINT participants_positive_contribution 
-CHECK (contribution_amount > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'participants_positive_contribution' 
+      AND conrelid = 'public.contract_participants'::regclass
+  ) THEN
+    ALTER TABLE public.contract_participants 
+    ADD CONSTRAINT participants_positive_contribution 
+    CHECK (contribution_amount > 0);
+  END IF;
+END $$;
 
 -- 4. Add validation for contract deposits
-ALTER TABLE contract_deposits 
-ADD CONSTRAINT deposits_positive_amount 
-CHECK (amount > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'deposits_positive_amount' 
+      AND conrelid = 'public.contract_deposits'::regclass
+  ) THEN
+    ALTER TABLE public.contract_deposits 
+    ADD CONSTRAINT deposits_positive_amount 
+    CHECK (amount > 0);
+  END IF;
+END $$;
 
 -- 5. Add constraints to profiles table
-ALTER TABLE profiles 
-ADD CONSTRAINT profiles_email_format 
-CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'profiles_email_format' 
+      AND conrelid = 'public.profiles'::regclass
+  ) THEN
+    ALTER TABLE public.profiles 
+    ADD CONSTRAINT profiles_email_format 
+    CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+  END IF;
+END $$;
 
-ALTER TABLE profiles 
-ADD CONSTRAINT profiles_name_not_empty 
-CHECK (length(trim(name)) > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'profiles_name_not_empty' 
+      AND conrelid = 'public.profiles'::regclass
+  ) THEN
+    ALTER TABLE public.profiles 
+    ADD CONSTRAINT profiles_name_not_empty 
+    CHECK (length(trim(name)) > 0);
+  END IF;
+END $$;
 
 -- 6. Add flexible wallet address validation (allows pending addresses and various formats)
-ALTER TABLE user_wallets 
-ADD CONSTRAINT wallet_address_not_empty 
-CHECK (length(trim(wallet_address)) > 0);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'wallet_address_not_empty' 
+      AND conrelid = 'public.user_wallets'::regclass
+  ) THEN
+    ALTER TABLE public.user_wallets 
+    ADD CONSTRAINT wallet_address_not_empty 
+    CHECK (length(trim(wallet_address)) > 0);
+  END IF;
+END $$;
 
 -- 7. Add indexes for better performance on security-critical lookups
 CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash ON public.api_keys (key_hash);
