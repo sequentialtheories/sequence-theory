@@ -49,7 +49,12 @@ USING (
 CREATE POLICY "Admins can view all API logs" 
 ON public.api_access_logs 
 FOR SELECT 
-USING (has_role(auth.uid(), 'admin'::app_role));
+USING (
+  CASE 
+    WHEN EXISTS (SELECT 1 FROM pg_type WHERE typname = 'app_role') THEN has_role(auth.uid(), 'admin'::app_role)
+    ELSE false
+  END
+);
 
 -- Create function to generate API key
 CREATE OR REPLACE FUNCTION public.generate_api_key()
