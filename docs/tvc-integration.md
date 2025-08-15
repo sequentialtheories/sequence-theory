@@ -13,7 +13,7 @@ All Vault Club operations are implemented as Supabase Edge Functions with:
 ## Functions Base URL
 
 ```
-https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1
+${VITE_SUPABASE_URL}/functions/v1
 ```
 
 ## Required Headers
@@ -90,7 +90,7 @@ Add this script tag to your TVC `index.html` (before any other scripts):
 ```html
 <script>
   window.__TVC_CONFIG = window.__TVC_CONFIG || {};
-  window.__TVC_CONFIG.functionsBase = "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1";
+  window.__TVC_CONFIG.functionsBase = "${VITE_SUPABASE_URL}/functions/v1";
   window.__TVC_CONFIG.vaultClubApiKey = "<VAULT_CLUB_API_KEY>"; // provided by Sequence Theory
 </script>
 ```
@@ -282,7 +282,7 @@ Both have RLS policies allowing authenticated users to read and authors to write
 
 ### Create a vault club:
 ```bash
-curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-create" \
+curl -X POST "${VITE_SUPABASE_URL}/functions/v1/vault-create" \
   -H "authorization: Bearer <JWT_TOKEN>" \
   -H "x-vault-club-api-key: <API_KEY>" \
   -H "content-type: application/json" \
@@ -291,7 +291,7 @@ curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-create
 
 ### Join a vault club:
 ```bash
-curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-join" \
+curl -X POST "${VITE_SUPABASE_URL}/functions/v1/vault-join" \
   -H "authorization: Bearer <JWT_TOKEN>" \
   -H "x-vault-club-api-key: <API_KEY>" \
   -H "content-type: application/json" \
@@ -300,14 +300,14 @@ curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-join" 
 
 ### Get balance:
 ```bash
-curl "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-balance?subclub_id=<SUBCLUB_ID>" \
+curl "${VITE_SUPABASE_URL}/functions/v1/vault-balance?subclub_id=<SUBCLUB_ID>" \
   -H "authorization: Bearer <JWT_TOKEN>" \
   -H "x-vault-club-api-key: <API_KEY>"
 ```
 
 ### Make a deposit:
 ```bash
-curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-deposit" \
+curl -X POST "${VITE_SUPABASE_URL}/functions/v1/vault-deposit" \
   -H "authorization: Bearer <JWT_TOKEN>" \
   -H "x-vault-club-api-key: <API_KEY>" \
   -H "x-idempotency-key: $(uuidgen)" \
@@ -317,7 +317,7 @@ curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-deposi
 
 ### Harvest vault:
 ```bash
-curl -X POST "https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/vault-harvest" \
+curl -X POST "${VITE_SUPABASE_URL}/functions/v1/vault-harvest" \
   -H "authorization: Bearer <JWT_TOKEN>" \
   -H "x-vault-club-api-key: <API_KEY>" \
   -H "x-idempotency-key: $(uuidgen)" \

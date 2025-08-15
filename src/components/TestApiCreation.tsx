@@ -1,9 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import { configService } from '@/lib/config';
+import { logger } from '@/lib/logger';
 
 export default function TestApiCreation() {
   const testApiKeyCreation = async () => {
     try {
-      const response = await fetch('https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/create-test-api-key', {
+      const config = configService.getConfig();
+      const response = await fetch(`${config.supabaseUrl}/functions/v1/create-test-api-key`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -11,15 +14,17 @@ export default function TestApiCreation() {
       });
       
       const data = await response.json();
-      console.log('API Key Creation Response:', data);
+      logger.info('API Key Creation Response received', { success: data.success });
       
       if (data.success) {
-        alert('SUCCESS! API Key created: ' + data.data.api_key);
+        alert('SUCCESS! API Key created: [REDACTED]');
+        logger.info('API Key created successfully', { keyPrefix: data.data.key_prefix });
       } else {
         alert('ERROR: ' + data.error);
+        logger.error('API Key creation failed', { error: data.error });
       }
     } catch (error) {
-      console.error('Test failed:', error);
+      logger.error('Test failed', error);
       alert('Test failed: ' + error.message);
     }
   };

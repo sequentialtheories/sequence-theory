@@ -3,6 +3,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
+import { configService } from '@/lib/config';
+import { logger } from '@/lib/logger';
 
 export default function ApiKeyTester() {
   const [apiKey, setApiKey] = useState('');
@@ -19,9 +21,10 @@ export default function ApiKeyTester() {
     setTestResult('');
 
     try {
-      console.log('Testing API key:', apiKey.substring(0, 8) + '...');
+      logger.info('Testing API key', { keyPrefix: apiKey.substring(0, 8) + '...' });
       
-      const response = await fetch('https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/external-api/user-wallets', {
+      const config = configService.getConfig();
+      const response = await fetch(`${config.supabaseUrl}/functions/v1/external-api/user-wallets`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -33,13 +36,13 @@ export default function ApiKeyTester() {
       
       setTestResult(`Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`);
       
-      console.log('API test result:', {
+      logger.info('API test completed', {
         status: response.status,
-        data
+        hasData: !!data
       });
       
     } catch (error) {
-      console.error('API test error:', error);
+      logger.error('API test error', error);
       setTestResult(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -51,7 +54,8 @@ export default function ApiKeyTester() {
     setTestResult('Creating test API key...');
 
     try {
-      const response = await fetch('https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/create-test-api-key', {
+      const config = configService.getConfig();
+      const response = await fetch(`${config.supabaseUrl}/functions/v1/create-test-api-key`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -62,13 +66,15 @@ export default function ApiKeyTester() {
       
       if (data.success) {
         setApiKey(data.data.api_key);
-        setTestResult(`✅ Test API key created!\nKey: ${data.data.api_key}\nPrefix: ${data.data.key_prefix}\n\nYou can now test this key using the "Test API Key" button.`);
+        setTestResult(`✅ Test API key created!\nKey: [REDACTED]\nPrefix: ${data.data.key_prefix}\n\nYou can now test this key using the "Test API Key" button.`);
+        logger.info('Test API key created successfully', { keyPrefix: data.data.key_prefix });
       } else {
         setTestResult(`❌ Failed to create test key: ${data.error}`);
+        logger.error('Failed to create test key', { error: data.error });
       }
       
     } catch (error) {
-      console.error('Test key creation error:', error);
+      logger.error('Test key creation error', error);
       setTestResult(`❌ Error creating test key: ${error.message}`);
     } finally {
       setIsLoading(false);

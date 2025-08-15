@@ -73,7 +73,7 @@ BEGIN
   -- Call edge function to create wallet (async) with proper error handling
   BEGIN
     PERFORM net.http_post(
-      url := 'https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/create-wallet',
+      url := current_setting('app.supabase_url', true) || '/functions/v1/create-wallet',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
         'Authorization', 'Bearer ' || current_setting('request.jwt.claims')::jsonb->>'aud'
