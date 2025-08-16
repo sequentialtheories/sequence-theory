@@ -10,6 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useContracts, type Contract, type UserContract } from '@/hooks/useContracts';
 import { Coins, Users, Target, Calendar, Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { DepositDialog } from '@/components/DepositDialog';
+import { CFG } from '@/lib/config';
 
 const ContractCard: React.FC<{ contract: Contract; onJoin?: (id: string) => void }> = ({ 
   contract, 
@@ -270,32 +272,48 @@ const CreateContractDialog: React.FC<{ onContractCreated: () => void }> = ({ onC
 export const ContractDashboard: React.FC = () => {
   const { contracts, userContracts, loading, joinContract, fetchContracts, fetchUserContracts } = useContracts();
   const [joiningContract, setJoiningContract] = useState<string | null>(null);
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
 
   const handleJoinContract = async (contractId: string) => {
-    setJoiningContract(contractId);
-    
-    // Get contract details for minimum contribution
     const contract = contracts.find(c => c.id === contractId);
     if (!contract) return;
 
-    const contributionAmount = prompt(
-      `Enter your contribution amount (minimum $${contract.minimum_contribution}):`
-    );
-    
-    if (contributionAmount) {
-      const amount = parseFloat(contributionAmount);
-      if (amount >= contract.minimum_contribution) {
-        await joinContract(contractId, amount);
-      } else {
-        toast({
-          title: "Invalid Amount",
-          description: `Minimum contribution is $${contract.minimum_contribution}`,
-          variant: "destructive",
-        });
+    if (CFG.SIMULATION_MODE) {
+      setJoiningContract(contractId);
+      
+      const contributionAmount = prompt(
+        `Enter your contribution amount (minimum $${contract.minimum_contribution}):`
+      );
+      
+      if (contributionAmount) {
+        const amount = parseFloat(contributionAmount);
+        if (amount >= contract.minimum_contribution) {
+          await joinContract(contractId, amount);
+        } else {
+          toast({
+            title: "Invalid Amount",
+            description: `Minimum contribution is $${contract.minimum_contribution}`,
+            variant: "destructive",
+          });
+        }
       }
+      
+      setJoiningContract(null);
+    } else {
+      setSelectedContract(contract);
+      setDepositDialogOpen(true);
     }
-    
-    setJoiningContract(null);
+  };
+
+  const handleDepositSuccess = async () => {
+    if (selectedContract) {
+      await joinContract(selectedContract.id, 0); // Amount handled by blockchain
+      fetchContracts();
+      fetchUserContracts();
+    }
+    setDepositDialogOpen(false);
+    setSelectedContract(null);
   };
 
   const handleContractCreated = () => {
@@ -359,6 +377,17 @@ export const ContractDashboard: React.FC = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Deposit Dialog */}
+      {selectedContract && (
+        <DepositDialog
+          open={depositDialogOpen}
+          onOpenChange={setDepositDialogOpen}
+          contractId={selectedContract.id}
+          minimumContribution={selectedContract.minimum_contribution}
+          onSuccess={handleDepositSuccess}
+        />
+      )}
     </div>
   );
 };

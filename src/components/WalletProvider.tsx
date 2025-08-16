@@ -2,11 +2,15 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { getOrCreateSequenceWallet } from '@/lib/sequenceWaas';
+import { getCurrentChainId, isOnCorrectNetwork } from '@/lib/chain';
+import { CFG } from '@/lib/config';
 
 interface WalletInfo {
   address: string;
   network: string;
   email: string;
+  chainId?: number;
+  isCorrectNetwork?: boolean;
 }
 
 interface WalletContextType {
@@ -68,10 +72,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Error fetching wallet after creation:', fetchError);
         setError('Failed to fetch wallet information');
       } else if (data) {
+        const chainId = CFG.WALLET_PROVIDER === 'metamask' ? await getCurrentChainId() : null;
+        const correctNetwork = CFG.WALLET_PROVIDER === 'metamask' ? await isOnCorrectNetwork() : true;
+        
         setWallet({
           address: data.wallet_address,
           network: data.network,
           email: data.email || user.email!,
+          chainId: chainId || undefined,
+          isCorrectNetwork: correctNetwork
         });
       }
     } catch (err) {
