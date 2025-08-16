@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { WalletProvider, useWallet } from "@/components/WalletProvider";
 import { NetworkBanner } from "@/components/NetworkBanner";
 import { DebugPanel } from "@/components/DebugPanel";
+import { HealthPanel } from "@/components/HealthPanel";
 import { useState, useEffect } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
@@ -75,6 +76,7 @@ function AppContent() {
         onDismiss={() => setShowNetworkBanner(false)} 
       />
       <DebugPanel />
+      <HealthPanel />
       <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
