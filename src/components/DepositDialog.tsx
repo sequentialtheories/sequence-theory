@@ -34,12 +34,6 @@ export function DepositDialog({
   const [allowance, setAllowance] = useState<string>('0');
   const [txHash, setTxHash] = useState<string>('');
 
-  useEffect(() => {
-    if (open && wallet?.address && CFG.VAULT_ADDRESS && CFG.STABLE_TOKEN_ADDRESS) {
-      loadTokenData();
-    }
-  }, [open, wallet?.address, loadTokenData]);
-
   const loadTokenData = useCallback(async () => {
     if (!wallet?.address) return;
     
@@ -54,6 +48,12 @@ export function DepositDialog({
       console.error('Failed to load token data:', error);
     }
   }, [wallet?.address]);
+
+  useEffect(() => {
+    if (open && wallet?.address && CFG.VAULT_ADDRESS && CFG.STABLE_TOKEN_ADDRESS) {
+      loadTokenData();
+    }
+  }, [open, wallet?.address, loadTokenData]);
 
   const handleApprove = async () => {
     if (!amount || !wallet?.address) return;
