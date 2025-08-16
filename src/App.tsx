@@ -5,7 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/AuthProvider";
-import { WalletProvider } from "@/components/WalletProvider";
+import { WalletProvider, useWallet } from "@/components/WalletProvider";
+import { NetworkBanner } from "@/components/NetworkBanner";
+import { DebugPanel } from "@/components/DebugPanel";
+import { useState, useEffect } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import Auth from "./pages/Auth";
@@ -52,16 +55,27 @@ import ApiKeyTester from "./components/ApiKeyTester";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SecurityHeaders />
-        <AuthProvider>
-          <WalletProvider>
-            <Routes>
+function AppContent() {
+  const { wallet } = useWallet();
+  const [showNetworkBanner, setShowNetworkBanner] = useState(false);
+
+  useEffect(() => {
+    if (wallet && wallet.isCorrectNetwork === false) {
+      setShowNetworkBanner(true);
+    } else {
+      setShowNetworkBanner(false);
+    }
+  }, [wallet]);
+
+  return (
+    <>
+      <SecurityHeaders />
+      <NetworkBanner 
+        isVisible={showNetworkBanner} 
+        onDismiss={() => setShowNetworkBanner(false)} 
+      />
+      <DebugPanel />
+      <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
             <Route path="/auth" element={<Auth />} />
@@ -125,7 +139,20 @@ const App = () => (
           <Route path="/learn/democratizing-financial-knowledge" element={<InteractiveLearning />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-            </Routes>
+        </Routes>
+      </>
+    );
+}
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AuthProvider>
+          <WalletProvider>
+            <AppContent />
           </WalletProvider>
         </AuthProvider>
       </BrowserRouter>
