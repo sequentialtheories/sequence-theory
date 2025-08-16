@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
       }), { status: 405, headers: corsHeaders });
     }
 
-    const { subclub_id } = await req.json();
+    const { subclub_id, tx_hash } = await req.json();
 
     if (!subclub_id) {
       return new Response(JSON.stringify({
@@ -262,7 +262,8 @@ Deno.serve(async (req) => {
           profits: profits,
           rrl_routing: rrlResult.routing_details,
           before_balances: { p1_usdc, p2_usdc, p3_usdc, tvl_usdc: currentState.tvl_usdc },
-          after_balances: { p1_usdc: newState.p1_usdc, p2_usdc: newState.p2_usdc, p3_usdc: newState.p3_usdc, tvl_usdc: newState.tvl_usdc }
+          after_balances: { p1_usdc: newState.p1_usdc, p2_usdc: newState.p2_usdc, p3_usdc: newState.p3_usdc, tvl_usdc: newState.tvl_usdc },
+          blockchain_tx_hash: tx_hash || null
         }
       })
       .select()

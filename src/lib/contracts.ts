@@ -8,6 +8,8 @@ const VAULT_ABI = [
   "function balanceOf(address account) view returns (uint256)",
   "function deposit(uint256 amount) external",
   "function harvestAndRoute() external",
+  "function canHarvest(address user) view returns (bool)",
+  "function lastHarvest() view returns (uint256)",
   "function getVaultStats() view returns (uint256 totalValue, uint256 memberCount, uint256 weeklyDeposits)"
 ];
 
