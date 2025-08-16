@@ -87,7 +87,7 @@ export async function runHarvestIfEligible(): Promise<boolean> {
       const provider = vault.runner?.provider;
       if (!provider || !('getGasPrice' in provider)) throw new Error('Provider not available');
       
-      const gasPrice = await (provider as any).getGasPrice();
+      const gasPrice = await (provider as { getGasPrice(): Promise<bigint> }).getGasPrice();
       const gasCostWei = gasEstimate * gasPrice;
       const gasCostEth = Number(gasCostWei) / 1e18;
       
@@ -121,7 +121,7 @@ export async function runHarvestIfEligible(): Promise<boolean> {
       throw new Error(result.error || 'Transaction failed');
     }
 
-    const txHash = (result.transaction as any)?.txHash;
+    const txHash = (result.transaction as { txHash?: string })?.txHash;
     if (!txHash) {
       throw new Error('Transaction hash not available');
     }
