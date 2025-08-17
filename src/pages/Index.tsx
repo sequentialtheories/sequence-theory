@@ -162,7 +162,7 @@ const Index = () => {
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-6xl mx-auto">
               <header className="text-center mb-16">
-                <h3 className="text-2xl font-bold mb-6 text-muted-foreground">Who We Are</h3>
+                <h3 className="text-4xl font-bold mb-6 text-foreground">Who We Are</h3>
                 <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
