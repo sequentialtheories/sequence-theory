@@ -5,9 +5,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
-  INSERT INTO public.profiles (id, user_id, email, name, created_at, updated_at)
+  INSERT INTO public.profiles (id, email, name, created_at, updated_at)
   VALUES (
-    gen_random_uuid(),
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),

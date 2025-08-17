@@ -1,14 +1,12 @@
 
 
 CREATE TABLE IF NOT EXISTS public.profiles (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email text,
     name text,
     eth_address text,
     created_at timestamptz DEFAULT now(),
-    updated_at timestamptz DEFAULT now(),
-    UNIQUE(user_id)
+    updated_at timestamptz DEFAULT now()
 );
 
 DO $$
@@ -32,15 +30,15 @@ DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 
 CREATE POLICY "Users can view own profile" 
 ON public.profiles FOR SELECT 
-USING (auth.uid() = user_id);
+USING (auth.uid() = id);
 
 CREATE POLICY "Users can update own profile" 
 ON public.profiles FOR UPDATE 
-USING (auth.uid() = user_id);
+USING (auth.uid() = id);
 
 CREATE POLICY "Users can insert own profile" 
 ON public.profiles FOR INSERT 
-WITH CHECK (auth.uid() = user_id);
+WITH CHECK (auth.uid() = id);
 
 CREATE OR REPLACE FUNCTION public.ensure_profile(p_user_id uuid, user_email text DEFAULT NULL, user_name text DEFAULT NULL)
 RETURNS public.profiles
@@ -52,10 +50,10 @@ DECLARE
 BEGIN
     SELECT * INTO profile_record 
     FROM public.profiles 
-    WHERE user_id = p_user_id;
+    WHERE id = p_user_id;
     
     IF NOT FOUND THEN
-        INSERT INTO public.profiles (user_id, email, name, created_at, updated_at)
+        INSERT INTO public.profiles (id, email, name, created_at, updated_at)
         VALUES (p_user_id, user_email, user_name, now(), now())
         RETURNING * INTO profile_record;
     ELSE
@@ -65,7 +63,7 @@ BEGIN
             SET email = COALESCE(user_email, email),
                 name = COALESCE(user_name, name),
                 updated_at = now()
-            WHERE user_id = p_user_id
+            WHERE id = p_user_id
             RETURNING * INTO profile_record;
         END IF;
     END IF;
