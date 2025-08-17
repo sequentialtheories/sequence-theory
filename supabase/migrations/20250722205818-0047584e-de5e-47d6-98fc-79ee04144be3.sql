@@ -29,11 +29,16 @@ ON public.user_wallets
 FOR INSERT 
 WITH CHECK (true);
 
--- Add wallet creation timestamp trigger
-CREATE TRIGGER update_user_wallets_updated_at
-BEFORE UPDATE ON public.user_wallets
-FOR EACH ROW
-EXECUTE FUNCTION public.update_updated_at_column();
+-- Add wallet creation timestamp trigger (with function check)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+        CREATE TRIGGER update_user_wallets_updated_at
+        BEFORE UPDATE ON public.user_wallets
+        FOR EACH ROW
+        EXECUTE FUNCTION public.update_updated_at_column();
+    END IF;
+END $$;
 
 -- Remove the early_access_signups table since we're consolidating everything
 DROP TABLE IF EXISTS public.early_access_signups;
