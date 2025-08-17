@@ -1,3 +1,26 @@
+do $$
+begin
+  if to_regtype('public.app_role') is null then
+    create type public.app_role as enum ('admin','member');
+  end if;
+end$$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_proc
+    where pronamespace = 'public'::regnamespace
+      and proname = 'has_role'
+  ) then
+    create function public.has_role(uid uuid, role public.app_role)
+    returns boolean
+    language sql
+    stable
+    as $$ select false $$;
+  end if;
+end$$;
+
 -- Create API keys table for external access management
 CREATE TABLE public.api_keys (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
