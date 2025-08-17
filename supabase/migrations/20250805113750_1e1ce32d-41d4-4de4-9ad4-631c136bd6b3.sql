@@ -17,7 +17,7 @@ begin
     returns boolean
     language sql
     stable
-    as $$ select false $$;
+    as $func$ select false $func$;
   end if;
 end$$;
 
