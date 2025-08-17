@@ -1,9 +1,18 @@
 -- Security hardening measures (without strict wallet validation due to existing data)
 
--- 1. Add constraints to ensure data integrity
-ALTER TABLE api_keys 
-ADD CONSTRAINT api_keys_name_not_empty 
-CHECK (length(trim(name)) > 0);
+-- 1. Add constraints to ensure data integrity (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'api_keys_name_not_empty' 
+    AND conrelid = 'api_keys'::regclass
+  ) THEN
+    ALTER TABLE api_keys 
+    ADD CONSTRAINT api_keys_name_not_empty 
+    CHECK (length(trim(name)) > 0);
+  END IF;
+END $$;
 
 ALTER TABLE api_keys 
 ADD CONSTRAINT api_keys_key_prefix_format 
