@@ -49,6 +49,7 @@ import InteractiveLearning from "./pages/InteractiveLearning";
 import ApiKeys from "./pages/ApiKeys";
 import TestApiCreation from "./components/TestApiCreation";
 import ApiKeyTester from "./components/ApiKeyTester";
+import Debug from "./pages/Debug";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => (
             } />
             <Route path="/test-api" element={<TestApiCreation />} />
             <Route path="/api-test" element={<ApiKeyTester />} />
+            <Route path="/debug" element={<Debug />} />
             <Route path="/learn-now" element={
               <ProtectedRoute>
                 <LearnNow />

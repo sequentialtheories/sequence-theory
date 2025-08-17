@@ -1,10 +1,12 @@
 import { SequenceWaaS } from '@0xsequence/waas'
 import { supabase } from '@/integrations/supabase/client'
+import { CFG } from './config'
 
+// Sequence WaaS instance configured for Amoy testnet via runtime config
 export const sequenceWaas = new SequenceWaaS({
-  projectAccessKey: 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE',
-  waasConfigKey: 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0=',
-  network: 'polygon'
+  projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY,
+  waasConfigKey: CFG.SEQUENCE_WAAS_CONFIG_KEY,
+  network: CFG.SEQUENCE_NETWORK // 'amoy' for testnet
 })
 
 // NON-CUSTODIAL Sequence Wallet operations
@@ -13,7 +15,7 @@ export const sequenceWaas = new SequenceWaaS({
 
 export const signInWithSequence = async (email: string) => {
   try {
-    console.log('Creating non-custodial Sequence wallet for:', email)
+    console.log(`Creating non-custodial Sequence wallet for: ${email.slice(0, 3)}***`)
     
     // Handle OTP code requirement for email verification
     let otpResolver: ((code: string) => Promise<void>) | null = null
@@ -30,7 +32,7 @@ export const signInWithSequence = async (email: string) => {
       throw new Error('Failed to create non-custodial Sequence wallet')
     }
     
-    console.log('✅ Non-custodial Sequence wallet created:', signInResult.wallet)
+    console.log('✅ Non-custodial Sequence wallet created:', signInResult.wallet?.slice(0, 6) + '...')
     console.log('🔐 User maintains full control of private keys')
     
     return {
@@ -92,12 +94,25 @@ export const getOrCreateSequenceWallet = async (userId: string, email: string) =
 
     // Store ONLY the public wallet address as reference (NON-CUSTODIAL)
     // NO private keys, seeds, or sensitive data stored
+    
+    // 1. Update canonical profiles.eth_address (new approach)
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ eth_address: signInResult.wallet })
+      .eq('user_id', userId)
+    
+    if (profileError) {
+      console.error('Error updating profile eth_address:', profileError)
+      // Continue with user_wallets fallback
+    }
+    
+    // 2. Backward compatibility: also store in user_wallets  
     const { data, error } = await supabase
       .from('user_wallets')
       .upsert({
         user_id: userId,
         wallet_address: signInResult.wallet, // PUBLIC address only
-        network: 'polygon',
+        network: CFG.SEQUENCE_NETWORK, // Use config network (amoy)
         email: email // For reference only
       }, {
         onConflict: 'user_id'
@@ -110,7 +125,7 @@ export const getOrCreateSequenceWallet = async (userId: string, email: string) =
       throw error
     }
 
-    console.log('✅ Non-custodial wallet created - public address stored as reference:', data?.wallet_address)
+    console.log('✅ Non-custodial wallet created - public address stored as reference:', data?.wallet_address?.slice(0, 6) + '...')
     console.log('🔐 User maintains full control of private keys - NO private data stored')
     return { success: true, walletAddress: signInResult.wallet }
     

@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -505,6 +505,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          eth_address: string | null
           id: string
           name: string
           updated_at: string
@@ -513,6 +514,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          eth_address?: string | null
           id?: string
           name: string
           updated_at?: string
@@ -521,6 +523,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          eth_address?: string | null
           id?: string
           name?: string
           updated_at?: string
@@ -552,6 +555,36 @@ export type Database = {
           lock_months?: number
           name?: string
           rigor?: string
+        }
+        Relationships: []
+      }
+      tx_events: {
+        Row: {
+          block_number: number | null
+          contract_address: string | null
+          created_at: string
+          id: string
+          method: string | null
+          tx_hash: string
+          user_id: string
+        }
+        Insert: {
+          block_number?: number | null
+          contract_address?: string | null
+          created_at?: string
+          id?: string
+          method?: string | null
+          tx_hash: string
+          user_id: string
+        }
+        Update: {
+          block_number?: number | null
+          contract_address?: string | null
+          created_at?: string
+          id?: string
+          method?: string | null
+          tx_hash?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -804,27 +837,27 @@ export type Database = {
           contract_id: string
           contract_name: string
           contract_type: string
-          target_amount: number
+          created_at: string
           current_amount: number
-          status: string
           is_creator: boolean
           is_participant: boolean
-          created_at: string
+          status: string
+          target_amount: number
         }[]
       }
       get_user_progress: {
         Args: Record<PropertyKey, never>
         Returns: {
-          module_id: string
           category_index: number
-          module_index: number
           completed_at: string
+          module_id: string
+          module_index: number
         }[]
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -857,16 +890,16 @@ export type Database = {
           p_api_key_id: string
           p_endpoint: string
           p_ip_address: unknown
-          p_user_agent: string
           p_request_data: Json
           p_response_status: number
+          p_user_agent: string
         }
         Returns: undefined
       }
       save_learning_progress: {
         Args: {
-          p_module_id: string
           p_category_index: number
+          p_module_id: string
           p_module_index: number
         }
         Returns: undefined
@@ -874,10 +907,10 @@ export type Database = {
       validate_api_key: {
         Args: { input_api_key: string }
         Returns: {
-          key_id: string
-          user_id: string
-          permissions: Json
           is_valid: boolean
+          key_id: string
+          permissions: Json
+          user_id: string
         }[]
       }
     }

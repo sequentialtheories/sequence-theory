@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Auto-create wallet after successful authentication
+        // Auto-create wallet after successful authentication  
         if (session?.user?.email && event === 'SIGNED_IN') {
           console.log('User authenticated, auto-creating wallet...');
           setTimeout(() => {

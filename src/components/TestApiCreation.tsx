@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TestApiCreation() {
+  const { toast } = useToast();
+  
   const testApiKeyCreation = async () => {
     try {
       const response = await fetch('https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/create-test-api-key', {
@@ -14,13 +17,24 @@ export default function TestApiCreation() {
       console.log('API Key Creation Response:', data);
       
       if (data.success) {
-        alert('SUCCESS! API Key created: ' + data.data.api_key);
+        toast({
+          title: "Success!",
+          description: `API Key created: ${data.data.api_key}`,
+        });
       } else {
-        alert('ERROR: ' + data.error);
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Test failed:', error);
-      alert('Test failed: ' + error.message);
+      toast({
+        title: "Test Failed",
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: "destructive",
+      });
     }
   };
 
