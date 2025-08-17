@@ -14,9 +14,18 @@ BEGIN
   END IF;
 END $$;
 
-ALTER TABLE api_keys 
-ADD CONSTRAINT api_keys_key_prefix_format 
-CHECK (key_prefix ~ '^st_[A-Za-z0-9]{4,}$');
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'api_keys_key_prefix_format' 
+    AND conrelid = 'api_keys'::regclass
+  ) THEN
+    ALTER TABLE api_keys 
+    ADD CONSTRAINT api_keys_key_prefix_format 
+    CHECK (key_prefix ~ '^st_[A-Za-z0-9]{4,}$');
+  END IF;
+END $$;
 
 -- 2. Add validation for contracts
 ALTER TABLE contracts 
