@@ -23,15 +23,3 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- Create profile for existing user
-INSERT INTO public.profiles (id, user_id, email, name, created_at, updated_at)
-VALUES (
-  gen_random_uuid(),
-  '5920cfb9-cb20-4524-8c22-75bb32a0fb51',
-  'bennykrupp@gmail.com',
-  'Benny Krupp',
-  NOW(),
-  NOW()
-)
-ON CONFLICT (user_id) DO NOTHING;
