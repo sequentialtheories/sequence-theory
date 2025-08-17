@@ -27,10 +27,19 @@ BEGIN
   END IF;
 END $$;
 
--- 2. Add validation for contracts
-ALTER TABLE contracts 
-ADD CONSTRAINT contracts_name_not_empty 
-CHECK (length(trim(name)) > 0);
+-- 2. Add validation for contracts (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'contracts_name_not_empty' 
+    AND conrelid = 'contracts'::regclass
+  ) THEN
+    ALTER TABLE contracts 
+    ADD CONSTRAINT contracts_name_not_empty 
+    CHECK (length(trim(name)) > 0);
+  END IF;
+END $$;
 
 ALTER TABLE contracts 
 ADD CONSTRAINT contracts_positive_amounts 
