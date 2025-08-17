@@ -1,4 +1,14 @@
 -- Phase 1: Simplify Database Schema
+CREATE TABLE IF NOT EXISTS public.user_wallets (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+  wallet_address TEXT NOT NULL UNIQUE,
+  wallet_config JSONB,
+  network TEXT NOT NULL DEFAULT 'polygon',
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
 -- Add email column to user_wallets and remove wallet_config
 ALTER TABLE public.user_wallets ADD COLUMN IF NOT EXISTS email text;
 
