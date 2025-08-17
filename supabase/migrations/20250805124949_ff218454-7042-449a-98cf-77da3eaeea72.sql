@@ -47,14 +47,14 @@ ADD CONSTRAINT wallet_address_not_empty
 CHECK (length(trim(wallet_address)) > 0);
 
 -- 7. Add indexes for better performance on security-critical lookups
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_api_keys_key_hash 
+CREATE INDEX IF NOT EXISTS idx_api_keys_key_hash 
 ON api_keys (key_hash);
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_api_keys_user_active 
+CREATE INDEX IF NOT EXISTS idx_api_keys_user_active 
 ON api_keys (user_id, is_active) 
 WHERE is_active = true;
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_api_access_logs_timestamp 
+CREATE INDEX IF NOT EXISTS idx_api_access_logs_timestamp 
 ON api_access_logs (created_at DESC);
 
 -- 8. Add function to log API access attempts for security monitoring
