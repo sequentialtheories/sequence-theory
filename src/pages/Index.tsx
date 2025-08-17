@@ -166,6 +166,7 @@ const Index = () => {
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
                 </div>
+                <h3 className="text-lg font-semibold mb-2 text-muted-foreground">Who We Are</h3>
                 <h2 className="text-4xl font-bold mb-4 text-foreground" itemProp="name">Building Financial Literacy & Inclusion</h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
                 <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed" itemProp="description">
