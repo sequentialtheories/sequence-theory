@@ -167,7 +167,7 @@ const Index = () => {
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
                 </div>
-                <h2 className="text-4xl font-bold mb-4 text-foreground" itemProp="name">Building Financial Literacy & Inclusion</h2>
+                <h2 className="text-2xl font-bold mb-4 text-foreground" itemProp="name">Building Financial Literacy & Inclusion</h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
                 <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed" itemProp="description">
                   Sequence Theory is not just a financial product, it's a framework for building lasting financial 
