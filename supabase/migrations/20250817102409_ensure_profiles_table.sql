@@ -1,10 +1,14 @@
 
+
 CREATE TABLE IF NOT EXISTS public.profiles (
-    id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     email text,
+    name text,
     eth_address text,
     created_at timestamptz DEFAULT now(),
-    updated_at timestamptz DEFAULT now()
+    updated_at timestamptz DEFAULT now(),
+    UNIQUE(user_id)
 );
 
 DO $$
@@ -28,17 +32,17 @@ DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 
 CREATE POLICY "Users can view own profile" 
 ON public.profiles FOR SELECT 
-USING (auth.uid() = id);
+USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can update own profile" 
 ON public.profiles FOR UPDATE 
-USING (auth.uid() = id);
+USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert own profile" 
 ON public.profiles FOR INSERT 
-WITH CHECK (auth.uid() = id);
+WITH CHECK (auth.uid() = user_id);
 
-CREATE OR REPLACE FUNCTION public.ensure_profile(user_id uuid, user_email text DEFAULT NULL)
+CREATE OR REPLACE FUNCTION public.ensure_profile(p_user_id uuid, user_email text DEFAULT NULL, user_name text DEFAULT NULL)
 RETURNS public.profiles
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -48,17 +52,20 @@ DECLARE
 BEGIN
     SELECT * INTO profile_record 
     FROM public.profiles 
-    WHERE id = user_id;
+    WHERE user_id = p_user_id;
     
     IF NOT FOUND THEN
-        INSERT INTO public.profiles (id, email, created_at, updated_at)
-        VALUES (user_id, user_email, now(), now())
+        INSERT INTO public.profiles (user_id, email, name, created_at, updated_at)
+        VALUES (p_user_id, user_email, user_name, now(), now())
         RETURNING * INTO profile_record;
     ELSE
-        IF user_email IS NOT NULL AND profile_record.email != user_email THEN
+        IF (user_email IS NOT NULL AND profile_record.email != user_email) OR 
+           (user_name IS NOT NULL AND profile_record.name != user_name) THEN
             UPDATE public.profiles 
-            SET email = user_email, updated_at = now()
-            WHERE id = user_id
+            SET email = COALESCE(user_email, email),
+                name = COALESCE(user_name, name),
+                updated_at = now()
+            WHERE user_id = p_user_id
             RETURNING * INTO profile_record;
         END IF;
     END IF;
@@ -69,4 +76,4 @@ $$;
 
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT ALL ON public.profiles TO authenticated;
-GRANT EXECUTE ON FUNCTION public.ensure_profile(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.ensure_profile(uuid, text, text) TO authenticated;
