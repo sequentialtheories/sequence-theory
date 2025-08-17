@@ -34,7 +34,12 @@ const Navigation = () => {
             className="flex items-center space-x-2 group"
             onClick={() => {
               if (location.pathname === '/') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const whoWeAreSection = document.querySelector('main[itemScope][itemType="https://schema.org/Service"]');
+                if (whoWeAreSection) {
+                  whoWeAreSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
               }
             }}
           >
