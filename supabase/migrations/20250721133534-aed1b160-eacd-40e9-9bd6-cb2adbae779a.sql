@@ -6,7 +6,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = 'public'
 AS $$
 BEGIN
-  INSERT INTO public.profiles (user_id, name, email)
+  INSERT INTO public.profiles (id, name, email)
   VALUES (
     new.id, 
     COALESCE(new.raw_user_meta_data ->> 'name', ''),

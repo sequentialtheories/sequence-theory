@@ -18,7 +18,7 @@ BEGIN
   );
   
   -- Insert profile only - NO wallet creation
-  INSERT INTO public.profiles (user_id, name, email)
+  INSERT INTO public.profiles (id, name, email)
   VALUES (
     new.id, 
     user_name,

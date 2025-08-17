@@ -20,7 +20,7 @@ BEGIN
   );
   
   -- Insert profile with proper error handling
-  INSERT INTO public.profiles (user_id, name, email)
+  INSERT INTO public.profiles (id, name, email)
   VALUES (
     new.id, 
     user_name,
