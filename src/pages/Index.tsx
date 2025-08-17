@@ -3,7 +3,6 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
-
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
@@ -167,13 +166,9 @@ const Index = () => {
                   <Users className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
                 </div>
-                <h2 className="text-2xl font-bold mb-4 text-foreground" itemProp="name">Building Financial Literacy & Inclusion</h2>
+                
                 <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
-                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed" itemProp="description">
-                  Sequence Theory is not just a financial product, it's a framework for building lasting financial 
-                  literacy and inclusion across digital and traditional markets. Our primary audience is financially 
-                  underserved individuals new to crypto or investing, overwhelmed by exchanges and speculation.
-                </p>
+                
                </header>
                
                {/* Financial Statistics Expander Section */}
