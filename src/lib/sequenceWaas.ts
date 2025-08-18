@@ -140,14 +140,17 @@ export const getOrCreateSequenceWallet = async (userId: string, email: string) =
 
 export const getSequenceWalletBalance = async (address: string) => {
   try {
-    // This checks public blockchain data only - non-custodial
-    console.log('Getting balance for wallet (public blockchain data):', address)
-    return { success: true, balance: '0' }
+    // Import the enhanced balance function
+    const { getSequenceWalletBalance: getBalance } = await import('./sequence');
+    const balance = await getBalance(address);
+    
+    console.log('Getting balance for wallet (public blockchain data):', address, balance);
+    return { success: true, balance: `${balance.matic} MATIC, ${balance.usdc} USDC` };
   } catch (error) {
-    console.error('Error getting wallet balance:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    console.error('Error getting wallet balance:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
-}
+};
 
 export const sendSequenceTransaction = async (transactions: any[]) => {
   try {

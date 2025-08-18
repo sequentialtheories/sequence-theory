@@ -6,24 +6,7 @@
  */
 
 import { CFG } from './config';
-import { SequenceWaaS } from '@0xsequence/waas';
-
-let sequenceInstance: SequenceWaaS | null = null;
-
-/**
- * Initialize Sequence WaaS instance for Amoy testnet
- */
-const getSequenceInstance = () => {
-  if (!sequenceInstance) {
-    // Use runtime config for network targeting
-    sequenceInstance = new SequenceWaaS({
-      projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY,
-      waasConfigKey: CFG.SEQUENCE_WAAS_CONFIG_KEY,
-      network: CFG.SEQUENCE_NETWORK // 'amoy' for testnet
-    });
-  }
-  return sequenceInstance;
-};
+import { sequenceWaas } from './sequenceWaas';
 
 /**
  * Get ethers-compatible Sequence signer for client-side transaction signing
@@ -31,16 +14,15 @@ const getSequenceInstance = () => {
  */
 export const getSequenceSigner = async () => {
   try {
-    const sequence = getSequenceInstance();
-    
-    // Get the current wallet/session
-    const wallet = await sequence.getAddress();
+    // Get the current wallet/session from unified instance
+    const wallet = await sequenceWaas.getAddress();
     if (!wallet) {
       throw new Error('No Sequence wallet session found. Please sign in first.');
     }
     
-    // Return the sequence instance for now (Phase B will implement proper signer)
-    return sequence;
+    // Return the WaaS instance as signer for now
+    // Note: Sequence WaaS provides transaction signing capabilities
+    return sequenceWaas;
   } catch (error) {
     console.error('Failed to get Sequence signer:', error);
     throw error;
@@ -59,6 +41,46 @@ export const getReadProvider = async () => {
   }
   
   return new JsonRpcProvider(CFG.RPC_URL);
+};
+
+/**
+ * Get Sequence wallet balance (native MATIC and ERC-20 tokens)
+ */
+export const getSequenceWalletBalance = async (address: string) => {
+  try {
+    const provider = await getReadProvider();
+    
+    // Get native MATIC balance
+    const maticBalance = await provider.getBalance(address);
+    const maticFormatted = (parseFloat(maticBalance.toString()) / 1e18).toFixed(4);
+    
+    // Get USDC balance (if contract address is configured)
+    let usdcBalance = '0';
+    if (CFG.STABLE_TOKEN_ADDRESS) {
+      try {
+        const { Contract } = await import('ethers');
+        const usdcContract = new Contract(
+          CFG.STABLE_TOKEN_ADDRESS,
+          ['function balanceOf(address) view returns (uint256)', 'function decimals() view returns (uint8)'],
+          provider
+        );
+        const balance = await usdcContract.balanceOf(address);
+        const decimals = await usdcContract.decimals();
+        usdcBalance = (parseFloat(balance.toString()) / Math.pow(10, decimals)).toFixed(2);
+      } catch (usdcError) {
+        console.warn('Failed to fetch USDC balance:', usdcError);
+      }
+    }
+    
+    return {
+      matic: maticFormatted,
+      usdc: usdcBalance,
+      address
+    };
+  } catch (error) {
+    console.error('Failed to get wallet balance:', error);
+    throw error;
+  }
 };
 
 /**

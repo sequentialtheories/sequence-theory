@@ -54,13 +54,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Auto-create wallet after successful authentication  
-        if (session?.user?.email && event === 'SIGNED_IN') {
-          console.log('User authenticated, auto-creating wallet...');
-          setTimeout(() => {
-            createWalletForUser(session.user.id, session.user.email!);
-          }, 1000);
-        }
+        // Note: Wallet creation is now handled explicitly through SequenceAuth UI
+        // instead of auto-creation which conflicts with OTP flow
       }
     );
 

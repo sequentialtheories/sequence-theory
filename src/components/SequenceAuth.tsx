@@ -60,9 +60,16 @@ export const SequenceAuth = ({ email, onSuccess, onError }: SequenceAuthProps) =
         throw new Error(result.error || 'Invalid OTP code');
       }
       
-      // OTP was successful, wallet should be created
-      // Note: In a real implementation, you'd get the wallet from the resolved promise
-      onSuccess('Wallet created successfully');
+      // OTP was successful, get the actual wallet address
+      const { sequenceWaas } = await import('@/lib/sequenceWaas');
+      const walletAddress = await sequenceWaas.getAddress();
+      
+      if (!walletAddress) {
+        throw new Error('Failed to retrieve wallet address after OTP verification');
+      }
+      
+      console.log('✅ OTP verified, wallet address:', walletAddress);
+      onSuccess(walletAddress);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(errorMessage);
