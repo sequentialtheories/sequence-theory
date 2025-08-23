@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 const WhitePaper = () => {
   // The Vault Club white paper
   const whitePaperImages = [
-    "/lovable-uploads/39a7de16-86e0-4173-91b6-c457c89d2631.png", // Title page with Abstract
-    "/lovable-uploads/e1d78388-2c73-4bcf-8204-9946501c8cc6.png", // Phase 1: The Mega Vault
-    "/lovable-uploads/6e78cc40-e54d-4d9e-8b65-dfc36bf14b59.png", // Deposit Schedule, Allocation & Rigor
-    "/lovable-uploads/4fdedbcf-8d7c-4548-8c91-fa253885e8bc.png", // Group Structure & Projected Outcomes
-    "/lovable-uploads/7eefc3c0-0f47-46f6-aa84-39fdfbe58c20.png", // Profit Model & Why Choose The Vault Club
-    "/lovable-uploads/643fdb42-1202-406c-8376-c4f5d89fa2a5.png", // Weekly Loan Schedule & Key Advantages
-    "/lovable-uploads/386bbfd1-b200-49f0-947e-6e817a1dfafb.png", // Technical Infrastructure & Risk Management
-    "/lovable-uploads/91c3b23f-9022-4551-b57f-778410388c5e.png"  // Conclusion & Additional Remarks
+    "/lovable-uploads/d8372ecb-aec5-4100-91b7-2d3ab780aac0.png", // Title page with Abstract
+    "/lovable-uploads/7777d3fa-2e63-4ff8-8f51-fef1d409214b.png", // Phase 1: The Mega Vault
+    "/lovable-uploads/97e92095-fa8d-48f0-a2de-2c9159837b11.png", // Deposit Schedule, Allocation & Rigor
+    "/lovable-uploads/db293bd7-c78e-4c2e-829e-e08dedbdd504.png", // Group Structure & Projected Outcomes
+    "/lovable-uploads/0acc7886-63ae-4b2b-b4da-5d8fd7e1e0d5.png", // Profit Model & Why Choose The Vault Club
+    "/lovable-uploads/81b6c19f-d83a-488b-82af-52d2f371d981.png", // Weekly & Biweekly Loan Schedule & Key Advantages
+    "/lovable-uploads/1be687b7-1726-44f2-abd1-ae3acab3d5fd.png", // Technical Infrastructure & Risk Management
+    "/lovable-uploads/913c999c-a1ad-4d49-b4b3-0c91ab827114.png"  // Conclusion & Additional Remarks
   ];
   return <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-6 py-8">
