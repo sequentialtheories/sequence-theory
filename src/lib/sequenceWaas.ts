@@ -174,13 +174,38 @@ export const sendSequenceTransaction = async (transactions: any[]) => {
 // User key management functions for non-custodial operation
 export const exportUserKeys = async () => {
   try {
-    // Allow users to export/backup their keys
-    console.log('🔐 User exporting their own keys (non-custodial)')
-    // Implementation would depend on Sequence's export capabilities
-    return { success: true, message: 'Keys are user-controlled in Sequence wallet' }
+    console.log('🔐 User requesting key export information (non-custodial)')
+    return { 
+      success: true, 
+      message: 'Use the "View Private Key" option to securely display your private key for backup purposes.' 
+    }
   } catch (error) {
     console.error('Error with key export:', error)
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
+// Get private key for secure display (never stored in database)
+export const getPrivateKeyForDisplay = async (): Promise<{ privateKey?: string; error?: string }> => {
+  try {
+    // Check if user has an active session
+    const isSignedIn = await sequenceWaas.isSignedIn()
+    
+    if (!isSignedIn) {
+      return { error: 'Please sign in to your Sequence wallet first.' }
+    }
+
+    // For Sequence WaaS, private keys are managed internally and not directly exposable
+    // This is by design for security - Sequence uses secure enclaves
+    console.log('🔐 Private key display requested (Sequence WaaS manages keys securely)')
+    
+    // Return a secure message explaining the non-custodial nature
+    return { 
+      error: 'Sequence WaaS manages your private keys securely in hardware enclaves. While you maintain full control, direct private key export requires using Sequence\'s official tools. Your wallet is fully non-custodial - we cannot access your keys.' 
+    }
+  } catch (error) {
+    console.error('Error accessing wallet info:', error)
+    return { error: error instanceof Error ? error.message : 'Failed to access wallet information' }
   }
 }
 

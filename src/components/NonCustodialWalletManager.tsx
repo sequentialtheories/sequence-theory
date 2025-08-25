@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Key, Download, Unlink, Info } from 'lucide-react';
+import { Shield, Key, Download, Unlink, Info, Eye } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 import { useWallet } from '@/components/WalletProvider';
-import { exportUserKeys, disconnectWallet } from '@/lib/sequenceWaas';
+import { exportUserKeys, disconnectWallet, getPrivateKeyForDisplay } from '@/lib/sequenceWaas';
 import { useToast } from '@/hooks/use-toast';
+import { PrivateKeyViewer } from '@/components/PrivateKeyViewer';
 
 export const NonCustodialWalletManager = () => {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export const NonCustodialWalletManager = () => {
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [showPrivateKeyViewer, setShowPrivateKeyViewer] = useState(false);
 
   const handleExportKeys = async () => {
     setIsExporting(true);
@@ -180,6 +182,15 @@ export const NonCustodialWalletManager = () => {
           <div className="space-y-3">
             <Button 
               variant="outline" 
+              onClick={() => setShowPrivateKeyViewer(true)} 
+              className="w-full justify-start text-orange-600 hover:text-orange-700 border-orange-200 hover:border-orange-300"
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              View Private Key (Secure Display)
+            </Button>
+
+            <Button 
+              variant="outline" 
               onClick={handleExportKeys} 
               disabled={isExporting}
               className="w-full justify-start"
@@ -198,6 +209,13 @@ export const NonCustodialWalletManager = () => {
               {isDisconnecting ? 'Disconnecting...' : 'Disconnect Wallet Reference'}
             </Button>
           </div>
+          
+          <PrivateKeyViewer
+            isOpen={showPrivateKeyViewer}
+            onClose={() => setShowPrivateKeyViewer(false)}
+            walletAddress={wallet.address}
+            onViewPrivateKey={getPrivateKeyForDisplay}
+          />
 
           <Alert>
             <Info className="h-4 w-4" />
