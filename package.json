@@ -11,6 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@0xsequence/connect": "^5.3.12",
+    "@0xsequence/hooks": "^5.3.12",
     "@0xsequence/waas": "^2.3.23",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -63,6 +65,8 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
+    "viem": "^2.35.1",
+    "wagmi": "^2.16.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {

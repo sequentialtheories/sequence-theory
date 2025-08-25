@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { getOrCreateSequenceWallet } from '@/lib/sequenceWaas';
 
 interface WalletInfo {
   address: string;
@@ -48,24 +47,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       setError(null);
 
-      // Try to get or create wallet
-      const result = await getOrCreateSequenceWallet(user.id, user.email!);
-      // If wallet creation failed, handle error early
-      if ('error' in result) {
-        console.error('Failed to get or create wallet:', result.error);
-        setError(result.error || 'Failed to create wallet');
-        return;
-      }
-
-      // Fetch the wallet data from database
+      // Only fetch existing wallet data from database - no automatic creation
       const { data, error: fetchError } = await supabase
         .from('user_wallets')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (fetchError) {
-        console.error('Error fetching wallet after creation:', fetchError);
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error fetching wallet:', fetchError);
         setError('Failed to fetch wallet information');
       } else if (data) {
         setWallet({
@@ -73,6 +63,10 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           network: data.network,
           email: data.email || user.email!,
         });
+      } else {
+        // No wallet found - this is handled by AutoWalletBootstrapper
+        console.log('No wallet found for user, AutoWalletBootstrapper will handle creation');
+        setWallet(null);
       }
     } catch (err) {
       console.error('Unexpected error fetching wallet:', err);

@@ -22,24 +22,6 @@ export const useAuth = () => {
   return context;
 };
 
-const createWalletForUser = async (userId: string, email: string) => {
-  try {
-    console.log('Auto-creating wallet for user:', userId);
-    
-    // Import the frontend wallet creation function
-    const { getOrCreateSequenceWallet } = await import('@/lib/sequenceWaas');
-    const result = await getOrCreateSequenceWallet(userId, email);
-
-    if (result.success) {
-      console.log('✅ Wallet auto-created:', result.walletAddress);
-    } else {
-      console.error('Failed to auto-create wallet:', result.error);
-    }
-  } catch (error) {
-    console.error('Failed to auto-create wallet:', error);
-  }
-};
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -53,9 +35,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Note: Wallet creation is now handled explicitly through SequenceAuth UI
-        // instead of auto-creation which conflicts with OTP flow
       }
     );
 
