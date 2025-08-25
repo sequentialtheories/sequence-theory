@@ -154,10 +154,7 @@ const CreateContractDialog: React.FC<{
   };
   return <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Contract
-        </Button>
+        
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
