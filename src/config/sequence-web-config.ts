@@ -14,4 +14,6 @@ export const sequenceWebConfig = createConfig("waas", {
   },
   email: true, // Enable email-based auth for embedded wallets
   enableConfirmationModal: false, // Skip confirmation for smoother UX
+  // Disable external wallet options - only use embedded WaaS wallets
+  walletConnect: false,
 });

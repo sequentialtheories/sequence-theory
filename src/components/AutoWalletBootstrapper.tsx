@@ -46,19 +46,8 @@ export const AutoWalletBootstrapper = () => {
     checkExistingWallet();
   }, [user?.id, hasCheckedWallet]);
 
-  // Show connect modal for users without wallets
-  useEffect(() => {
-    if (!user || !hasCheckedWallet || userHasWallet === null) return;
-
-    // If user has no wallet and wagmi is not connected, show modal
-    if (!userHasWallet && !isConnected) {
-      const timer = setTimeout(() => {
-        setOpenConnectModal(true);
-      }, 1000); // Small delay to avoid showing immediately on page load
-
-      return () => clearTimeout(timer);
-    }
-  }, [user, hasCheckedWallet, userHasWallet, isConnected, setOpenConnectModal]);
+  // Remove auto-opening of connect modal - we'll handle wallet creation differently
+  // No longer automatically opening the connect modal for users without wallets
 
   // Persist wallet to Supabase when connected
   useEffect(() => {
