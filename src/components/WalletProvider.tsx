@@ -47,12 +47,12 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       const storeConnectedWallet = async () => {
         try {
           console.log('Storing connected wallet:', address);
-          const result = await upsertUserWallet(user.id, address, 'amoy', user.email);
+          const result = await upsertUserWallet(user.id, address, 'polygon', user.email);
           
           if (result.success) {
             setWallet({
               address,
-              network: 'amoy',
+              network: 'polygon',
               email: user.email!,
             });
           }
@@ -80,7 +80,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       if (address && isConnected) {
         setWallet({
           address,
-          network: 'amoy',
+          network: 'polygon',
           email: user.email!,
         });
         setLoading(false);
