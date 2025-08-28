@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthProvider';
+import { useAccount } from 'wagmi';
+import { upsertUserWallet } from '@/lib/wallet-utils';
 import { supabase } from '@/integrations/supabase/client';
 
 interface WalletInfo {
@@ -13,6 +15,7 @@ interface WalletContextType {
   loading: boolean;
   error: string | null;
   refetchWallet: () => Promise<void>;
+  isConnected: boolean;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -20,6 +23,7 @@ const WalletContext = createContext<WalletContextType>({
   loading: true,
   error: null,
   refetchWallet: async () => {},
+  isConnected: false,
 });
 
 export const useWallet = () => {
@@ -32,9 +36,34 @@ export const useWallet = () => {
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
+  const { address, isConnected } = useAccount();
   const [wallet, setWallet] = useState<WalletInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Store wallet when connected via Sequence Connect
+  useEffect(() => {
+    if (user && address && isConnected && !wallet) {
+      const storeConnectedWallet = async () => {
+        try {
+          console.log('Storing connected wallet:', address);
+          const result = await upsertUserWallet(user.id, address, 'amoy', user.email);
+          
+          if (result.success) {
+            setWallet({
+              address,
+              network: 'amoy',
+              email: user.email!,
+            });
+          }
+        } catch (error) {
+          console.error('Error storing connected wallet:', error);
+        }
+      };
+
+      storeConnectedWallet();
+    }
+  }, [user, address, isConnected, wallet]);
 
   const fetchWallet = async () => {
     if (!user) {
@@ -47,14 +76,25 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       setError(null);
 
-      // Only fetch existing wallet data from database - no automatic creation
+      // Check if there's a connected wallet first
+      if (address && isConnected) {
+        setWallet({
+          address,
+          network: 'amoy',
+          email: user.email!,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Otherwise fetch from database
       const { data, error: fetchError } = await supabase
         .from('user_wallets')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
+      if (fetchError && fetchError.code !== 'PGRST116') {
         console.error('Error fetching wallet:', fetchError);
         setError('Failed to fetch wallet information');
       } else if (data) {
@@ -64,8 +104,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           email: data.email || user.email!,
         });
       } else {
-        // No wallet found - this is handled by AutoWalletBootstrapper
-        console.log('No wallet found for user, AutoWalletBootstrapper will handle creation');
         setWallet(null);
       }
     } catch (err) {
@@ -78,14 +116,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchWallet();
-  }, [user]);
+  }, [user, address, isConnected]);
 
   const refetchWallet = async () => {
     await fetchWallet();
   };
 
   return (
-    <WalletContext.Provider value={{ wallet, loading, error, refetchWallet }}>
+    <WalletContext.Provider value={{ wallet, loading, error, refetchWallet, isConnected }}>
       {children}
     </WalletContext.Provider>
   );

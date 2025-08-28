@@ -10,10 +10,9 @@ export const sequenceWebConfig = createConfig("waas", {
   position: 'center',
   signIn: {
     projectName: "Vault Club",
-    logoUrl: undefined, // Can be added later
+    logoUrl: undefined,
   },
-  email: true, // Enable email-based auth for embedded wallets
-  enableConfirmationModal: false, // Skip confirmation for smoother UX
-  // Disable external wallet options - only use embedded WaaS wallets
+  email: true,
+  enableConfirmationModal: false,
   walletConnect: false,
 });
