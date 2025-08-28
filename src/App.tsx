@@ -9,7 +9,7 @@ import { WalletProvider } from "@/components/WalletProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
 import { SequenceConnect } from '@0xsequence/connect';
-import { EmbeddedWalletCreator } from '@/components/EmbeddedWalletCreator';
+
 import { sequenceWebConfig } from '@/config/sequence-web-config';
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
@@ -66,7 +66,7 @@ const App = () => (
           <SecurityHeaders />
           <AuthProvider>
             <WalletProvider>
-              <EmbeddedWalletCreator />
+              
               <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
