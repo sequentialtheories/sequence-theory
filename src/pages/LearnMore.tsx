@@ -31,7 +31,7 @@ const LearnMore = () => {
             onClick={() => navigate("/")}
             variant="outline"
             size="sm"
-            className="mb-6 w-10 h-10 rounded-full bg-navy-900 border-navy-700 text-white hover:bg-navy-800 hover:text-white"
+            className="mb-6 w-10 h-10 rounded-full bg-slate-900 border-slate-800 text-white hover:bg-slate-800 hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
