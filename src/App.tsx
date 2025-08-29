@@ -53,6 +53,7 @@ import ApiKeys from "./pages/ApiKeys";
 import TestApiCreation from "./components/TestApiCreation";
 import ApiKeyTester from "./components/ApiKeyTester";
 import Debug from "./pages/Debug";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +105,7 @@ const App = () => (
           <Route path="/education-quiz" element={<EducationQuiz />} />
           <Route path="/comprehensive-exam" element={<ComprehensiveExam />} />
           <Route path="/white-paper" element={<WhitePaper />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
           <Route path="/learn/vault-club-contracts" element={<VaultClubContracts />} />

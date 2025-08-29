@@ -19,7 +19,8 @@ const Navigation = () => {
     { label: "Home", href: "/" },
     { label: "Learn More", href: "/learn-more" },
     { label: "Learn Now", href: "/learn-now" },
-    { label: "White Paper", href: "/white-paper" }
+    { label: "White Paper", href: "/white-paper" },
+    { label: "FAQ", href: "/faq" }
   ];
 
   const isActive = (href: string) => location.pathname === href;
