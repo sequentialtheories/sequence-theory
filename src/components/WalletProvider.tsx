@@ -1,8 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from './AuthProvider';
-import { useAccount } from 'wagmi';
-import { upsertUserWallet } from '@/lib/wallet-utils';
-import { supabase } from '@/integrations/supabase/client';
+import { createContext, useContext } from 'react';
+import { useSequenceWallet } from '@/hooks/useSequenceWallet';
 
 interface WalletInfo {
   address: string;
@@ -15,6 +12,8 @@ interface WalletContextType {
   error: string | null;
   refetchWallet: () => Promise<void>;
   isConnected: boolean;
+  createWallet: () => Promise<void>;
+  signMessage: (message: string) => Promise<string>;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -23,6 +22,8 @@ const WalletContext = createContext<WalletContextType>({
   error: null,
   refetchWallet: async () => {},
   isConnected: false,
+  createWallet: async () => {},
+  signMessage: async () => '',
 });
 
 export const useWallet = () => {
@@ -34,92 +35,32 @@ export const useWallet = () => {
 };
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
-  const { address, isConnected } = useAccount();
-  const [wallet, setWallet] = useState<WalletInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { 
+    wallet: sequenceWallet, 
+    loading, 
+    error, 
+    createWallet, 
+    refetchWallet,
+    signMessage
+  } = useSequenceWallet();
 
-  // Store wallet when connected via Sequence Connect
-  useEffect(() => {
-    if (user && address && isConnected && !wallet) {
-      const storeConnectedWallet = async () => {
-        try {
-          console.log('Storing connected wallet:', address);
-          const result = await upsertUserWallet(user.id, address, 'polygon');
-          
-          if (result.success) {
-            setWallet({
-              address,
-              network: 'polygon',
-            });
-          }
-        } catch (error) {
-          console.error('Error storing connected wallet:', error);
-        }
-      };
+  const wallet = sequenceWallet ? {
+    address: sequenceWallet.address,
+    network: sequenceWallet.network,
+  } : null;
 
-      storeConnectedWallet();
-    }
-  }, [user, address, isConnected, wallet]);
-
-  const fetchWallet = async () => {
-    if (!user) {
-      setWallet(null);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Check if there's a connected wallet first
-      if (address && isConnected) {
-        setWallet({
-          address,
-          network: 'polygon',
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Otherwise fetch from database
-      const { data, error: fetchError } = await supabase
-        .from('user_wallets')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('Error fetching wallet:', fetchError);
-        setError('Failed to fetch wallet information');
-      } else if (data) {
-        setWallet({
-          address: data.wallet_address,
-          network: data.network,
-        });
-      } else {
-        setWallet(null);
-      }
-    } catch (err) {
-      console.error('Unexpected error fetching wallet:', err);
-      setError('An unexpected error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchWallet();
-  }, [user, address, isConnected]);
-
-  const refetchWallet = async () => {
-    await fetchWallet();
-  };
+  const isConnected = !!wallet;
 
   return (
-    <WalletContext.Provider value={{ wallet, loading, error, refetchWallet, isConnected }}>
+    <WalletContext.Provider value={{ 
+      wallet, 
+      loading, 
+      error, 
+      refetchWallet, 
+      isConnected,
+      createWallet,
+      signMessage
+    }}>
       {children}
     </WalletContext.Provider>
   );

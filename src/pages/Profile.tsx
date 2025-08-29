@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWallet } from '@/components/WalletProvider';
 import { ContractDashboard } from '@/components/ContractDashboard';
-import { WalletConnectionStatus } from '@/components/WalletConnectionStatus';
+import { WalletProofSection } from '@/components/WalletProofSection';
 
 
 // Private keys are no longer stored in wallet_config for security
@@ -322,8 +322,8 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* Sequence Web SDK Wallet Connection */}
-          <WalletConnectionStatus />
+          {/* Embedded Wallet Proof Section */}
+          <WalletProofSection />
 
 
           {/* Investment Contracts */}

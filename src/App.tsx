@@ -1,16 +1,14 @@
 
+import { AuthProvider } from "@/components/AuthProvider";
+import { WalletProvider } from "@/components/WalletProvider";
+import { AutoWalletCreator } from "@/components/AutoWalletCreator";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/components/AuthProvider";
-import { WalletProvider } from "@/components/WalletProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SecurityHeaders } from "@/components/SecurityHeaders";
-import { SequenceConnect } from '@0xsequence/connect';
-
-import { sequenceWebConfig } from '@/config/sequence-web-config';
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import { Admin } from "./pages/Admin";
@@ -61,13 +59,12 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <SequenceConnect config={sequenceWebConfig}>
-        <BrowserRouter>
-          <SecurityHeaders />
-          <AuthProvider>
-            <WalletProvider>
-              
-              <Routes>
+      <BrowserRouter>
+        <SecurityHeaders />
+        <AuthProvider>
+          <WalletProvider>
+            <AutoWalletCreator />
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
             <Route path="/auth" element={<Auth />} />
@@ -132,11 +129,10 @@ const App = () => (
           <Route path="/learn/democratizing-financial-knowledge" element={<InteractiveLearning />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-              </Routes>
-            </WalletProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </SequenceConnect>
+            </Routes>
+          </WalletProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
