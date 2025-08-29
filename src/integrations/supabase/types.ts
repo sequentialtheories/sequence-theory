@@ -172,6 +172,36 @@ export type Database = {
         }
         Relationships: []
       }
+      api_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          identifier: string
+          request_count: number
+          updated_at: string
+          window_duration_minutes: number
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          identifier: string
+          request_count?: number
+          updated_at?: string
+          window_duration_minutes?: number
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          identifier?: string
+          request_count?: number
+          updated_at?: string
+          window_duration_minutes?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       contract_deposits: {
         Row: {
           amount: number
@@ -659,7 +689,6 @@ export type Database = {
       user_wallets: {
         Row: {
           created_at: string
-          email: string | null
           id: string
           network: string
           updated_at: string
@@ -668,7 +697,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          email?: string | null
           id?: string
           network?: string
           updated_at?: string
@@ -677,7 +705,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          email?: string | null
           id?: string
           network?: string
           updated_at?: string
@@ -827,6 +854,14 @@ export type Database = {
         Args: { p_contract_id: string }
         Returns: boolean
       }
+      check_rate_limit: {
+        Args: {
+          p_identifier: string
+          p_limit?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       generate_api_key: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -916,6 +951,10 @@ export type Database = {
           permissions: Json
           user_id: string
         }[]
+      }
+      validate_api_permissions: {
+        Args: { p_api_key_id: string; p_required_permission: string }
+        Returns: boolean
       }
     }
     Enums: {
