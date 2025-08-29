@@ -33,7 +33,7 @@ export const ProfileDropdown = () => {
   const { wallet, loading: walletLoading } = useWallet();
 
   // Fetch user profile
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -41,9 +41,12 @@ export const ProfileDropdown = () => {
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
       return data;
     },
     enabled: !!user?.id,
@@ -91,17 +94,22 @@ export const ProfileDropdown = () => {
     hasUser: !!user, 
     userId: user?.id, 
     hasProfile: !!profile, 
-    profileLoading: profile === undefined 
+    profileLoading 
   });
   
-  if (!user || !profile) {
-    console.log('ProfileDropdown - Not rendering because:', { noUser: !user, noProfile: !profile });
+  // Don't render if no user is authenticated
+  if (!user) {
+    console.log('ProfileDropdown - Not rendering because no user');
     return null;
   }
 
-  const userInitials = profile.name 
+  // Calculate user initials from profile name or email
+  const userInitials = profile?.name 
     ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase()
-    : profile.email[0].toUpperCase();
+    : user.email?.[0]?.toUpperCase() || 'U';
+
+  // Display email from profile or user object
+  const displayEmail = profile?.email || user.email;
 
   return (
     <>
@@ -123,11 +131,15 @@ export const ProfileDropdown = () => {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col space-y-1 leading-none">
-              {profile.name && (
+              {profileLoading ? (
+                <p className="text-sm text-muted-foreground">Loading profile...</p>
+              ) : profile?.name ? (
                 <p className="font-medium">{profile.name}</p>
+              ) : (
+                <p className="text-sm text-muted-foreground">Complete your profile</p>
               )}
               <p className="text-xs text-muted-foreground truncate">
-                {profile.email}
+                {displayEmail}
               </p>
             </div>
           </div>
