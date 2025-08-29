@@ -53,7 +53,7 @@ const FAQ = () => {
           onClick={() => navigate(-1)}
           variant="outline"
           size="sm"
-          className="absolute top-6 right-6 z-10"
+          className="absolute top-6 left-6 z-10"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
