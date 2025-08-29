@@ -1,7 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const FAQ = () => {
+  const navigate = useNavigate();
+  
   const faqs = [
     {
       question: "What is Sequence Theory?",
@@ -43,7 +48,16 @@ const FAQ = () => {
 
   return (
     <div className="min-h-screen bg-gradient-secondary py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 relative">
+        <Button
+          onClick={() => navigate(-1)}
+          variant="outline"
+          size="sm"
+          className="absolute top-6 right-6 z-10"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
