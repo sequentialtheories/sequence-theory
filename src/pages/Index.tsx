@@ -238,7 +238,7 @@ const Index = () => {
         </section>
 
         {/* Mission Section */}
-        <main className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden" itemScope itemType="https://schema.org/Service">
+        <main className="pt-20 pb-12 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden" itemScope itemType="https://schema.org/Service">
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-6xl mx-auto">
               <header className="text-center mb-16">
