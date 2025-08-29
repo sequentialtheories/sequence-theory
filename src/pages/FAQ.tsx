@@ -21,7 +21,7 @@ const FAQ = () => {
     },
     {
       question: "Is this safe?",
-      answer: "All investing has risks, but our approach focuses on steady, long-term growth rather than risky quick gains. We spread investments across multiple areas to reduce risk, and you maintain control over your contributions."
+      answer: "All investing has risks, but our approach focuses on steady, long-term growth rather than risky quick gains. We spread investments across multiple areas to reduce risk, and you maintain control over your contributions. And since everything is on the blockchain & automated with smart contracts, all fund management is observable & automatic!"
     },
     {
       question: "Do I need to know about crypto or investing?",
