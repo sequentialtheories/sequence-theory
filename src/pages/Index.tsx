@@ -156,6 +156,87 @@ const Index = () => {
           </div>
         </section>
 
+        {/* The Leap Issue Section */}
+        <section className="py-20 relative bg-gradient-to-br from-accent/5 to-muted/20" itemScope itemType="https://schema.org/Article">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-6xl mx-auto">
+              <header className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-6 py-2 mb-6">
+                  <Shield className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-medium text-accent">The Barrier</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl mobile-text-xl font-bold mb-4 text-foreground" itemProp="headline">The Leap Issue</h2>
+                <div className="w-24 h-1 bg-gradient-to-r from-accent to-accent/60 mx-auto mb-8"></div>
+                <p className="text-lg sm:text-xl mobile-text-base text-muted-foreground max-w-4xl mx-auto leading-relaxed px-4" itemProp="description">
+                  In crypto currently, too much autonomy is required. Navigating web3 wallets, exchanges, infinite plethora of tokens, 
+                  DeFi's jargon & market focus leaves users feeling that entering crypto is "too much of a leap."
+                </p>
+              </header>
+              
+              <div className="grid md:grid-cols-2 gap-12 mb-16">
+                {/* The Problem Card */}
+                <div className="relative group" itemScope itemType="https://schema.org/Article">
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-accent/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
+                  <div className="relative bg-card p-8 rounded-xl border border-accent/20 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                    <div className="w-16 h-16 bg-gradient-to-br from-accent/20 to-accent/30 rounded-2xl flex items-center justify-center mb-6">
+                      <Target className="h-8 w-8 text-accent" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-6 text-foreground" itemProp="headline">Common Pain Points</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Navigating complex web3 wallets and security requirements</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Overwhelming exchanges with thousands of tokens</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Dense DeFi jargon and technical complexity</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Constant market speculation and FOMO pressure</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* The Solution Card */}
+                <div className="relative group" itemScope itemType="https://schema.org/Article">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/10 rounded-2xl transform -rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
+                  <div className="relative bg-card p-8 rounded-xl border border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/30 rounded-2xl flex items-center justify-center mb-6">
+                      <CheckCircle className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-6 text-foreground" itemProp="headline">Our Solution: Eliminating the Leap</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Spoon-feeding users with structured investing</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Controlled risk exposure through automation</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Completely automated contracts remove complexity</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-muted-foreground">Focus on education and gradual market entry</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Mission Section */}
         <main className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden" itemScope itemType="https://schema.org/Service">
           <div className="container mx-auto px-6 relative z-10">
