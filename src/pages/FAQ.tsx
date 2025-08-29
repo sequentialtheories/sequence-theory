@@ -25,7 +25,7 @@ const FAQ = () => {
     },
     {
       question: "Do I need to know about crypto or investing?",
-      answer: "Not at all! We teach you everything you need to know through simple lessons and modules. Our community also helps newcomers learn and feel confident."
+      answer: "Not at all! We teach you everything you need to know through simple lessons and modules. Our community also helps newcomers learn and feel confident. Learn about the tech behind the contract as you grow your wealth!"
     },
     {
       question: "How do I start?",
