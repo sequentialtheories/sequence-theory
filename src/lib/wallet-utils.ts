@@ -7,8 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 export async function upsertUserWallet(
   userId: string, 
   walletAddress: string, 
-  network: string = 'amoy', 
-  email?: string
+  network: string = 'amoy'
 ) {
   try {
     const { data, error } = await supabase
@@ -17,7 +16,6 @@ export async function upsertUserWallet(
         user_id: userId,
         wallet_address: walletAddress,
         network,
-        email: email || null,
       }, {
         onConflict: 'user_id'
       })
@@ -44,7 +42,7 @@ export async function checkUserWallet(userId: string) {
   try {
     const { data, error } = await supabase
       .from('user_wallets')
-      .select('wallet_address, network, email')
+      .select('wallet_address, network')
       .eq('user_id', userId)
       .maybeSingle();
 

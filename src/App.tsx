@@ -50,7 +50,6 @@ import GlobalEducationStatistics from "./pages/GlobalEducationStatistics";
 import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowledge";
 import InteractiveLearning from "./pages/InteractiveLearning";
 import ApiKeys from "./pages/ApiKeys";
-import TestApiCreation from "./components/TestApiCreation";
 import ApiKeyTester from "./components/ApiKeyTester";
 import Debug from "./pages/Debug";
 import FAQ from "./pages/FAQ";
@@ -87,7 +86,6 @@ const App = () => (
                 <ApiKeys />
               </ProtectedRoute>
             } />
-            <Route path="/test-api" element={<TestApiCreation />} />
             <Route path="/api-test" element={<ApiKeyTester />} />
             <Route path="/debug" element={<Debug />} />
             <Route path="/learn-now" element={

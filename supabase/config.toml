@@ -13,7 +13,7 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.create-test-api-key]
-verify_jwt = false
+verify_jwt = true
 
 [functions.vault-club-user-creation]
 verify_jwt = false

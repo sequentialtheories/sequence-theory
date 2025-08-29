@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 interface WalletInfo {
   address: string;
   network: string;
-  email: string;
 }
 
 interface WalletContextType {
@@ -47,13 +46,12 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       const storeConnectedWallet = async () => {
         try {
           console.log('Storing connected wallet:', address);
-          const result = await upsertUserWallet(user.id, address, 'polygon', user.email);
+          const result = await upsertUserWallet(user.id, address, 'polygon');
           
           if (result.success) {
             setWallet({
               address,
               network: 'polygon',
-              email: user.email!,
             });
           }
         } catch (error) {
@@ -81,7 +79,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         setWallet({
           address,
           network: 'polygon',
-          email: user.email!,
         });
         setLoading(false);
         return;
@@ -101,7 +98,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         setWallet({
           address: data.wallet_address,
           network: data.network,
-          email: data.email || user.email!,
         });
       } else {
         setWallet(null);

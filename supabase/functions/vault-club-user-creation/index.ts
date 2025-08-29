@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import { ethers } from 'https://esm.sh/ethers@6.15.0';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://vaultclub.io', // Restrict to Vault Club domain
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
 };
 
@@ -78,15 +78,13 @@ serve(async (req) => {
     const deterministicAddress = ethers.getAddress(seed.slice(0, 42));
     const { data: walletUpsertData, error: walletUpsertError } = await supabase
       .from('user_wallets')
-      .upsert(
-        {
-          user_id: userId,
-          wallet_address: deterministicAddress,
-          network: 'polygon',
-          email
-        },
-        { onConflict: 'user_id' }
-      )
+      .upsert({
+        user_id: userId,
+        wallet_address: deterministicAddress,
+        network: 'polygon'
+      }, {
+        onConflict: 'user_id'
+      })
       .select()
       .maybeSingle();
 

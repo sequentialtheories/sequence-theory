@@ -73,7 +73,7 @@ export const getOrCreateSequenceWallet = async (userId: string, email: string) =
     // Check if user already has a wallet address reference (PUBLIC INFO ONLY)
     const { data: existingWallet, error: fetchError } = await supabase
       .from('user_wallets')
-      .select('wallet_address, network, email') // Only public information
+      .select('wallet_address, network') // Only public information, email removed for security
       .eq('user_id', userId)
       .maybeSingle()
 
@@ -113,7 +113,6 @@ export const getOrCreateSequenceWallet = async (userId: string, email: string) =
         user_id: userId,
         wallet_address: signInResult.wallet, // PUBLIC address only
         network: CFG.SEQUENCE_NETWORK, // Use config network (amoy)
-        email: email // For reference only
       }, {
         onConflict: 'user_id'
       })

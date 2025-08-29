@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://id-preview--902c4709-595e-47f5-b881-6247d8b5fbf9.lovable.app', // Restrict to your domain
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
 };
 
@@ -117,11 +117,30 @@ serve(async (req) => {
 
       let walletQuery = supabase
         .from('user_wallets')
-        .select('wallet_address, network, email, created_at, updated_at, user_id');
+        .select('wallet_address, network, created_at, updated_at, user_id');
 
       // If specific email or user_id is requested, filter accordingly
       if (email) {
-        walletQuery = walletQuery.eq('email', email);
+        // For email lookup, we need to join with profiles table since email is no longer in user_wallets
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('email', email)
+          .maybeSingle();
+          
+        if (profile) {
+          walletQuery = walletQuery.eq('user_id', profile.user_id);
+        } else {
+          // Email not found in profiles
+          await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 404);
+          return new Response(
+            JSON.stringify({ error: 'User not found for email' }), 
+            { 
+              status: 404, 
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            }
+          );
+        }
       } else if (userId) {
         walletQuery = walletQuery.eq('user_id', userId);
       } else {

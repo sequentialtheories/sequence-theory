@@ -7,11 +7,11 @@ export const SecurityHeaders = () => {
     cspMeta.httpEquiv = 'Content-Security-Policy';
     cspMeta.content = `
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://esm.sh;
+      script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://esm.sh;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com;
       img-src 'self' data: https:;
-      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://waas.sequence.app;
+      connect-src 'self' https://qldjhlnsphlixmzzrdwi.supabase.co wss://qldjhlnsphlixmzzrdwi.supabase.co https://waas.sequence.app;
       frame-ancestors 'none';
       object-src 'none';
       base-uri 'self';
