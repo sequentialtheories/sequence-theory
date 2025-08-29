@@ -50,7 +50,7 @@ const FAQ = () => {
     <div className="min-h-screen bg-gradient-secondary py-20">
       <div className="container mx-auto px-6 relative">
         <Button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           variant="outline"
           size="sm"
           className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
