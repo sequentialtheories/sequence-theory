@@ -823,6 +823,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_contract_owner: {
+        Args: { p_contract_id: string }
+        Returns: boolean
+      }
       generate_api_key: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -870,7 +874,7 @@ export type Database = {
         Returns: boolean
       }
       is_contract_participant: {
-        Args: { contract_id: string }
+        Args: { p_contract_id: string }
         Returns: boolean
       }
       is_owner_of_subclub: {
