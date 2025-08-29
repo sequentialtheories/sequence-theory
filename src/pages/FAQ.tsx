@@ -37,7 +37,7 @@ const FAQ = () => {
     },
     {
       question: "What does it cost?",
-      answer: "Contact us for current pricing and membership details. We want to make sure our services fit your needs and budget."
+      answer: "Sequence Theory provides educational content & community completely for free! While The Vault Club charges minimal utility fees, there is no upfront fee at all!"
     }
   ];
 
