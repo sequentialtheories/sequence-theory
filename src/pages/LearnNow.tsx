@@ -315,8 +315,8 @@ const LearnNow = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {learningCategories.map((category, index) => <button key={index} onClick={() => setSelectedCategory(index)} className={`group relative p-8 text-center rounded-2xl transition-all duration-500 transform hover:-translate-y-2 ${selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600 text-white shadow-2xl scale-105' : 'bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-cyan-50 border border-gray-200 hover:border-purple-300 shadow-lg hover:shadow-xl'}`}>
-                      <div className={`absolute inset-0 rounded-2xl blur-xl opacity-20 ${selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600' : 'bg-gray-200'}`}></div>
+                  {learningCategories.map((category, index) => <button key={index} onClick={() => setSelectedCategory(index)} className={`group relative p-8 text-center rounded-2xl transition-all duration-500 transform hover:-translate-y-2 ${selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600 text-white shadow-2xl scale-105' : 'bg-white/90 backdrop-blur-sm hover:bg-gradient-to-br hover:from-purple-50 hover:to-cyan-50 border-2 border-purple-200/60 hover:border-purple-300 shadow-lg hover:shadow-xl'}`}>
+                      <div className={`absolute inset-0 rounded-2xl blur-xl opacity-20 ${selectedCategory === index ? 'bg-gradient-to-br from-purple-600 to-cyan-600' : 'bg-purple-200'}`}></div>
                       
                       <div className="relative z-10">
                         <div className={`text-xl font-bold mb-4 ${selectedCategory === index ? 'text-white' : 'text-gray-900 group-hover:text-purple-700'}`}>
