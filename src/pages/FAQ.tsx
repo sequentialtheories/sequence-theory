@@ -82,7 +82,7 @@ const FAQ = () => {
               onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
               className="text-primary hover:text-primary-glow transition-smooth font-medium"
             >
-              Contact us through The Vault Club
+              Contact us at sequencetheoryinc@gmail.com
             </button>
           </div>
         </div>
