@@ -1,7 +1,9 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const WhitePaper = () => {
+  const navigate = useNavigate();
+  
   // The Vault Club white paper
   const whitePaperImages = [
     "/lovable-uploads/d8372ecb-aec5-4100-91b7-2d3ab780aac0.png", // Title page with Abstract
@@ -14,15 +16,15 @@ const WhitePaper = () => {
     "/lovable-uploads/913c999c-a1ad-4d49-b4b3-0c91ab827114.png"  // Conclusion & Additional Remarks
   ];
   return <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <Link to="/">
-            <Button variant="outline" className="inline-flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
+      <div className="container mx-auto px-6 py-8 relative">
+        <Button
+          onClick={() => navigate("/")}
+          variant="outline"
+          size="sm"
+          className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">The Vault Club - White Paper</h1>
