@@ -53,10 +53,9 @@ const FAQ = () => {
           onClick={() => navigate(-1)}
           variant="outline"
           size="sm"
-          className="absolute top-6 left-6 z-10"
+          className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
