@@ -5,27 +5,39 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What is Sequence Theory?",
-      answer: "Sequence Theory is an educational platform designed to ease people into investing through comprehensive financial education and practical tools."
+      answer: "Sequence Theory helps everyday people learn about money and investing. We make it easy to understand and get started, even if you've never invested before."
     },
     {
-      question: "How does The Vault Club work?",
-      answer: "The Vault Club provides members with access to educational resources, investment tools, and a community of learners focused on building financial literacy and wealth."
+      question: "What is The Vault Club?",
+      answer: "The Vault Club is our investment system that automatically grows your money over time. You contribute regularly, and our system reinvests your funds to help them compound and grow."
+    },
+    {
+      question: "How does it work exactly?",
+      answer: "You set up regular contributions (like $50 a week), and our system automatically invests that money across different opportunities. It's designed to grow slowly and steadily over time without you having to manage it daily."
+    },
+    {
+      question: "Who is this for?",
+      answer: "This is for people who want to build wealth but don't know where to start, or those who want steady growth without the stress of day trading or managing complex investments."
+    },
+    {
+      question: "Is this safe?",
+      answer: "All investing has risks, but our approach focuses on steady, long-term growth rather than risky quick gains. We spread investments across multiple areas to reduce risk, and you maintain control over your contributions."
+    },
+    {
+      question: "Do I need to know about crypto or investing?",
+      answer: "Not at all! We teach you everything you need to know through simple lessons and modules. Our community also helps newcomers learn and feel confident."
+    },
+    {
+      question: "How do I start?",
+      answer: "Create an account, go through our 'Learn Now' section to understand the basics, then choose how much and how often you want to contribute. Join our Discord community for support along the way."
     },
     {
       question: "Is this financial advice?",
-      answer: "No, the content provided by Sequence Theory is for educational purposes only and should not be considered as financial advice. Always consult with a qualified financial advisor before making investment decisions."
+      answer: "No, everything we provide is for education only. We teach you how to think about money and investing, but you should talk to a financial advisor before making any major decisions."
     },
     {
-      question: "How do I get started?",
-      answer: "You can get started by signing up for The Vault Club through our platform. Once registered, you'll have access to our educational modules and learning resources."
-    },
-    {
-      question: "What kind of education do you provide?",
-      answer: "We provide comprehensive financial education covering topics from basic financial literacy to advanced investment strategies, blockchain technology, and digital assets."
-    },
-    {
-      question: "Is there a cost to join?",
-      answer: "Please contact us for current pricing information and membership options."
+      question: "What does it cost?",
+      answer: "Contact us for current pricing and membership details. We want to make sure our services fit your needs and budget."
     }
   ];
 
