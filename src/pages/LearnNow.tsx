@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle, Lock, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLearningProgress } from "@/hooks/useLearningProgress";
 const LearnNow = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const { isModuleUnlocked, isModuleCompleted, isCategoryCompleted, areAllCategoriesCompleted, getCompletionStats } = useLearningProgress();
   
@@ -172,13 +173,14 @@ const LearnNow = () => {
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl translate-y-32 -translate-x-32"></div>
         
         <div className="container mx-auto px-6 relative z-10">
-          <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-all duration-300 mb-6 group">
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            <span className="relative">
-              Back to Home
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white scale-x-0 transition-transform group-hover:scale-x-100"></span>
-            </span>
-          </Link>
+          <Button
+            onClick={() => navigate("/")}
+            variant="outline"
+            size="sm"
+            className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white mb-6"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute inset-0 bg-white/20 rounded-2xl blur-lg"></div>

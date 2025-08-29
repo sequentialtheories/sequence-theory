@@ -7,9 +7,11 @@ import PreSignup from "@/components/PreSignup";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, FileText, ArrowLeft, Shield, TrendingUp, Target } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LearnMore = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background decorative elements */}
@@ -25,10 +27,14 @@ const LearnMore = () => {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
         <div className="container mx-auto px-6 relative z-10">
-          <Link to="/" className="inline-flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground transition-all duration-300 hover:translate-x-1 mb-6">
+          <Button
+            onClick={() => navigate("/")}
+            variant="outline"
+            size="sm"
+            className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white mb-6"
+          >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </Link>
+          </Button>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
             The Vault Club: Investment Platform
           </h1>
