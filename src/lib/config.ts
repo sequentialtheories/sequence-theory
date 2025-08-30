@@ -22,13 +22,13 @@ const get = (key: string, defaultValue = '') => {
 };
 
 export const CFG = {
-  // Network configuration (Polygon mainnet)
-  CHAIN_ID: Number(get('CHAIN_ID', '137')),
-  RPC_URL: get('RPC_URL', 'https://polygon-rpc.com'),
+  // Network configuration (Amoy testnet)
+  CHAIN_ID: Number(get('CHAIN_ID', '80002')),
+  RPC_URL: get('RPC_URL', 'https://rpc-amoy.polygon.technology'),
   
   // Feature flags (runtime overridable)
   SIMULATION_MODE: get('SIMULATION_MODE', '1') === '1',
-  FEATURE_TESTNET_ONLY: get('FEATURE_TESTNET_ONLY', '0') === '1',
+  FEATURE_TESTNET_ONLY: get('FEATURE_TESTNET_ONLY', '1') === '1',
   
   // Contract addresses (will be set by user in Phase B)
   VAULT_ADDRESS: get('VAULT_ADDRESS', ''),
@@ -37,7 +37,7 @@ export const CFG = {
   
   // Sequence WaaS configuration
   SEQUENCE_PROJECT_ID: get('SEQUENCE_PROJECT_ID', ''),
-  SEQUENCE_NETWORK: get('SEQUENCE_NETWORK', 'polygon'),
+  SEQUENCE_NETWORK: get('SEQUENCE_NETWORK', 'amoy'),
   
   // Legacy Sequence config (keep for now during migration)
   SEQUENCE_PROJECT_ACCESS_KEY: get('SEQUENCE_PROJECT_ACCESS_KEY', 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE'),

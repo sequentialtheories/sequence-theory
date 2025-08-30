@@ -108,7 +108,7 @@ serve(async (req) => {
       const sequence = new SequenceWaaS({
         projectAccessKey: sequenceProjectAccessKey,
         waasConfigKey: sequenceWaasConfigKey,
-        network: 'polygon'
+        network: 'amoy'
       })
 
       // Use signIn method to create/retrieve wallet
@@ -136,7 +136,7 @@ serve(async (req) => {
       .upsert({
         user_id: userId,
         wallet_address: walletAddress,
-        network: 'polygon',
+        network: 'amoy',
         provider: 'sequence_waas'
       }, {
         onConflict: 'user_id'
@@ -166,7 +166,7 @@ serve(async (req) => {
       success: true,
       wallet: {
         address: walletAddress,
-        network: 'polygon',
+        network: 'amoy',
         provider: 'sequence_waas'
       }
     }), {
