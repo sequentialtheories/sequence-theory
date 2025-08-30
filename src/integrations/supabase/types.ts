@@ -943,6 +943,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      sync_user_email: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       validate_api_key: {
         Args: { input_api_key: string }
         Returns: {
