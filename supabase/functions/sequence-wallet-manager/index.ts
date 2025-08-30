@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'http://localhost:3000',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
@@ -20,14 +20,15 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const sequenceWaasConfigKey = Deno.env.get('SEQUENCE_WAAS_CONFIG_KEY')!
-    
-    if (!supabaseUrl || !supabaseServiceKey || !sequenceWaasConfigKey) {
+    const sequenceProjectAccessKey = Deno.env.get('SEQUENCE_PROJECT_ACCESS_KEY')!
+
+    if (!supabaseUrl || !supabaseServiceKey || !sequenceWaasConfigKey || !sequenceProjectAccessKey) {
       throw new Error('Missing required environment variables')
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
-    
-    // Get authenticated user from JWT - SECURITY: Only allow actions for authenticated user
+
+    // Get authenticated user from JWT
     const authHeader = req.headers.get('Authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -44,6 +45,22 @@ serve(async (req) => {
       })
     }
 
+    // Rate limiting
+    const { data: rateLimitData, error: rateLimitError } = await supabase.rpc('check_rate_limit', {
+      p_identifier: `wallet_create:${user.id}`,
+      p_limit: 5,
+      p_window_minutes: 60
+    })
+
+    if (rateLimitError) {
+      console.warn('Rate limit check failed:', rateLimitError)
+    } else if (!rateLimitData) {
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
     const { action }: SequenceWalletRequest = await req.json()
     const userId = user.id
     const email = user.email!
@@ -52,7 +69,7 @@ serve(async (req) => {
       // Check if user already has a wallet
       const { data: existingWallet, error: fetchError } = await supabase
         .from('user_wallets')
-        .select('wallet_address, network')
+        .select('wallet_address, network, provider')
         .eq('user_id', userId)
         .maybeSingle()
 
@@ -70,7 +87,7 @@ serve(async (req) => {
           wallet: {
             address: existingWallet.wallet_address,
             network: existingWallet.network,
-            provider: 'sequence_waas'
+            provider: existingWallet.provider
           }
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -80,32 +97,30 @@ serve(async (req) => {
 
     // Create new wallet using Sequence WaaS
     console.log('Creating Sequence wallet for user:', userId, 'email:', email)
-    
+
     let walletAddress: string
-    
+
     try {
       // Import Sequence WaaS SDK
       const { SequenceWaaS } = await import('https://esm.sh/@0xsequence/waas@2.3.23')
-      
-      // Initialize Sequence WaaS with proper configuration
+
+      // Initialize Sequence WaaS
       const sequence = new SequenceWaaS({
-        projectAccessKey: 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE',
+        projectAccessKey: sequenceProjectAccessKey,
         waasConfigKey: sequenceWaasConfigKey,
-        network: 80002 // Amoy testnet
+        network: 'amoy'
       })
 
-      // Use correct signIn method - creates/retrieves wallet and authenticates
+      // Use signIn method to create/retrieve wallet
       const signInResponse = await sequence.signIn({ 
         email: email 
       })
-      
+
       walletAddress = signInResponse.wallet
       console.log('Sequence wallet created/retrieved:', walletAddress)
 
     } catch (sequenceError) {
       console.error('Sequence WaaS authentication failed:', sequenceError)
-      
-      // NO FALLBACK - Return error instead of fake addresses
       return new Response(JSON.stringify({ 
         error: 'Wallet creation failed: ' + sequenceError.message,
         details: 'Sequence WaaS authentication error'
@@ -115,7 +130,7 @@ serve(async (req) => {
       })
     }
 
-    // Store wallet in database with provider information
+    // Store wallet in database
     const { error: insertError } = await supabase
       .from('user_wallets')
       .upsert({
@@ -135,7 +150,7 @@ serve(async (req) => {
       })
     }
 
-    // Update user profile with wallet address for quick access
+    // Update user profile
     const { error: profileError } = await supabase
       .from('profiles')
       .update({ eth_address: walletAddress })
