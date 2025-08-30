@@ -81,6 +81,8 @@ serve(async (req) => {
     // Create new wallet using Sequence WaaS
     console.log('Creating Sequence wallet for user:', userId)
     
+    let walletAddress: string
+    
     try {
       // Import Sequence WaaS SDK
       const { SequenceWaaS } = await import('https://esm.sh/@0xsequence/waas@2.3.23')
@@ -97,7 +99,7 @@ serve(async (req) => {
         email: email
       })
       
-      const walletAddress = wallet.address
+      walletAddress = wallet.address
       console.log('Sequence wallet created/retrieved:', walletAddress)
 
     } catch (sequenceError) {
@@ -113,52 +115,51 @@ serve(async (req) => {
         .map(b => b.toString(16).padStart(2, '0'))
         .join('')
       
-      const walletAddress = `0x${hashHex.slice(0, 40)}`
+      walletAddress = `0x${hashHex.slice(0, 40)}`
       console.log('Using fallback deterministic address:', walletAddress)
+    }
 
-      // Store wallet in database
-      const { error: insertError } = await supabase
-        .from('user_wallets')
-        .upsert({
-          user_id: userId,
-          wallet_address: walletAddress,
-          network: 'amoy'
-        }, {
-          onConflict: 'user_id'
-        })
+    // Store wallet in database
+    const { error: insertError } = await supabase
+      .from('user_wallets')
+      .upsert({
+        user_id: userId,
+        wallet_address: walletAddress,
+        network: 'amoy'
+      }, {
+        onConflict: 'user_id'
+      })
 
-      if (insertError) {
-        console.error('Error storing wallet:', insertError)
-        return new Response(JSON.stringify({ error: 'Failed to store wallet' }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-      }
-
-      // Update user profile with wallet address for quick access
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ eth_address: walletAddress })
-        .eq('user_id', userId)
-
-      if (profileError) {
-        console.warn('Error updating profile with wallet address:', profileError)
-      }
-
-      console.log('Successfully created wallet for user:', userId)
-
-      return new Response(JSON.stringify({
-        success: true,
-        wallet: {
-          address: walletAddress,
-          network: 'amoy',
-          provider: 'sequence_waas'
-        }
-      }), {
+    if (insertError) {
+      console.error('Error storing wallet:', insertError)
+      return new Response(JSON.stringify({ error: 'Failed to store wallet' }), {
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
-}
+
+    // Update user profile with wallet address for quick access
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ eth_address: walletAddress })
+      .eq('user_id', userId)
+
+    if (profileError) {
+      console.warn('Error updating profile with wallet address:', profileError)
+    }
+
+    console.log('Successfully created wallet for user:', userId)
+
+    return new Response(JSON.stringify({
+      success: true,
+      wallet: {
+        address: walletAddress,
+        network: 'amoy',
+        provider: 'sequence_waas'
+      }
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
 
   } catch (error) {
     console.error('Sequence wallet manager error:', error)
