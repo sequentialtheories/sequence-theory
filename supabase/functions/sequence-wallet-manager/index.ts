@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://id-preview--902c4709-595e-47f5-b881-6247d8b5fbf9.lovable.app',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
@@ -79,7 +79,7 @@ serve(async (req) => {
     }
 
     // Create new wallet using Sequence WaaS
-    console.log('Creating Sequence wallet for user:', userId)
+    console.log('Creating Sequence wallet for user:', userId, 'email:', email)
     
     let walletAddress: string
     
@@ -94,38 +94,35 @@ serve(async (req) => {
         network: 80002 // Amoy testnet
       })
 
-      // Create wallet using Sequence WaaS API with user's email
-      const wallet = await sequence.getWallet({
-        email: email
+      // Use correct signIn method - creates/retrieves wallet and authenticates
+      const signInResponse = await sequence.signIn({ 
+        email: email 
       })
       
-      walletAddress = wallet.address
+      walletAddress = signInResponse.wallet
       console.log('Sequence wallet created/retrieved:', walletAddress)
 
     } catch (sequenceError) {
-      console.error('Sequence WaaS error:', sequenceError)
+      console.error('Sequence WaaS authentication failed:', sequenceError)
       
-      // Fallback: Generate deterministic address for development
-      // TODO: Remove this once Sequence WaaS is properly configured
-      const crypto = globalThis.crypto || (await import('https://deno.land/std@0.168.0/crypto/mod.ts')).crypto
-      const encoder = new TextEncoder()
-      const data = encoder.encode(`${userId}-${email}`)
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-      const hashHex = Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('')
-      
-      walletAddress = `0x${hashHex.slice(0, 40)}`
-      console.log('Using fallback deterministic address:', walletAddress)
+      // NO FALLBACK - Return error instead of fake addresses
+      return new Response(JSON.stringify({ 
+        error: 'Wallet creation failed: ' + sequenceError.message,
+        details: 'Sequence WaaS authentication error'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
     }
 
-    // Store wallet in database
+    // Store wallet in database with provider information
     const { error: insertError } = await supabase
       .from('user_wallets')
       .upsert({
         user_id: userId,
         wallet_address: walletAddress,
-        network: 'amoy'
+        network: 'amoy',
+        provider: 'sequence_waas'
       }, {
         onConflict: 'user_id'
       })

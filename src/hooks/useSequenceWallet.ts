@@ -33,11 +33,7 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       setError(null)
 
       const { data, error: functionError } = await supabase.functions.invoke('sequence-wallet-manager', {
-        body: {
-          action: 'get',
-          userId: user.id,
-          email: user.email
-        }
+        body: { action: 'get' }
       })
 
       if (functionError) {
@@ -66,11 +62,7 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       setError(null)
 
       const { data, error: functionError } = await supabase.functions.invoke('sequence-wallet-manager', {
-        body: {
-          action: 'create',
-          userId: user.id,
-          email: user.email
-        }
+        body: { action: 'create' }
       })
 
       if (functionError) {
@@ -105,15 +97,8 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       throw new Error('No wallet available')
     }
 
-    // For demo purposes, create a mock signature
-    // In a real implementation, this would use Sequence WaaS to sign
-    const encoder = new TextEncoder()
-    const data = encoder.encode(`${message}-${wallet.address}`)
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    const signature = `0x${hashArray.map(b => b.toString(16).padStart(2, '0')).join('')}`
-    
-    return signature
+    // Real signing not implemented - would require Sequence WaaS signMessage API
+    throw new Error('Message signing not yet implemented. Real cryptographic signing will be available once Sequence WaaS integration is complete.')
   }
 
   const refetchWallet = async () => {
