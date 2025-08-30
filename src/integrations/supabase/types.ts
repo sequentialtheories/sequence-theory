@@ -691,6 +691,7 @@ export type Database = {
           created_at: string
           id: string
           network: string
+          provider: string
           updated_at: string
           user_id: string
           wallet_address: string
@@ -699,6 +700,7 @@ export type Database = {
           created_at?: string
           id?: string
           network?: string
+          provider?: string
           updated_at?: string
           user_id: string
           wallet_address: string
@@ -707,6 +709,7 @@ export type Database = {
           created_at?: string
           id?: string
           network?: string
+          provider?: string
           updated_at?: string
           user_id?: string
           wallet_address?: string
