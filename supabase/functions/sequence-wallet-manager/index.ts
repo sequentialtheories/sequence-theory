@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'http://localhost:3000',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
@@ -108,7 +108,7 @@ serve(async (req) => {
       const sequence = new SequenceWaaS({
         projectAccessKey: sequenceProjectAccessKey,
         waasConfigKey: sequenceWaasConfigKey,
-        network: 'amoy'
+        network: 'polygon'
       })
 
       // Use signIn method to create/retrieve wallet
@@ -136,7 +136,7 @@ serve(async (req) => {
       .upsert({
         user_id: userId,
         wallet_address: walletAddress,
-        network: 'amoy',
+        network: 'polygon',
         provider: 'sequence_waas'
       }, {
         onConflict: 'user_id'
@@ -166,7 +166,7 @@ serve(async (req) => {
       success: true,
       wallet: {
         address: walletAddress,
-        network: 'amoy',
+        network: 'polygon',
         provider: 'sequence_waas'
       }
     }), {
