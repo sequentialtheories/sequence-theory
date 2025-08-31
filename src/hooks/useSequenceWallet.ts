@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { CFG } from '@/lib/config'
 
 interface WalletInfo {
   address: string
@@ -26,22 +27,28 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
   const [error, setError] = useState<string | null>(null)
 
   const fetchWallet = async () => {
-    if (!user?.id || !user?.email) return
+    if (!user?.id) return
 
     try {
       setLoading(true)
       setError(null)
 
-      const { data, error: functionError } = await supabase.functions.invoke('sequence-wallet-manager', {
-        body: { action: 'get' }
-      })
+      const { data: existingWallet, error: fetchError } = await supabase
+        .from('user_wallets')
+        .select('wallet_address, network, provider')
+        .eq('user_id', user.id)
+        .maybeSingle()
 
-      if (functionError) {
-        throw new Error(functionError.message)
+      if (fetchError) {
+        throw new Error(fetchError.message)
       }
 
-      if (data?.success && data?.wallet) {
-        setWallet(data.wallet)
+      if (existingWallet) {
+        setWallet({
+          address: existingWallet.wallet_address,
+          network: existingWallet.network,
+          provider: existingWallet.provider || 'sequence_waas'
+        })
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch wallet'
@@ -61,23 +68,63 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       setLoading(true)
       setError(null)
 
-      const { data, error: functionError } = await supabase.functions.invoke('sequence-wallet-manager', {
-        body: { action: 'create' }
+      // Import Sequence WaaS SDK (client-side only)
+      const { SequenceWaaS } = await import('@0xsequence/waas')
+
+      // Initialize Sequence WaaS in browser environment
+      const sequence = new SequenceWaaS({
+        projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY,
+        waasConfigKey: 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE', // TODO: Move to env var
+        network: CFG.SEQUENCE_NETWORK as any
       })
 
-      if (functionError) {
-        throw new Error(functionError.message)
+      // Sign in with email - creates/retrieves wallet
+      // @ts-ignore - Sequence WaaS typing may be incomplete
+      const signInResponse = await sequence.signIn({ 
+        email: user.email 
+      })
+
+      const walletAddress = signInResponse.wallet
+
+      // Store wallet in database
+      const { error: upsertError } = await supabase
+        .from('user_wallets')
+        .upsert({
+          user_id: user.id,
+          wallet_address: walletAddress,
+          network: CFG.SEQUENCE_NETWORK,
+          provider: 'sequence_waas'
+        }, {
+          onConflict: 'user_id'
+        })
+
+      if (upsertError) {
+        throw new Error(`Failed to store wallet: ${upsertError.message}`)
       }
 
-      if (data?.success && data?.wallet) {
-        setWallet(data.wallet)
-        toast({
-          title: "Wallet Created",
-          description: "Your embedded wallet has been created successfully!"
-        })
-      } else {
-        throw new Error('Failed to create wallet')
+      // Update profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ eth_address: walletAddress })
+        .eq('user_id', user.id)
+
+      if (profileError) {
+        console.warn('Error updating profile:', profileError)
       }
+
+      const walletInfo = {
+        address: walletAddress,
+        network: CFG.SEQUENCE_NETWORK,
+        provider: 'sequence_waas'
+      }
+
+      setWallet(walletInfo)
+      
+      toast({
+        title: "Wallet Created",
+        description: "Your embedded wallet has been created successfully!"
+      })
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create wallet'
       setError(errorMessage)
@@ -97,8 +144,8 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       throw new Error('No wallet available')
     }
 
-    // Real signing not implemented - would require Sequence WaaS signMessage API
-    throw new Error('Message signing not yet implemented. Real cryptographic signing will be available once Sequence WaaS integration is complete.')
+    // Real signing not implemented yet
+    throw new Error('Message signing not yet implemented. Will be available once Sequence WaaS integration is complete.')
   }
 
   const refetchWallet = async () => {

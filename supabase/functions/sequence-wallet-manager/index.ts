@@ -65,113 +65,57 @@ serve(async (req) => {
     const userId = user.id
     const email = user.email!
 
-    if (action === 'get') {
-      // Check if user already has a wallet
-      const { data: existingWallet, error: fetchError } = await supabase
-        .from('user_wallets')
-        .select('wallet_address, network, provider')
-        .eq('user_id', userId)
-        .maybeSingle()
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error('Error fetching wallet:', fetchError)
-        return new Response(JSON.stringify({ error: 'Failed to fetch wallet' }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-      }
-
-      if (existingWallet) {
-        return new Response(JSON.stringify({
-          success: true,
-          wallet: {
-            address: existingWallet.wallet_address,
-            network: existingWallet.network,
-            provider: existingWallet.provider
-          }
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-      }
-    }
-
-    // Create new wallet using Sequence WaaS
-    console.log('Creating Sequence wallet for user:', userId, 'email:', email)
-
-    let walletAddress: string
-
-    try {
-      // Import Sequence WaaS SDK
-      const { SequenceWaaS } = await import('https://esm.sh/@0xsequence/waas@2.3.23')
-
-      // Initialize Sequence WaaS
-      const sequence = new SequenceWaaS({
-        projectAccessKey: sequenceProjectAccessKey,
-        waasConfigKey: sequenceWaasConfigKey,
-        network: 'amoy'
-      })
-
-      // Use signIn method to create/retrieve wallet
-      const signInResponse = await sequence.signIn({ 
-        email: email 
-      })
-
-      walletAddress = signInResponse.wallet
-      console.log('Sequence wallet created/retrieved:', walletAddress)
-
-    } catch (sequenceError) {
-      console.error('Sequence WaaS authentication failed:', sequenceError)
-      return new Response(JSON.stringify({ 
-        error: 'Wallet creation failed: ' + sequenceError.message,
-        details: 'Sequence WaaS authentication error'
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Store wallet in database
-    const { error: insertError } = await supabase
+  // Only handle 'get' action - wallet creation now happens client-side
+  if (action === 'get') {
+    // Fetch existing wallet from database
+    const { data: existingWallet, error: fetchError } = await supabase
       .from('user_wallets')
-      .upsert({
-        user_id: userId,
-        wallet_address: walletAddress,
-        network: 'amoy',
-        provider: 'sequence_waas'
-      }, {
-        onConflict: 'user_id'
-      })
+      .select('wallet_address, network, provider')
+      .eq('user_id', userId)
+      .maybeSingle()
 
-    if (insertError) {
-      console.error('Error storing wallet:', insertError)
-      return new Response(JSON.stringify({ error: 'Failed to store wallet' }), {
-        status: 500,
+    if (fetchError) {
+      console.error('Error fetching wallet:', fetchError)
+      return new Response(JSON.stringify({
+        success: false,
+        error: `Failed to fetch wallet: ${fetchError.message}`
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
+      })
+    }
+
+    if (existingWallet) {
+      return new Response(JSON.stringify({
+        success: true,
+        wallet: {
+          address: existingWallet.wallet_address,
+          network: existingWallet.network,
+          provider: existingWallet.provider || 'sequence_waas'
+        }
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    // Update user profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({ eth_address: walletAddress })
-      .eq('user_id', userId)
-
-    if (profileError) {
-      console.warn('Error updating profile with wallet address:', profileError)
-    }
-
-    console.log('Successfully created wallet for user:', userId)
-
+    // No wallet found
     return new Response(JSON.stringify({
-      success: true,
-      wallet: {
-        address: walletAddress,
-        network: 'amoy',
-        provider: 'sequence_waas'
-      }
+      success: false,
+      error: 'No wallet found for user'
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 404
     })
+  }
+
+  // Unsupported action
+  return new Response(JSON.stringify({
+    success: false,
+    error: 'Wallet creation moved to client-side. Use the frontend SDK.'
+  }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status: 400
+  })
 
   } catch (error) {
     console.error('Sequence wallet manager error:', error)
