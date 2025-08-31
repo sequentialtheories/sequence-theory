@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { CFG, getConfigString, toggleSimulationMode, toggleTestnetMode } from '@/lib/config';
+import { CFG, getConfigString, toggleSimulationMode, toggleTestnetMode, resetSequenceOverrides, forceBypassCacheReload } from '@/lib/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -176,13 +176,28 @@ export default function Debug() {
           <CardDescription>Toggle features without rebuilding</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button onClick={toggleSimulationMode} variant="outline">
               Toggle Simulation Mode (Currently: {CFG.SIMULATION_MODE ? 'ON' : 'OFF'})
             </Button>
             <Button onClick={toggleTestnetMode} variant="outline">
               Toggle Testnet Mode (Currently: {CFG.FEATURE_TESTNET_ONLY ? 'ON' : 'OFF'})
             </Button>
+          </div>
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="font-medium">Troubleshooting</h4>
+            <div className="flex gap-2 flex-wrap">
+              <Button onClick={resetSequenceOverrides} variant="destructive" size="sm">
+                Reset Sequence Overrides
+              </Button>
+              <Button onClick={forceBypassCacheReload} variant="destructive" size="sm">
+                Force Cache Reload
+              </Button>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Use these if you're experiencing persistent atob errors or cache issues.
+            </div>
           </div>
           <div className="text-sm text-muted-foreground">
             These changes will reload the page to apply new configuration.

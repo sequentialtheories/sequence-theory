@@ -10,11 +10,40 @@
  * localStorage.setItem('tvc_CHAIN_ID', '80002')
  */
 
+/**
+ * Validates if a string is properly base64 encoded
+ */
+const isValidBase64 = (str: string): boolean => {
+  if (!str) return false;
+  try {
+    atob(str);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Sanitizes and validates localStorage overrides
+ */
 const get = (key: string, defaultValue = '') => {
   // Check localStorage first with tvc_ prefix
   const localValue = localStorage.getItem(`tvc_${key}`);
   if (localValue !== null) {
-    return localValue;
+    // Trim whitespace
+    const trimmed = localValue.trim();
+    
+    // Special validation for Sequence keys
+    if (key === 'SEQUENCE_WAAS_CONFIG_KEY' || key === 'SEQUENCE_PROJECT_ACCESS_KEY') {
+      if (!isValidBase64(trimmed)) {
+        console.warn(`Invalid ${key} override detected (not base64), falling back to default`);
+        // Auto-clean the invalid override
+        localStorage.removeItem(`tvc_${key}`);
+        return defaultValue;
+      }
+    }
+    
+    return trimmed;
   }
   
   // Fallback to defaults
@@ -73,4 +102,55 @@ export const toggleTestnetMode = () => {
   const current = CFG.FEATURE_TESTNET_ONLY;
   localStorage.setItem('tvc_FEATURE_TESTNET_ONLY', current ? '0' : '1');
   window.location.reload();
+};
+
+/**
+ * Reset all Sequence-related localStorage overrides
+ */
+export const resetSequenceOverrides = () => {
+  const sequenceKeys = [
+    'tvc_SEQUENCE_PROJECT_ID',
+    'tvc_SEQUENCE_NETWORK', 
+    'tvc_SEQUENCE_PROJECT_ACCESS_KEY',
+    'tvc_SEQUENCE_WAAS_CONFIG_KEY'
+  ];
+  
+  sequenceKeys.forEach(key => {
+    localStorage.removeItem(key);
+  });
+  
+  console.log('Sequence overrides cleared');
+  window.location.reload();
+};
+
+/**
+ * Force bypass cache reload (unregister service workers, clear cache)
+ */
+export const forceBypassCacheReload = async () => {
+  try {
+    // Unregister service workers
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const registration of registrations) {
+        await registration.unregister();
+        console.log('Service worker unregistered');
+      }
+    }
+    
+    // Clear caches
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map(name => caches.delete(name))
+      );
+      console.log('Browser caches cleared');
+    }
+    
+    // Force reload with cache bypass
+    window.location.reload();
+  } catch (error) {
+    console.warn('Cache clear failed:', error);
+    // Fallback to regular reload
+    window.location.reload();
+  }
 };

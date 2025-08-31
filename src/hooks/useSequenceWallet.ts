@@ -71,12 +71,28 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       // Import Sequence WaaS SDK (client-side only)
       const { SequenceWaaS } = await import('@0xsequence/waas')
 
-      // Validate base64 encoded waasConfigKey
+      // Validate base64 encoded waasConfigKey with fallback
       const waasConfigKey = CFG.SEQUENCE_WAAS_CONFIG_KEY
       try {
         atob(waasConfigKey) // Validate it's base64
+        console.log('✅ WaaS config key validation passed')
       } catch (error) {
-        throw new Error('Invalid WaaS config key: not properly base64 encoded')
+        console.error('❌ Invalid WaaS config key detected:', error);
+        
+        // Check if there's a localStorage override causing the issue
+        const override = localStorage.getItem('tvc_SEQUENCE_WAAS_CONFIG_KEY');
+        if (override) {
+          console.log('Removing invalid localStorage override:', override.slice(0, 20) + '...');
+          localStorage.removeItem('tvc_SEQUENCE_WAAS_CONFIG_KEY');
+          
+          toast({
+            title: "Configuration Fixed",
+            description: "Invalid Sequence config override was automatically removed. Please try again.",
+            variant: "default"
+          });
+        }
+        
+        throw new Error('Invalid WaaS config key: not properly base64 encoded. Please check your configuration or clear localStorage overrides.')
       }
 
       console.log('Sequence config:', {
