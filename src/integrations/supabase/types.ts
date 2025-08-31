@@ -853,6 +853,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_api_keys: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       check_contract_owner: {
         Args: { p_contract_id: string }
         Returns: boolean
