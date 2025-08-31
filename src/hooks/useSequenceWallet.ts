@@ -71,10 +71,24 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       // Import Sequence WaaS SDK (client-side only)
       const { SequenceWaaS } = await import('@0xsequence/waas')
 
+      // Validate base64 encoded waasConfigKey
+      const waasConfigKey = CFG.SEQUENCE_WAAS_CONFIG_KEY
+      try {
+        atob(waasConfigKey) // Validate it's base64
+      } catch (error) {
+        throw new Error('Invalid WaaS config key: not properly base64 encoded')
+      }
+
+      console.log('Sequence config:', {
+        projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY.slice(0, 8) + '...',
+        waasConfigKey: waasConfigKey.slice(0, 8) + '...',
+        network: CFG.SEQUENCE_NETWORK
+      })
+
       // Initialize Sequence WaaS in browser environment
       const sequence = new SequenceWaaS({
         projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY,
-        waasConfigKey: 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE', // TODO: Move to env var
+        waasConfigKey: waasConfigKey,
         network: CFG.SEQUENCE_NETWORK as any
       })
 

@@ -19,10 +19,8 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const sequenceWaasConfigKey = Deno.env.get('SEQUENCE_WAAS_CONFIG_KEY')!
-    const sequenceProjectAccessKey = Deno.env.get('SEQUENCE_PROJECT_ACCESS_KEY')!
 
-    if (!supabaseUrl || !supabaseServiceKey || !sequenceWaasConfigKey || !sequenceProjectAccessKey) {
+    if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error('Missing required environment variables')
     }
 
