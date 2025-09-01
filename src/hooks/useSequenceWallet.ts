@@ -68,55 +68,48 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       setLoading(true)
       setError(null)
 
-      // Import Sequence WaaS SDK (client-side only)
+      console.log('=== WALLET CREATION DEBUG START ===');
+      console.log('User info:', { id: user.id, email: user.email });
+
+      // Import Sequence WaaS SDK
+      console.log('Step 1: Importing Sequence SDK...');
       const { SequenceWaaS } = await import('@0xsequence/waas')
+      console.log('Step 1: ✅ SDK imported successfully');
 
-      // Validate base64 encoded waasConfigKey with fallback
-      const waasConfigKey = CFG.SEQUENCE_WAAS_CONFIG_KEY
-      try {
-        atob(waasConfigKey) // Validate it's base64
-        console.log('✅ WaaS config key validation passed')
-      } catch (error) {
-        console.error('❌ Invalid WaaS config key detected:', error);
-        
-        // Check if there's a localStorage override causing the issue
-        const override = localStorage.getItem('tvc_SEQUENCE_WAAS_CONFIG_KEY');
-        if (override) {
-          console.log('Removing invalid localStorage override:', override.slice(0, 20) + '...');
-          localStorage.removeItem('tvc_SEQUENCE_WAAS_CONFIG_KEY');
-          
-          toast({
-            title: "Configuration Fixed",
-            description: "Invalid Sequence config override was automatically removed. Please try again.",
-            variant: "default"
-          });
-        }
-        
-        throw new Error('Invalid WaaS config key: not properly base64 encoded. Please check your configuration or clear localStorage overrides.')
-      }
-
-      console.log('Sequence config:', {
-        projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY.slice(0, 8) + '...',
-        waasConfigKey: waasConfigKey.slice(0, 8) + '...',
+      // Check configuration
+      console.log('Step 2: Checking configuration...');
+      console.log('Config values:', {
+        projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY?.substring(0, 10) + '...',
+        waasConfigKey: CFG.SEQUENCE_WAAS_CONFIG_KEY?.substring(0, 10) + '...',
         network: CFG.SEQUENCE_NETWORK
-      })
+      });
 
-      // Initialize Sequence WaaS in browser environment
+      // Initialize Sequence WaaS
+      console.log('Step 3: Initializing Sequence WaaS...');
       const sequence = new SequenceWaaS({
         projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY,
-        waasConfigKey: waasConfigKey,
+        waasConfigKey: CFG.SEQUENCE_WAAS_CONFIG_KEY,
         network: CFG.SEQUENCE_NETWORK as any
       })
+      console.log('Step 3: ✅ SequenceWaaS initialized');
 
-      // Sign in with email - creates/retrieves wallet
+      // Sign in with email
+      console.log('Step 4: Calling sequence.signIn with email:', user.email);
       // @ts-ignore - Sequence WaaS typing may be incomplete
       const signInResponse = await sequence.signIn({ 
         email: user.email 
       })
+      console.log('Step 4: ✅ signIn response:', signInResponse);
 
       const walletAddress = signInResponse.wallet
+      console.log('Step 5: Extracted wallet address:', walletAddress);
+
+      if (!walletAddress) {
+        throw new Error('No wallet address returned from Sequence');
+      }
 
       // Store wallet in database
+      console.log('Step 6: Storing wallet in database...');
       const { error: upsertError } = await supabase
         .from('user_wallets')
         .upsert({
@@ -129,17 +122,22 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
         })
 
       if (upsertError) {
+        console.error('Step 6: ❌ Database upsert failed:', upsertError);
         throw new Error(`Failed to store wallet: ${upsertError.message}`)
       }
+      console.log('Step 6: ✅ Wallet stored in user_wallets');
 
       // Update profile
+      console.log('Step 7: Updating profile...');
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ eth_address: walletAddress })
         .eq('user_id', user.id)
 
       if (profileError) {
-        console.warn('Error updating profile:', profileError)
+        console.warn('Step 7: ⚠️ Profile update warning:', profileError)
+      } else {
+        console.log('Step 7: ✅ Profile updated');
       }
 
       const walletInfo = {
@@ -149,6 +147,7 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       }
 
       setWallet(walletInfo)
+      console.log('=== WALLET CREATION DEBUG SUCCESS ===');
       
       toast({
         title: "Wallet Created",
@@ -156,6 +155,15 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       })
 
     } catch (err) {
+      console.log('=== WALLET CREATION DEBUG ERROR ===');
+      console.error('Detailed error info:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+        fullError: err
+      });
+      console.log('=== WALLET CREATION DEBUG END ===');
+
       const errorMessage = err instanceof Error ? err.message : 'Failed to create wallet'
       setError(errorMessage)
       toast({

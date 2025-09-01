@@ -15,12 +15,20 @@ export const AutoWalletCreator = () => {
       // Only create wallet if user is authenticated, no wallet exists, and not currently loading
       if (user && !wallet && !loading) {
         try {
-          console.log('Auto-creating Sequence wallet for user:', user.id);
+          console.log('=== AUTO WALLET CREATION TRIGGERED ===');
+          console.log('AutoWalletCreator: Creating wallet for user:', user.id);
           await createWallet();
+          console.log('AutoWalletCreator: ✅ Wallet creation completed');
         } catch (error) {
           // Silently handle errors - don't break the user experience
-          console.warn('Failed to auto-create wallet:', error);
+          console.warn('AutoWalletCreator: ❌ Failed to auto-create wallet:', error);
         }
+      } else {
+        console.log('AutoWalletCreator: Skipping wallet creation', {
+          hasUser: !!user,
+          hasWallet: !!wallet,
+          isLoading: loading
+        });
       }
     };
 
