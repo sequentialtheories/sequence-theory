@@ -60,6 +60,7 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
   }
 
   const createWallet = async () => {
+    console.log('createWallet function started');
     if (!user?.id || !user?.email) {
       throw new Error('User not authenticated')
     }
