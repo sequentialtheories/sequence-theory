@@ -1,29 +1,39 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://id-preview--902c4709-595e-47f5-b881-6247d8b5fbf9.lovable.app', // Restrict to your domain
+  'Access-Control-Allow-Origin': 'https://id-preview--902c4709-595e-47f5-b881-6247d8b5fbf9.lovable.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
-};
+  'Access-Control-Max-Age': '86400', // 24 hours
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin'
+}
 
-// Rate limiting store
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+/**
+ * Enhanced rate limiting using database function
+ */
+async function isRateLimited(supabase: any, identifier: string, limit: number = 10, windowMinutes: number = 60): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc('check_enhanced_rate_limit', {
+      p_identifier: identifier,
+      p_limit: limit,
+      p_window_minutes: windowMinutes,
+      p_burst_limit: 3,
+      p_burst_window_minutes: 1
+    });
 
-function isRateLimited(identifier: string, limit: number = 100, windowMs: number = 3600000): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(identifier);
-  
-  if (!entry || now > entry.resetTime) {
-    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
-    return false;
+    if (error) {
+      console.error('Rate limit check failed:', error);
+      return true; // Fail closed - block on error
+    }
+
+    return !data; // Function returns true if allowed, false if rate limited
+  } catch (err) {
+    console.error('Rate limit error:', err);
+    return true; // Fail closed
   }
-  
-  if (entry.count >= limit) {
-    return true;
-  }
-  
-  entry.count++;
-  return false;
 }
 
 function getClientIP(req: Request): string {
@@ -33,7 +43,7 @@ function getClientIP(req: Request): string {
          'unknown';
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -47,6 +57,7 @@ serve(async (req) => {
     // Extract API key from header
     const apiKey = req.headers.get('x-api-key');
     if (!apiKey) {
+      console.log('⚠️ SECURITY: API request without key from IP:', getClientIP(req))
       return new Response(
         JSON.stringify({ error: 'API key required' }), 
         { 
@@ -56,11 +67,39 @@ serve(async (req) => {
       );
     }
 
+    // Input validation
+    if (apiKey.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(apiKey)) {
+      console.log('⚠️ SECURITY: Invalid API key format from IP:', getClientIP(req))
+      return new Response(
+        JSON.stringify({ error: 'Invalid API key format' }), 
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Check rate limit BEFORE API key validation to prevent enumeration
+    const clientIP = getClientIP(req);
+    const rateLimitKey = `${clientIP}:${apiKey.substring(0, 8)}`;
+    
+    const isRateLimitExceeded = await isRateLimited(supabase, rateLimitKey, 10, 60); // 10 requests per hour per IP+key prefix
+    if (isRateLimitExceeded) {
+      console.log('⚠️ SECURITY: Rate limit exceeded for IP:', clientIP)
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded' }), 
+        { 
+          status: 429, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
     // Validate API key
     const { data: keyData, error: keyError } = await supabase.rpc('validate_api_key', { input_api_key: apiKey });
     
     if (keyError || !keyData || keyData.length === 0 || !keyData[0].is_valid) {
-      console.log('Invalid API key attempt:', { apiKey: apiKey.substring(0, 8) + '...', error: keyError });
+      console.log('⚠️ SECURITY: Invalid API key attempt from IP:', clientIP)
       return new Response(
         JSON.stringify({ error: 'Invalid API key' }), 
         { 
@@ -71,20 +110,7 @@ serve(async (req) => {
     }
 
     const validatedKey = keyData[0];
-    const clientIP = getClientIP(req);
     
-    // Rate limiting by API key
-    if (isRateLimited(validatedKey.key_id, 1000, 3600000)) { // 1000 requests per hour
-      await logAccess(supabase, validatedKey.key_id, req.url, clientIP, req.headers.get('user-agent'), null, 429);
-      return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded' }), 
-        { 
-          status: 429, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
-    }
-
     // Parse request body
     let requestData = null;
     try {

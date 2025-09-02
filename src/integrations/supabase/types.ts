@@ -861,6 +861,16 @@ export type Database = {
         Args: { p_contract_id: string }
         Returns: boolean
       }
+      check_enhanced_rate_limit: {
+        Args: {
+          p_burst_limit?: number
+          p_burst_window_minutes?: number
+          p_identifier: string
+          p_limit?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_identifier: string

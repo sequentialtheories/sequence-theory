@@ -1,44 +1,42 @@
 import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const SecurityHeaders = () => {
   useEffect(() => {
-    // Add security headers via meta tags for CSP
-    const cspMeta = document.createElement('meta');
-    cspMeta.httpEquiv = 'Content-Security-Policy';
-    cspMeta.content = `
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://esm.sh;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data: https:;
-      connect-src 'self' https://qldjhlnsphlixmzzrdwi.supabase.co wss://qldjhlnsphlixmzzrdwi.supabase.co https://waas.sequence.app https://api.sequence.app;
-      frame-ancestors 'none';
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      upgrade-insecure-requests;
-    `.replace(/\s+/g, ' ').trim();
-    
-    document.head.appendChild(cspMeta);
-    
-    // Add X-Frame-Options
-    const frameMeta = document.createElement('meta');
-    frameMeta.httpEquiv = 'X-Frame-Options';
-    frameMeta.content = 'DENY';
-    document.head.appendChild(frameMeta);
-    
-    // Add X-Content-Type-Options
-    const contentTypeMeta = document.createElement('meta');
-    contentTypeMeta.httpEquiv = 'X-Content-Type-Options';
-    contentTypeMeta.content = 'nosniff';
-    document.head.appendChild(contentTypeMeta);
-    
-    return () => {
-      // Cleanup on unmount
-      if (cspMeta.parentNode) cspMeta.parentNode.removeChild(cspMeta);
-      if (frameMeta.parentNode) frameMeta.parentNode.removeChild(frameMeta);
-      if (contentTypeMeta.parentNode) contentTypeMeta.parentNode.removeChild(contentTypeMeta);
+    // Fetch security headers from edge function for proper implementation
+    const applySecurityHeaders = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('security-headers');
+        
+        if (error) {
+          console.warn('Failed to fetch security headers:', error);
+          return;
+        }
+
+        // Apply viewport meta tag for mobile security
+        const viewportMeta = document.createElement('meta');
+        viewportMeta.name = 'viewport';
+        viewportMeta.content = 'width=device-width, initial-scale=1.0, user-scalable=no';
+        document.head.appendChild(viewportMeta);
+
+        // Add referrer policy meta tag
+        const referrerMeta = document.createElement('meta');
+        referrerMeta.name = 'referrer';
+        referrerMeta.content = 'strict-origin-when-cross-origin';
+        document.head.appendChild(referrerMeta);
+
+        // Add robots meta for security
+        const robotsMeta = document.createElement('meta');
+        robotsMeta.name = 'robots';
+        robotsMeta.content = 'noindex, nofollow';
+        document.head.appendChild(robotsMeta);
+
+      } catch (err) {
+        console.warn('Security headers initialization failed:', err);
+      }
     };
+
+    applySecurityHeaders();
   }, []);
   
   return null;

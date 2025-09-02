@@ -1,13 +1,16 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
+import { createClient } from 'jsr:@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://vaultclub.io', // Restrict to Vault Club domain
+  'Access-Control-Allow-Origin': 'https://vaultclub.io',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin'
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -119,6 +122,7 @@ serve(async (req) => {
 
     console.log('✅ Authentication successful for:', email);
 
+    // SECURITY: Don't return refresh tokens to external systems
     return new Response(JSON.stringify({ 
       success: true,
       data: {
@@ -135,12 +139,17 @@ serve(async (req) => {
         api_key: generatedApiKey,
         session: {
           access_token: authData.session?.access_token,
-          refresh_token: authData.session?.refresh_token,
           expires_at: authData.session?.expires_at
+          // refresh_token removed for security
         }
       }
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache'
+      },
     });
 
   } catch (error) {
