@@ -689,8 +689,10 @@ export type Database = {
       user_wallets: {
         Row: {
           created_at: string
+          created_via: string
           id: string
           network: string
+          provenance: Database["public"]["Enums"]["wallet_provenance"]
           provider: string
           updated_at: string
           user_id: string
@@ -698,8 +700,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_via?: string
           id?: string
           network?: string
+          provenance?: Database["public"]["Enums"]["wallet_provenance"]
           provider?: string
           updated_at?: string
           user_id: string
@@ -707,8 +711,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_via?: string
           id?: string
           network?: string
+          provenance?: Database["public"]["Enums"]["wallet_provenance"]
           provider?: string
           updated_at?: string
           user_id?: string
@@ -980,6 +986,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      wallet_provenance: "sequence_embedded" | "user_provided_verified"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1108,6 +1115,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      wallet_provenance: ["sequence_embedded", "user_provided_verified"],
     },
   },
 } as const
