@@ -1,14 +1,51 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://id-preview--902c4709-595e-47f5-b881-6247d8b5fbf9.lovable.app',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
-  'Access-Control-Max-Age': '86400', // 24 hours
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin'
+// Restrict CORS to specific origins based on environment
+const ALLOWED_ORIGINS = new Set([
+  'https://app.sequencetheory.com',
+  'https://preview.lovable.dev', // dev only
+  'https://id-preview--902c4709-595e-47f5-b881-6247d8b5fbf9.lovable.app' // current preview
+]);
+
+const getCorsHeaders = (origin: string | null) => {
+  const baseHeaders = {
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    'Vary': 'Origin'
+  };
+
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    return {
+      ...baseHeaders,
+      'Access-Control-Allow-Origin': origin
+    };
+  }
+  
+  return {
+    ...baseHeaders,
+    'Access-Control-Allow-Origin': 'https://app.sequencetheory.com'
+  };
+};
+
+// PII redaction utility with peppered hash
+async function redactPII(email: string): Promise<string> {
+  const pepper = Deno.env.get('LOG_PEPPER') || 'default-pepper-change-me';
+  const prefix = email.slice(0, 2);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pepper + email);
+  
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = new Uint8Array(hashBuffer);
+  const hashHex = Array.from(hashArray, b => b.toString(16).padStart(2, '0')).join('');
+  
+  return `${prefix}…#${hashHex.slice(0, 12)}`;
 }
 
 /**
@@ -44,6 +81,9 @@ function getClientIP(req: Request): string {
 }
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -118,15 +158,21 @@ Deno.serve(async (req) => {
         requestData = await req.json();
       }
     } catch (e) {
-      // Body parsing failed, continue without request data
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }), 
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     const url = new URL(req.url);
     const endpoint = url.pathname;
 
     // Handle different endpoints
-    if (endpoint === '/external-api/user-wallets' && req.method === 'GET') {
-      // Check permissions
+    if (endpoint === '/external-api/user-wallets' && req.method === 'POST') {
+      // Check basic wallet read permission
       if (!validatedKey.permissions?.read_wallet) {
         await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 403);
         return new Response(
@@ -138,47 +184,62 @@ Deno.serve(async (req) => {
         );
       }
 
-      const email = url.searchParams.get('email');
-      const userId = url.searchParams.get('user_id');
+      // Parse request body for email/user_id lookup
+      const { ownerEmail, ownerId } = requestData || {};
+      
+      // Require read_profile permission for any profile-based lookup
+      if ((ownerEmail || ownerId) && !validatedKey.permissions?.read_profile) {
+        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 403);
+        return new Response(
+          JSON.stringify({ error: 'read_profile permission required for user lookups' }), 
+          { 
+            status: 403, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
 
       let walletQuery = supabase
         .from('user_wallets')
-        .select('wallet_address, network, created_at, updated_at, user_id');
+        .select('wallet_address, network, provenance, created_via, created_at, updated_at, user_id');
 
-      // If specific email or user_id is requested, filter accordingly
-      if (email) {
-        // For email lookup, we need to join with profiles table since email is no longer in user_wallets
+      // Determine which user's wallets to fetch
+      let targetUserId = validatedKey.user_id; // default to API key owner
+      
+      if (ownerEmail) {
+        // Email lookup requires join with profiles table
         const { data: profile } = await supabase
           .from('profiles')
           .select('user_id')
-          .eq('email', email)
+          .eq('email', ownerEmail)
           .maybeSingle();
           
-        if (profile) {
-          walletQuery = walletQuery.eq('user_id', profile.user_id);
-        } else {
-          // Email not found in profiles
-          await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 404);
+        if (!profile) {
+          // Use redacted email for logging to prevent PII exposure
+          const redactedEmail = await redactPII(ownerEmail);
+          await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), 
+            { ownerEmail: redactedEmail, ownerId }, 404);
           return new Response(
-            JSON.stringify({ error: 'User not found for email' }), 
+            JSON.stringify({ error: 'User not found' }), 
             { 
               status: 404, 
               headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
             }
           );
         }
-      } else if (userId) {
-        walletQuery = walletQuery.eq('user_id', userId);
-      } else {
-        // Default: return wallets for the API key owner
-        walletQuery = walletQuery.eq('user_id', validatedKey.user_id);
+        targetUserId = profile.user_id;
+      } else if (ownerId) {
+        targetUserId = ownerId;
       }
 
+      walletQuery = walletQuery.eq('user_id', targetUserId);
       const { data: wallets, error: walletsError } = await walletQuery;
 
       if (walletsError) {
         console.error('Error fetching wallets:', walletsError);
-        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 500);
+        const redactedEmail = ownerEmail ? await redactPII(ownerEmail) : null;
+        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), 
+          { ownerEmail: redactedEmail, ownerId }, 500);
         return new Response(
           JSON.stringify({ error: 'Failed to fetch wallet data' }), 
           { 
@@ -188,15 +249,15 @@ Deno.serve(async (req) => {
         );
       }
 
-      // For Vault Club integration, also include user profile data
+      // Enhanced response for Vault Club access (with profile data)
       if (validatedKey.permissions?.vault_club_access && wallets && wallets.length > 0) {
         const userIds = wallets.map(w => w.user_id);
         const { data: profiles } = await supabase
           .from('profiles')
-          .select('user_id, name, email')
+          .select('user_id, name') // NO EMAIL in response
           .in('user_id', userIds);
 
-        // Merge profile data with wallet data
+        // Merge profile data with wallet data (no email exposure)
         const enrichedWallets = wallets.map(wallet => {
           const profile = profiles?.find(p => p.user_id === wallet.user_id);
           return {
@@ -211,8 +272,10 @@ Deno.serve(async (req) => {
           .update({ last_used_at: new Date().toISOString() })
           .eq('id', validatedKey.key_id);
 
-        // Log successful access
-        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), { email, user_id: userId }, 200);
+        // Log successful access with redacted PII
+        const redactedEmail = ownerEmail ? await redactPII(ownerEmail) : null;
+        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), 
+          { ownerEmail: redactedEmail, ownerId }, 200);
 
         return new Response(
           JSON.stringify({ 
@@ -228,7 +291,9 @@ Deno.serve(async (req) => {
 
       // Standard response for non-Vault Club requests
       if (!wallets || wallets.length === 0) {
-        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), requestData, 404);
+        const redactedEmail = ownerEmail ? await redactPII(ownerEmail) : null;
+        await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), 
+          { ownerEmail: redactedEmail, ownerId }, 404);
         return new Response(
           JSON.stringify({ error: 'Wallet not found' }), 
           { 
@@ -244,8 +309,10 @@ Deno.serve(async (req) => {
         .update({ last_used_at: new Date().toISOString() })
         .eq('id', validatedKey.key_id);
 
-      // Log successful access
-      await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), { email, user_id: userId }, 200);
+      // Log successful access with redacted PII
+      const redactedEmail = ownerEmail ? await redactPII(ownerEmail) : null;
+      await logAccess(supabase, validatedKey.key_id, endpoint, clientIP, req.headers.get('user-agent'), 
+        { ownerEmail: redactedEmail, ownerId }, 200);
 
       return new Response(
         JSON.stringify({ 
@@ -254,6 +321,17 @@ Deno.serve(async (req) => {
         }), 
         { 
           status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Reject GET requests for security (force POST)
+    if (endpoint === '/external-api/user-wallets' && req.method === 'GET') {
+      return new Response(
+        JSON.stringify({ error: 'Use POST method for wallet requests' }), 
+        { 
+          status: 405, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
