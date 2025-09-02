@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
-import { CFG } from '@/lib/config'
+import { CFG, getWithSource } from '@/lib/config'
 
 interface WalletInfo {
   address: string
@@ -85,10 +85,23 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
         throw new Error('SEQUENCE_NETWORK is missing from configuration. Please check your CFG settings.')
       }
       console.log('Step 1: ✅ Configuration validated');
+      const projectKeyMeta = getWithSource('SEQUENCE_PROJECT_ACCESS_KEY', '')
+      const waasKeyMeta = getWithSource('SEQUENCE_WAAS_CONFIG_KEY', '')
+      const networkMeta = getWithSource('SEQUENCE_NETWORK', 'amoy')
+
       console.log('Config values:', {
-        projectAccessKey: CFG.SEQUENCE_PROJECT_ACCESS_KEY.substring(0, 10) + '...',
-        waasConfigKey: CFG.SEQUENCE_WAAS_CONFIG_KEY.substring(0, 10) + '...',
-        network: CFG.SEQUENCE_NETWORK
+        projectAccessKey: {
+          value: CFG.SEQUENCE_PROJECT_ACCESS_KEY ? CFG.SEQUENCE_PROJECT_ACCESS_KEY.substring(0, 10) + '...' : '',
+          source: projectKeyMeta.source
+        },
+        waasConfigKey: {
+          value: CFG.SEQUENCE_WAAS_CONFIG_KEY ? CFG.SEQUENCE_WAAS_CONFIG_KEY.substring(0, 10) + '...' : '',
+          source: waasKeyMeta.source
+        },
+        network: {
+          value: CFG.SEQUENCE_NETWORK,
+          source: networkMeta.source
+        }
       });
 
       // Step 2: Import Sequence WaaS SDK

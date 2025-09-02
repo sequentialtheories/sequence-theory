@@ -16,7 +16,11 @@
 const isValidBase64 = (str: string): boolean => {
   if (!str) return false;
   try {
-    atob(str);
+    // Normalize base64url to standard base64 and remove whitespace
+    const normalized = str.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
+    const pad = normalized.length % 4;
+    const padded = pad ? normalized + '='.repeat(4 - pad) : normalized;
+    atob(padded);
     return true;
   } catch {
     return false;
@@ -36,10 +40,7 @@ const get = (key: string, defaultValue = '') => {
     // Special validation for Sequence keys
     if (key === 'SEQUENCE_WAAS_CONFIG_KEY' || key === 'SEQUENCE_PROJECT_ACCESS_KEY') {
       if (!isValidBase64(trimmed)) {
-        console.warn(`Invalid ${key} override detected (not base64), falling back to default`);
-        // Auto-clean the invalid override
-        localStorage.removeItem(`tvc_${key}`);
-        return defaultValue;
+        console.warn(`Config override for ${key} may not be standard base64. Keeping override as-is.`);
       }
     }
     
@@ -48,6 +49,14 @@ const get = (key: string, defaultValue = '') => {
   
   // Fallback to defaults
   return defaultValue;
+};
+
+export const getWithSource = (key: string, defaultValue = '') => {
+  const localValue = localStorage.getItem(`tvc_${key}`);
+  if (localValue !== null) {
+    return { value: localValue.trim(), source: 'localStorage' as const };
+  }
+  return { value: defaultValue, source: 'default' as const };
 };
 
 export const CFG = {
