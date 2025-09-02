@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { CFG, getConfigString, toggleSimulationMode, toggleTestnetMode, resetSequenceOverrides, forceBypassCacheReload } from '@/lib/config';
+import { CFG, getConfigString, getWithSource, toggleSimulationMode, toggleTestnetMode, resetSequenceOverrides, forceBypassCacheReload } from '@/lib/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
 interface UserProfile {
@@ -28,6 +30,11 @@ export default function Debug() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [healthStats, setHealthStats] = useState<HealthStats | null>(null);
   const [loading, setLoading] = useState(false);
+  
+  // Sequence Configuration Form State
+  const [projectKey, setProjectKey] = useState('');
+  const [waasKey, setWaasKey] = useState('');
+  const [showKeys, setShowKeys] = useState(false);
 
   // Fetch user profile on mount
   useEffect(() => {
@@ -83,6 +90,44 @@ export default function Debug() {
       setLoading(false);
     }
   };
+
+  // Sequence WaaS Configuration Handlers
+  const saveSequenceKeys = () => {
+    if (!projectKey.trim() || !waasKey.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Both Project Access Key and WaaS Config Key are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    localStorage.setItem('tvc_SEQUENCE_PROJECT_ACCESS_KEY', projectKey.trim());
+    localStorage.setItem('tvc_SEQUENCE_WAAS_CONFIG_KEY', waasKey.trim());
+    
+    toast({
+      title: "Configuration Saved",
+      description: "Sequence keys saved to localStorage. Reload the page to apply changes.",
+    });
+    
+    // Clear form
+    setProjectKey('');
+    setWaasKey('');
+  };
+
+  const clearSequenceKeys = () => {
+    localStorage.removeItem('tvc_SEQUENCE_PROJECT_ACCESS_KEY');
+    localStorage.removeItem('tvc_SEQUENCE_WAAS_CONFIG_KEY');
+    
+    toast({
+      title: "Configuration Cleared",
+      description: "Sequence key overrides removed. Reload the page to apply changes.",
+    });
+  };
+
+  // Get current configuration status
+  const projectKeyMeta = getWithSource('SEQUENCE_PROJECT_ACCESS_KEY', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9');
+  const waasKeyMeta = getWithSource('SEQUENCE_WAAS_CONFIG_KEY', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9');
 
   // Only show debug page in testnet mode
   if (!CFG.FEATURE_TESTNET_ONLY) {
@@ -166,6 +211,105 @@ export default function Debug() {
               <div><strong>User Balance:</strong> {healthStats.userBalance}</div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Sequence WaaS Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Sequence WaaS Configuration</CardTitle>
+          <CardDescription>Manage your Sequence Project Access Key and WaaS Config Key</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Current Configuration Status */}
+          <div className="space-y-3">
+            <h4 className="font-medium">Current Configuration</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Project Access Key:</span>
+                  <Badge variant={projectKeyMeta.source === 'localStorage' ? 'default' : 'secondary'}>
+                    {projectKeyMeta.source}
+                  </Badge>
+                </div>
+                <div className="text-xs font-mono bg-muted p-2 rounded">
+                  {showKeys 
+                    ? projectKeyMeta.value 
+                    : projectKeyMeta.value ? projectKeyMeta.value.substring(0, 20) + '...' : 'Not set'
+                  }
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">WaaS Config Key:</span>
+                  <Badge variant={waasKeyMeta.source === 'localStorage' ? 'default' : 'secondary'}>
+                    {waasKeyMeta.source}
+                  </Badge>
+                </div>
+                <div className="text-xs font-mono bg-muted p-2 rounded">
+                  {showKeys 
+                    ? waasKeyMeta.value 
+                    : waasKeyMeta.value ? waasKeyMeta.value.substring(0, 20) + '...' : 'Not set'
+                  }
+                </div>
+              </div>
+            </div>
+            
+            <Button 
+              onClick={() => setShowKeys(!showKeys)} 
+              variant="outline" 
+              size="sm"
+            >
+              {showKeys ? 'Hide' : 'Show'} Keys
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Configuration Form */}
+          <div className="space-y-4">
+            <h4 className="font-medium">Set New Configuration</h4>
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="projectKey">Project Access Key</Label>
+                <Input
+                  id="projectKey"
+                  type="password"
+                  placeholder="Enter your Sequence Project Access Key"
+                  value={projectKey}
+                  onChange={(e) => setProjectKey(e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="waasKey">WaaS Config Key</Label>
+                <Input
+                  id="waasKey"
+                  type="password"
+                  placeholder="Enter your WaaS Config Key"
+                  value={waasKey}
+                  onChange={(e) => setWaasKey(e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-2 flex-wrap">
+              <Button onClick={saveSequenceKeys}>
+                Save Configuration
+              </Button>
+              <Button onClick={clearSequenceKeys} variant="destructive">
+                Clear Overrides
+              </Button>
+            </div>
+            
+            <div className="text-xs text-muted-foreground">
+              Keys are stored in localStorage and will override default configuration. 
+              Reload the page after changes to apply new settings.
+            </div>
+          </div>
         </CardContent>
       </Card>
 
