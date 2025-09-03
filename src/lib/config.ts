@@ -14,17 +14,14 @@
  * Validates if a string is properly base64 encoded
  */
 const isValidBase64 = (str: string): boolean => {
-  if (!str) return false;
-  try {
-    // Normalize base64url to standard base64 and remove whitespace
-    const normalized = str.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
-    const pad = normalized.length % 4;
-    const padded = pad ? normalized + '='.repeat(4 - pad) : normalized;
-    atob(padded);
-    return true;
-  } catch {
-    return false;
-  }
+  if (!str || typeof str !== 'string') return false;
+  const cleaned = str.trim();
+  // base64url (Sequence uses this)
+  const base64urlRegex = /^[A-Za-z0-9_-]+$/;
+  if (base64urlRegex.test(cleaned)) return true;
+  // standard base64
+  const base64Regex = /^[A-Za-z0-9+/]+=*$/;
+  return base64Regex.test(cleaned);
 };
 
 /**
@@ -80,6 +77,27 @@ export const CFG = {
   // Legacy Sequence config (keep for now during migration)
   SEQUENCE_PROJECT_ACCESS_KEY: get('SEQUENCE_PROJECT_ACCESS_KEY', 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE'),
   SEQUENCE_WAAS_CONFIG_KEY: get('SEQUENCE_WAAS_CONFIG_KEY', 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0='),
+};
+
+// Runtime config accessor with source tracking (Lovable note: env vars not supported)
+export const getConfigValue = (
+  key: string,
+  defaultValue: string = ''
+): { value: string; source: 'localStorage' | 'default' } => {
+  const localStorageKey = `tvc_${key}`;
+  const localValue = localStorage.getItem(localStorageKey);
+  if (localValue && localValue.trim()) {
+    console.log(`Config ${key} loaded from localStorage`);
+    return { value: localValue.trim(), source: 'localStorage' };
+  }
+  console.warn(`Config ${key} using default value`);
+  return { value: defaultValue, source: 'default' };
+};
+
+export const sequenceConfig = {
+  projectAccessKey: getConfigValue('SEQUENCE_PROJECT_ACCESS_KEY', ''),
+  waasConfigKey: getConfigValue('SEQUENCE_WAAS_CONFIG_KEY', ''),
+  network: getConfigValue('SEQUENCE_NETWORK', 'amoy').value,
 };
 
 /**

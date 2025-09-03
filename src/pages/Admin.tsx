@@ -3,6 +3,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SequenceDebugPanel } from '@/components/admin/SequenceDebugPanel';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Loader2 } from 'lucide-react';
 
@@ -68,6 +69,7 @@ export const Admin = () => {
             </p>
           </CardContent>
         </Card>
+        <SequenceDebugPanel />
       </div>
     </div>
   );
