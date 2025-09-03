@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
         `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
         `font-src 'self' https://fonts.gstatic.com`,
         `img-src 'self' data: https:`,
-        `connect-src 'self' https://qldjhlnsphlixmzzrdwi.supabase.co wss://qldjhlnsphlixmzzrdwi.supabase.co https://waas.sequence.app https://api.sequence.app`,
+        `connect-src 'self' https://qldjhlnsphlixmzzrdwi.supabase.co wss://qldjhlnsphlixmzzrdwi.supabase.co https://waas.sequence.app https://api.sequence.app https://nodes.sequence.app https://*.sequence.xyz`,
         `frame-ancestors 'none'`,
         `object-src 'none'`,
         `base-uri 'self'`,

@@ -39,36 +39,41 @@ export class SequenceDebugService {
 
   private validateConfiguration(): boolean {
     console.group('🔍 Sequence Configuration Validation');
+    
     const projectKey = sequenceConfig.projectAccessKey;
     const waasKey = sequenceConfig.waasConfigKey;
-
-    if (!projectKey.value || !waasKey.value) {
+    
+    // Check if keys exist
+    if (!projectKey || !waasKey) {
       this.logStep('CONFIG_VALIDATION', 'error', {
         error: 'Missing required keys',
-        projectKey: projectKey.source,
-        waasKey: waasKey.source
+        projectKeySource: sequenceConfig.projectAccessKeySource,
+        waasKeySource: sequenceConfig.waasConfigKeySource,
+        isConfigured: sequenceConfig.isConfigured
       });
       console.groupEnd();
       return false;
     }
 
-    const projectKeyValid = /^[A-Za-z0-9_-]+$/.test(projectKey.value);
-    const waasKeyValid = /^[A-Za-z0-9_-]+$/.test(waasKey.value);
+    // Validate key formats
+    const projectKeyValid = /^[A-Za-z0-9_-]+$/.test(projectKey);
+    const waasKeyValid = /^[A-Za-z0-9_-]+$/.test(waasKey);
 
     this.logStep('CONFIG_VALIDATION', 'success', {
       projectKey: {
-        source: projectKey.source,
-        length: projectKey.value.length,
+        source: sequenceConfig.projectAccessKeySource,
+        length: projectKey.length,
         valid: projectKeyValid,
-        preview: projectKey.value.substring(0, 10) + '...'
+        preview: projectKey.substring(0, 10) + '...'
       },
       waasKey: {
-        source: waasKey.source,
-        length: waasKey.value.length,
+        source: sequenceConfig.waasConfigKeySource,
+        length: waasKey.length,
         valid: waasKeyValid,
-        preview: waasKey.value.substring(0, 10) + '...'
+        preview: waasKey.substring(0, 10) + '...'
       },
-      network: sequenceConfig.network
+      network: sequenceConfig.network,
+      networkSource: sequenceConfig.networkSource
     });
 
     console.groupEnd();
@@ -80,8 +85,8 @@ export class SequenceDebugService {
       if (!this.validateConfiguration()) throw new Error('Invalid configuration');
 
       this.sequence = new SequenceWaaS({
-        projectAccessKey: sequenceConfig.projectAccessKey.value,
-        waasConfigKey: sequenceConfig.waasConfigKey.value,
+        projectAccessKey: sequenceConfig.projectAccessKey,
+        waasConfigKey: sequenceConfig.waasConfigKey,
         network: sequenceConfig.network as any
       });
 
@@ -138,6 +143,29 @@ export class SequenceDebugService {
       });
       console.groupEnd();
       return { success: false, error, debugSteps: this.debugSteps };
+    }
+  }
+
+  async signMessage(message: string): Promise<string> {
+    if (!this.sequence) {
+      throw new Error('Sequence not initialized');
+    }
+
+    try {
+      console.log('Signing message:', message);
+      const signatureResponse = await this.sequence.signMessage({
+        message: message
+      });
+      
+      if (!signatureResponse?.data?.signature) {
+        throw new Error('No signature returned from Sequence WaaS');
+      }
+
+      console.log('Message signed successfully');
+      return signatureResponse.data.signature;
+    } catch (error) {
+      console.error('Error signing message:', error);
+      throw error;
     }
   }
 

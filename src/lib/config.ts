@@ -70,13 +70,10 @@ export const CFG = {
   STABLE_TOKEN_ADDRESS: get('STABLE_TOKEN_ADDRESS', ''),
   STABLE_TOKEN_DECIMALS: Number(get('STABLE_TOKEN_DECIMALS', '6')),
   
-  // Sequence WaaS configuration
-  SEQUENCE_PROJECT_ID: get('SEQUENCE_PROJECT_ID', ''),
+  // Sequence WaaS configuration (empty defaults - must be set via localStorage)
   SEQUENCE_NETWORK: get('SEQUENCE_NETWORK', 'amoy'),
-  
-  // Legacy Sequence config (keep for now during migration)
-  SEQUENCE_PROJECT_ACCESS_KEY: get('SEQUENCE_PROJECT_ACCESS_KEY', 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE'),
-  SEQUENCE_WAAS_CONFIG_KEY: get('SEQUENCE_WAAS_CONFIG_KEY', 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0='),
+  SEQUENCE_PROJECT_ACCESS_KEY: get('SEQUENCE_PROJECT_ACCESS_KEY', ''),
+  SEQUENCE_WAAS_CONFIG_KEY: get('SEQUENCE_WAAS_CONFIG_KEY', ''),
 };
 
 // Runtime config accessor with source tracking (Lovable note: env vars not supported)
@@ -94,10 +91,19 @@ export const getConfigValue = (
   return { value: defaultValue, source: 'default' };
 };
 
+// Unified sequence config (single source of truth)
 export const sequenceConfig = {
-  projectAccessKey: getConfigValue('SEQUENCE_PROJECT_ACCESS_KEY', ''),
-  waasConfigKey: getConfigValue('SEQUENCE_WAAS_CONFIG_KEY', ''),
-  network: getConfigValue('SEQUENCE_NETWORK', 'amoy').value,
+  get projectAccessKey() { return CFG.SEQUENCE_PROJECT_ACCESS_KEY; },
+  get waasConfigKey() { return CFG.SEQUENCE_WAAS_CONFIG_KEY; },
+  get network() { return CFG.SEQUENCE_NETWORK; },
+  // Source tracking for debugging
+  get projectAccessKeySource() { return getWithSource('SEQUENCE_PROJECT_ACCESS_KEY', '').source; },
+  get waasConfigKeySource() { return getWithSource('SEQUENCE_WAAS_CONFIG_KEY', '').source; },
+  get networkSource() { return getWithSource('SEQUENCE_NETWORK', 'amoy').source; },
+  // Check if properly configured
+  get isConfigured() { 
+    return !!(this.projectAccessKey && this.waasConfigKey && this.network);
+  }
 };
 
 /**
@@ -136,7 +142,6 @@ export const toggleTestnetMode = () => {
  */
 export const resetSequenceOverrides = () => {
   const sequenceKeys = [
-    'tvc_SEQUENCE_PROJECT_ID',
     'tvc_SEQUENCE_NETWORK', 
     'tvc_SEQUENCE_PROJECT_ACCESS_KEY',
     'tvc_SEQUENCE_WAAS_CONFIG_KEY'
