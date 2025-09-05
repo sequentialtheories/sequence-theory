@@ -29,12 +29,11 @@ export class SequenceDebugService {
 
   async initializeSequence(): Promise<DebugResult> {
     try {
-      console.log('=== SEQUENCE INITIALIZATION ===');
-      console.log('Config:', {
-        projectAccessKey: config.projectAccessKey.substring(0, 20) + '...',
-        waasConfigKey: config.waasConfigKey.substring(0, 20) + '...',
-        network: config.network
-      });
+      // Only log in debug mode - removed key exposure
+      if (window.location.hostname === 'localhost' || window.location.hostname.includes('preview')) {
+        console.log('=== SEQUENCE INITIALIZATION ===');
+        console.log('Config network:', config.network);
+      }
 
       const waasConfig = {
         projectAccessKey: config.projectAccessKey,
@@ -62,7 +61,11 @@ export class SequenceDebugService {
   }
 
   async createWallet(email: string): Promise<DebugResult> {
-    console.group(`🚀 Creating Wallet for ${email}`);
+    // Only log in debug mode for security
+    const isDebugMode = window.location.hostname === 'localhost' || window.location.hostname.includes('preview');
+    if (isDebugMode) {
+      console.group(`🚀 Creating Wallet for ${email.replace(/@.*/, '@***')}`);
+    }
     this.debugSteps = [];
 
     try {
@@ -73,35 +76,50 @@ export class SequenceDebugService {
 
       try {
         const isSignedIn = await this.sequence!.isSignedIn();
-        console.log('Session check:', { isSignedIn });
+        const isDebugMode = window.location.hostname === 'localhost' || window.location.hostname.includes('preview');
+        if (isDebugMode) console.log('Session check:', { isSignedIn });
+        
         if (isSignedIn) {
           const address = await this.sequence!.getAddress();
           if (address) {
-            console.log('Existing wallet found:', { address });
-            console.groupEnd();
+            if (isDebugMode) {
+              console.log('Existing wallet found:', { address });
+              console.groupEnd();
+            }
             return { success: true, address, debugSteps: this.debugSteps };
           }
         }
       } catch (e) {
-        console.log('Session check failed:', e);
+        if (window.location.hostname === 'localhost' || window.location.hostname.includes('preview')) {
+          console.log('Session check failed:', e);
+        }
       }
 
-      console.log('Starting sign in process...');
+      const isDebugMode = window.location.hostname === 'localhost' || window.location.hostname.includes('preview');
+      if (isDebugMode) console.log('Starting sign in process...');
+      
       const signInResponse = await this.sequence!.signIn({ email }, `TVC_Session_${Date.now()}`);
-      console.log('Sign in completed:', {
-        hasSession: !!(signInResponse as any)?.sessionId,
-        hasWallet: !!(signInResponse as any)?.wallet
-      });
+      
+      if (isDebugMode) {
+        console.log('Sign in completed:', {
+          hasSession: !!(signInResponse as any)?.sessionId,
+          hasWallet: !!(signInResponse as any)?.wallet
+        });
+      }
 
       const address = await this.sequence!.getAddress();
       if (!address) throw new Error('No address returned after sign in');
-      console.log('Wallet created successfully:', { address });
-
-      console.groupEnd();
+      
+      if (isDebugMode) {
+        console.log('Wallet created successfully:', { address });
+        console.groupEnd();
+      }
       return { success: true, address, debugSteps: this.debugSteps };
     } catch (error) {
-      console.error('Wallet creation failed:', error);
-      console.groupEnd();
+      if (window.location.hostname === 'localhost' || window.location.hostname.includes('preview')) {
+        console.error('Wallet creation failed:', error);
+        console.groupEnd();
+      }
       return { success: false, error, debugSteps: this.debugSteps };
     }
   }
@@ -130,19 +148,30 @@ export class SequenceDebugService {
   }
 
   enableNetworkMonitoring() {
+    // Only enable network monitoring in development/debug environments for security
+    const isDebugMode = window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('preview') ||
+                       new URLSearchParams(window.location.search).has('debug');
+    
+    if (!isDebugMode) {
+      console.warn('Network monitoring disabled in production for security');
+      return;
+    }
+
     const originalFetch = window.fetch.bind(window);
     window.fetch = async (...args: Parameters<typeof fetch>) => {
       const [url, options] = args;
       if (typeof url === 'string' && url.includes('sequence')) {
-        console.group(`📡 Sequence API: ${url}`);
-        console.log('Request:', options);
+        console.group(`📡 Sequence API: ${url.replace(/\/[a-f0-9]{8,}/g, '/***')}`); // Redact potential keys
+        // Don't log full request options to prevent key exposure
+        console.log('Request method:', (options as any)?.method || 'GET');
         try {
           const response = await originalFetch(...args);
           console.log('Response Status:', response.status);
           if (!response.ok) {
             const clone = response.clone();
             const body = await clone.text();
-            console.error('Error Response:', body);
+            console.error('Error Response:', body.length > 500 ? body.substring(0, 500) + '...' : body);
           }
           console.groupEnd();
           return response;

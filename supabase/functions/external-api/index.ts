@@ -303,6 +303,9 @@ Deno.serve(async (req) => {
         );
       }
 
+      // Remove user_id from standard response for privacy
+      const sanitizedWallets = wallets.map(({ user_id, ...wallet }) => wallet);
+
       // Update last used timestamp
       await supabase
         .from('api_keys')
@@ -317,7 +320,7 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          data: wallets.length === 1 ? wallets[0] : wallets
+          data: sanitizedWallets.length === 1 ? sanitizedWallets[0] : sanitizedWallets
         }), 
         { 
           status: 200, 
