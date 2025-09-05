@@ -1,7 +1,6 @@
 
 import { AuthProvider } from "@/components/AuthProvider";
 import { WalletProvider } from "@/components/WalletProvider";
-import { AutoWalletCreator } from "@/components/AutoWalletCreator";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,7 +48,6 @@ import DemocratizingFinancialKnowledge from "./pages/DemocratizingFinancialKnowl
 import InteractiveLearning from "./pages/InteractiveLearning";
 import ApiKeys from "./pages/ApiKeys";
 import ApiKeyTester from "./components/ApiKeyTester";
-import Debug from "./pages/Debug";
 import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
@@ -63,7 +61,6 @@ const App = () => (
         <SecurityHeaders />
         <AuthProvider>
           <WalletProvider>
-            <AutoWalletCreator />
             <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
@@ -84,7 +81,6 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/api-test" element={<ApiKeyTester />} />
-            <Route path="/debug" element={<Debug />} />
             <Route path="/learn-now" element={
               <ProtectedRoute>
                 <LearnNow />

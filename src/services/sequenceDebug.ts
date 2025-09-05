@@ -1,10 +1,12 @@
 import { SequenceWaaS } from '@0xsequence/waas';
-import { sequenceConfig } from '@/lib/config';
+import { config } from '@/lib/config';
 
 interface DebugResult {
   success: boolean;
+  message?: string;
   address?: string;
   error?: any;
+  details?: any;
   debugSteps: Array<{
     step: string;
     status: 'success' | 'error';
@@ -25,76 +27,37 @@ export class SequenceDebugService {
     return this.instance;
   }
 
-  private logStep(step: string, status: 'success' | 'error', details: any) {
-    const entry = {
-      step,
-      status,
-      details,
-      timestamp: new Date().toISOString()
-    };
-    this.debugSteps.push(entry);
-    if (status === 'error') console.error(`🔴 [${step}]`, details);
-    else console.log(`🟢 [${step}]`, details);
-  }
-
-  private validateConfiguration(): boolean {
-    console.group('🔍 Sequence Configuration Validation');
-    
-    const projectKey = sequenceConfig.projectAccessKey;
-    const waasKey = sequenceConfig.waasConfigKey;
-    
-    // Check if keys exist
-    if (!projectKey || !waasKey) {
-      this.logStep('CONFIG_VALIDATION', 'error', {
-        error: 'Missing required keys',
-        projectKeySource: sequenceConfig.projectAccessKeySource,
-        waasKeySource: sequenceConfig.waasConfigKeySource,
-        isConfigured: sequenceConfig.isConfigured
-      });
-      console.groupEnd();
-      return false;
-    }
-
-    // Validate key formats
-    const projectKeyValid = /^[A-Za-z0-9_-]+$/.test(projectKey);
-    const waasKeyValid = /^[A-Za-z0-9_-]+$/.test(waasKey);
-
-    this.logStep('CONFIG_VALIDATION', 'success', {
-      projectKey: {
-        source: sequenceConfig.projectAccessKeySource,
-        length: projectKey.length,
-        valid: projectKeyValid,
-        preview: projectKey.substring(0, 10) + '...'
-      },
-      waasKey: {
-        source: sequenceConfig.waasConfigKeySource,
-        length: waasKey.length,
-        valid: waasKeyValid,
-        preview: waasKey.substring(0, 10) + '...'
-      },
-      network: sequenceConfig.network,
-      networkSource: sequenceConfig.networkSource
-    });
-
-    console.groupEnd();
-    return projectKeyValid && waasKeyValid;
-  }
-
-  async initializeSequence(): Promise<boolean> {
+  async initializeSequence(): Promise<DebugResult> {
     try {
-      if (!this.validateConfiguration()) throw new Error('Invalid configuration');
-
-      this.sequence = new SequenceWaaS({
-        projectAccessKey: sequenceConfig.projectAccessKey,
-        waasConfigKey: sequenceConfig.waasConfigKey,
-        network: sequenceConfig.network as any
+      console.log('=== SEQUENCE INITIALIZATION ===');
+      console.log('Config:', {
+        projectAccessKey: config.projectAccessKey.substring(0, 20) + '...',
+        waasConfigKey: config.waasConfigKey.substring(0, 20) + '...',
+        network: config.network
       });
 
-      this.logStep('SEQUENCE_INIT', 'success', { initialized: true, network: sequenceConfig.network });
-      return true;
-    } catch (error) {
-      this.logStep('SEQUENCE_INIT', 'error', error);
-      return false;
+      const waasConfig = {
+        projectAccessKey: config.projectAccessKey,
+        waasConfigKey: config.waasConfigKey,
+        network: config.network
+      };
+
+      this.sequence = new SequenceWaaS(waasConfig);
+      
+      return {
+        success: true,
+        message: 'Sequence initialized successfully',
+        details: waasConfig,
+        debugSteps: []
+      };
+    } catch (error: any) {
+      console.error('Sequence initialization failed:', error);
+      return {
+        success: false,
+        message: `Initialization failed: ${error.message}`,
+        details: { error: error.message },
+        debugSteps: []
+      };
     }
   }
 
@@ -104,43 +67,40 @@ export class SequenceDebugService {
 
     try {
       if (!this.sequence) {
-        const initialized = await this.initializeSequence();
-        if (!initialized) throw new Error('Failed to initialize Sequence');
+        const initResult = await this.initializeSequence();
+        if (!initResult.success) throw new Error(initResult.message);
       }
 
       try {
         const isSignedIn = await this.sequence!.isSignedIn();
-        this.logStep('SESSION_CHECK', 'success', { isSignedIn });
+        console.log('Session check:', { isSignedIn });
         if (isSignedIn) {
           const address = await this.sequence!.getAddress();
           if (address) {
-            this.logStep('EXISTING_WALLET', 'success', { address });
+            console.log('Existing wallet found:', { address });
             console.groupEnd();
             return { success: true, address, debugSteps: this.debugSteps };
           }
         }
       } catch (e) {
-        this.logStep('SESSION_CHECK', 'error', e);
+        console.log('Session check failed:', e);
       }
 
-      this.logStep('SIGNIN_START', 'success', { email });
+      console.log('Starting sign in process...');
       const signInResponse = await this.sequence!.signIn({ email }, `TVC_Session_${Date.now()}`);
-      this.logStep('SIGNIN_COMPLETE', 'success', {
+      console.log('Sign in completed:', {
         hasSession: !!(signInResponse as any)?.sessionId,
         hasWallet: !!(signInResponse as any)?.wallet
       });
 
       const address = await this.sequence!.getAddress();
       if (!address) throw new Error('No address returned after sign in');
-      this.logStep('WALLET_CREATED', 'success', { address });
+      console.log('Wallet created successfully:', { address });
 
       console.groupEnd();
       return { success: true, address, debugSteps: this.debugSteps };
     } catch (error) {
-      this.logStep('WALLET_CREATION_FAILED', 'error', {
-        error: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined
-      });
+      console.error('Wallet creation failed:', error);
       console.groupEnd();
       return { success: false, error, debugSteps: this.debugSteps };
     }
