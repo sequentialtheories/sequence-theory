@@ -939,6 +939,10 @@ export type Database = {
         Args: { p_subclub_id: string }
         Returns: boolean
       }
+      is_wallet_owner: {
+        Args: { wallet_user_id: string }
+        Returns: boolean
+      }
       join_contract: {
         Args: {
           p_contract_id: string
