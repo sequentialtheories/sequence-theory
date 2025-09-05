@@ -856,7 +856,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_wallets_minimal: {
+        Row: {
+          created_at: string | null
+          created_via: string | null
+          network: string | null
+          provenance: Database["public"]["Enums"]["wallet_provenance"] | null
+          wallet_address: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_via?: string | null
+          network?: string | null
+          provenance?: Database["public"]["Enums"]["wallet_provenance"] | null
+          wallet_address?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_via?: string | null
+          network?: string | null
+          provenance?: Database["public"]["Enums"]["wallet_provenance"] | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_access_api_keys: {
