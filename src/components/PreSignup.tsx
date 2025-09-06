@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useValidation } from "@/hooks/useValidation";
+import { useAuth } from "@/components/AuthProvider";
 import { Mail, Vault } from "lucide-react";
 
 const PreSignup = () => {
@@ -14,8 +15,14 @@ const PreSignup = () => {
   const [lastSubmissionTime, setLastSubmissionTime] = useState<number>(0);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { validateEmail, sanitizeInput } = useValidation();
+
+  // Don't render if user is logged in
+  if (user) {
+    return null;
+  }
 
   // Rate limiting: 1 submission per 30 seconds
   const isRateLimited = useCallback((): boolean => {

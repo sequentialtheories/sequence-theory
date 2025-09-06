@@ -73,13 +73,15 @@ const Navigation = () => {
             ))}
             
             <div className="flex items-center space-x-3">
-              <Button 
-                onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
-                size="sm"
-                className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-2 rounded-full transition-spring hover:scale-105 animate-glow"
-              >
-                Join The Vault Club
-              </Button>
+              {!user && (
+                <Button 
+                  onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
+                  size="sm"
+                  className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-2 rounded-full transition-spring hover:scale-105 animate-glow"
+                >
+                  Join The Vault Club
+                </Button>
+              )}
               
               {!loading && (
                 user ? (
@@ -128,16 +130,18 @@ const Navigation = () => {
               ))}
               
               <div className="flex flex-col space-y-4 pt-4 mobile-gap-6">
-                <Button 
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  size="lg"
-                  className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-3 rounded-full transition-spring hover:scale-105 w-full mobile-text-base"
-                >
-                  Join The Vault Club
-                </Button>
+                {!user && (
+                  <Button 
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    size="lg"
+                    className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-3 rounded-full transition-spring hover:scale-105 w-full mobile-text-base"
+                  >
+                    Join The Vault Club
+                  </Button>
+                )}
                 
                 {!loading && (
                   user ? (
