@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
  */
 export const WalletConnectionStatus = () => {
   const { user } = useAuth();
-  const { wallet, loading, error, createWallet } = useWallet();
+  const { wallet, loading, error, signIn } = useWallet();
 
   if (!user) {
     return (
@@ -61,8 +61,8 @@ export const WalletConnectionStatus = () => {
             <p className="text-sm text-muted-foreground">
               {error}
             </p>
-            <Button onClick={createWallet} variant="outline" className="w-full">
-              Retry Wallet Creation
+            <Button onClick={signIn} variant="outline" className="w-full">
+              Connect Wallet
             </Button>
           </div>
         </CardContent>

@@ -4,25 +4,24 @@ import { useSequenceWallet } from '@/hooks/useSequenceWallet';
 interface WalletInfo {
   address: string;
   network: string;
+  isConnected: boolean;
 }
 
 interface WalletContextType {
   wallet: WalletInfo | null;
   loading: boolean;
   error: string | null;
-  refetchWallet: () => Promise<void>;
-  isConnected: boolean;
-  createWallet: () => Promise<void>;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
   signMessage: (message: string) => Promise<string>;
 }
 
 const WalletContext = createContext<WalletContextType>({
   wallet: null,
-  loading: true,
+  loading: false,
   error: null,
-  refetchWallet: async () => {},
-  isConnected: false,
-  createWallet: async () => {},
+  signIn: async () => {},
+  signOut: async () => {},
   signMessage: async () => '',
 });
 
@@ -35,32 +34,10 @@ export const useWallet = () => {
 };
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
-  const { 
-    wallet: sequenceWallet, 
-    loading, 
-    error, 
-    createWallet, 
-    refetchWallet,
-    signMessage
-  } = useSequenceWallet();
-
-  const wallet = sequenceWallet ? {
-    address: sequenceWallet.address,
-    network: sequenceWallet.network,
-  } : null;
-
-  const isConnected = !!wallet;
+  const walletState = useSequenceWallet();
 
   return (
-    <WalletContext.Provider value={{ 
-      wallet, 
-      loading, 
-      error, 
-      refetchWallet, 
-      isConnected,
-      createWallet,
-      signMessage
-    }}>
+    <WalletContext.Provider value={walletState}>
       {children}
     </WalletContext.Provider>
   );

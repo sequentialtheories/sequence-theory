@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const { wallet, loading: walletLoading } = useWallet();
+  const { wallet, loading: walletLoading, error: walletError, signIn } = useWallet();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -313,10 +314,22 @@ const Profile = () => {
               ) : (
                 <div className="text-center py-8">
                   <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">No wallet found for your account.</p>
-                  <p className="text-xs text-muted-foreground">
-                    A wallet should have been created automatically when you signed up. Try refreshing the page or contact support.
+                  <p className="text-muted-foreground mb-4">No wallet connected.</p>
+                  <p className="text-xs text-muted-foreground mb-6">
+                    Connect your Sequence wallet to access blockchain features.
                   </p>
+                  {walletError && (
+                    <Alert variant="destructive" className="mb-4 text-left">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>{walletError}</AlertDescription>
+                    </Alert>
+                  )}
+                  <Button 
+                    onClick={signIn}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    Connect Wallet
+                  </Button>
                 </div>
               )}
             </CardContent>

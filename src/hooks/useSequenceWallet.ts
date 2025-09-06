@@ -1,148 +1,179 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/components/AuthProvider'
-import { supabase } from '@/integrations/supabase/client'
-import { useToast } from '@/hooks/use-toast'
-import { sequenceDebug } from '@/services/sequenceDebug'
+import { useState, useEffect, useCallback } from 'react';
+import { SequenceWaaS } from '@0xsequence/waas';
+import { useAuth } from '@/components/AuthProvider';
+import { useToast } from '@/hooks/use-toast';
+import { SEQUENCE_CONFIG, validateSequenceConfig } from '@/lib/config';
 
 interface WalletInfo {
-  address: string
-  network: string
-  provider: string
+  address: string;
+  network: string;
+  isConnected: boolean;
 }
 
 interface UseSequenceWalletReturn {
-  wallet: WalletInfo | null
-  loading: boolean
-  error: string | null
-  createWallet: () => Promise<void>
-  refetchWallet: () => Promise<void>
-  signMessage: (message: string) => Promise<string>
+  wallet: WalletInfo | null;
+  loading: boolean;
+  error: string | null;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  signMessage: (message: string) => Promise<string>;
 }
 
 export const useSequenceWallet = (): UseSequenceWalletReturn => {
-  const { user } = useAuth()
-  const { toast } = useToast()
-  const [wallet, setWallet] = useState<WalletInfo | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [wallet, setWallet] = useState<WalletInfo | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sequenceWaaS, setSequenceWaaS] = useState<SequenceWaaS | null>(null);
 
-  const fetchWallet = async () => {
-    if (!user?.id) return
-
+  // Initialize Sequence WaaS instance
+  const initializeSequence = useCallback(async () => {
     try {
-      setLoading(true)
-      setError(null)
-
-      const { data: existingWallet, error: fetchError } = await supabase
-        .from('user_wallets')
-        .select('wallet_address, network, provider')
-        .eq('user_id', user.id)
-        .maybeSingle()
-
-      if (fetchError) {
-        throw new Error(fetchError.message)
+      // Validate configuration first
+      const configValidation = validateSequenceConfig();
+      if (!configValidation.isValid) {
+        throw new Error(`Configuration Error: ${configValidation.errors.join(', ')}`);
       }
 
-      if (existingWallet) {
-        setWallet({
-          address: existingWallet.wallet_address,
-          network: existingWallet.network,
-          provider: existingWallet.provider || 'sequence_waas'
-        })
+      const waasInstance = new SequenceWaaS({
+        projectAccessKey: SEQUENCE_CONFIG.projectAccessKey,
+        waasConfigKey: SEQUENCE_CONFIG.waasConfigKey,
+        network: SEQUENCE_CONFIG.network
+      });
+
+      setSequenceWaaS(waasInstance);
+      return waasInstance;
+    } catch (err: any) {
+      console.error('Failed to initialize Sequence:', err);
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  // Check if user is already signed in
+  const checkExistingSession = useCallback(async (waasInstance: SequenceWaaS) => {
+    try {
+      const isSignedIn = await waasInstance.isSignedIn();
+      if (isSignedIn) {
+        const address = await waasInstance.getAddress();
+        if (address) {
+          setWallet({
+            address,
+            network: SEQUENCE_CONFIG.network,
+            isConnected: true
+          });
+        }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch wallet'
-      setError(errorMessage)
-      console.error('Error fetching wallet:', err)
-    } finally {
-      setLoading(false)
+      console.error('Session check failed:', err);
+      // Don't throw here, just log - user might need to sign in fresh
     }
-  }
+  }, []);
 
-  const createWallet = async () => {
-    if (!user?.id || !user?.email) {
-      throw new Error('User not authenticated')
+  // Sign in with Sequence (following official SDK patterns)
+  const signIn = useCallback(async () => {
+    if (!user?.email) {
+      throw new Error('User email required for wallet sign in');
     }
 
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      // Delegate to the debug service for consistent wallet creation
-      const result = await sequenceDebug.createWallet(user.email)
-      
-      if (!result.success || !result.address) {
-        throw new Error(result.error?.message || 'Failed to create wallet')
+      let waasInstance = sequenceWaaS;
+      if (!waasInstance) {
+        waasInstance = await initializeSequence();
       }
 
-      // Update database
-      const { error: upsertError } = await supabase
-        .from('user_wallets')
-        .upsert({
-          user_id: user.id,
-          wallet_address: result.address,
-          network: 'amoy',
-          provider: 'sequence_waas'
-        }, { onConflict: 'user_id' })
+      // Follow the official Sequence sign in pattern
+      const signInResponse = await waasInstance.signIn(
+        { email: user.email },
+        `session_${Date.now()}`
+      );
 
-      if (upsertError) {
-        throw new Error(`Failed to store wallet: ${upsertError.message}`)
+      const address = await waasInstance.getAddress();
+      if (!address) {
+        throw new Error('No wallet address returned after sign in');
       }
 
       setWallet({
-        address: result.address,
-        network: 'amoy',
-        provider: 'sequence_waas'
-      })
-      
+        address,
+        network: SEQUENCE_CONFIG.network,
+        isConnected: true
+      });
+
       toast({
-        title: "Wallet Created",
-        description: "Your embedded wallet has been created successfully!"
-      })
+        title: "Wallet Connected",
+        description: "Successfully connected to your Sequence wallet"
+      });
 
     } catch (err: any) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create wallet'
-      setError(errorMessage)
+      const errorMessage = err.message || 'Failed to sign in to wallet';
+      setError(errorMessage);
       toast({
-        title: "Wallet Creation Failed",
+        title: "Wallet Connection Failed", 
         description: errorMessage,
         variant: "destructive"
-      })
-      throw err
+      });
+      throw err;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, [user?.email, sequenceWaaS, initializeSequence, toast]);
 
-  const signMessage = async (message: string): Promise<string> => {
-    if (!wallet?.address) {
-      throw new Error('No wallet available')
+  // Sign out
+  const signOut = useCallback(async () => {
+    try {
+      if (sequenceWaaS) {
+        // Note: signOut method availability depends on SDK version
+        // Check Sequence documentation for current method
+        if ('signOut' in sequenceWaaS) {
+          await (sequenceWaaS as any).signOut();
+        }
+      }
+      setWallet(null);
+    } catch (err) {
+      console.error('Sign out failed:', err);
+    }
+  }, [sequenceWaaS]);
+
+  // Sign message
+  const signMessage = useCallback(async (message: string): Promise<string> => {
+    if (!sequenceWaaS || !wallet?.isConnected) {
+      throw new Error('Wallet not connected');
     }
 
     try {
-      // Use sequenceDebug service for message signing
-      return await sequenceDebug.signMessage(message)
+      const response = await sequenceWaaS.signMessage({ message });
+      if (!response?.data?.signature) {
+        throw new Error('No signature returned');
+      }
+      return response.data.signature;
     } catch (err: any) {
-      console.error('Error signing message:', err);
+      console.error('Message signing failed:', err);
       throw new Error(`Failed to sign message: ${err.message}`);
     }
-  }
+  }, [sequenceWaaS, wallet?.isConnected]);
 
-  const refetchWallet = async () => {
-    await fetchWallet()
-  }
-
-  // Auto-fetch wallet on mount and user change
+  // Initialize on user change
   useEffect(() => {
-    fetchWallet()
-  }, [user?.id])
+    if (user?.email && !sequenceWaaS) {
+      initializeSequence()
+        .then(checkExistingSession)
+        .catch(err => {
+          console.error('Initialization failed:', err);
+          setError(err.message);
+        });
+    }
+  }, [user?.email, sequenceWaaS, initializeSequence, checkExistingSession]);
 
   return {
     wallet,
     loading,
     error,
-    createWallet,
-    refetchWallet,
+    signIn,
+    signOut,
     signMessage
-  }
-}
+  };
+};

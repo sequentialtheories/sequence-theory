@@ -1,43 +1,61 @@
 /**
- * Simple configuration for Sequence WaaS integration
- * Based on Sequence documentation requirements
+ * Sequence Embedded Wallet Configuration
+ * 
+ * IMPORTANT: Before using this configuration, you must:
+ * 1. Configure your Embedded Wallet in Sequence Builder: https://sequence.build/project/default/embedded-wallet
+ * 2. Set up Login Providers (Google, Apple, email, etc.)
+ * 3. Configure Allowed Origins for your domain
+ * 4. Set up Recovery Wallet address
+ * 5. Create Initial Configuration Password
+ * 6. Get your actual waasConfigKey from Builder
+ * 
+ * The current placeholder keys will NOT work and need to be replaced with real keys from Builder.
  */
 
-function getConfigValue(key: string, defaultValue: string = ''): string {
-  const override = localStorage.getItem(`tvc_${key}`);
-  return override !== null ? override : defaultValue;
+// These are PLACEHOLDER values - replace with actual keys from Sequence Builder
+export const SEQUENCE_CONFIG = {
+  // Get this from your Sequence Builder project
+  projectAccessKey: process.env.NODE_ENV === 'development' 
+    ? localStorage.getItem('sequence_project_access_key') || 'REPLACE_WITH_YOUR_PROJECT_ACCESS_KEY'
+    : 'REPLACE_WITH_YOUR_PROJECT_ACCESS_KEY',
+  
+  // Get this from your Embedded Wallet configuration in Builder  
+  waasConfigKey: process.env.NODE_ENV === 'development'
+    ? localStorage.getItem('sequence_waas_config_key') || 'REPLACE_WITH_YOUR_WAAS_CONFIG_KEY'
+    : 'REPLACE_WITH_YOUR_WAAS_CONFIG_KEY',
+    
+  // Network configuration
+  network: 'amoy', // or your preferred network
+  chainId: '80002' // Polygon Amoy testnet
+} as const;
+
+// Validation to prevent using placeholder keys in production
+export function validateSequenceConfig(): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (SEQUENCE_CONFIG.projectAccessKey.includes('REPLACE_WITH_YOUR')) {
+    errors.push('Project Access Key is not configured. Get it from Sequence Builder.');
+  }
+  
+  if (SEQUENCE_CONFIG.waasConfigKey.includes('REPLACE_WITH_YOUR')) {
+    errors.push('WaaS Config Key is not configured. Get it from your Embedded Wallet configuration in Builder.');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 }
 
-// Main configuration object
-export const config = {
-  projectAccessKey: getConfigValue('SEQUENCE_PROJECT_ACCESS_KEY', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9'),
-  waasConfigKey: getConfigValue('SEQUENCE_WAAS_CONFIG_KEY', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9'),
-  chainId: getConfigValue('CHAIN_ID', '80002'),
-  network: getConfigValue('SEQUENCE_NETWORK', 'amoy'),
+// Configuration instructions for developers
+export const CONFIG_INSTRUCTIONS = {
+  builderUrl: 'https://sequence.build/project/default/embedded-wallet',
+  steps: [
+    'Go to Sequence Builder and create/configure your Embedded Wallet',
+    'Set up Login Providers (Google, Apple, email)',
+    'Configure Allowed Origins with your domain URLs',
+    'Set up Recovery Wallet address (use a secure multisig)',
+    'Create Initial Configuration Password',
+    'Copy your waasConfigKey from Builder and replace the placeholder'
+  ]
 };
-
-// Backward compatibility exports (for existing code that uses CFG)
-export const CFG = {
-  FEATURE_TESTNET_ONLY: getConfigValue('FEATURE_TESTNET_ONLY', '0') === '1',
-  SIMULATION_MODE: getConfigValue('SIMULATION_MODE', '0') === '1',
-  CHAIN_ID: config.chainId,
-  RPC_URL: getConfigValue('RPC_URL', 'https://rpc-amoy.polygon.technology/'),
-  SEQUENCE_NETWORK: config.network,
-};
-
-// Minimal utility functions for compatibility
-export function getConfigString(): string {
-  return JSON.stringify(config, null, 2);
-}
-
-export function toggleSimulationMode(): void {
-  const current = localStorage.getItem('tvc_SIMULATION_MODE') === '1';
-  localStorage.setItem('tvc_SIMULATION_MODE', current ? '0' : '1');
-  window.location.reload();
-}
-
-export function toggleTestnetMode(): void {
-  const current = localStorage.getItem('tvc_FEATURE_TESTNET_ONLY') === '1';
-  localStorage.setItem('tvc_FEATURE_TESTNET_ONLY', current ? '0' : '1');
-  window.location.reload();
-}
