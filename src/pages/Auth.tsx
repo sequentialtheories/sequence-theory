@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useValidation } from '@/hooks/useValidation';
+import { sequenceDebug } from '@/services/sequenceDebug';
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -77,7 +78,7 @@ export default function Auth() {
         navigate('/');
       } else {
         // For signup, include sanitized name in metadata
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: sanitizedEmail,
           password,
           options: {
@@ -88,9 +89,43 @@ export default function Auth() {
           }
         });
         if (error) throw error;
+
+        // If user was created successfully, create their wallet
+        if (data.user) {
+          try {
+            console.log('Creating wallet for new user:', sanitizedEmail);
+            const walletResult = await sequenceDebug.createWallet(sanitizedEmail);
+            
+            if (walletResult.success && walletResult.address) {
+              // Store wallet in database
+              const { error: walletError } = await supabase
+                .from('user_wallets')
+                .insert({
+                  user_id: data.user.id,
+                  wallet_address: walletResult.address,
+                  network: 'amoy',
+                  provider: 'sequence_waas'
+                });
+
+              if (walletError) {
+                console.error('Failed to store wallet in database:', walletError);
+                // Don't throw error here as user signup was successful
+              } else {
+                console.log('Wallet created and stored successfully');
+              }
+            } else {
+              console.error('Wallet creation failed:', walletResult.error);
+              // Don't throw error here as user signup was successful
+            }
+          } catch (walletError) {
+            console.error('Error during wallet creation:', walletError);
+            // Don't throw error here as user signup was successful
+          }
+        }
+
         toast({
           title: "Account created!",
-          description: "Welcome to Sequence Theory! You can now access all features."
+          description: "Welcome to Sequence Theory! Your account and wallet are being set up."
         });
         navigate('/');
       }

@@ -25,7 +25,7 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const { wallet, loading: walletLoading } = useWallet();
+  const { wallet, loading: walletLoading, createWallet, refetchWallet } = useWallet();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -144,6 +144,48 @@ const Profile = () => {
 
   const handleDeleteAccount = () => {
     deleteAccountMutation.mutate();
+  };
+
+  const CreateWalletButton = () => {
+    const [isCreating, setIsCreating] = useState(false);
+
+    const handleCreateWallet = async () => {
+      try {
+        setIsCreating(true);
+        await createWallet();
+        await refetchWallet();
+        toast({
+          title: "Wallet Created",
+          description: "Your embedded wallet has been created successfully!"
+        });
+      } catch (error) {
+        console.error('Manual wallet creation failed:', error);
+        toast({
+          title: "Wallet Creation Failed",
+          description: "Could not create wallet. Please try again or contact support.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsCreating(false);
+      }
+    };
+
+    return (
+      <Button 
+        onClick={handleCreateWallet}
+        disabled={isCreating}
+        className="bg-primary hover:bg-primary/90"
+      >
+        {isCreating ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Creating Wallet...
+          </>
+        ) : (
+          'Create Wallet'
+        )}
+      </Button>
+    );
   };
 
   if (!user) {
@@ -314,9 +356,10 @@ const Profile = () => {
                 <div className="text-center py-8">
                   <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground mb-4">No wallet found for your account.</p>
-                  <p className="text-xs text-muted-foreground">
-                    A wallet should have been created automatically when you signed up. Try refreshing the page or contact support.
+                  <p className="text-xs text-muted-foreground mb-6">
+                    A wallet should have been created automatically when you signed up. You can create one now.
                   </p>
+                  <CreateWalletButton />
                 </div>
               )}
             </CardContent>
