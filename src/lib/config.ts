@@ -16,14 +16,13 @@
 export const SEQUENCE_CONFIG = {
   // Get this from your Sequence Builder project
   projectAccessKey: process.env.NODE_ENV === 'development' 
-    ? localStorage.getItem('sequence_project_access_key') || 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE
-    '
-    : 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE,
+    ? localStorage.getItem('sequence_project_access_key') || 'REPLACE_WITH_YOUR_PROJECT_ACCESS_KEY'
+    : 'REPLACE_WITH_YOUR_PROJECT_ACCESS_KEY',
   
   // Get this from your Embedded Wallet configuration in Builder  
   waasConfigKey: process.env.NODE_ENV === 'development'
-    ? localStorage.getItem('sequence_waas_config_key') || 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0='
-    : 'eyJwcm9qZWN0SWQiOjQzMDY3LCJycGNTZXJ2ZXIiOiJodHRwczovL3dhYXMuc2VxdWVuY2UuYXBwIn0=',
+    ? localStorage.getItem('sequence_waas_config_key') || 'REPLACE_WITH_YOUR_WAAS_CONFIG_KEY'
+    : 'REPLACE_WITH_YOUR_WAAS_CONFIG_KEY',
     
   // Network configuration
   network: 'amoy', // or your preferred network
