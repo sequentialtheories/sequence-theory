@@ -9,13 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Save, User, Mail, Wallet, Copy, Shield, Trash2, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Trash2, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useWallet } from '@/components/WalletProvider';
 import { ContractDashboard } from '@/components/ContractDashboard';
-import { WalletProofSection } from '@/components/WalletProofSection';
 
 
 // Private keys are no longer stored in wallet_config for security
@@ -26,7 +24,6 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const { wallet, loading: walletLoading, error: walletError, signIn } = useWallet();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -51,11 +48,6 @@ const Profile = () => {
       setName(profile.name || '');
     }
   }, [profile]);
-
-  // Log wallet status for debugging
-  useEffect(() => {
-    console.log('Wallet status:', { wallet, walletLoading });
-  }, [wallet, walletLoading]);
 
 
   // Update profile mutation
@@ -91,22 +83,6 @@ const Profile = () => {
 
   const handleSave = () => {
     updateProfileMutation.mutate({ name });
-  };
-
-  const copyToClipboard = async (text: string, label: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast({
-        title: "Copied to clipboard",
-        description: `${label} has been copied to your clipboard.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Failed to copy",
-        description: "Could not copy to clipboard.",
-        variant: "destructive",
-      });
-    }
   };
 
   // Delete account mutation
@@ -247,105 +223,6 @@ const Profile = () => {
               </Button>
             </CardContent>
           </Card>
-
-          {/* Wallet Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Wallet className="h-5 w-5" />
-                <span>Wallet Information</span>
-              </CardTitle>
-              <CardDescription>
-                Your blockchain wallet details
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {walletLoading ? (
-                <div className="text-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Loading wallet information...</p>
-                </div>
-              ) : wallet ? (
-                <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <Label>Wallet Address</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        value={wallet.address}
-                        readOnly
-                        className="bg-muted font-mono text-sm"
-                      />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => copyToClipboard(wallet.address, 'Wallet address')}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label>Network</Label>
-                    <Input
-                      value={wallet.network}
-                      readOnly
-                      className="bg-muted capitalize"
-                    />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label>Provider</Label>
-                    <Input
-                      value="Sequence WaaS"
-                      readOnly
-                      className="bg-muted capitalize"
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-2">
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Shield className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-800">
-                            Sequence Embedded Wallet
-                          </span>
-                        </div>
-                        <p className="text-xs text-blue-700">
-                          Your wallet is secured by Sequence's infrastructure and created deterministically from your user data. All wallet operations are handled on the frontend using the Sequence WaaS SDK.
-                        </p>
-                      </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-4">No wallet connected.</p>
-                  <p className="text-xs text-muted-foreground mb-6">
-                    Connect your Sequence wallet to access blockchain features.
-                  </p>
-                  {walletError && (
-                    <Alert variant="destructive" className="mb-4 text-left">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>{walletError}</AlertDescription>
-                    </Alert>
-                  )}
-                  <Button 
-                    onClick={signIn}
-                    className="bg-primary hover:bg-primary/90"
-                  >
-                    Connect Wallet
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Embedded Wallet Proof Section */}
-          <WalletProofSection />
-
 
           {/* Investment Contracts */}
           <ContractDashboard />
