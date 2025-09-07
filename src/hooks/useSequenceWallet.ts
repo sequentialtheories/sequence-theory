@@ -19,6 +19,11 @@ interface UseSequenceWalletReturn {
   signOut: () => Promise<void>;
   signMessage: (message: string) => Promise<string>;
   autoCreateWallet: boolean;
+  isVerificationRequired: boolean;
+  verificationEmail: string | null;
+  verificationError: string | null;
+  verifyEmailCode: (code: string) => Promise<void>;
+  resendVerificationCode: () => Promise<void>;
 }
 
 export const useSequenceWallet = (): UseSequenceWalletReturn => {
@@ -29,6 +34,10 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
   const [error, setError] = useState<string | null>(null);
   const [sequenceWaaS, setSequenceWaaS] = useState<SequenceWaaS | null>(null);
   const [autoCreateWallet, setAutoCreateWallet] = useState(false);
+  const [isVerificationRequired, setIsVerificationRequired] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
 
   // Initialize Sequence WaaS instance
   const initializeSequence = useCallback(async () => {
@@ -113,27 +122,9 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
     }
   }, [user?.id, persistWalletToSupabase]);
 
-  // Sign in with Sequence (following official SDK patterns)
-  const signIn = useCallback(async () => {
-    if (!user?.email) {
-      throw new Error('User email required for wallet sign in');
-    }
-
+  // Complete wallet setup after successful verification
+  const completeWalletSetup = useCallback(async (waasInstance: SequenceWaaS) => {
     try {
-      setLoading(true);
-      setError(null);
-
-      let waasInstance = sequenceWaaS;
-      if (!waasInstance) {
-        waasInstance = await initializeSequence();
-      }
-
-      // Follow the official Sequence sign in pattern
-      const signInResponse = await waasInstance.signIn(
-        { email: user.email },
-        `session_${Date.now()}`
-      );
-
       const address = await waasInstance.getAddress();
       if (!address) {
         throw new Error('No wallet address returned after sign in');
@@ -148,14 +139,84 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
       // Persist to Supabase
       await persistWalletToSupabase(address);
 
+      // Clear verification states
+      setIsVerificationRequired(false);
+      setVerificationEmail(null);
+      setVerificationError(null);
+      setPendingSessionId(null);
+
       toast({
         title: "Wallet Connected",
         description: "Successfully connected to your Sequence wallet"
       });
 
     } catch (err: any) {
+      console.error('Wallet setup completion failed:', err);
+      throw err;
+    }
+  }, [persistWalletToSupabase, toast]);
+
+  // Sign in with Sequence (updated for email verification flow)
+  const signIn = useCallback(async () => {
+    if (!user?.email) {
+      throw new Error('User email required for wallet sign in');
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setVerificationError(null);
+
+      let waasInstance = sequenceWaaS;
+      if (!waasInstance) {
+        waasInstance = await initializeSequence();
+      }
+
+      console.log('Attempting Sequence sign in for:', user.email);
+      
+      const sessionId = `session_${Date.now()}`;
+      setPendingSessionId(sessionId);
+
+      // Follow the official Sequence sign in pattern
+      const signInResponse = await waasInstance.signIn(
+        { email: user.email },
+        sessionId
+      );
+
+      console.log('Sign in response:', signInResponse);
+
+      // Check if the user is already signed in (existing session)
+      try {
+        const isSignedIn = await waasInstance.isSignedIn();
+        if (isSignedIn) {
+          console.log('User already signed in, completing wallet setup');
+          await completeWalletSetup(waasInstance);
+          return;
+        }
+      } catch (err) {
+        console.log('Not signed in yet, proceeding with verification flow');
+      }
+
+      // If we reach here, email verification is required
+      console.log('Email verification required for:', user.email);
+      setIsVerificationRequired(true);
+      setVerificationEmail(user.email);
+      
+      toast({
+        title: "Verification Required",
+        description: `Please check your email (${user.email}) for the verification code`
+      });
+
+    } catch (err: any) {
+      console.error('Sign in failed:', err);
       const errorMessage = err.message || 'Failed to sign in to wallet';
       setError(errorMessage);
+      
+      // Clear verification states on error
+      setIsVerificationRequired(false);
+      setVerificationEmail(null);
+      setPendingSessionId(null);
+      
       toast({
         title: "Wallet Connection Failed", 
         description: errorMessage,
@@ -165,7 +226,92 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
     } finally {
       setLoading(false);
     }
-  }, [user?.email, sequenceWaaS, initializeSequence, toast]);
+  }, [user?.email, sequenceWaaS, initializeSequence, toast, completeWalletSetup]);
+
+  // Verify email code
+  const verifyEmailCode = useCallback(async (code: string) => {
+    if (!sequenceWaaS || !pendingSessionId || !user?.email) {
+      throw new Error('No pending verification session');
+    }
+
+    try {
+      setLoading(true);
+      setVerificationError(null);
+
+      console.log('Verifying email code for session:', pendingSessionId);
+
+      // Try different possible verification method names
+      let verificationResult;
+      try {
+        // Most likely method name based on Sequence patterns
+        if ('verifyEmailCode' in sequenceWaaS) {
+          verificationResult = await (sequenceWaaS as any).verifyEmailCode(code, pendingSessionId);
+        } else if ('completeEmailAuth' in sequenceWaaS) {
+          verificationResult = await (sequenceWaaS as any).completeEmailAuth(code, pendingSessionId);
+        } else if ('verifySignIn' in sequenceWaaS) {
+          verificationResult = await (sequenceWaaS as any).verifySignIn(code);
+        } else {
+          throw new Error('Email verification method not found in SDK');
+        }
+      } catch (methodErr: any) {
+        console.error('Verification method failed:', methodErr);
+        throw new Error(`Verification failed: ${methodErr.message}`);
+      }
+
+      console.log('Verification result:', verificationResult);
+
+      // Complete wallet setup after successful verification
+      await completeWalletSetup(sequenceWaaS);
+
+    } catch (err: any) {
+      console.error('Email verification failed:', err);
+      const errorMessage = err.message || 'Invalid verification code';
+      setVerificationError(errorMessage);
+      
+      // Map common Sequence error types to user-friendly messages
+      if (errorMessage.includes('invalid') || errorMessage.includes('code')) {
+        setVerificationError('Invalid verification code. Please try again.');
+      } else if (errorMessage.includes('expired')) {
+        setVerificationError('Verification code has expired. Please request a new one.');
+      } else if (errorMessage.includes('attempts')) {
+        setVerificationError('Too many verification attempts. Please try again later.');
+      } else {
+        setVerificationError(errorMessage);
+      }
+      
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [sequenceWaaS, pendingSessionId, user?.email, completeWalletSetup]);
+
+  // Resend verification code
+  const resendVerificationCode = useCallback(async () => {
+    if (!user?.email) {
+      throw new Error('No email available for resend');
+    }
+
+    try {
+      setLoading(true);
+      setVerificationError(null);
+
+      // Re-trigger the sign in process to send a new code
+      await signIn();
+      
+      toast({
+        title: "Code Resent",
+        description: "A new verification code has been sent to your email"
+      });
+
+    } catch (err: any) {
+      console.error('Resend failed:', err);
+      const errorMessage = err.message || 'Failed to resend verification code';
+      setVerificationError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.email, signIn, toast]);
 
   // Sign out
   const signOut = useCallback(async () => {
@@ -178,6 +324,11 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
         }
       }
       setWallet(null);
+      // Clear verification states
+      setIsVerificationRequired(false);
+      setVerificationEmail(null);
+      setVerificationError(null);
+      setPendingSessionId(null);
     } catch (err) {
       console.error('Sign out failed:', err);
     }
@@ -262,6 +413,11 @@ export const useSequenceWallet = (): UseSequenceWalletReturn => {
     signIn,
     signOut,
     signMessage,
-    autoCreateWallet
+    autoCreateWallet,
+    isVerificationRequired,
+    verificationEmail,
+    verificationError,
+    verifyEmailCode,
+    resendVerificationCode
   };
 };

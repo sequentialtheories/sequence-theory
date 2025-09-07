@@ -15,6 +15,11 @@ interface WalletContextType {
   signOut: () => Promise<void>;
   signMessage: (message: string) => Promise<string>;
   autoCreateWallet: boolean;
+  isVerificationRequired: boolean;
+  verificationEmail: string | null;
+  verificationError: string | null;
+  verifyEmailCode: (code: string) => Promise<void>;
+  resendVerificationCode: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -25,6 +30,11 @@ const WalletContext = createContext<WalletContextType>({
   signOut: async () => {},
   signMessage: async () => '',
   autoCreateWallet: false,
+  isVerificationRequired: false,
+  verificationEmail: null,
+  verificationError: null,
+  verifyEmailCode: async () => {},
+  resendVerificationCode: async () => {},
 });
 
 export const useWallet = () => {

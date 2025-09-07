@@ -1,6 +1,7 @@
 
 import { AuthProvider } from "@/components/AuthProvider";
 import { WalletProvider } from "@/components/WalletProvider";
+import { WalletVerificationDialog } from "@/components/WalletVerificationDialog";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,6 +60,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <WalletProvider>
+            <WalletVerificationDialog />
             <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
