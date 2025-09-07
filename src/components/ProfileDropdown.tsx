@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
 
 // Private keys are no longer stored in wallet_config for security
 import {
@@ -12,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Wallet } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
@@ -21,6 +22,7 @@ export const ProfileDropdown = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { wallet } = useTurnkeyWallet();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -121,6 +123,20 @@ export const ProfileDropdown = () => {
             <User className="mr-2 h-4 w-4" />
             <span>Profile Settings</span>
           </DropdownMenuItem>
+          {wallet && (
+            <>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1.5">
+                <div className="flex items-center space-x-2 text-sm">
+                  <Wallet className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">Wallet:</span>
+                </div>
+                <div className="text-xs font-mono text-muted-foreground truncate mt-1">
+                  {wallet.wallet_address.slice(0, 6)}...{wallet.wallet_address.slice(-4)}
+                </div>
+              </div>
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="text-red-600">
             <LogOut className="mr-2 h-4 w-4" />
