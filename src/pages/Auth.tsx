@@ -106,8 +106,13 @@ export default function Auth() {
   };
   return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4 relative">
       {/* Back Arrow */}
-      <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="absolute top-4 left-4 p-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-colors rounded-full border-2 border-purple-200 hover:border-purple-300 bg-white/50 backdrop-blur-sm">
-        <ArrowLeft className="h-5 w-5" />
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={() => navigate('/')} 
+        className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
+      >
+        <ArrowLeft className="h-4 w-4" />
       </Button>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
