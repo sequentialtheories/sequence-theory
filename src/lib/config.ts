@@ -18,7 +18,7 @@ export const SEQUENCE_CONFIG = {
   projectAccessKey: process.env.NODE_ENV === 'development' 
     ? localStorage.getItem('sequence_project_access_key') || 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE
     '
-    : 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE',
+    : 'AQAAAAAAAKg7Q8xQ94GXN9ogCwnDTzn-BkE,
   
   // Get this from your Embedded Wallet configuration in Builder  
   waasConfigKey: process.env.NODE_ENV === 'development'
