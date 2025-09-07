@@ -168,19 +168,19 @@ const LearnNow = () => {
   return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50">
       {/* Header */}
       <header className="relative bg-gradient-to-r from-cyan-600 via-purple-600 to-indigo-600 text-white py-8 overflow-hidden">
+        <Button
+          onClick={() => navigate("/")}
+          variant="outline"
+          size="sm"
+          className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl translate-y-32 -translate-x-32"></div>
         
         <div className="container mx-auto px-6 relative z-10">
-          <Button
-            onClick={() => navigate("/")}
-            variant="outline"
-            size="sm"
-            className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="absolute inset-0 bg-white/20 rounded-2xl blur-lg"></div>
