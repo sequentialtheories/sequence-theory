@@ -38,7 +38,7 @@ const FAQ = () => {
     },
     {
       question: "Is this financial advice?",
-      answer: "No, everything we provide is for education only. We teach you how to think about money and investing, but you should talk to a financial advisor before making any major decisions."
+      answer: "No, everything we provide is for education only. We teach you how to think about money and investing, encouraging self empowered financial advising."
     },
     {
       question: "What does it cost?",
