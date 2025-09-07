@@ -134,10 +134,18 @@ const Profile = () => {
       });
       navigate('/');
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Delete account error:', error);
+      let description = "There was an error deleting your account. Please try again or contact support.";
+      
+      // Check if it's a rate limit error
+      if (error?.message?.includes('Rate limit exceeded') || error?.status === 429) {
+        description = "Too many delete attempts. Please wait a few minutes before trying again.";
+      }
+      
       toast({
         title: "Error deleting account",
-        description: "There was an error deleting your account. Please try again or contact support.",
+        description,
         variant: "destructive",
       });
     },

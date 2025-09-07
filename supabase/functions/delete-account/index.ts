@@ -40,9 +40,9 @@ serve(async (req) => {
     
     const rateLimitOk = await supabaseAdmin.rpc('check_enhanced_rate_limit', {
       p_identifier: rateLimitIdentifier,
-      p_limit: 3,
+      p_limit: 10,
       p_window_minutes: 60,
-      p_burst_limit: 1,
+      p_burst_limit: 5,
       p_burst_window_minutes: 10
     });
     
