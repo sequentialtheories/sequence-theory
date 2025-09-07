@@ -14,6 +14,7 @@ interface WalletContextType {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   signMessage: (message: string) => Promise<string>;
+  autoCreateWallet: boolean;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -23,6 +24,7 @@ const WalletContext = createContext<WalletContextType>({
   signIn: async () => {},
   signOut: async () => {},
   signMessage: async () => '',
+  autoCreateWallet: false,
 });
 
 export const useWallet = () => {

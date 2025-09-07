@@ -29,16 +29,54 @@ export const SEQUENCE_CONFIG = {
   chainId: '80002' // Polygon Amoy testnet
 } as const;
 
-// Validation to prevent using placeholder keys in production
+// Decode and validate WaaS Config Key
+export function decodeWaasConfigKey(waasConfigKey: string): { projectId: number; rpcServer: string } | null {
+  try {
+    const decoded = atob(waasConfigKey);
+    const config = JSON.parse(decoded);
+    
+    if (typeof config.projectId === 'number' && typeof config.rpcServer === 'string') {
+      return config;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// Enhanced validation with actual key format checking
 export function validateSequenceConfig(): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
   
+  // Check for placeholder values
   if (SEQUENCE_CONFIG.projectAccessKey.includes('REPLACE_WITH_YOUR')) {
     errors.push('Project Access Key is not configured. Get it from Sequence Builder.');
   }
   
   if (SEQUENCE_CONFIG.waasConfigKey.includes('REPLACE_WITH_YOUR')) {
     errors.push('WaaS Config Key is not configured. Get it from your Embedded Wallet configuration in Builder.');
+  }
+  
+  // Validate project access key format (should start with 'AQAAAAAAA')
+  if (!SEQUENCE_CONFIG.projectAccessKey.startsWith('AQAAAAAAA')) {
+    errors.push('Project Access Key format appears invalid. Should start with "AQAAAAAAA".');
+  }
+  
+  // Validate WaaS config key by attempting to decode it
+  const waasConfig = decodeWaasConfigKey(SEQUENCE_CONFIG.waasConfigKey);
+  if (!waasConfig) {
+    errors.push('WaaS Config Key is invalid or corrupted. Should be a valid base64-encoded JSON.');
+  } else if (!waasConfig.projectId || !waasConfig.rpcServer) {
+    errors.push('WaaS Config Key is missing required fields (projectId or rpcServer).');
+  }
+  
+  // Network configuration checks
+  if (!SEQUENCE_CONFIG.network) {
+    errors.push('Network configuration is missing.');
+  }
+  
+  if (!SEQUENCE_CONFIG.chainId) {
+    errors.push('Chain ID configuration is missing.');
   }
   
   return {
