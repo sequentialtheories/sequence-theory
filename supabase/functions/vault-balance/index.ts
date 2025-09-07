@@ -1,9 +1,22 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, x-idempotency-key',
-}
+// Get allowed origins from environment
+const getAllowedOrigins = () => {
+  const origins = Deno.env.get('ALLOWED_ORIGINS') || 'https://vaultclub.io';
+  return origins.split(',').map(origin => origin.trim());
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigins = getAllowedOrigins();
+  const allowedOrigin = origin && allowedOrigins.includes(origin) ? origin : 'https://vaultclub.io';
+  
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, x-idempotency-key',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    'Pragma': 'no-cache'
+  };
+};
 
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
@@ -31,6 +44,7 @@ Deno.serve(async (req) => {
     }
 
     if (apiKey !== vaultClubApiKey) {
+      await logAccess(supabaseAdmin, null, 'vault-balance', clientIp, req.headers.get('user-agent'), null, 403);
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid vault club API key',
@@ -144,6 +158,7 @@ Deno.serve(async (req) => {
     } : null;
 
     console.log(`Balance requested for subclub ${subclub_id} by user ${user.id}`);
+    await logAccess(supabaseAdmin, null, 'vault-balance', clientIp, req.headers.get('user-agent'), { subclub_id, user_id: user.id }, 200);
 
     return new Response(JSON.stringify({
       success: true,
@@ -169,6 +184,7 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Unexpected error:', error);
+    const corsHeaders = getCorsHeaders(req.headers.get('origin'));
     return new Response(JSON.stringify({
       success: false,
       error: 'Internal server error',
@@ -178,3 +194,19 @@ Deno.serve(async (req) => {
     }), { status: 500, headers: corsHeaders });
   }
 });
+
+// Access logging helper
+async function logAccess(supabase: any, apiKeyId: string | null, endpoint: string, ipAddress: string, userAgent: string | null, requestData: any, responseStatus: number) {
+  try {
+    await supabase.from('api_access_logs').insert({
+      api_key_id: apiKeyId,
+      endpoint: endpoint,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      request_data: requestData,
+      response_status: responseStatus
+    });
+  } catch (error) {
+    console.error('Failed to log access:', error);
+  }
+}

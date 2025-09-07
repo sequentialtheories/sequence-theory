@@ -3,12 +3,27 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import { ethers } from 'https://esm.sh/ethers@6.15.0';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
+// Get allowed origins from environment
+const getAllowedOrigins = () => {
+  const origins = Deno.env.get('ALLOWED_ORIGINS') || 'https://vaultclub.io';
+  return origins.split(',').map(origin => origin.trim());
+};
+
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigins = getAllowedOrigins();
+  const allowedOrigin = origin && allowedOrigins.includes(origin) ? origin : 'https://vaultclub.io';
+  
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    'Pragma': 'no-cache'
+  };
 };
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get('origin'));
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,9 +33,34 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const vaultClubApiKey = Deno.env.get('VAULT_CLUB_API_KEY');
     
+    // Rate limiting
+    const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown';
+    const rateLimitIdentifier = `vault-user-sync:${clientIp}`;
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const rateLimitOk = await supabase.rpc('check_enhanced_rate_limit', {
+      p_identifier: rateLimitIdentifier,
+      p_limit: 10,
+      p_window_minutes: 60,
+      p_burst_limit: 3,
+      p_burst_window_minutes: 1
+    });
+    
+    if (rateLimitOk.error || !rateLimitOk.data) {
+      console.warn('Rate limit exceeded for:', clientIp);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Rate limit exceeded' 
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
     // Validate Vault Club API key
     const apiKey = req.headers.get('x-vault-club-api-key');
     if (!vaultClubApiKey || apiKey !== vaultClubApiKey) {
+      await logAccess(supabase, null, 'vault-club-user-sync', clientIp, req.headers.get('user-agent'), null, 401);
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Unauthorized: Invalid Vault Club API key' 
@@ -85,12 +125,13 @@ serve(async (req) => {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      await logAccess(supabase, null, 'vault-club-user-sync:get', clientIp, req.headers.get('user-agent'), { email: '***', user_id: user.id }, 200);
+      
       return new Response(JSON.stringify({ 
         success: true,
         data: {
           user: {
             id: user.id,
-            email: user.email,
             name: profile?.name || user.user_metadata?.name || 'Unknown User',
             created_at: user.created_at,
             last_sign_in_at: user.last_sign_in_at,
@@ -263,6 +304,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in vault-club-user-sync:', error);
+    const corsHeaders = getCorsHeaders(req.headers.get('origin'));
     return new Response(JSON.stringify({ 
       success: false, 
       error: error.message 
@@ -272,3 +314,19 @@ serve(async (req) => {
     });
   }
 });
+
+// Access logging helper
+async function logAccess(supabase: any, apiKeyId: string | null, endpoint: string, ipAddress: string, userAgent: string | null, requestData: any, responseStatus: number) {
+  try {
+    await supabase.from('api_access_logs').insert({
+      api_key_id: apiKeyId,
+      endpoint: endpoint,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      request_data: requestData,
+      response_status: responseStatus
+    });
+  } catch (error) {
+    console.error('Failed to log access:', error);
+  }
+}

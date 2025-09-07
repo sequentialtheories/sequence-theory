@@ -7,7 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { SecurityHeaders } from "@/components/SecurityHeaders";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import { Admin } from "./pages/Admin";
@@ -58,7 +57,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SecurityHeaders />
         <AuthProvider>
           <WalletProvider>
             <Routes>

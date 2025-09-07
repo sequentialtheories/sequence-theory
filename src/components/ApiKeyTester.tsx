@@ -22,11 +22,12 @@ export default function ApiKeyTester() {
       console.log('Testing API key:', apiKey.substring(0, 8) + '...');
       
       const response = await fetch('https://qldjhlnsphlixmzzrdwi.supabase.co/functions/v1/external-api/user-wallets', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': apiKey.trim()
-        }
+        },
+        body: JSON.stringify({})
       });
 
       const data = await response.json();

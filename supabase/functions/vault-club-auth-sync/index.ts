@@ -16,13 +16,38 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Rate limiting
+    const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown';
+    const rateLimitIdentifier = `vault-auth-sync:${clientIp}`;
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    const rateLimitOk = await supabase.rpc('check_enhanced_rate_limit', {
+      p_identifier: rateLimitIdentifier,
+      p_limit: 5,
+      p_window_minutes: 60,
+      p_burst_limit: 2,
+      p_burst_window_minutes: 1
+    });
+    
+    if (rateLimitOk.error || !rateLimitOk.data) {
+      console.warn('Rate limit exceeded for:', clientIp);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Rate limit exceeded' 
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     const vaultClubApiKey = Deno.env.get('VAULT_CLUB_API_KEY');
     
     // Validate Vault Club API key
     const apiKey = req.headers.get('x-vault-club-api-key');
     if (!vaultClubApiKey || apiKey !== vaultClubApiKey) {
+      await logAccess(supabase, null, 'vault-club-auth-sync', clientIp, req.headers.get('user-agent'), null, 401);
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Unauthorized: Invalid Vault Club API key' 
@@ -31,8 +56,6 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { email, password } = await req.json();
 
     if (!email || !password) {
@@ -55,6 +78,7 @@ Deno.serve(async (req) => {
 
     if (authError) {
       console.log('Authentication failed:', authError.message);
+      await logAccess(supabase, null, 'vault-club-auth-sync', clientIp, req.headers.get('user-agent'), { email: '***' }, 401);
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Invalid credentials' 
@@ -121,9 +145,10 @@ Deno.serve(async (req) => {
     }
 
     console.log('✅ Authentication successful for:', email);
+    await logAccess(supabase, null, 'vault-club-auth-sync', clientIp, req.headers.get('user-agent'), { email: '***' }, 200);
 
     // SECURITY: Don't return refresh tokens to external systems
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: true,
       data: {
         user: {
@@ -163,3 +188,19 @@ Deno.serve(async (req) => {
     });
   }
 });
+
+// Access logging helper
+async function logAccess(supabase: any, apiKeyId: string | null, endpoint: string, ipAddress: string, userAgent: string | null, requestData: any, responseStatus: number) {
+  try {
+    await supabase.from('api_access_logs').insert({
+      api_key_id: apiKeyId,
+      endpoint: endpoint,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      request_data: requestData,
+      response_status: responseStatus
+    });
+  } catch (error) {
+    console.error('Failed to log access:', error);
+  }
+}
