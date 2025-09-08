@@ -79,12 +79,19 @@ export const useTurnkeyWallet = (): UseTurnkeyWalletReturn => {
         body: { user_id: user.id }
       });
 
+      console.log('Turnkey function response:', { data, error });
+
       if (error) {
-        console.error('Error creating wallet:', error);
-        setError('Failed to create wallet');
+        console.error('Supabase function error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        setError(`Failed to create wallet: ${error.message || 'Unknown error'}`);
         toast({
           title: "Wallet Creation Failed",
-          description: "There was an error creating your wallet. Please try again.",
+          description: `Error: ${error.message || 'Unknown error'}`,
           variant: "destructive",
         });
         return;

@@ -92,7 +92,13 @@ serve(async (req) => {
       organizationId,
       parameters: {
         subOrganizationName: subOrgName,
-        rootUsers: [],
+        rootUsers: [
+          {
+            userName: `user-${user.id}`,
+            userEmail: user.email || `user-${user.id}@example.com`,
+            apiKeys: []
+          }
+        ],
         rootQuorumThreshold: 1,
         wallet: {
           walletName,
@@ -116,11 +122,7 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Stamp': JSON.stringify({
-          publicKey: apiPublicKey,
-          scheme: "SIGNATURE_SCHEME_TK_API_P256",
-          signature: "placeholder" // In production, this would be properly signed
-        })
+        'Authorization': `Bearer ${apiPrivateKey}`
       },
       body: JSON.stringify(createSubOrgPayload)
     })
