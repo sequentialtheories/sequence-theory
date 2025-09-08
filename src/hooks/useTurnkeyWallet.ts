@@ -1,3 +1,6 @@
+// DEPRECATED: Use WalletProvider and useWallet instead
+// This hook is kept for backwards compatibility but should not be used in new code
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,6 +22,7 @@ interface UseTurnkeyWalletReturn {
   refreshWallet: () => Promise<void>;
 }
 
+/** @deprecated Use WalletProvider and useWallet instead */
 export const useTurnkeyWallet = (): UseTurnkeyWalletReturn => {
   const { user } = useAuth();
   const { toast } = useToast();
