@@ -75,7 +75,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           description: "Your non-custodial wallet has been created successfully!",
         });
       } else {
-        throw new Error('Wallet creation failed - no success response');
+        console.error('Wallet creation failed - no success in response:', data);
+        throw new Error(data?.error || 'Wallet creation failed - no success response');
       }
     } catch (err) {
       console.error('Error creating wallet:', err);
@@ -125,9 +126,20 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   // Auto-create wallet when user becomes available (after email verification)
   useEffect(() => {
+    // Only create wallet if:
+    // 1. User is confirmed and has email_confirmed_at
+    // 2. We don't already have a wallet address
+    // 3. We're not currently loading
+    // 4. Add a small delay to ensure session is fully established
     if (user?.id && user?.email_confirmed_at && !walletAddress && !isLoading) {
-      console.log('User confirmed email, auto-creating wallet...');
-      createWallet().catch(console.error);
+      console.log('User confirmed email, scheduling wallet creation...');
+      const timeout = setTimeout(() => {
+        createWallet().catch(err => {
+          console.error('Auto wallet creation failed:', err);
+        });
+      }, 1000); // 1 second delay to ensure session is stable
+      
+      return () => clearTimeout(timeout);
     }
   }, [user?.id, user?.email_confirmed_at, walletAddress, isLoading]);
 

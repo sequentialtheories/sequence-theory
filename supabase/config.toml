@@ -38,3 +38,6 @@ verify_jwt = true
 
 [functions.vault-harvest]
 verify_jwt = true
+
+[functions.create-turnkey-wallet]
+verify_jwt = true

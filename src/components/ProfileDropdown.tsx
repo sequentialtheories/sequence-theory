@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
+import { useWallet } from '@/components/WalletProvider';
 
 // Private keys are no longer stored in wallet_config for security
 import {
@@ -22,7 +22,7 @@ export const ProfileDropdown = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { wallet } = useTurnkeyWallet();
+  const { walletAddress } = useWallet();
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -123,7 +123,7 @@ export const ProfileDropdown = () => {
             <User className="mr-2 h-4 w-4" />
             <span>Profile Settings</span>
           </DropdownMenuItem>
-          {wallet && (
+          {walletAddress && (
             <>
               <DropdownMenuSeparator />
               <div className="px-2 py-1.5">
@@ -132,7 +132,7 @@ export const ProfileDropdown = () => {
                   <span className="text-muted-foreground">Wallet:</span>
                 </div>
                 <div className="text-xs font-mono text-muted-foreground truncate mt-1">
-                  {wallet.wallet_address.slice(0, 6)}...{wallet.wallet_address.slice(-4)}
+                  {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                 </div>
               </div>
             </>
