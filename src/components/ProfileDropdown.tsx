@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 // Private keys are no longer stored in wallet_config for security
 import {
