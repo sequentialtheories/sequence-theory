@@ -1,8 +1,5 @@
 project_id = "qldjhlnsphlixmzzrdwi"
 
-[functions.sequence-wallet-manager]
-verify_jwt = true
-
 [functions.security-headers]
 verify_jwt = false
 
@@ -37,7 +34,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.vault-harvest]
-verify_jwt = true
-
-[functions.create-turnkey-wallet]
 verify_jwt = true

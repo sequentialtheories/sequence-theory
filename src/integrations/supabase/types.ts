@@ -613,7 +613,6 @@ export type Database = {
           network: string
           provenance: Database["public"]["Enums"]["wallet_provenance"]
           provider: string
-          turnkey_sub_org_id: string | null
           updated_at: string
           user_id: string
           wallet_address: string
@@ -625,7 +624,6 @@ export type Database = {
           network?: string
           provenance?: Database["public"]["Enums"]["wallet_provenance"]
           provider?: string
-          turnkey_sub_org_id?: string | null
           updated_at?: string
           user_id: string
           wallet_address: string
@@ -637,7 +635,6 @@ export type Database = {
           network?: string
           provenance?: Database["public"]["Enums"]["wallet_provenance"]
           provider?: string
-          turnkey_sub_org_id?: string | null
           updated_at?: string
           user_id?: string
           wallet_address?: string
@@ -782,8 +779,8 @@ export type Database = {
       app_role: "admin" | "user"
       wallet_provenance:
         | "sequence_embedded"
-        | "user_provided_verified"
-        | "turnkey_embedded"
+        | "external_import"
+        | "self_custody"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -914,8 +911,8 @@ export const Constants = {
       app_role: ["admin", "user"],
       wallet_provenance: [
         "sequence_embedded",
-        "user_provided_verified",
-        "turnkey_embedded",
+        "external_import",
+        "self_custody",
       ],
     },
   },
