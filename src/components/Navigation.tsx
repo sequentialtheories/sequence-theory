@@ -19,6 +19,7 @@ const Navigation = () => {
     { label: "Home", href: "/" },
     { label: "Learn More", href: "/learn-more" },
     { label: "Learn Now", href: "/learn-now" },
+    { label: "Indices", href: "/indices" },
     { label: "White Paper", href: "/white-paper" },
     { label: "FAQ", href: "/faq" }
   ];

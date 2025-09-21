@@ -14,6 +14,7 @@ import LearnMore from "./pages/LearnMore";
 import LearnNow from "./pages/LearnNow";
 import NotFound from "./pages/NotFound";
 import WhitePaper from "./pages/WhitePaper";
+import Indices from "./pages/Indices";
 import FinancialBasics from "./pages/FinancialBasics";
 import DigitalAssetFundamentals from "./pages/DigitalAssetFundamentals";
 import VaultClubContracts from "./pages/VaultClubContracts";
@@ -91,6 +92,7 @@ const App = () => (
           <Route path="/web3-quiz" element={<Web3Quiz />} />
           <Route path="/education-quiz" element={<EducationQuiz />} />
           <Route path="/comprehensive-exam" element={<ComprehensiveExam />} />
+          <Route path="/indices" element={<Indices />} />
           <Route path="/white-paper" element={<WhitePaper />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
