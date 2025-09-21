@@ -9,19 +9,50 @@ const Indices = () => {
   const navigate = useNavigate();
   const indices = [{
     name: "Anchor5",
+    subtitle: "The Blue-Chip Stability Index",
     icon: <Target className="h-8 w-8" />,
-    description: "A stable foundation index focused on established digital assets with proven track records.",
-    features: ["Conservative risk profile", "5 core digital assets", "Quarterly rebalancing", "Focus on market leaders"]
+    description: "A concentrated 5-asset portfolio using multi-factor scoring and price-weighting like the Dow Jones.",
+    methodology: [
+      "Multi-factor composite scoring system",
+      "Price-weighted methodology (Dow Jones style)",
+      "Focus on stability and established market leaders",
+      "Quarterly rebalancing with rigorous selection"
+    ],
+    formula: {
+      composite: "Score(T) = 0.2·Rank_Price(T) + 0.3·Rank_Wallets(T) + 0.2·Rank_Stability(T) + 0.3·Rank_MCap(T)",
+      index: "Anchor5Index(t) = Σᵢ₌₁⁵ Pᵢ(t) / D"
+    }
   }, {
     name: "Vibe20",
+    subtitle: "The High-Volume Index",
     icon: <TrendingUp className="h-8 w-8" />,
-    description: "A balanced growth index capturing emerging opportunities across the digital asset ecosystem.",
-    features: ["Moderate risk profile", "20 diversified assets", "Monthly rebalancing", "Innovation focused"]
+    description: "Top 20 cryptocurrencies by trading volume with volume-weighted market cap methodology.",
+    methodology: [
+      "Volume-weighted market capitalization",
+      "Top 20 assets by trading volume",
+      "Dynamic weighting based on market activity",
+      "Monthly rebalancing for optimal exposure"
+    ],
+    formula: {
+      weight: "Weight(T) = Vol(T)·MCap(T) / Σⱼ₌₁²⁰ Vol(j)·MCap(j)",
+      index: "Vibe20Index(t) = Σᵢ₌₁²⁰ Weight(i)·[Pᵢ(t)/Pᵢ(0)]·1000"
+    }
   }, {
     name: "Wave100",
+    subtitle: "The Momentum Performance Index",
     icon: <Waves className="h-8 w-8" />,
-    description: "A comprehensive index providing broad exposure to the entire digital asset market.",
-    features: ["Aggressive growth profile", "100+ digital assets", "Weekly rebalancing", "Full market exposure"]
+    description: "Top 100 performers by percentage gains, with equal or return-proportional weighting.",
+    methodology: [
+      "Momentum-based selection criteria",
+      "Dual weighting methodologies available",
+      "CoinGecko data integration",
+      "Weekly rebalancing for trend capture"
+    ],
+    formula: {
+      equal: "Wave100(t) = (1/100)·Σᵢ₌₁¹⁰⁰ [Pᵢ(t)/Pᵢ(0)]·1000",
+      proportional: "Weight(i) = %Gain(i) / Σ %Gain(all)"
+    },
+    dataSource: "CoinGecko API"
   }];
   return <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <Navigation />
@@ -58,20 +89,44 @@ const Indices = () => {
                   <CardTitle className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
                     {index.name}
                   </CardTitle>
+                  <CardDescription className="text-sm text-primary font-semibold mt-2">
+                    {index.subtitle}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-muted-foreground text-center mb-6 leading-relaxed">
                     {index.description}
                   </CardDescription>
                   
-                  <div className="space-y-3">
-                    {index.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-center text-sm text-muted-foreground">
-                        <div className="w-2 h-2 rounded-full bg-gradient-primary mr-3 flex-shrink-0"></div>
-                        {feature}
-                      </div>)}
+                  {/* Formula Section */}
+                  <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-foreground mb-3">Mathematical Formula:</h4>
+                    <div className="space-y-2">
+                      {Object.entries(index.formula).map(([key, formula]) => (
+                        <div key={key} className="text-xs font-mono text-muted-foreground bg-background/50 p-2 rounded border overflow-x-auto">
+                          {formula}
+                        </div>
+                      ))}
+                    </div>
+                    {index.dataSource && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Data Source: {index.dataSource}
+                      </p>
+                    )}
                   </div>
                   
-                  <Button className="w-full mt-6 bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => {
+                  {/* Methodology Section */}
+                  <div className="space-y-3 mb-6">
+                    <h4 className="text-sm font-semibold text-foreground">Methodology:</h4>
+                    {index.methodology.map((item, itemIndex) => (
+                      <div key={itemIndex} className="flex items-center text-sm text-muted-foreground">
+                        <div className="w-2 h-2 rounded-full bg-gradient-primary mr-3 flex-shrink-0"></div>
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => {
                 // Future implementation for index details
                 console.log(`Learn more about ${index.name}`);
               }}>
