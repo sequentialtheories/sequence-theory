@@ -98,39 +98,11 @@ const Indices = () => {
                     {index.description}
                   </CardDescription>
                   
-                  {/* Formula Section */}
-                  <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Mathematical Formula:</h4>
-                    <div className="space-y-2">
-                      {Object.entries(index.formula).map(([key, formula]) => (
-                        <div key={key} className="text-xs font-mono text-muted-foreground bg-background/50 p-2 rounded border overflow-x-auto">
-                          {formula}
-                        </div>
-                      ))}
-                    </div>
-                    {index.dataSource && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Data Source: {index.dataSource}
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* Methodology Section */}
-                  <div className="space-y-3 mb-6">
-                    <h4 className="text-sm font-semibold text-foreground">Methodology:</h4>
-                    {index.methodology.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center text-sm text-muted-foreground">
-                        <div className="w-2 h-2 rounded-full bg-gradient-primary mr-3 flex-shrink-0"></div>
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                  
                   <Button className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => {
                 // Future implementation for index details
-                console.log(`Learn more about ${index.name}`);
+                console.log(`View ${index.name}`);
               }}>
-                    Learn More
+                    View
                   </Button>
                 </CardContent>
               </Card>)}
