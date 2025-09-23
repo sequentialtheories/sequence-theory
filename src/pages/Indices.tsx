@@ -173,8 +173,7 @@ const Indices = () => {
         'High liquidity',
         'Conservative approach'
       ],
-      rebalance: 'Quarterly',
-      volatility: 'Low',
+      marketScore: 8.7,
       chartColor: '#3b82f6',
       data: anchorSeries
     },
@@ -190,8 +189,7 @@ const Indices = () => {
         'Very high liquidity',
         'Sentiment tracking'
       ],
-      rebalance: 'Monthly',
-      volatility: 'Medium-High',
+      marketScore: 7.2,
       chartColor: '#10b981',
       data: vibeSeries
     },
@@ -207,8 +205,7 @@ const Indices = () => {
         'Variable liquidity',
         'Trend following'
       ],
-      rebalance: 'Weekly',
-      volatility: 'Very High',
+      marketScore: 6.8,
       chartColor: '#f59e0b',
       data: waveSeries
     }
@@ -269,22 +266,15 @@ const Indices = () => {
                   <CardDescription className="text-muted-foreground text-center mb-6 leading-relaxed">
                     {index.description}
                   </CardDescription>
-                  <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="font-semibold text-foreground">
-                        Rebalancing
-                      </div>
-                      <div className="text-muted-foreground">
-                        {index.rebalance}
-                      </div>
+                  <div className="text-center p-4 bg-gradient-primary/10 rounded-lg mb-6">
+                    <div className="font-semibold text-foreground mb-2">
+                      Market Score
                     </div>
-                    <div className="text-center p-3 bg-muted/50 rounded-lg">
-                      <div className="font-semibold text-foreground">
-                        Volatility
-                      </div>
-                      <div className="text-muted-foreground">
-                        {index.volatility}
-                      </div>
+                    <div className="text-3xl font-bold text-primary">
+                      {index.marketScore}/10
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      Overall market performance rating
                     </div>
                   </div>
                   <Button
