@@ -173,7 +173,7 @@ const Indices = () => {
         'High liquidity',
         'Conservative approach'
       ],
-      marketScore: 8.7,
+      marketScore: 1247,
       chartColor: '#3b82f6',
       data: anchorSeries
     },
@@ -189,7 +189,7 @@ const Indices = () => {
         'Very high liquidity',
         'Sentiment tracking'
       ],
-      marketScore: 7.2,
+      marketScore: 892,
       chartColor: '#10b981',
       data: vibeSeries
     },
@@ -205,7 +205,7 @@ const Indices = () => {
         'Variable liquidity',
         'Trend following'
       ],
-      marketScore: 6.8,
+      marketScore: 1834,
       chartColor: '#f59e0b',
       data: waveSeries
     }
@@ -271,10 +271,10 @@ const Indices = () => {
                       Market Score
                     </div>
                     <div className="text-3xl font-bold text-primary">
-                      {index.marketScore}/10
+                      {index.marketScore.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
-                      Overall market performance rating
+                      Current market index value
                     </div>
                   </div>
                   <Button
