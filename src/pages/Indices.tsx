@@ -30,8 +30,6 @@ import Footer from '@/components/Footer';
 
 interface MarketCoin {
   id: string;
-  name: string;
-  symbol: string;
   current_price: number;
   market_cap: number;
   total_volume: number;
@@ -44,39 +42,27 @@ interface DataPoint {
   value: number;
 }
 
-interface IndexResult {
-  series: DataPoint[];
-  tokens: string[];
-  score: number;
-}
-
-const monthsFull = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const stableIds = new Set([
-  'tether','usdt','usd-coin','usdc','binance-usd','busd','dai','true-usd','usdd',
-  'frax','pax-dollar','paxos-standard','gemini-dollar','gusd','tusd','lusd','liquity-usd','usdp'
+  'tether','usdt','usd-coin','usdc','binance-usd','busd','dai','true-usd','usdd','frax','pax-dollar','paxos-standard','gemini-dollar','gusd','tusd','lusd','liquity-usd','usdp'
 ]);
-
-const getDynamicMonthLabels = (): string[] => {
-  const currentMonthIndex = new Date().getMonth();
-  return monthsFull.slice(0, currentMonthIndex + 1);
-};
 
 const getChangeAsRatio = (pct: number) => {
   return 1 + pct / 100;
 };
 
-const generateSeries = (start: number, monthlyRatio: number, labels: string[]): DataPoint[] => {
+const generateSeries = (start: number, monthlyRatio: number): DataPoint[] => {
   const series: DataPoint[] = [];
   let value = start;
-  labels.forEach((label, idx) => {
-    if (idx === 0) {
-      series.push({ month: label, value });
+  for (let i = 0; i < 12; i++) {
+    if (i === 0) {
+      series.push({ month: months[i], value });
     } else {
       value = value * monthlyRatio;
-      series.push({ month: label, value });
+      series.push({ month: months[i], value });
     }
-  });
+  }
   return series;
 };
 
@@ -84,71 +70,56 @@ const fetchMarketData = async (): Promise<MarketCoin[]> => {
   const apiKey = import.meta.env.VITE_CG_API_KEY;
   const headers: Record<string, string> = {};
   if (apiKey) {
-    headers['x-cg-demo-api-key'] = apiKey as string;
+    headers['x-cg-demo-api-key'] = apiKey;
   }
   const urlBase = 'https://api.coingecko.com/api/v3/coins/markets';
   const params = 'vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=false&price_change_percentage=24h%2C7d%2C30d';
   const urls = [`${urlBase}?${params}&page=1`, `${urlBase}?${params}&page=2`];
   const responses = await Promise.all(
-    urls.map(async (url) => {
-      const res = await fetch(url, { headers });
+    urls.map((url) => fetch(url, { headers }).then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`);
       }
       return res.json();
-    })
+    }))
   );
   return responses.flat();
 };
 
-const computeAnchor5Index = (coins: MarketCoin[], labels: string[]): IndexResult => {
-  const result: IndexResult = { series: [], tokens: [], score: 0 };
-  if (!coins || labels.length === 0) return result;
+const computeAnchor5Series = (coins: MarketCoin[]): DataPoint[] => {
+  if (!coins) return [];
   const filtered = coins.filter((c) => !stableIds.has(c.id));
   filtered.sort((a, b) => (b.current_price ?? 0) - (a.current_price ?? 0));
   const selected = filtered.slice(0, 5);
-  if (selected.length === 0) return result;
   const totalPrice = selected.reduce((sum, c) => sum + (c.current_price ?? 0), 0);
-  const totalMcap = selected.reduce((sum, c) => sum + (c.market_cap ?? 0), 0);
-  if (totalPrice === 0 || totalMcap === 0) return result;
+  if (totalPrice === 0) return [];
   const weightedPct = selected.reduce((acc, c) => {
-    const priceWeight = (c.current_price ?? 0) / totalPrice;
-    const mcapWeight = (c.market_cap ?? 0) / totalMcap;
-    const combinedWeight = 0.5 * priceWeight + 0.5 * mcapWeight;
+    const weight = (c.current_price ?? 0) / totalPrice;
     const pct = c.price_change_percentage_30d_in_currency ?? c.price_change_percentage_30d ?? 0;
-    return acc + combinedWeight * pct;
+    return acc + weight * pct;
   }, 0);
   const ratio = getChangeAsRatio(weightedPct);
-  const series = generateSeries(1000, ratio, labels);
-  const tokens = selected.map((c) => c.name || c.id);
-  const score = series.length > 0 ? series[series.length - 1].value : 0;
-  return { series, tokens, score };
+  return generateSeries(1000, ratio);
 };
 
-const computeVibe20Index = (coins: MarketCoin[], labels: string[]): IndexResult => {
-  const result: IndexResult = { series: [], tokens: [], score: 0 };
-  if (!coins || labels.length === 0) return result;
+const computeVibe20Series = (coins: MarketCoin[]): DataPoint[] => {
+  if (!coins) return [];
   const filtered = coins.filter((c) => !stableIds.has(c.id));
   filtered.sort((a, b) => (b.total_volume ?? 0) - (a.total_volume ?? 0));
   const selected = filtered.slice(0, 20);
-  if (selected.length === 0) return result;
   const totalVolume = selected.reduce((sum, c) => sum + (c.total_volume ?? 0), 0);
-  if (totalVolume === 0) return result;
+  if (totalVolume === 0) return [];
   const weightedPct = selected.reduce((acc, c) => {
     const weight = (c.total_volume ?? 0) / totalVolume;
     const pct = c.price_change_percentage_30d_in_currency ?? c.price_change_percentage_30d ?? 0;
     return acc + weight * pct;
   }, 0);
   const ratio = getChangeAsRatio(weightedPct);
-  const series = generateSeries(1000, ratio, labels);
-  const tokens = selected.map((c) => c.name || c.id);
-  const score = series.length > 0 ? series[series.length - 1].value : 0;
-  return { series, tokens, score };
+  return generateSeries(1000, ratio);
 };
 
-const computeWave100Index = (coins: MarketCoin[], labels: string[]): IndexResult => {
-  const result: IndexResult = { series: [], tokens: [], score: 0 };
-  if (!coins || labels.length === 0) return result;
+const computeWave100Series = (coins: MarketCoin[]): DataPoint[] => {
+  if (!coins) return [];
   const filtered = coins.filter((c) => !stableIds.has(c.id) && (c.market_cap ?? 0) >= 10000000);
   filtered.sort((a, b) => {
     const pctB = b.price_change_percentage_30d_in_currency ?? b.price_change_percentage_30d ?? 0;
@@ -156,62 +127,34 @@ const computeWave100Index = (coins: MarketCoin[], labels: string[]): IndexResult
     return pctB - pctA;
   });
   const selected = filtered.slice(0, 100);
-  if (selected.length === 0) return result;
+  if (selected.length === 0) return [];
   const avgPct = selected.reduce((sum, c) => {
     const pct = c.price_change_percentage_30d_in_currency ?? c.price_change_percentage_30d ?? 0;
     return sum + pct;
   }, 0) / selected.length;
   const ratio = getChangeAsRatio(avgPct);
-  const series = generateSeries(1000, ratio, labels);
-  const tokens = selected.map((c) => c.name || c.id);
-  const score = series.length > 0 ? series[series.length - 1].value : 0;
-  return { series, tokens, score };
+  return generateSeries(1000, ratio);
 };
 
 const Indices = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
-
-  const [anchorData, setAnchorData] = useState<DataPoint[]>([]);
-  const [anchorTokens, setAnchorTokens] = useState<string[]>([]);
-  const [anchorScore, setAnchorScore] = useState<number>(0);
-
-  const [vibeData, setVibeData] = useState<DataPoint[]>([]);
-  const [vibeTokens, setVibeTokens] = useState<string[]>([]);
-  const [vibeScore, setVibeScore] = useState<number>(0);
-
-  const [waveData, setWaveData] = useState<DataPoint[]>([]);
-  const [waveTokens, setWaveTokens] = useState<string[]>([]);
-  const [waveScore, setWaveScore] = useState<number>(0);
+  const [anchorSeries, setAnchorSeries] = useState<DataPoint[]>([]);
+  const [vibeSeries, setVibeSeries] = useState<DataPoint[]>([]);
+  const [waveSeries, setWaveSeries] = useState<DataPoint[]>([]);
 
   useEffect(() => {
-    const load = async () => {
+  const load = async () => {
       try {
         const data = await fetchMarketData();
-        const monthLabels = getDynamicMonthLabels();
-        const anchor = computeAnchor5Index(data, monthLabels);
-        const vibe = computeVibe20Index(data, monthLabels);
-        const wave = computeWave100Index(data, monthLabels);
-        setAnchorData(anchor.series);
-        setAnchorTokens(anchor.tokens);
-        setAnchorScore(anchor.score);
-        setVibeData(vibe.series);
-        setVibeTokens(vibe.tokens);
-        setVibeScore(vibe.score);
-        setWaveData(wave.series);
-        setWaveTokens(wave.tokens);
-        setWaveScore(wave.score);
+        setAnchorSeries(computeAnchor5Series(data));
+        setVibeSeries(computeVibe20Series(data));
+        setWaveSeries(computeWave100Series(data));
       } catch (err) {
         console.error(err);
-        setAnchorData([]);
-        setAnchorTokens([]);
-        setAnchorScore(0);
-        setVibeData([]);
-        setVibeTokens([]);
-        setVibeScore(0);
-        setWaveData([]);
-        setWaveTokens([]);
-        setWaveScore(0);
+        setAnchorSeries([]);
+        setVibeSeries([]);
+        setWaveSeries([]);
       }
     };
     load();
@@ -223,17 +166,16 @@ const Indices = () => {
       subtitle: 'The Blue-Chip Stability Index',
       icon: <Target className="h-8 w-8" />, 
       description:
-        'Focuses on 5 long-term, stable, widely used cryptos (like a crypto version of the Dow Jones). Uses price and market cap weighting for selection.',
+        'Focuses on 5 long-term, stable, widely used cryptos (like a crypto version of the Dow Jones). Uses price ranking for selection and price weighting.',
       characteristics: [
         'Quarterly rebalancing',
         'Low volatility',
         'High liquidity',
         'Conservative approach'
       ],
-      index.tokens: anchorScore,
-      tokens: anchorTokens,
+      marketScore: 1247,
       chartColor: '#3b82f6',
-      data: anchorData
+      data: anchorSeries
     },
     {
       name: 'Vibe20',
@@ -247,10 +189,9 @@ const Indices = () => {
         'Very high liquidity',
         'Sentiment tracking'
       ],
-      marketScore: vibeScore,
-      tokens: vibeTokens,
+      marketScore: 892,
       chartColor: '#10b981',
-      data: vibeData
+      data: vibeSeries
     },
     {
       name: 'Wave100',
@@ -264,10 +205,9 @@ const Indices = () => {
         'Variable liquidity',
         'Trend following'
       ],
-      marketscore: waveScore,
-      tokens: waveTokens,
+      marketScore: 1834,
       chartColor: '#f59e0b',
-      data: waveData
+      data: waveSeries
     }
   ];
 
@@ -306,7 +246,7 @@ const Indices = () => {
                 className={`border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-glow group ${
                   expandedIndex === index.name ? 'lg:col-span-3' : ''
                 }`}
-              marketScore
+              >
                 <CardHeader className="text-center pb-4">
                   <div className="flex justify-center mb-4">
                     <div className="p-4 rounded-full bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-colors">
@@ -331,7 +271,7 @@ const Indices = () => {
                       Market Score
                     </div>
                     <div className="text-3xl font-bold text-primary">
-                      {index.marketScore ? index.marketScore.toFixed(2) : '—'}
+                      {index.marketScore.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
                       Current market index value
@@ -357,7 +297,7 @@ const Indices = () => {
                     <div className="mt-6 animate-fade-in">
                       <div className="border-t pt-6">
                         <h4 className="text-lg font-semibold text-foreground mb-4 text-center">
-                          {index.name} Performance ({getDynamicMonthLabels().length}-Month View)
+                          {index.name} Performance (12-Month View)
                         </h4>
                         <div className="h-80 w-full">
                           <ResponsiveContainer width="100%" height="100%">
@@ -378,7 +318,10 @@ const Indices = () => {
                                   fontSize: 12,
                                   fill: 'hsl(var(--muted-foreground))'
                                 }}
-                                domain={['dataMin - 50', 'dataMax + 50']}
+                                domain={[
+                                  'dataMin - 50',
+                                  'dataMax + 50'
+                                ]}
                               />
                               <Tooltip
                                 contentStyle={{
@@ -407,15 +350,6 @@ const Indices = () => {
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
-                        {index.tokens && index.tokens.length > 0 && (
-                          <div className="mt-6 text-center">
-                            <div className="font-semibold text-foreground mb-2">Top Tokens</div>
-                            <div className="text-sm text-muted-foreground">
-                              {index.tokens.slice(0, 20).join(', ')}
-                              {index.tokens.length > 20 ? ', ...' : ''}
-                            </div>
-                          </div>
-                        )}
                         <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
                           {index.characteristics.map((char, charIndex) => (
                             <div
