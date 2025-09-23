@@ -173,7 +173,7 @@ const Indices = () => {
         'High liquidity',
         'Conservative approach'
       ],
-      marketScore: 1247,
+      marketScore: anchorSeries.length > 0 ? Math.round(anchorSeries[anchorSeries.length - 1].value) : 1000,
       chartColor: '#3b82f6',
       data: anchorSeries
     },
@@ -189,7 +189,7 @@ const Indices = () => {
         'Very high liquidity',
         'Sentiment tracking'
       ],
-      marketScore: 892,
+      marketScore: vibeSeries.length > 0 ? Math.round(vibeSeries[vibeSeries.length - 1].value) : 1000,
       chartColor: '#10b981',
       data: vibeSeries
     },
@@ -205,7 +205,7 @@ const Indices = () => {
         'Variable liquidity',
         'Trend following'
       ],
-      marketScore: 1834,
+      marketScore: waveSeries.length > 0 ? Math.round(waveSeries[waveSeries.length - 1].value) : 1000,
       chartColor: '#f59e0b',
       data: waveSeries
     }
