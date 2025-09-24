@@ -136,7 +136,7 @@ const Indices: React.FC = () => {
     name: 'Anchor5',
     subtitle: 'Price-Weighted Top 5',
     icon: TrendingUp,
-    description: 'A price-weighted index of the top 5 cryptocurrencies by market cap (excluding stablecoins).',
+    description: 'A price-weighted index of the top 5 cryptocurrencies by longevity indicators such as market capitalization, holding wallets, security, etc.',
     characteristics: ['High correlation with major coins', 'Lower volatility', 'Blue-chip focus'],
     marketScore: anchorData?.currentValue || 0,
     chartColor: '#3b82f6',
@@ -209,7 +209,11 @@ const Indices: React.FC = () => {
                   <p className="text-muted-foreground mb-4">{index.description}</p>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {index.characteristics.map((char, charIndex) => {})}
+                    {index.characteristics.map((char, charIndex) => (
+                      <span key={charIndex} className="px-3 py-1 bg-muted text-muted-foreground text-sm rounded-full">
+                        {char}
+                      </span>
+                    ))}
                   </div>
 
                   <Button onClick={() => toggleIndex(index.name)} variant="outline" className="w-full mb-4">
