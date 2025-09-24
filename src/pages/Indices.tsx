@@ -209,9 +209,7 @@ const Indices: React.FC = () => {
                   <p className="text-muted-foreground mb-4">{index.description}</p>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {index.characteristics.map((char, charIndex) => <span key={charIndex} className="px-2 py-1 bg-secondary text-secondary-foreground rounded-md text-sm">
-                        {char}
-                      </span>)}
+                    {index.characteristics.map((char, charIndex) => {})}
                   </div>
 
                   <Button onClick={() => toggleIndex(index.name)} variant="outline" className="w-full mb-4">
