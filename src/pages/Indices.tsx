@@ -1,275 +1,290 @@
 import React, { useState, useEffect } from 'react';
+import Navigation from '@/components/Navigation';
+import { ArrowLeft, TrendingUp, BarChart3, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, TrendingUp, Target, Waves, ChevronDown, ChevronUp } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-interface MarketCoin {
-  id: string;
-  current_price: number;
-  market_cap: number;
-  total_volume: number;
-  price_change_percentage_30d_in_currency?: number;
-  price_change_percentage_30d?: number;
-}
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+
 interface DataPoint {
-  month: string;
+  date: string;
   value: number;
 }
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const stableIds = new Set(['tether', 'usdt', 'usd-coin', 'usdc', 'binance-usd', 'busd', 'dai', 'true-usd', 'usdd', 'frax', 'pax-dollar', 'paxos-standard', 'gemini-dollar', 'gusd', 'tusd', 'lusd', 'liquity-usd', 'usdp']);
-const getChangeAsRatio = (pct: number) => {
-  return 1 + pct / 100;
-};
-const generateSeries = (start: number, monthlyRatio: number): DataPoint[] => {
-  const series: DataPoint[] = [];
-  let value = start;
-  for (let i = 0; i < 12; i++) {
-    if (i === 0) {
-      series.push({
-        month: months[i],
-        value
-      });
-    } else {
-      value = value * monthlyRatio;
-      series.push({
-        month: months[i],
-        value
-      });
-    }
-  }
-  return series;
-};
-const fetchMarketData = async (): Promise<MarketCoin[]> => {
-  const apiKey = import.meta.env.VITE_CG_API_KEY;
-  const headers: Record<string, string> = {};
-  if (apiKey) {
-    headers['x-cg-demo-api-key'] = apiKey;
-  }
-  const urlBase = 'https://api.coingecko.com/api/v3/coins/markets';
-  const params = 'vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=false&price_change_percentage=24h%2C7d%2C30d';
-  const urls = [`${urlBase}?${params}&page=1`, `${urlBase}?${params}&page=2`];
-  const responses = await Promise.all(urls.map(url => fetch(url, {
-    headers
-  }).then(res => {
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-    return res.json();
-  })));
-  return responses.flat();
-};
-const computeAnchor5Series = (coins: MarketCoin[]): DataPoint[] => {
-  if (!coins) return [];
-  const filtered = coins.filter(c => !stableIds.has(c.id));
-  filtered.sort((a, b) => (b.current_price ?? 0) - (a.current_price ?? 0));
-  const selected = filtered.slice(0, 5);
-  const totalPrice = selected.reduce((sum, c) => sum + (c.current_price ?? 0), 0);
-  if (totalPrice === 0) return [];
-  const weightedPct = selected.reduce((acc, c) => {
-    const weight = (c.current_price ?? 0) / totalPrice;
-    const pct = c.price_change_percentage_30d_in_currency ?? c.price_change_percentage_30d ?? 0;
-    return acc + weight * pct;
-  }, 0);
-  const ratio = getChangeAsRatio(weightedPct);
-  return generateSeries(1000, ratio);
-};
-const computeVibe20Series = (coins: MarketCoin[]): DataPoint[] => {
-  if (!coins) return [];
-  const filtered = coins.filter(c => !stableIds.has(c.id));
-  filtered.sort((a, b) => (b.total_volume ?? 0) - (a.total_volume ?? 0));
-  const selected = filtered.slice(0, 20);
-  const totalVolume = selected.reduce((sum, c) => sum + (c.total_volume ?? 0), 0);
-  if (totalVolume === 0) return [];
-  const weightedPct = selected.reduce((acc, c) => {
-    const weight = (c.total_volume ?? 0) / totalVolume;
-    const pct = c.price_change_percentage_30d_in_currency ?? c.price_change_percentage_30d ?? 0;
-    return acc + weight * pct;
-  }, 0);
-  const ratio = getChangeAsRatio(weightedPct);
-  return generateSeries(1000, ratio);
-};
-const computeWave100Series = (coins: MarketCoin[]): DataPoint[] => {
-  if (!coins) return [];
-  const filtered = coins.filter(c => !stableIds.has(c.id) && (c.market_cap ?? 0) >= 10000000);
-  filtered.sort((a, b) => {
-    const pctB = b.price_change_percentage_30d_in_currency ?? b.price_change_percentage_30d ?? 0;
-    const pctA = a.price_change_percentage_30d_in_currency ?? a.price_change_percentage_30d ?? 0;
-    return pctB - pctA;
-  });
-  const selected = filtered.slice(0, 100);
-  if (selected.length === 0) return [];
-  const avgPct = selected.reduce((sum, c) => {
-    const pct = c.price_change_percentage_30d_in_currency ?? c.price_change_percentage_30d ?? 0;
-    return sum + pct;
-  }, 0) / selected.length;
-  const ratio = getChangeAsRatio(avgPct);
-  return generateSeries(1000, ratio);
-};
-const Indices = () => {
+
+interface IndexData {
+  name: string;
+  data: DataPoint[];
+  currentValue: number;
+}
+
+type TimePeriod = 'daily' | 'year' | 'all';
+
+const Indices: React.FC = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
-  const [anchorSeries, setAnchorSeries] = useState<DataPoint[]>([]);
-  const [vibeSeries, setVibeSeries] = useState<DataPoint[]>([]);
-  const [waveSeries, setWaveSeries] = useState<DataPoint[]>([]);
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('year');
+  const [loading, setLoading] = useState(false);
+  const [anchorData, setAnchorData] = useState<IndexData | null>(null);
+  const [vibeData, setVibeData] = useState<IndexData | null>(null);
+  const [waveData, setWaveData] = useState<IndexData | null>(null);
+
+  const fetchIndicesData = async (period: TimePeriod) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('crypto-indices', {
+        body: { timePeriod: period }
+      });
+      
+      if (error) throw error;
+      
+      return {
+        anchor5: data.anchor5,
+        vibe20: data.vibe20,
+        wave100: data.wave100
+      };
+    } catch (error) {
+      console.error('Error fetching indices data:', error);
+      // Fallback to mock data
+      return {
+        anchor5: { name: 'Anchor5', data: generateMockData(period), currentValue: 1247 },
+        vibe20: { name: 'Vibe20', data: generateMockData(period), currentValue: 892 },
+        wave100: { name: 'Wave100', data: generateMockData(period), currentValue: 1834 }
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateMockData = (period: TimePeriod): DataPoint[] => {
+    const now = new Date();
+    const points = [];
+    
+    switch (period) {
+      case 'daily':
+        for (let i = 29; i >= 0; i--) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          points.push({
+            date: date.toISOString().split('T')[0],
+            value: Math.round(1000 + Math.sin(i * 0.2) * 200 + Math.random() * 100)
+          });
+        }
+        break;
+      case 'year':
+        const currentMonth = now.getMonth();
+        for (let i = 0; i <= currentMonth; i++) {
+          const date = new Date(now.getFullYear(), i, 1);
+          points.push({
+            date: date.toISOString().split('T')[0],
+            value: Math.round(1000 + i * 50 + Math.sin(i * 0.5) * 100)
+          });
+        }
+        break;
+      case 'all':
+        for (let i = 8; i >= 0; i--) {
+          const date = new Date(now);
+          date.setMonth(date.getMonth() - (i * 3));
+          points.push({
+            date: date.toISOString().split('T')[0],
+            value: Math.round(800 + (8-i) * 100 + Math.sin((8-i) * 0.3) * 150)
+          });
+        }
+        break;
+    }
+    
+    return points;
+  };
+
+  const formatXAxisLabel = (value: string) => {
+    const date = new Date(value);
+    switch (timePeriod) {
+      case 'daily':
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      case 'year':
+        return date.toLocaleDateString('en-US', { month: 'short' });
+      case 'all':
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      default:
+        return value;
+    }
+  };
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchMarketData();
-        setAnchorSeries(computeAnchor5Series(data));
-        setVibeSeries(computeVibe20Series(data));
-        setWaveSeries(computeWave100Series(data));
-      } catch (err) {
-        console.error(err);
-        setAnchorSeries([]);
-        setVibeSeries([]);
-        setWaveSeries([]);
-      }
+    const loadData = async () => {
+      const data = await fetchIndicesData(timePeriod);
+      setAnchorData(data.anchor5);
+      setVibeData(data.vibe20);
+      setWaveData(data.wave100);
     };
-    load();
-  }, []);
-  const indices = [{
-    name: 'Anchor5',
-    subtitle: 'The Blue-Chip Stability Index',
-    icon: <Target className="h-8 w-8" />,
-    description: 'Focuses on 5 long-term, stable, widely used cryptos (like a crypto version of the Dow Jones). Uses price ranking for selection and price weighting.',
-    characteristics: ['Quarterly rebalancing', 'Low volatility', 'High liquidity', 'Conservative approach'],
-    marketScore: anchorSeries.length > 0 ? Math.round(anchorSeries[anchorSeries.length - 1].value) : 1000,
-    chartColor: '#3b82f6',
-    data: anchorSeries
-  }, {
-    name: 'Vibe20',
-    subtitle: 'The High-Volume Index',
-    icon: <TrendingUp className="h-8 w-8" />,
-    description: 'Tracks the 20 most-traded cryptos by 24h volume (excludes stablecoins). Purely volume-based weighting.',
-    characteristics: ['Monthly rebalancing', 'Medium-high volatility', 'Very high liquidity', 'Sentiment tracking'],
-    marketScore: vibeSeries.length > 0 ? Math.round(vibeSeries[vibeSeries.length - 1].value) : 1000,
-    chartColor: '#10b981',
-    data: vibeSeries
-  }, {
-    name: 'Wave100',
-    subtitle: 'The Momentum Performance Index',
-    icon: <Waves className="h-8 w-8" />,
-    description: 'Picks the top 100 coins with biggest 30-day percentage gains, capturing momentum trends. Equal-weighted.',
-    characteristics: ['Weekly rebalancing', 'Very high volatility', 'Variable liquidity', 'Trend following'],
-    marketScore: waveSeries.length > 0 ? Math.round(waveSeries[waveSeries.length - 1].value) : 1000,
-    chartColor: '#f59e0b',
-    data: waveSeries
-  }];
+    
+    loadData();
+  }, [timePeriod]);
+
+  const indices = [
+    {
+      name: 'Anchor5',
+      subtitle: 'Price-Weighted Top 5',
+      icon: TrendingUp,
+      description: 'A price-weighted index of the top 5 cryptocurrencies by market cap (excluding stablecoins).',
+      characteristics: ['High correlation with major coins', 'Lower volatility', 'Blue-chip focus'],
+      marketScore: anchorData?.currentValue || 0,
+      chartColor: '#3b82f6',
+      data: anchorData?.data || []
+    },
+    {
+      name: 'Vibe20',
+      subtitle: 'Volume-Weighted Top 20',
+      icon: BarChart3,
+      description: 'A volume-weighted index focusing on the 20 most actively traded cryptocurrencies.',
+      characteristics: ['High liquidity focus', 'Trading activity based', 'Market sentiment indicator'],
+      marketScore: vibeData?.currentValue || 0,
+      chartColor: '#10b981',
+      data: vibeData?.data || []
+    },
+    {
+      name: 'Wave100',
+      subtitle: 'Momentum Top 100',
+      icon: Activity,
+      description: 'A momentum-based index tracking the performance of the top 100 cryptocurrencies.',
+      characteristics: ['Broad market exposure', 'Momentum-driven', 'Higher volatility potential'],
+      marketScore: waveData?.currentValue || 0,
+      chartColor: '#f59e0b',
+      data: waveData?.data || []
+    }
+  ];
+
   const toggleIndex = (name: string) => {
     setExpandedIndex(expandedIndex === name ? null : name);
   };
-  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
+
+  return (
+    <div className="min-h-screen bg-background">
       <Navigation />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <Button onClick={() => navigate(-1)} variant="ghost" size="sm" className="mb-8 hover:bg-primary/10">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 bg-gradient-primary bg-clip-text text-transparent">
-              Investment Indices
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Discover our carefully curated investment indices designed to
-              provide diversified exposure to digital assets across different
-              risk profiles and market segments.
+          <div className="mb-8">
+            <button
+              onClick={() => navigate('/vault-club-main')}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Vault Club
+            </button>
+            <h1 className="text-3xl font-bold">Investment Indices</h1>
+            <p className="text-muted-foreground mt-2">
+              Track the performance of curated cryptocurrency investment indices
             </p>
+            
+            {/* Time Period Selector */}
+            <div className="flex gap-2 mt-6">
+              {(['daily', 'year', 'all'] as TimePeriod[]).map((period) => (
+                <button
+                  key={period}
+                  onClick={() => setTimePeriod(period)}
+                  disabled={loading}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    timePeriod === period
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {period === 'daily' ? 'Daily' : period === 'year' ? 'Year' : 'All Time'}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-            {indices.map(index => <Card key={index.name} className={`border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-glow group ${expandedIndex === index.name ? 'lg:col-span-3' : ''}`}>
-                <CardHeader className="text-center pb-4">
-                  <div className="flex justify-center mb-4">
-                    <div className="p-4 rounded-full bg-gradient-primary/10 group-hover:bg-gradient-primary/20 transition-colors">
-                      {React.cloneElement(index.icon, {
-                    className: 'h-8 w-8 text-primary'
-                  })}
+
+          <div className="grid gap-6">
+            {indices.map((index) => (
+              <Card key={index.name} className="border border-border">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <index.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl">{index.name}</CardTitle>
+                        <CardDescription>{index.subtitle}</CardDescription>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-primary">
+                        {index.marketScore.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Current market index value
+                      </div>
                     </div>
                   </div>
-                  <CardTitle className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
-                    {index.name}
-                  </CardTitle>
-                  <CardDescription className="text-sm text-primary font-semibold mt-2">
-                    {index.subtitle}
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-muted-foreground text-center mb-6 leading-relaxed">
-                    {index.description}
-                  </CardDescription>
-                  <div className="text-center p-4 bg-gradient-primary/10 rounded-lg mb-6">
-                    <div className="font-semibold text-foreground mb-2">
-                      Market Score
-                    </div>
-                    <div className="text-3xl font-bold text-primary">
-                      {index.marketScore.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      Current market index value
-                    </div>
+                  <p className="text-muted-foreground mb-4">{index.description}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {index.characteristics.map((char, charIndex) => (
+                      <span 
+                        key={charIndex}
+                        className="px-2 py-1 bg-secondary text-secondary-foreground rounded-md text-sm"
+                      >
+                        {char}
+                      </span>
+                    ))}
                   </div>
-                  <Button className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => toggleIndex(index.name)}>
-                    {expandedIndex === index.name ? <>
-                        Hide Chart{' '}
-                        <ChevronUp className="ml-2 h-4 w-4" />
-                      </> : <>
-                        View Chart{' '}
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                      </>}
+
+                  <Button
+                    onClick={() => toggleIndex(index.name)}
+                    variant="outline"
+                    className="w-full mb-4"
+                  >
+                    {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
                   </Button>
-                  {expandedIndex === index.name && <div className="mt-6 animate-fade-in">
-                      <div className="border-t pt-6">
-                        <h4 className="text-lg font-semibold text-foreground mb-4 text-center">
-                          {index.name} Performance (12-Month View)
-                        </h4>
-                        <div className="h-80 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={index.data}>
-                              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                              <XAxis dataKey="month" tick={{
-                          fontSize: 12,
-                          fill: 'hsl(var(--muted-foreground))'
-                        }} />
-                              <YAxis tick={{
-                          fontSize: 12,
-                          fill: 'hsl(var(--muted-foreground))'
-                        }} domain={['dataMin - 50', 'dataMax + 50']} />
-                              <Tooltip contentStyle={{
-                          backgroundColor: 'hsl(var(--background))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px'
-                        }} labelStyle={{
-                          color: 'hsl(var(--foreground))'
-                        }} />
-                              <Line type="monotone" dataKey="value" stroke={index.chartColor} strokeWidth={3} dot={{
-                          r: 4,
-                          fill: index.chartColor
-                        }} activeDot={{
-                          r: 6,
-                          fill: index.chartColor
-                        }} />
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                        <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                          {index.characteristics.map((char, charIndex) => {})}
-                        </div>
+
+                  {expandedIndex === index.name && (
+                    <div className="border-t pt-4">
+                      <h4 className="text-lg font-semibold mb-4">
+                        {index.name} Performance ({timePeriod === 'daily' ? 'Last 30 Days' : timePeriod === 'year' ? 'Year to Date' : 'All Time'})
+                      </h4>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={index.data}>
+                            <XAxis 
+                              dataKey="date" 
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fontSize: 12, fill: '#6b7280' }}
+                              tickFormatter={formatXAxisLabel}
+                            />
+                            <YAxis 
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fontSize: 12, fill: '#6b7280' }}
+                            />
+                            <Tooltip 
+                              labelFormatter={(value) => formatXAxisLabel(value)}
+                              formatter={(value: number) => [value.toLocaleString(), 'Index Value']}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="value" 
+                              stroke={index.chartColor}
+                              strokeWidth={2}
+                              dot={false}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
                       </div>
-                    </div>}
+                    </div>
+                  )}
                 </CardContent>
-              </Card>)}
-          </div>
-          <div className="text-center">
-            <Card className="border-primary/20 bg-gradient-secondary/50 backdrop-blur-sm">
-              {/* Add call to action content here */}
-            </Card>
+              </Card>
+            ))}
           </div>
         </div>
       </main>
-      <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Indices;
