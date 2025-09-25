@@ -163,7 +163,7 @@ async function fetchHistoricalData(coinId: string, days: string, apiKey: string)
 
 async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
   // Filter for blue-chip criteria: exclude stablecoins
-  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd']);
+  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
   // Calculate custom stability scores
   const scoredCoins = marketData
@@ -226,8 +226,12 @@ async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], ti
 }
 
 async function calculateVibe20(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
-  // Top 20 by 24h trading volume
+  // Filter out stablecoins first
+  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
+  
+  // Top 20 by 24h trading volume (excluding stablecoins)
   const top20 = marketData
+    .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
     .sort((a, b) => b.total_volume - a.total_volume)
     .slice(0, 20);
   
@@ -241,7 +245,7 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
   
   // Calculate weighted price sum
   const weightedPriceSum = weightedTokens.reduce((sum, coin) => sum + (coin.current_price * coin.indexWeight), 0);
-  const currentValue = Math.round(weightedPriceSum * 100); // Scale to reasonable index value
+  const currentValue = Math.round(weightedPriceSum * 100 / 100); // Scale to reasonable index value, divide by 100
   
   // Create composition
   const composition: TokenComposition[] = weightedTokens.map(coin => ({
@@ -271,7 +275,7 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
     
     return { 
       date: date.includes('T') ? date.split('T')[0] : date, 
-      value: Math.round(weightedIndexValue * 100) 
+      value: Math.round(weightedIndexValue * 100 / 100) 
     };
   });
   
@@ -280,7 +284,7 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
 
 async function calculateWave100(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
   // Filter out stablecoins and microcaps, focus on momentum gainers
-  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd']);
+  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   const minMarketCap = 100000000; // $100M minimum to avoid microcaps
   
   // Select top 100 by % gains (30-day performance), excluding stables and microcaps
@@ -302,7 +306,7 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
   
   // Calculate momentum-weighted index value
   const avgMomentum = momentumCoins.reduce((sum, coin) => sum + (coin.price_change_percentage_30d || 0), 0) / momentumCoins.length;
-  const currentValue = Math.round(1000 + (avgMomentum * 10)); // Base 1000 with momentum scaling
+  const currentValue = Math.round((1000 + (avgMomentum * 10)) * 100); // Base 1000 with momentum scaling, multiply by 100
   
   // Create composition (show top 20 by momentum for display)
   const composition: TokenComposition[] = weightedTokens.slice(0, 20).map(coin => ({
@@ -333,7 +337,7 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
     
     return { 
       date: date.includes('T') ? date.split('T')[0] : date, 
-      value: Math.round(1000 + momentumIndexValue) 
+      value: Math.round((1000 + momentumIndexValue) * 100) 
     };
   });
   
