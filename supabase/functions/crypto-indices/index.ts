@@ -25,6 +25,8 @@ interface TokenComposition {
   weight: number;
   price: number;
   change_24h: number;
+  market_cap: number;
+  volume: number;
 }
 
 interface IndexCalculation {
@@ -198,7 +200,9 @@ async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], ti
     name: coin.name,
     weight: (coin.current_price / totalPrice) * 100,
     price: coin.current_price,
-    change_24h: coin.price_change_percentage_24h || 0
+    change_24h: coin.price_change_percentage_24h || 0,
+    market_cap: coin.market_cap,
+    volume: coin.total_volume
   }));
   
   // Fetch real historical data for each coin and calculate index values
@@ -258,7 +262,9 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
     name: coin.name,
     weight: coin.indexWeight * 100,
     price: coin.current_price,
-    change_24h: coin.price_change_percentage_24h || 0
+    change_24h: coin.price_change_percentage_24h || 0,
+    market_cap: coin.market_cap,
+    volume: coin.total_volume
   }));
   
   // Fetch real historical data for each coin and calculate weighted index values
@@ -310,14 +316,16 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
   const weightedMomentumSum = weightedTokens.slice(0, 20).reduce((sum, coin) => sum + (coin.current_price * coin.momentumWeight * 20), 0);
   const currentValue = Math.round((1000 + weightedMomentumSum) * 100); // Base 1000 with momentum scaling, multiply by 100
   
-  // Create composition (show top 20 by momentum for display)
-  const composition: TokenComposition[] = weightedTokens.slice(0, 20).map(coin => ({
+  // Create composition (show all 100 tokens by momentum for display)
+  const composition: TokenComposition[] = weightedTokens.map(coin => ({
     id: coin.id,
     symbol: coin.symbol.toUpperCase(),
     name: coin.name,
     weight: coin.momentumWeight * 100,
     price: coin.current_price,
-    change_24h: coin.price_change_percentage_24h || 0
+    change_24h: coin.price_change_percentage_24h || 0,
+    market_cap: coin.market_cap,
+    volume: coin.total_volume
   }));
   
   // Fetch real historical data for top momentum coins and calculate weighted index values

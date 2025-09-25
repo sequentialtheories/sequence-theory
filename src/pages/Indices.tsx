@@ -19,6 +19,8 @@ interface TokenComposition {
   weight: number;
   price: number;
   change_24h: number;
+  market_cap: number;
+  volume: number;
 }
 
 interface IndexData {
@@ -216,18 +218,20 @@ const Indices: React.FC = () => {
                   {index.data?.composition && index.data.composition.length > 0 && (
                     <div className="mb-4">
                       <h4 className="text-sm font-semibold mb-2">Index Composition</h4>
-                      <div className="max-h-48 overflow-y-auto border rounded-lg">
+                      <div className="max-h-96 overflow-y-auto border rounded-lg">
                         <table className="w-full text-xs">
                           <thead className="bg-muted sticky top-0">
                             <tr>
                               <th className="text-left p-2">Token</th>
+                              <th className="text-right p-2">Market Cap</th>
+                              <th className="text-right p-2">Volume</th>
                               <th className="text-right p-2">Weight</th>
                               <th className="text-right p-2">Price</th>
                               <th className="text-right p-2">24h</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {index.data.composition.slice(0, 10).map((token, tokenIndex) => (
+                            {index.data.composition.map((token, tokenIndex) => (
                               <tr key={tokenIndex} className="border-t">
                                 <td className="p-2">
                                   <div>
@@ -235,6 +239,8 @@ const Indices: React.FC = () => {
                                     <div className="text-muted-foreground text-xs truncate">{token.name}</div>
                                   </div>
                                 </td>
+                                <td className="text-right p-2">${(token.market_cap / 1000000000).toFixed(2)}B</td>
+                                <td className="text-right p-2">${(token.volume / 1000000).toFixed(2)}M</td>
                                 <td className="text-right p-2">{token.weight.toFixed(1)}%</td>
                                 <td className="text-right p-2">${token.price.toLocaleString()}</td>
                                 <td className={`text-right p-2 ${token.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
