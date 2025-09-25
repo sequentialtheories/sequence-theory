@@ -18,10 +18,20 @@ interface CoinData {
   price_change_percentage_30d: number;
 }
 
+interface TokenComposition {
+  id: string;
+  symbol: string;
+  name: string;
+  weight: number;
+  price: number;
+  change_24h: number;
+}
+
 interface IndexCalculation {
   name: string;
   data: { date: string; value: number }[];
   currentValue: number;
+  composition: TokenComposition[];
 }
 
 serve(async (req) => {
@@ -91,7 +101,6 @@ function getTimeRanges(timePeriod: string, now: Date) {
   
   switch (timePeriod) {
     case 'daily':
-      // Last 30 days
       for (let i = 29; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -99,7 +108,6 @@ function getTimeRanges(timePeriod: string, now: Date) {
       }
       break;
     case 'year':
-      // January to current month
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth();
       for (let i = 0; i <= currentMonth; i++) {
@@ -108,7 +116,6 @@ function getTimeRanges(timePeriod: string, now: Date) {
       }
       break;
     case 'all':
-      // Quarterly data for last 2 years
       for (let i = 8; i >= 0; i--) {
         const date = new Date(now);
         date.setMonth(date.getMonth() - (i * 3));
@@ -121,68 +128,133 @@ function getTimeRanges(timePeriod: string, now: Date) {
 }
 
 function calculateAnchor5(marketData: CoinData[], timeRanges: string[]): IndexCalculation {
-  // Top 5 by market cap (excluding stablecoins)
-  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd']);
-  const top5 = marketData
+  // Filter for blue-chip criteria: exclude stablecoins
+  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd']);
+  
+  // Calculate custom stability scores
+  const scoredCoins = marketData
     .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
+    .filter(coin => coin.market_cap_rank <= 50) // Focus on top 50 for stability
+    .map(coin => {
+      // Custom scoring: PriceRank + WalletRank + StabilityRank + MCapRank
+      const priceRank = Math.max(0, 100 - (coin.current_price > 1000 ? 20 : coin.current_price > 100 ? 15 : coin.current_price > 10 ? 10 : 5));
+      const mCapRank = Math.max(0, 100 - coin.market_cap_rank);
+      const stabilityRank = Math.max(0, 100 - Math.abs(coin.price_change_percentage_30d || 0));
+      const walletRank = coin.market_cap > 0 ? Math.min(100, coin.market_cap / 1000000000) : 0;
+      
+      const totalScore = priceRank + mCapRank + stabilityRank + walletRank;
+      return { ...coin, stabilityScore: totalScore };
+    })
+    .sort((a, b) => b.stabilityScore - a.stabilityScore)
     .slice(0, 5);
   
-  // Price-weighted calculation
-  const baseValue = 1000;
-  const totalPrice = top5.reduce((sum, coin) => sum + coin.current_price, 0);
-  const currentValue = Math.round(baseValue * (totalPrice / 1000)); // Normalized base
+  // Price-weighted calculation (like Dow Jones)
+  const totalPrice = scoredCoins.reduce((sum, coin) => sum + coin.current_price, 0);
+  const divisor = 10; // Dow-style divisor
+  const currentValue = Math.round(totalPrice / divisor);
   
-  // Generate historical simulation based on current performance
+  // Create composition
+  const composition: TokenComposition[] = scoredCoins.map(coin => ({
+    id: coin.id,
+    symbol: coin.symbol.toUpperCase(),
+    name: coin.name,
+    weight: (coin.current_price / totalPrice) * 100,
+    price: coin.current_price,
+    change_24h: coin.price_change_percentage_24h || 0
+  }));
+  
+  // Generate historical data
   const data = timeRanges.map((date, index) => {
     const progress = index / (timeRanges.length - 1);
-    const volatility = 0.8 + (Math.sin(index * 0.5) * 0.2); // Some volatility simulation
-    const value = Math.round(baseValue * volatility + (currentValue - baseValue) * progress);
+    const baseValue = 100;
+    const value = Math.round(baseValue + (currentValue - baseValue) * progress * (0.9 + Math.sin(index * 0.3) * 0.1));
     return { date, value };
   });
   
-  return { name: 'Anchor5', data, currentValue };
+  return { name: 'Anchor5', data, currentValue, composition };
 }
 
 function calculateVibe20(marketData: CoinData[], timeRanges: string[]): IndexCalculation {
-  // Top 20 by volume
+  // Top 20 by 24h trading volume
   const top20 = marketData
     .sort((a, b) => b.total_volume - a.total_volume)
     .slice(0, 20);
   
-  // Volume-weighted calculation
-  const baseValue = 1000;
-  const avgVolume = top20.reduce((sum, coin) => sum + coin.total_volume, 0) / top20.length;
-  const currentValue = Math.round(baseValue * Math.log10(avgVolume / 1000000000) * 100);
+  // Hybrid formula: Weight(T) = (Vol × MCap) / Σ(Vol × MCap)
+  const totalWeightBase = top20.reduce((sum, coin) => sum + (coin.total_volume * coin.market_cap), 0);
+  
+  const weightedTokens = top20.map(coin => {
+    const weight = (coin.total_volume * coin.market_cap) / totalWeightBase;
+    return { ...coin, indexWeight: weight };
+  });
+  
+  // Calculate weighted price sum
+  const weightedPriceSum = weightedTokens.reduce((sum, coin) => sum + (coin.current_price * coin.indexWeight), 0);
+  const currentValue = Math.round(weightedPriceSum * 100); // Scale to reasonable index value
+  
+  // Create composition
+  const composition: TokenComposition[] = weightedTokens.map(coin => ({
+    id: coin.id,
+    symbol: coin.symbol.toUpperCase(),
+    name: coin.name,
+    weight: coin.indexWeight * 100,
+    price: coin.current_price,
+    change_24h: coin.price_change_percentage_24h || 0
+  }));
   
   const data = timeRanges.map((date, index) => {
     const progress = index / (timeRanges.length - 1);
-    const volatility = 0.9 + (Math.cos(index * 0.3) * 0.15);
-    const value = Math.round(baseValue * volatility + (currentValue - baseValue) * progress);
+    const baseValue = 100;
+    const value = Math.round(baseValue + (currentValue - baseValue) * progress * (0.95 + Math.cos(index * 0.4) * 0.05));
     return { date, value };
   });
   
-  return { name: 'Vibe20', data, currentValue };
+  return { name: 'Vibe20', data, currentValue, composition };
 }
 
 function calculateWave100(marketData: CoinData[], timeRanges: string[]): IndexCalculation {
-  // Top 100 momentum-based
-  const top100 = marketData.slice(0, 100);
+  // Filter out stablecoins and microcaps, focus on momentum gainers
+  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd']);
+  const minMarketCap = 100000000; // $100M minimum to avoid microcaps
   
-  // Momentum calculation based on 30-day performance
-  const avgMomentum = top100.reduce((sum, coin) => {
-    const momentum = coin.price_change_percentage_30d || 0;
-    return sum + momentum;
-  }, 0) / top100.length;
+  // Select top 100 by % gains (30-day performance), excluding stables and microcaps
+  const momentumCoins = marketData
+    .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
+    .filter(coin => coin.market_cap >= minMarketCap)
+    .filter(coin => coin.price_change_percentage_30d !== null)
+    .sort((a, b) => (b.price_change_percentage_30d || 0) - (a.price_change_percentage_30d || 0))
+    .slice(0, 100);
   
-  const baseValue = 1000;
-  const currentValue = Math.round(baseValue + (avgMomentum * 20)); // Momentum multiplier
+  // Return-proportional weighting based on 30-day gains
+  const totalMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, coin.price_change_percentage_30d || 0), 0);
+  
+  const weightedTokens = momentumCoins.map(coin => {
+    const momentum = Math.max(0, coin.price_change_percentage_30d || 0);
+    const weight = totalMomentum > 0 ? momentum / totalMomentum : 1 / momentumCoins.length;
+    return { ...coin, momentumWeight: weight };
+  });
+  
+  // Calculate momentum-weighted index value
+  const avgMomentum = momentumCoins.reduce((sum, coin) => sum + (coin.price_change_percentage_30d || 0), 0) / momentumCoins.length;
+  const currentValue = Math.round(1000 + (avgMomentum * 10)); // Base 1000 with momentum scaling
+  
+  // Create composition (show top 20 by momentum for display)
+  const composition: TokenComposition[] = weightedTokens.slice(0, 20).map(coin => ({
+    id: coin.id,
+    symbol: coin.symbol.toUpperCase(),
+    name: coin.name,
+    weight: coin.momentumWeight * 100,
+    price: coin.current_price,
+    change_24h: coin.price_change_percentage_24h || 0
+  }));
   
   const data = timeRanges.map((date, index) => {
     const progress = index / (timeRanges.length - 1);
-    const volatility = 1.0 + (Math.sin(index * 0.4) * 0.25); // Higher volatility for momentum
-    const value = Math.round(baseValue * volatility + (currentValue - baseValue) * progress);
+    const baseValue = 1000;
+    const volatility = 1.0 + (Math.sin(index * 0.5) * 0.3); // Higher volatility for momentum index
+    const value = Math.round(baseValue + (currentValue - baseValue) * progress * volatility);
     return { date, value };
   });
   
-  return { name: 'Wave100', data, currentValue };
+  return { name: 'Wave100', data, currentValue, composition };
 }

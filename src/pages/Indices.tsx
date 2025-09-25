@@ -10,10 +10,21 @@ interface DataPoint {
   date: string;
   value: number;
 }
+
+interface TokenComposition {
+  id: string;
+  symbol: string;
+  name: string;
+  weight: number;
+  price: number;
+  change_24h: number;
+}
+
 interface IndexData {
   name: string;
   data: DataPoint[];
   currentValue: number;
+  composition?: TokenComposition[];
 }
 type TimePeriod = 'daily' | 'year' | 'all';
 const Indices: React.FC = () => {
@@ -140,7 +151,7 @@ const Indices: React.FC = () => {
     characteristics: ['High correlation with major coins', 'Lower volatility', 'Blue-chip focus'],
     marketScore: anchorData?.currentValue || 0,
     chartColor: '#3b82f6',
-    data: anchorData?.data || []
+    data: anchorData
   }, {
     name: 'Vibe20',
     subtitle: 'Volume-Weighted Top 20',
@@ -149,7 +160,7 @@ const Indices: React.FC = () => {
     characteristics: ['High liquidity focus', 'Trading activity based', 'Market sentiment indicator'],
     marketScore: vibeData?.currentValue || 0,
     chartColor: '#10b981',
-    data: vibeData?.data || []
+    data: vibeData
   }, {
     name: 'Wave100',
     subtitle: 'Momentum Top 100',
@@ -158,7 +169,7 @@ const Indices: React.FC = () => {
     characteristics: ['Broad market exposure', 'Momentum-driven', 'Higher volatility potential'],
     marketScore: waveData?.currentValue || 0,
     chartColor: '#f59e0b',
-    data: waveData?.data || []
+    data: waveData
   }];
   const toggleIndex = (name: string) => {
     setExpandedIndex(expandedIndex === name ? null : name);
@@ -216,6 +227,42 @@ const Indices: React.FC = () => {
                     ))}
                   </div>
 
+                  {/* Token Composition Table */}
+                  {index.data?.composition && index.data.composition.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="text-sm font-semibold mb-2">Index Composition</h4>
+                      <div className="max-h-48 overflow-y-auto border rounded-lg">
+                        <table className="w-full text-xs">
+                          <thead className="bg-muted sticky top-0">
+                            <tr>
+                              <th className="text-left p-2">Token</th>
+                              <th className="text-right p-2">Weight</th>
+                              <th className="text-right p-2">Price</th>
+                              <th className="text-right p-2">24h</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {index.data.composition.slice(0, 10).map((token, tokenIndex) => (
+                              <tr key={tokenIndex} className="border-t">
+                                <td className="p-2">
+                                  <div>
+                                    <div className="font-medium">{token.symbol}</div>
+                                    <div className="text-muted-foreground text-xs truncate">{token.name}</div>
+                                  </div>
+                                </td>
+                                <td className="text-right p-2">{token.weight.toFixed(1)}%</td>
+                                <td className="text-right p-2">${token.price.toLocaleString()}</td>
+                                <td className={`text-right p-2 ${token.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {token.change_24h.toFixed(1)}%
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
                   <Button onClick={() => toggleIndex(index.name)} variant="outline" className="w-full mb-4">
                     {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
                   </Button>
@@ -226,7 +273,7 @@ const Indices: React.FC = () => {
                       </h4>
                       <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={index.data}>
+                          <LineChart data={index.data?.data || []}>
                             <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{
                         fontSize: 12,
                         fill: '#6b7280'
