@@ -99,11 +99,15 @@ serve(async (req) => {
 function getTimeRanges(timePeriod: string, now: Date) {
   const ranges = [];
   
+  // Convert UTC time to EST (UTC-5, or UTC-4 during DST)
+  const estOffset = -5; // EST offset from UTC
+  const estNow = new Date(now.getTime() + (estOffset * 60 * 60 * 1000));
+  
   switch (timePeriod) {
     case 'daily':
-      // Last 24 hours - hourly data points
-      for (let i = 23; i >= 0; i--) {
-        const date = new Date(now);
+      // Last 24 hours - every 2 hours for better granularity
+      for (let i = 23; i >= 0; i -= 2) {
+        const date = new Date(estNow);
         date.setHours(date.getHours() - i);
         ranges.push(date.toISOString());
       }
@@ -111,15 +115,15 @@ function getTimeRanges(timePeriod: string, now: Date) {
     case 'month':
       // Last 30 days - daily data points
       for (let i = 29; i >= 0; i--) {
-        const date = new Date(now);
+        const date = new Date(estNow);
         date.setDate(date.getDate() - i);
         ranges.push(date.toISOString().split('T')[0]);
       }
       break;
     case 'year':
       // January to current month - monthly data points
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth();
+      const currentYear = estNow.getFullYear();
+      const currentMonth = estNow.getMonth();
       for (let i = 0; i <= currentMonth; i++) {
         const date = new Date(currentYear, i, 1);
         ranges.push(date.toISOString().split('T')[0]);
@@ -128,7 +132,7 @@ function getTimeRanges(timePeriod: string, now: Date) {
     case 'all':
       // All time - quarterly data points
       for (let i = 8; i >= 0; i--) {
-        const date = new Date(now);
+        const date = new Date(estNow);
         date.setMonth(date.getMonth() - (i * 3));
         ranges.push(date.toISOString().split('T')[0]);
       }
@@ -245,7 +249,7 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
   
   // Calculate weighted price sum
   const weightedPriceSum = weightedTokens.reduce((sum, coin) => sum + (coin.current_price * coin.indexWeight), 0);
-  const currentValue = Math.round(weightedPriceSum * 100 / 100); // Scale to reasonable index value, divide by 100
+  const currentValue = Math.round((weightedPriceSum * 100) / 100); // Scale to reasonable index value, divide by 100
   
   // Create composition
   const composition: TokenComposition[] = weightedTokens.map(coin => ({
@@ -275,7 +279,7 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
     
     return { 
       date: date.includes('T') ? date.split('T')[0] : date, 
-      value: Math.round(weightedIndexValue * 100 / 100) 
+      value: Math.round((weightedIndexValue * 100) / 100) 
     };
   });
   
@@ -283,14 +287,12 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
 }
 
 async function calculateWave100(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
-  // Filter out stablecoins and microcaps, focus on momentum gainers
+  // Filter out stablecoins only, focus on price appreciation (30-day gains)
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
-  const minMarketCap = 100000000; // $100M minimum to avoid microcaps
   
-  // Select top 100 by % gains (30-day performance), excluding stables and microcaps
+  // Select top 100 by price appreciation (30-day performance), excluding only stablecoins
   const momentumCoins = marketData
     .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
-    .filter(coin => coin.market_cap >= minMarketCap)
     .filter(coin => coin.price_change_percentage_30d !== null)
     .sort((a, b) => (b.price_change_percentage_30d || 0) - (a.price_change_percentage_30d || 0))
     .slice(0, 100);
@@ -304,9 +306,9 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
     return { ...coin, momentumWeight: weight };
   });
   
-  // Calculate momentum-weighted index value
-  const avgMomentum = momentumCoins.reduce((sum, coin) => sum + (coin.price_change_percentage_30d || 0), 0) / momentumCoins.length;
-  const currentValue = Math.round((1000 + (avgMomentum * 10)) * 100); // Base 1000 with momentum scaling, multiply by 100
+  // Calculate momentum-weighted index value using same formula as historical
+  const weightedMomentumSum = weightedTokens.slice(0, 20).reduce((sum, coin) => sum + (coin.current_price * coin.momentumWeight * 20), 0);
+  const currentValue = Math.round((1000 + weightedMomentumSum) * 100); // Base 1000 with momentum scaling, multiply by 100
   
   // Create composition (show top 20 by momentum for display)
   const composition: TokenComposition[] = weightedTokens.slice(0, 20).map(coin => ({

@@ -61,25 +61,33 @@ const Indices: React.FC = () => {
 
   const formatXAxisLabel = (value: string) => {
     const date = new Date(value);
+    // Display in EST timezone
+    const estOffset = -5 * 60; // EST is UTC-5
+    const estDate = new Date(date.getTime() + (estOffset * 60 * 1000));
+    
     switch (timePeriod) {
       case 'daily':
-        return date.toLocaleTimeString('en-US', {
+        return estDate.toLocaleTimeString('en-US', {
           hour: 'numeric',
-          hour12: true
+          hour12: true,
+          timeZone: 'America/New_York'
         });
       case 'month':
-        return date.toLocaleDateString('en-US', {
+        return estDate.toLocaleDateString('en-US', {
           month: 'short',
-          day: 'numeric'
+          day: 'numeric',
+          timeZone: 'America/New_York'
         });
       case 'year':
-        return date.toLocaleDateString('en-US', {
-          month: 'short'
+        return estDate.toLocaleDateString('en-US', {
+          month: 'short',
+          timeZone: 'America/New_York'
         });
       case 'all':
-        return date.toLocaleDateString('en-US', {
+        return estDate.toLocaleDateString('en-US', {
           year: 'numeric',
-          month: 'short'
+          month: 'short',
+          timeZone: 'America/New_York'
         });
       default:
         return value;
