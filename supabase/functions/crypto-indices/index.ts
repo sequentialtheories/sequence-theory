@@ -69,9 +69,9 @@ serve(async (req) => {
     const timeRanges = getTimeRanges(timePeriod, now);
     
     // Calculate indices
-    const anchor5 = calculateAnchor5(marketData, timeRanges);
-    const vibe20 = calculateVibe20(marketData, timeRanges);
-    const wave100 = calculateWave100(marketData, timeRanges);
+    const anchor5 = await calculateAnchor5(marketData, timeRanges, timePeriod, apiKey);
+    const vibe20 = await calculateVibe20(marketData, timeRanges, timePeriod, apiKey);
+    const wave100 = await calculateWave100(marketData, timeRanges, timePeriod, apiKey);
 
     return new Response(
       JSON.stringify({
@@ -101,6 +101,15 @@ function getTimeRanges(timePeriod: string, now: Date) {
   
   switch (timePeriod) {
     case 'daily':
+      // Last 24 hours - hourly data points
+      for (let i = 23; i >= 0; i--) {
+        const date = new Date(now);
+        date.setHours(date.getHours() - i);
+        ranges.push(date.toISOString());
+      }
+      break;
+    case 'month':
+      // Last 30 days - daily data points
       for (let i = 29; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -108,6 +117,7 @@ function getTimeRanges(timePeriod: string, now: Date) {
       }
       break;
     case 'year':
+      // January to current month - monthly data points
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth();
       for (let i = 0; i <= currentMonth; i++) {
@@ -116,6 +126,7 @@ function getTimeRanges(timePeriod: string, now: Date) {
       }
       break;
     case 'all':
+      // All time - quarterly data points
       for (let i = 8; i >= 0; i--) {
         const date = new Date(now);
         date.setMonth(date.getMonth() - (i * 3));
@@ -127,7 +138,30 @@ function getTimeRanges(timePeriod: string, now: Date) {
   return ranges;
 }
 
-function calculateAnchor5(marketData: CoinData[], timeRanges: string[]): IndexCalculation {
+async function fetchHistoricalData(coinId: string, days: string, apiKey: string): Promise<number[]> {
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=${days === '1' ? 'hourly' : 'daily'}`,
+      {
+        headers: {
+          'x-cg-demo-api-key': apiKey,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${coinId} historical data`);
+    }
+
+    const data = await response.json();
+    return data.prices.map((price: [number, number]) => price[1]);
+  } catch (error) {
+    console.error(`Error fetching historical data for ${coinId}:`, error);
+    return [];
+  }
+}
+
+async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
   // Filter for blue-chip criteria: exclude stablecoins
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd']);
   
@@ -163,18 +197,35 @@ function calculateAnchor5(marketData: CoinData[], timeRanges: string[]): IndexCa
     change_24h: coin.price_change_percentage_24h || 0
   }));
   
-  // Generate historical data
+  // Fetch real historical data for each coin and calculate index values
+  const days = timePeriod === 'daily' ? '1' : timePeriod === 'month' ? '30' : timePeriod === 'year' ? '365' : 'max';
+  const historicalDataPromises = scoredCoins.map(coin => fetchHistoricalData(coin.id, days, apiKey));
+  const historicalDataArrays = await Promise.all(historicalDataPromises);
+  
+  // Calculate historical index values
   const data = timeRanges.map((date, index) => {
-    const progress = index / (timeRanges.length - 1);
-    const baseValue = 100;
-    const value = Math.round(baseValue + (currentValue - baseValue) * progress * (0.9 + Math.sin(index * 0.3) * 0.1));
-    return { date, value };
+    let indexValue = 0;
+    
+    // Calculate price-weighted sum for this time point
+    scoredCoins.forEach((coin, coinIndex) => {
+      const historicalPrices = historicalDataArrays[coinIndex];
+      if (historicalPrices.length > index) {
+        indexValue += historicalPrices[index] || coin.current_price;
+      } else {
+        indexValue += coin.current_price;
+      }
+    });
+    
+    return { 
+      date: date.includes('T') ? date.split('T')[0] : date, 
+      value: Math.round(indexValue / divisor) 
+    };
   });
   
   return { name: 'Anchor5', data, currentValue, composition };
 }
 
-function calculateVibe20(marketData: CoinData[], timeRanges: string[]): IndexCalculation {
+async function calculateVibe20(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
   // Top 20 by 24h trading volume
   const top20 = marketData
     .sort((a, b) => b.total_volume - a.total_volume)
@@ -202,17 +253,32 @@ function calculateVibe20(marketData: CoinData[], timeRanges: string[]): IndexCal
     change_24h: coin.price_change_percentage_24h || 0
   }));
   
+  // Fetch real historical data for each coin and calculate weighted index values
+  const days = timePeriod === 'daily' ? '1' : timePeriod === 'month' ? '30' : timePeriod === 'year' ? '365' : 'max';
+  const historicalDataPromises = weightedTokens.map(coin => fetchHistoricalData(coin.id, days, apiKey));
+  const historicalDataArrays = await Promise.all(historicalDataPromises);
+  
+  // Calculate historical index values
   const data = timeRanges.map((date, index) => {
-    const progress = index / (timeRanges.length - 1);
-    const baseValue = 100;
-    const value = Math.round(baseValue + (currentValue - baseValue) * progress * (0.95 + Math.cos(index * 0.4) * 0.05));
-    return { date, value };
+    let weightedIndexValue = 0;
+    
+    // Calculate volume-weighted sum for this time point
+    weightedTokens.forEach((coin, coinIndex) => {
+      const historicalPrices = historicalDataArrays[coinIndex];
+      const price = historicalPrices.length > index ? historicalPrices[index] : coin.current_price;
+      weightedIndexValue += (price || coin.current_price) * coin.indexWeight;
+    });
+    
+    return { 
+      date: date.includes('T') ? date.split('T')[0] : date, 
+      value: Math.round(weightedIndexValue * 100) 
+    };
   });
   
   return { name: 'Vibe20', data, currentValue, composition };
 }
 
-function calculateWave100(marketData: CoinData[], timeRanges: string[]): IndexCalculation {
+async function calculateWave100(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
   // Filter out stablecoins and microcaps, focus on momentum gainers
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd']);
   const minMarketCap = 100000000; // $100M minimum to avoid microcaps
@@ -248,12 +314,27 @@ function calculateWave100(marketData: CoinData[], timeRanges: string[]): IndexCa
     change_24h: coin.price_change_percentage_24h || 0
   }));
   
+  // Fetch real historical data for top momentum coins and calculate weighted index values
+  const days = timePeriod === 'daily' ? '1' : timePeriod === 'month' ? '30' : timePeriod === 'year' ? '365' : 'max';
+  const top20ForHistory = weightedTokens.slice(0, 20); // Use top 20 for historical calculation
+  const historicalDataPromises = top20ForHistory.map(coin => fetchHistoricalData(coin.id, days, apiKey));
+  const historicalDataArrays = await Promise.all(historicalDataPromises);
+  
+  // Calculate historical index values
   const data = timeRanges.map((date, index) => {
-    const progress = index / (timeRanges.length - 1);
-    const baseValue = 1000;
-    const volatility = 1.0 + (Math.sin(index * 0.5) * 0.3); // Higher volatility for momentum index
-    const value = Math.round(baseValue + (currentValue - baseValue) * progress * volatility);
-    return { date, value };
+    let momentumIndexValue = 0;
+    
+    // Calculate momentum-weighted sum for this time point
+    top20ForHistory.forEach((coin, coinIndex) => {
+      const historicalPrices = historicalDataArrays[coinIndex];
+      const price = historicalPrices.length > index ? historicalPrices[index] : coin.current_price;
+      momentumIndexValue += (price || coin.current_price) * coin.momentumWeight * 20; // Scale by 20 since using top 20
+    });
+    
+    return { 
+      date: date.includes('T') ? date.split('T')[0] : date, 
+      value: Math.round(1000 + momentumIndexValue) 
+    };
   });
   
   return { name: 'Wave100', data, currentValue, composition };

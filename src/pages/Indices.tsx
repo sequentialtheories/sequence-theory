@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
+
 interface DataPoint {
   date: string;
   value: number;
@@ -26,7 +27,9 @@ interface IndexData {
   currentValue: number;
   composition?: TokenComposition[];
 }
-type TimePeriod = 'daily' | 'year' | 'all';
+
+type TimePeriod = 'daily' | 'month' | 'year' | 'all';
+
 const Indices: React.FC = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
@@ -35,16 +38,12 @@ const Indices: React.FC = () => {
   const [anchorData, setAnchorData] = useState<IndexData | null>(null);
   const [vibeData, setVibeData] = useState<IndexData | null>(null);
   const [waveData, setWaveData] = useState<IndexData | null>(null);
+
   const fetchIndicesData = async (period: TimePeriod) => {
     setLoading(true);
     try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('crypto-indices', {
-        body: {
-          timePeriod: period
-        }
+      const { data, error } = await supabase.functions.invoke('crypto-indices', {
+        body: { timePeriod: period }
       });
       if (error) throw error;
       return {
@@ -54,69 +53,21 @@ const Indices: React.FC = () => {
       };
     } catch (error) {
       console.error('Error fetching indices data:', error);
-      // Fallback to mock data
-      return {
-        anchor5: {
-          name: 'Anchor5',
-          data: generateMockData(period),
-          currentValue: 1247
-        },
-        vibe20: {
-          name: 'Vibe20',
-          data: generateMockData(period),
-          currentValue: 892
-        },
-        wave100: {
-          name: 'Wave100',
-          data: generateMockData(period),
-          currentValue: 1834
-        }
-      };
+      throw error; // Remove fallback to mock data
     } finally {
       setLoading(false);
     }
   };
-  const generateMockData = (period: TimePeriod): DataPoint[] => {
-    const now = new Date();
-    const points = [];
-    switch (period) {
-      case 'daily':
-        for (let i = 29; i >= 0; i--) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i);
-          points.push({
-            date: date.toISOString().split('T')[0],
-            value: Math.round(1000 + Math.sin(i * 0.2) * 200 + Math.random() * 100)
-          });
-        }
-        break;
-      case 'year':
-        const currentMonth = now.getMonth();
-        for (let i = 0; i <= currentMonth; i++) {
-          const date = new Date(now.getFullYear(), i, 1);
-          points.push({
-            date: date.toISOString().split('T')[0],
-            value: Math.round(1000 + i * 50 + Math.sin(i * 0.5) * 100)
-          });
-        }
-        break;
-      case 'all':
-        for (let i = 8; i >= 0; i--) {
-          const date = new Date(now);
-          date.setMonth(date.getMonth() - i * 3);
-          points.push({
-            date: date.toISOString().split('T')[0],
-            value: Math.round(800 + (8 - i) * 100 + Math.sin((8 - i) * 0.3) * 150)
-          });
-        }
-        break;
-    }
-    return points;
-  };
+
   const formatXAxisLabel = (value: string) => {
     const date = new Date(value);
     switch (timePeriod) {
       case 'daily':
+        return date.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          hour12: true
+        });
+      case 'month':
         return date.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric'
@@ -134,15 +85,25 @@ const Indices: React.FC = () => {
         return value;
     }
   };
+
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetchIndicesData(timePeriod);
-      setAnchorData(data.anchor5);
-      setVibeData(data.vibe20);
-      setWaveData(data.wave100);
+      try {
+        const data = await fetchIndicesData(timePeriod);
+        setAnchorData(data.anchor5);
+        setVibeData(data.vibe20);
+        setWaveData(data.wave100);
+      } catch (error) {
+        console.error('Failed to load indices data:', error);
+        // Show error state instead of mock data
+        setAnchorData(null);
+        setVibeData(null);
+        setWaveData(null);
+      }
     };
     loadData();
   }, [timePeriod]);
+
   const indices = [{
     name: 'Anchor5',
     subtitle: 'Price-Weighted Top 5',
@@ -171,15 +132,17 @@ const Indices: React.FC = () => {
     chartColor: '#f59e0b',
     data: waveData
   }];
+
   const toggleIndex = (name: string) => {
     setExpandedIndex(expandedIndex === name ? null : name);
   };
-  return <div className="min-h-screen bg-background">
+
+  return (
+    <div className="min-h-screen bg-background">
       <Navigation />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6">
           <div className="mb-8">
-            
             <h1 className="text-3xl font-bold">Market Indices</h1>
             <p className="text-muted-foreground mt-2">
               Track the performance of curated cryptocurrency investment indices
@@ -187,14 +150,28 @@ const Indices: React.FC = () => {
             
             {/* Time Period Selector */}
             <div className="flex gap-2 mt-6">
-              {(['daily', 'year', 'all'] as TimePeriod[]).map(period => <button key={period} onClick={() => setTimePeriod(period)} disabled={loading} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${timePeriod === period ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                  {period === 'daily' ? 'Daily' : period === 'year' ? 'Year' : 'All Time'}
-                </button>)}
+              {(['daily', 'month', 'year', 'all'] as TimePeriod[]).map(period => (
+                <button 
+                  key={period} 
+                  onClick={() => setTimePeriod(period)} 
+                  disabled={loading} 
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    timePeriod === period 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {period === 'daily' ? 'Daily' : 
+                   period === 'month' ? 'Month' : 
+                   period === 'year' ? 'Year' : 'All Time'}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="grid gap-6">
-            {indices.map(index => <Card key={index.name} className="border border-border">
+            {indices.map(index => (
+              <Card key={index.name} className="border border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -267,32 +244,54 @@ const Indices: React.FC = () => {
                     {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                  {expandedIndex === index.name && <div className="border-t pt-4">
+                  {expandedIndex === index.name && (
+                    <div className="border-t pt-4">
                       <h4 className="text-lg font-semibold mb-4">
-                        {index.name} Performance ({timePeriod === 'daily' ? 'Last 30 Days' : timePeriod === 'year' ? 'Year to Date' : 'All Time'})
+                        {index.name} Performance ({
+                          timePeriod === 'daily' ? 'Last 24 Hours' : 
+                          timePeriod === 'month' ? 'Last 30 Days' : 
+                          timePeriod === 'year' ? 'Year to Date' : 'All Time'
+                        })
                       </h4>
                       <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={index.data?.data || []}>
-                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{
-                        fontSize: 12,
-                        fill: '#6b7280'
-                      }} tickFormatter={formatXAxisLabel} />
-                            <YAxis axisLine={false} tickLine={false} tick={{
-                        fontSize: 12,
-                        fill: '#6b7280'
-                      }} />
-                            <Tooltip labelFormatter={value => formatXAxisLabel(value)} formatter={(value: number) => [value.toLocaleString(), 'Index Value']} />
-                            <Line type="monotone" dataKey="value" stroke={index.chartColor} strokeWidth={2} dot={false} />
+                            <XAxis 
+                              dataKey="date" 
+                              axisLine={false} 
+                              tickLine={false} 
+                              tick={{ fontSize: 12, fill: '#6b7280' }} 
+                              tickFormatter={formatXAxisLabel} 
+                            />
+                            <YAxis 
+                              axisLine={false} 
+                              tickLine={false} 
+                              tick={{ fontSize: 12, fill: '#6b7280' }} 
+                            />
+                            <Tooltip 
+                              labelFormatter={value => formatXAxisLabel(value)} 
+                              formatter={(value: number) => [value.toLocaleString(), 'Index Value']} 
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="value" 
+                              stroke={index.chartColor} 
+                              strokeWidth={2} 
+                              dot={false} 
+                            />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
-                    </div>}
+                    </div>
+                  )}
                 </CardContent>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
       </main>
-    </div>;
+    </div>
+  );
 };
+
 export default Indices;
