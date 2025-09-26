@@ -33,6 +33,7 @@ interface IndexCalculation {
   name: string;
   data: { date: string; value: number }[];
   currentValue: number;
+  change_24h_percentage: number;
   composition: TokenComposition[];
 }
 
@@ -230,7 +231,19 @@ async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], ti
     };
   });
   
-  return { name: 'Anchor5', data, currentValue, composition };
+  // Calculate 24-hour percentage change using EST
+  const now = new Date();
+  const estOffset = -5; // EST is UTC-5
+  const nowEST = new Date(now.getTime() + (estOffset * 60 * 60 * 1000));
+  const yesterday = new Date(nowEST.getTime() - (24 * 60 * 60 * 1000));
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  // Find the closest data point to 24 hours ago
+  const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
+  const change_24h_percentage = yesterdayData ? 
+    ((currentValue - yesterdayData.value) / yesterdayData.value) * 100 : 0;
+  
+  return { name: 'Anchor5', data, currentValue, change_24h_percentage, composition };
 }
 
 async function calculateVibe20(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
@@ -289,7 +302,19 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
     };
   });
   
-  return { name: 'Vibe20', data, currentValue, composition };
+  // Calculate 24-hour percentage change using EST
+  const now = new Date();
+  const estOffset = -5; // EST is UTC-5
+  const nowEST = new Date(now.getTime() + (estOffset * 60 * 60 * 1000));
+  const yesterday = new Date(nowEST.getTime() - (24 * 60 * 60 * 1000));
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  // Find the closest data point to 24 hours ago
+  const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
+  const change_24h_percentage = yesterdayData ? 
+    ((currentValue - yesterdayData.value) / yesterdayData.value) * 100 : 0;
+  
+  return { name: 'Vibe20', data, currentValue, change_24h_percentage, composition };
 }
 
 async function calculateWave100(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
@@ -351,5 +376,17 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
     };
   });
   
-  return { name: 'Wave100', data, currentValue, composition };
+  // Calculate 24-hour percentage change using EST
+  const now = new Date();
+  const estOffset = -5; // EST is UTC-5
+  const nowEST = new Date(now.getTime() + (estOffset * 60 * 60 * 1000));
+  const yesterday = new Date(nowEST.getTime() - (24 * 60 * 60 * 1000));
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  // Find the closest data point to 24 hours ago
+  const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
+  const change_24h_percentage = yesterdayData ? 
+    ((currentValue - yesterdayData.value) / yesterdayData.value) * 100 : 0;
+  
+  return { name: 'Wave100', data, currentValue, change_24h_percentage, composition };
 }

@@ -27,6 +27,7 @@ interface IndexData {
   name: string;
   data: DataPoint[];
   currentValue: number;
+  change_24h_percentage: number;
   composition?: TokenComposition[];
 }
 
@@ -194,11 +195,23 @@ const Indices: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-primary">
-                        {index.marketScore.toLocaleString()}
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="text-2xl font-bold text-primary">
+                          {index.marketScore.toLocaleString()}
+                        </div>
+                        {index.data?.change_24h_percentage !== undefined && (
+                          <div className={`text-lg font-semibold ${
+                            index.data.change_24h_percentage >= 0 
+                              ? 'text-green-600' 
+                              : 'text-red-600'
+                          }`}>
+                            {index.data.change_24h_percentage >= 0 ? '+' : ''}
+                            {index.data.change_24h_percentage.toFixed(2)}%
+                          </div>
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Current market index value
+                        Current index value (24h change)
                       </div>
                     </div>
                   </div>
