@@ -33,6 +33,23 @@ interface IndexData {
 
 type TimePeriod = 'daily' | 'month' | 'year' | 'all';
 
+const formatLargeNumber = (value: number): string => {
+  const abs = Math.abs(value);
+  
+  if (abs >= 1e12) {
+    const formatted = (value / 1e12).toFixed(2);
+    return `${parseFloat(formatted)}T`;
+  } else if (abs >= 1e9) {
+    const formatted = (value / 1e9).toFixed(2);
+    return `${parseFloat(formatted)}B`;
+  } else if (abs >= 1e6) {
+    const formatted = (value / 1e6).toFixed(2);
+    return `${parseFloat(formatted)}M`;
+  } else {
+    return value.toLocaleString();
+  }
+};
+
 const Indices: React.FC = () => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
@@ -194,26 +211,26 @@ const Indices: React.FC = () => {
                         <CardDescription>{index.subtitle}</CardDescription>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="text-2xl font-bold text-primary">
-                          {index.marketScore.toLocaleString()}
-                        </div>
-                        {index.data?.change_24h_percentage !== undefined && (
-                          <div className={`text-lg font-semibold ${
-                            index.data.change_24h_percentage >= 0 
-                              ? 'text-green-600' 
-                              : 'text-red-600'
-                          }`}>
-                            {index.data.change_24h_percentage >= 0 ? '+' : ''}
-                            {index.data.change_24h_percentage.toFixed(2)}%
+                      <div className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="text-2xl font-bold text-primary">
+                            {formatLargeNumber(index.marketScore)}
                           </div>
-                        )}
+                          {index.data?.change_24h_percentage !== undefined && (
+                            <div className={`text-lg font-semibold ${
+                              index.data.change_24h_percentage >= 0 
+                                ? 'text-green-600' 
+                                : 'text-red-600'
+                            }`}>
+                              {index.data.change_24h_percentage >= 0 ? '+' : ''}
+                              {index.data.change_24h_percentage.toFixed(2)}%
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Current index value (24h change)
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        Current index value (24h change)
-                      </div>
-                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -244,23 +261,23 @@ const Indices: React.FC = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {index.data.composition.map((token, tokenIndex) => (
-                              <tr key={tokenIndex} className="border-t">
-                                <td className="p-2">
-                                  <div>
-                                    <div className="font-medium">{token.symbol}</div>
-                                    <div className="text-muted-foreground text-xs truncate">{token.name}</div>
-                                  </div>
-                                </td>
-                                <td className="text-right p-2">${(token.market_cap / 1000000000).toFixed(2)}B</td>
-                                <td className="text-right p-2">${(token.volume / 1000000).toFixed(2)}M</td>
-                                <td className="text-right p-2">{token.weight.toFixed(1)}%</td>
-                                <td className="text-right p-2">${token.price.toLocaleString()}</td>
-                                <td className={`text-right p-2 ${token.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  {token.change_24h.toFixed(1)}%
-                                </td>
-                              </tr>
-                            ))}
+                             {index.data.composition.map((token, tokenIndex) => (
+                               <tr key={tokenIndex} className="border-t">
+                                 <td className="p-2">
+                                   <div>
+                                     <div className="font-medium">{token.symbol}</div>
+                                     <div className="text-muted-foreground text-xs truncate">{token.name}</div>
+                                   </div>
+                                 </td>
+                                 <td className="text-right p-2">${formatLargeNumber(token.market_cap)}</td>
+                                 <td className="text-right p-2">${formatLargeNumber(token.volume)}</td>
+                                 <td className="text-right p-2">{token.weight.toFixed(1)}%</td>
+                                 <td className="text-right p-2">${formatLargeNumber(token.price)}</td>
+                                 <td className={`text-right p-2 ${token.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                   {token.change_24h.toFixed(1)}%
+                                 </td>
+                               </tr>
+                             ))}
                           </tbody>
                         </table>
                       </div>
@@ -297,7 +314,7 @@ const Indices: React.FC = () => {
                             />
                             <Tooltip 
                               labelFormatter={value => formatXAxisLabel(value)} 
-                              formatter={(value: number) => [value.toLocaleString(), 'Index Value']} 
+                              formatter={(value: number) => [formatLargeNumber(value), 'Index Value']} 
                             />
                             <Line 
                               type="monotone" 
