@@ -27,7 +27,7 @@ interface IndexData {
   name: string;
   data: DataPoint[];
   currentValue: number;
-  change_24h_percentage: number;
+  change_24h_percentage?: number;
   composition?: TokenComposition[];
 }
 

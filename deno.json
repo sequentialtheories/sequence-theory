@@ -2,9 +2,5 @@
   "imports": {
     "npm:@supabase/supabase-js": "npm:@supabase/supabase-js@2.58.0",
     "npm:@supabase/realtime-js": "npm:@supabase/realtime-js@2.15.5"
-  },
-  "nodeModulesDir": "auto",
-  "compilerOptions": {
-    "checkJs": false
   }
 }
