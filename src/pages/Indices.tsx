@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navigation from '@/components/Navigation';
-import { ArrowLeft, TrendingUp, BarChart3, Activity } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { TrendingUp, BarChart3, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
+import { ProfessionalChart } from '@/components/chart/ProfessionalChart';
+import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 
 interface DataPoint {
   date: string;
@@ -51,21 +51,29 @@ const formatLargeNumber = (value: number): string => {
 };
 
 const Indices: React.FC = () => {
-  const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('year');
   const [loading, setLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [anchorData, setAnchorData] = useState<IndexData | null>(null);
   const [vibeData, setVibeData] = useState<IndexData | null>(null);
   const [waveData, setWaveData] = useState<IndexData | null>(null);
 
-  const fetchIndicesData = async (period: TimePeriod) => {
-    setLoading(true);
+  const fetchIndicesData = async (period: TimePeriod, isRefresh = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    
     try {
       const { data, error } = await supabase.functions.invoke('crypto-indices', {
         body: { timePeriod: period }
       });
       if (error) throw error;
+      
+      setLastUpdated(new Date());
       return {
         anchor5: data.anchor5,
         vibe20: data.vibe20,
@@ -73,9 +81,10 @@ const Indices: React.FC = () => {
       };
     } catch (error) {
       console.error('Error fetching indices data:', error);
-      throw error; // Remove fallback to mock data
+      throw error;
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -114,23 +123,34 @@ const Indices: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await fetchIndicesData(timePeriod);
-        setAnchorData(data.anchor5);
-        setVibeData(data.vibe20);
-        setWaveData(data.wave100);
-      } catch (error) {
-        console.error('Failed to load indices data:', error);
-        // Show error state instead of mock data
+  const loadData = useCallback(async (isRefresh = false) => {
+    try {
+      const data = await fetchIndicesData(timePeriod, isRefresh);
+      setAnchorData(data.anchor5);
+      setVibeData(data.vibe20);
+      setWaveData(data.wave100);
+    } catch (error) {
+      console.error('Failed to load indices data:', error);
+      if (!isRefresh) {
         setAnchorData(null);
         setVibeData(null);
         setWaveData(null);
       }
-    };
-    loadData();
+    }
   }, [timePeriod]);
+
+  const refreshData = useCallback(() => loadData(true), [loadData]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Auto-refresh every 60 seconds
+  useAutoRefresh({
+    onRefresh: refreshData,
+    enabled: true,
+    interval: 60000
+  });
 
   const indices = [{
     name: 'Anchor5',
@@ -288,44 +308,18 @@ const Indices: React.FC = () => {
                     {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                  {expandedIndex === index.name && (
+                  {expandedIndex === index.name && index.data?.data && (
                     <div className="border-t pt-4">
-                      <h4 className="text-lg font-semibold mb-4">
-                        {index.name} Performance ({
-                          timePeriod === 'daily' ? 'Last 24 Hours' : 
-                          timePeriod === 'month' ? 'Last 30 Days' : 
-                          timePeriod === 'year' ? 'Year to Date' : 'All Time'
-                        })
-                      </h4>
-                      <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={index.data?.data || []}>
-                            <XAxis 
-                              dataKey="date" 
-                              axisLine={false} 
-                              tickLine={false} 
-                              tick={{ fontSize: 12, fill: '#6b7280' }} 
-                              tickFormatter={formatXAxisLabel} 
-                            />
-                            <YAxis 
-                              axisLine={false} 
-                              tickLine={false} 
-                              tick={{ fontSize: 12, fill: '#6b7280' }} 
-                            />
-                            <Tooltip 
-                              labelFormatter={value => formatXAxisLabel(value)} 
-                              formatter={(value: number) => [formatLargeNumber(value), 'Index Value']} 
-                            />
-                            <Line 
-                              type="monotone" 
-                              dataKey="value" 
-                              stroke={index.chartColor} 
-                              strokeWidth={2} 
-                              dot={false} 
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
+                      <ProfessionalChart
+                        data={index.data.data}
+                        color={index.chartColor}
+                        indexName={index.name}
+                        timePeriod={timePeriod}
+                        isRefreshing={isRefreshing}
+                        lastUpdated={lastUpdated}
+                        formatXAxisLabel={formatXAxisLabel}
+                        formatLargeNumber={formatLargeNumber}
+                      />
                     </div>
                   )}
                 </CardContent>
