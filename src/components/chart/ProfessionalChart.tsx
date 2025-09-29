@@ -9,8 +9,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  Legend, 
-  Brush 
+  Legend
 } from 'recharts';
 import { ChartControls } from './ChartControls';
 import { RefreshIndicator } from './RefreshIndicator';
@@ -44,28 +43,6 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
   const [showGrid, setShowGrid] = useState(true);
   const [showLegend, setShowLegend] = useState(true);
   const [chartType, setChartType] = useState<'line' | 'area'>('line');
-  const [zoomDomain, setZoomDomain] = useState<{startIndex?: number, endIndex?: number}>({});
-
-  const hasZoom = zoomDomain.startIndex !== undefined || zoomDomain.endIndex !== undefined;
-
-  const handleResetZoom = () => {
-    setZoomDomain({});
-  };
-
-  const handleBrushChange = (brushData: any) => {
-    if (brushData && brushData.startIndex !== undefined && brushData.endIndex !== undefined) {
-      setZoomDomain({
-        startIndex: brushData.startIndex,
-        endIndex: brushData.endIndex
-      });
-    }
-  };
-
-  const displayData = useMemo(() => {
-    if (!hasZoom) return data;
-    const { startIndex = 0, endIndex = data.length - 1 } = zoomDomain;
-    return data.slice(startIndex, endIndex + 1);
-  }, [data, zoomDomain, hasZoom]);
 
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -108,14 +85,12 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         onToggleGrid={() => setShowGrid(!showGrid)}
         onToggleLegend={() => setShowLegend(!showLegend)}
         onToggleChartType={() => setChartType(chartType === 'line' ? 'area' : 'line')}
-        onResetZoom={handleResetZoom}
-        hasZoom={hasZoom}
       />
 
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           {chartType === 'line' ? (
-            <LineChart data={displayData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={color} stopOpacity={0.1}/>
@@ -170,18 +145,9 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
                 activeDot={{ r: 4, stroke: color, strokeWidth: 2, fill: 'hsl(var(--background))' }}
                 name="Index Value"
               />
-              
-              <Brush 
-                dataKey="date" 
-                height={30}
-                stroke={color}
-                fill={`url(#${gradientId})`}
-                onChange={handleBrushChange}
-                tickFormatter={formatXAxisLabel}
-              />
             </LineChart>
           ) : (
-            <AreaChart data={displayData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
@@ -234,15 +200,6 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
                 name="Index Value"
-              />
-              
-              <Brush 
-                dataKey="date" 
-                height={30}
-                stroke={color}
-                fill={`url(#${gradientId})`}
-                onChange={handleBrushChange}
-                tickFormatter={formatXAxisLabel}
               />
             </AreaChart>
           )}
