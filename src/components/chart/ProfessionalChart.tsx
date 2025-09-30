@@ -1,26 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  ResponsiveContainer, 
-  LineChart, 
-  AreaChart, 
-  Line, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend
-} from 'recharts';
+import React, { useState } from 'react';
 import { ChartControls } from './ChartControls';
 import { RefreshIndicator } from './RefreshIndicator';
+import { CandlestickChart } from './CandlestickChart';
 
-interface DataPoint {
+interface CandlestickDataPoint {
   date: string;
-  value: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
 }
 
 interface ProfessionalChartProps {
-  data: DataPoint[];
+  data: CandlestickDataPoint[];
   color: string;
   indexName: string;
   timePeriod: string;
@@ -41,36 +34,13 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
   formatLargeNumber
 }) => {
   const [showGrid, setShowGrid] = useState(true);
-  const [showLegend, setShowLegend] = useState(true);
-  const [chartType, setChartType] = useState<'line' | 'area'>('line');
-
-  const customTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-strong">
-          <p className="text-sm font-medium text-card-foreground mb-1">
-            {indexName}
-          </p>
-          <p className="text-xs text-muted-foreground mb-2">
-            {formatXAxisLabel(label)}
-          </p>
-          <p className="text-sm font-semibold text-primary">
-            {formatLargeNumber(payload[0].value)}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const gradientId = `gradient-${indexName.toLowerCase()}`;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-lg font-semibold">
           {indexName} Performance ({
-            timePeriod === 'daily' ? 'Last 24 Hours' : 
+            timePeriod === 'daily' ? '12AM-Current' : 
             timePeriod === 'month' ? 'Last 30 Days' : 
             timePeriod === 'year' ? 'Year to Date' : 'All Time'
           })
@@ -80,131 +50,21 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
       <ChartControls
         showGrid={showGrid}
-        showLegend={showLegend}
-        chartType={chartType}
+        showLegend={false}
+        chartType="line"
         onToggleGrid={() => setShowGrid(!showGrid)}
-        onToggleLegend={() => setShowLegend(!showLegend)}
-        onToggleChartType={() => setChartType(chartType === 'line' ? 'area' : 'line')}
+        onToggleLegend={() => {}}
+        onToggleChartType={() => {}}
       />
 
-      <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          {chartType === 'line' ? (
-            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <defs>
-                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={color} stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor={color} stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              
-              {showGrid && (
-                <CartesianGrid 
-                  strokeDasharray="3 3" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  strokeOpacity={0.2}
-                />
-              )}
-              
-              <XAxis 
-                dataKey="date" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                tickFormatter={formatXAxisLabel}
-              />
-              
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                tickFormatter={formatLargeNumber}
-                label={{ 
-                  value: 'Index Value', 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' }
-                }}
-              />
-              
-              <Tooltip content={customTooltip} />
-              
-              {showLegend && (
-                <Legend 
-                  wrapperStyle={{ paddingTop: '20px' }}
-                  iconType="line"
-                />
-              )}
-              
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke={color} 
-                strokeWidth={2} 
-                dot={false}
-                activeDot={{ r: 4, stroke: color, strokeWidth: 2, fill: 'hsl(var(--background))' }}
-                name="Index Value"
-              />
-            </LineChart>
-          ) : (
-            <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <defs>
-                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor={color} stopOpacity={0.05}/>
-                </linearGradient>
-              </defs>
-              
-              {showGrid && (
-                <CartesianGrid 
-                  strokeDasharray="3 3" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  strokeOpacity={0.2}
-                />
-              )}
-              
-              <XAxis 
-                dataKey="date" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                tickFormatter={formatXAxisLabel}
-              />
-              
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                tickFormatter={formatLargeNumber}
-                label={{ 
-                  value: 'Index Value', 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' }
-                }}
-              />
-              
-              <Tooltip content={customTooltip} />
-              
-              {showLegend && (
-                <Legend 
-                  wrapperStyle={{ paddingTop: '20px' }}
-                  iconType="rect"
-                />
-              )}
-              
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke={color} 
-                strokeWidth={2}
-                fill={`url(#${gradientId})`}
-                name="Index Value"
-              />
-            </AreaChart>
-          )}
-        </ResponsiveContainer>
-      </div>
+      <CandlestickChart
+        data={data}
+        color={color}
+        showGrid={showGrid}
+        formatXAxisLabel={formatXAxisLabel}
+        formatLargeNumber={formatLargeNumber}
+        indexName={indexName}
+      />
     </div>
   );
 };

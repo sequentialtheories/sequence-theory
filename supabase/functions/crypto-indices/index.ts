@@ -29,9 +29,18 @@ interface TokenComposition {
   volume: number;
 }
 
+interface CandlestickDataPoint {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
 interface IndexCalculation {
   name: string;
-  data: { date: string; value: number }[];
+  data: CandlestickDataPoint[];
   currentValue: number;
   change_24h_percentage: number;
   composition: TokenComposition[];
@@ -108,10 +117,14 @@ function getTimeRanges(timePeriod: string, now: Date) {
   
   switch (timePeriod) {
     case 'daily':
-      // Last 24 hours - every 2 hours for better granularity
-      for (let i = 23; i >= 0; i -= 2) {
-        const date = new Date(estNow);
-        date.setHours(date.getHours() - i);
+      // From 12AM EST today to current time - hourly data points
+      const startOfDay = new Date(estNow);
+      startOfDay.setHours(0, 0, 0, 0);
+      const currentHour = estNow.getHours();
+      
+      for (let i = 0; i <= currentHour; i++) {
+        const date = new Date(startOfDay);
+        date.setHours(i);
         ranges.push(date.toISOString());
       }
       break;
@@ -145,7 +158,7 @@ function getTimeRanges(timePeriod: string, now: Date) {
   return ranges;
 }
 
-async function fetchHistoricalData(coinId: string, days: string, apiKey: string): Promise<number[]> {
+async function fetchHistoricalData(coinId: string, days: string, apiKey: string): Promise<{prices: number[], volumes: number[]}> {
   try {
     const response = await fetch(
       `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}&interval=${days === '1' ? 'hourly' : 'daily'}`,
@@ -161,10 +174,13 @@ async function fetchHistoricalData(coinId: string, days: string, apiKey: string)
     }
 
     const data = await response.json();
-    return data.prices.map((price: [number, number]) => price[1]);
+    return {
+      prices: data.prices.map((price: [number, number]) => price[1]),
+      volumes: data.total_volumes?.map((vol: [number, number]) => vol[1]) || []
+    };
   } catch (error) {
     console.error(`Error fetching historical data for ${coinId}:`, error);
-    return [];
+    return { prices: [], volumes: [] };
   }
 }
 
@@ -211,23 +227,34 @@ async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], ti
   const historicalDataPromises = scoredCoins.map(coin => fetchHistoricalData(coin.id, days, apiKey));
   const historicalDataArrays = await Promise.all(historicalDataPromises);
   
-  // Calculate historical index values
-  const data = timeRanges.map((date, index) => {
-    let indexValue = 0;
+  // Calculate historical OHLC candlestick data
+  const data: CandlestickDataPoint[] = timeRanges.map((date, index) => {
+    const values: number[] = [];
+    let totalVolume = 0;
     
-    // Calculate price-weighted sum for this time point
+    // Collect all price values for this time point
     scoredCoins.forEach((coin, coinIndex) => {
-      const historicalPrices = historicalDataArrays[coinIndex];
-      if (historicalPrices.length > index) {
-        indexValue += historicalPrices[index] || coin.current_price;
-      } else {
-        indexValue += coin.current_price;
-      }
+      const historicalData = historicalDataArrays[coinIndex];
+      const price = historicalData.prices.length > index ? historicalData.prices[index] : coin.current_price;
+      const volume = historicalData.volumes.length > index ? historicalData.volumes[index] : coin.total_volume;
+      values.push(price || coin.current_price);
+      totalVolume += volume || 0;
     });
     
+    // Calculate OHLC from collected values
+    const indexValues = values.map(v => v / divisor);
+    const open = indexValues[0];
+    const close = indexValues[indexValues.length - 1];
+    const high = Math.max(...indexValues);
+    const low = Math.min(...indexValues);
+    
     return { 
-      date: date.includes('T') ? date.split('T')[0] : date, 
-      value: Math.round(indexValue / divisor) 
+      date: date.includes('T') ? date.split('T')[0] : date,
+      open: Math.round(open),
+      high: Math.round(high),
+      low: Math.round(low),
+      close: Math.round(close),
+      volume: totalVolume
     };
   });
   
@@ -241,7 +268,7 @@ async function calculateAnchor5(marketData: CoinData[], timeRanges: string[], ti
   // Find the closest data point to 24 hours ago
   const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
   const change_24h_percentage = yesterdayData ? 
-    ((currentValue - yesterdayData.value) / yesterdayData.value) * 100 : 0;
+    ((currentValue - yesterdayData.close) / yesterdayData.close) * 100 : 0;
   
   return { name: 'Anchor5', data, currentValue, change_24h_percentage, composition };
 }
@@ -285,20 +312,34 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
   const historicalDataPromises = weightedTokens.map(coin => fetchHistoricalData(coin.id, days, apiKey));
   const historicalDataArrays = await Promise.all(historicalDataPromises);
   
-  // Calculate historical index values
-  const data = timeRanges.map((date, index) => {
-    let weightedIndexValue = 0;
+  // Calculate historical OHLC candlestick data
+  const data: CandlestickDataPoint[] = timeRanges.map((date, index) => {
+    const values: number[] = [];
+    let totalVolume = 0;
     
-    // Calculate volume-weighted sum for this time point
+    // Collect all weighted price values for this time point
     weightedTokens.forEach((coin, coinIndex) => {
-      const historicalPrices = historicalDataArrays[coinIndex];
-      const price = historicalPrices.length > index ? historicalPrices[index] : coin.current_price;
-      weightedIndexValue += (price || coin.current_price) * coin.indexWeight;
+      const historicalData = historicalDataArrays[coinIndex];
+      const price = historicalData.prices.length > index ? historicalData.prices[index] : coin.current_price;
+      const volume = historicalData.volumes.length > index ? historicalData.volumes[index] : coin.total_volume;
+      values.push((price || coin.current_price) * coin.indexWeight);
+      totalVolume += volume || 0;
     });
     
+    // Calculate OHLC from collected values
+    const scaledValues = values.map(v => (v * 100) / 100);
+    const open = scaledValues[0];
+    const close = scaledValues[scaledValues.length - 1];
+    const high = Math.max(...scaledValues);
+    const low = Math.min(...scaledValues);
+    
     return { 
-      date: date.includes('T') ? date.split('T')[0] : date, 
-      value: Math.round((weightedIndexValue * 100) / 100) 
+      date: date.includes('T') ? date.split('T')[0] : date,
+      open: Math.round(open),
+      high: Math.round(high),
+      low: Math.round(low),
+      close: Math.round(close),
+      volume: totalVolume
     };
   });
   
@@ -312,27 +353,42 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
   // Find the closest data point to 24 hours ago
   const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
   const change_24h_percentage = yesterdayData ? 
-    ((currentValue - yesterdayData.value) / yesterdayData.value) * 100 : 0;
+    ((currentValue - yesterdayData.close) / yesterdayData.close) * 100 : 0;
   
   return { name: 'Vibe20', data, currentValue, change_24h_percentage, composition };
 }
 
 async function calculateWave100(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
-  // Filter out stablecoins only, focus on price appreciation (30-day gains)
+  // Filter out stablecoins only, focus on price appreciation based on time period
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
-  // Select top 100 by price appreciation (30-day performance), excluding only stablecoins
+  // Determine which price change percentage to use based on time period
+  const getPriceChange = (coin: CoinData): number => {
+    switch (timePeriod) {
+      case 'daily':
+        return coin.price_change_percentage_24h || 0;
+      case 'month':
+        return coin.price_change_percentage_30d || 0;
+      case 'year':
+      case 'all':
+        return coin.price_change_percentage_30d || 0; // Use 30d as best available
+      default:
+        return coin.price_change_percentage_30d || 0;
+    }
+  };
+  
+  // Select top 100 by price appreciation for the selected time period
   const momentumCoins = marketData
     .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
-    .filter(coin => coin.price_change_percentage_30d !== null)
-    .sort((a, b) => (b.price_change_percentage_30d || 0) - (a.price_change_percentage_30d || 0))
+    .filter(coin => getPriceChange(coin) !== 0)
+    .sort((a, b) => getPriceChange(b) - getPriceChange(a))
     .slice(0, 100);
   
-  // Return-proportional weighting based on 30-day gains
-  const totalMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, coin.price_change_percentage_30d || 0), 0);
+  // Return-proportional weighting based on selected time period gains
+  const totalMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, getPriceChange(coin)), 0);
   
   const weightedTokens = momentumCoins.map(coin => {
-    const momentum = Math.max(0, coin.price_change_percentage_30d || 0);
+    const momentum = Math.max(0, getPriceChange(coin));
     const weight = totalMomentum > 0 ? momentum / totalMomentum : 1 / momentumCoins.length;
     return { ...coin, momentumWeight: weight };
   });
@@ -359,20 +415,34 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
   const historicalDataPromises = top20ForHistory.map(coin => fetchHistoricalData(coin.id, days, apiKey));
   const historicalDataArrays = await Promise.all(historicalDataPromises);
   
-  // Calculate historical index values
-  const data = timeRanges.map((date, index) => {
-    let momentumIndexValue = 0;
+  // Calculate historical OHLC candlestick data
+  const data: CandlestickDataPoint[] = timeRanges.map((date, index) => {
+    const values: number[] = [];
+    let totalVolume = 0;
     
-    // Calculate momentum-weighted sum for this time point
+    // Calculate momentum-weighted values for this time point
     top20ForHistory.forEach((coin, coinIndex) => {
-      const historicalPrices = historicalDataArrays[coinIndex];
-      const price = historicalPrices.length > index ? historicalPrices[index] : coin.current_price;
-      momentumIndexValue += (price || coin.current_price) * coin.momentumWeight * 20; // Scale by 20 since using top 20
+      const historicalData = historicalDataArrays[coinIndex];
+      const price = historicalData.prices.length > index ? historicalData.prices[index] : coin.current_price;
+      const volume = historicalData.volumes.length > index ? historicalData.volumes[index] : coin.total_volume;
+      values.push((price || coin.current_price) * coin.momentumWeight * 20);
+      totalVolume += volume || 0;
     });
     
+    // Calculate OHLC from collected values
+    const scaledValues = values.map(v => (1000 + v) * 100);
+    const open = scaledValues[0];
+    const close = scaledValues[scaledValues.length - 1];
+    const high = Math.max(...scaledValues);
+    const low = Math.min(...scaledValues);
+    
     return { 
-      date: date.includes('T') ? date.split('T')[0] : date, 
-      value: Math.round((1000 + momentumIndexValue) * 100) 
+      date: date.includes('T') ? date.split('T')[0] : date,
+      open: Math.round(open),
+      high: Math.round(high),
+      low: Math.round(low),
+      close: Math.round(close),
+      volume: totalVolume
     };
   });
   
@@ -386,7 +456,7 @@ async function calculateWave100(marketData: CoinData[], timeRanges: string[], ti
   // Find the closest data point to 24 hours ago
   const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
   const change_24h_percentage = yesterdayData ? 
-    ((currentValue - yesterdayData.value) / yesterdayData.value) * 100 : 0;
+    ((currentValue - yesterdayData.close) / yesterdayData.close) * 100 : 0;
   
   return { name: 'Wave100', data, currentValue, change_24h_percentage, composition };
 }

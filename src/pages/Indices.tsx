@@ -7,9 +7,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { ProfessionalChart } from '@/components/chart/ProfessionalChart';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 
-interface DataPoint {
+interface CandlestickDataPoint {
   date: string;
-  value: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
 }
 
 interface TokenComposition {
@@ -25,7 +29,7 @@ interface TokenComposition {
 
 interface IndexData {
   name: string;
-  data: DataPoint[];
+  data: CandlestickDataPoint[];
   currentValue: number;
   change_24h_percentage?: number;
   composition?: TokenComposition[];
