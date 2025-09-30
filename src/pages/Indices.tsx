@@ -240,7 +240,7 @@ const Indices: React.FC = () => {
                           <div className="text-2xl font-bold text-primary">
                             {formatLargeNumber(index.marketScore)}
                           </div>
-                          {index.data?.change_24h_percentage !== undefined && (
+                          {index.data?.change_24h_percentage != null && (
                             <div className={`text-lg font-semibold ${
                               index.data.change_24h_percentage >= 0 
                                 ? 'text-green-600' 
