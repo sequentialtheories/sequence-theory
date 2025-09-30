@@ -240,7 +240,7 @@ const Indices: React.FC = () => {
                           <div className="text-2xl font-bold text-primary">
                             {formatLargeNumber(index.marketScore)}
                           </div>
-                          {index.data?.change_24h_percentage !== undefined && (
+                          {index.data?.change_24h_percentage != null && (
                             <div className={`text-lg font-semibold ${
                               index.data.change_24h_percentage >= 0 
                                 ? 'text-green-600' 
@@ -295,10 +295,10 @@ const Indices: React.FC = () => {
                                  </td>
                                  <td className="text-right p-2">${formatLargeNumber(token.market_cap)}</td>
                                  <td className="text-right p-2">${formatLargeNumber(token.volume)}</td>
-                                 <td className="text-right p-2">{token.weight.toFixed(1)}%</td>
+                                 <td className="text-right p-2">{(token.weight || 0).toFixed(1)}%</td>
                                  <td className="text-right p-2">${formatLargeNumber(token.price)}</td>
-                                 <td className={`text-right p-2 ${token.change_24h >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                   {token.change_24h.toFixed(1)}%
+                                 <td className={`text-right p-2 ${(token.change_24h || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                   {(token.change_24h || 0).toFixed(1)}%
                                  </td>
                                </tr>
                              ))}
