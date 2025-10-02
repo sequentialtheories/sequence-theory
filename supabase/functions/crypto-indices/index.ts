@@ -359,104 +359,202 @@ async function calculateVibe20(marketData: CoinData[], timeRanges: string[], tim
 }
 
 async function calculateWave100(marketData: CoinData[], timeRanges: string[], timePeriod: string, apiKey: string): Promise<IndexCalculation> {
-  // Filter out stablecoins only, focus on price appreciation based on time period
-  const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
-  
-  // Determine which price change percentage to use based on time period
-  const getPriceChange = (coin: CoinData): number => {
-    switch (timePeriod) {
-      case 'daily':
-        return coin.price_change_percentage_24h || 0;
-      case 'month':
-        return coin.price_change_percentage_30d || 0;
-      case 'year':
-      case 'all':
-        return coin.price_change_percentage_30d || 0; // Use 30d as best available
-      default:
-        return coin.price_change_percentage_30d || 0;
-    }
-  };
-  
-  // Select top 100 by price appreciation for the selected time period
-  const momentumCoins = marketData
-    .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
-    .filter(coin => getPriceChange(coin) !== 0)
-    .sort((a, b) => getPriceChange(b) - getPriceChange(a))
-    .slice(0, 100);
-  
-  // Return-proportional weighting based on selected time period gains
-  const totalMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, getPriceChange(coin)), 0);
-  
-  const weightedTokens = momentumCoins.map(coin => {
-    const momentum = Math.max(0, getPriceChange(coin));
-    const weight = totalMomentum > 0 ? momentum / totalMomentum : 1 / momentumCoins.length;
-    return { ...coin, momentumWeight: weight };
-  });
-  
-  // Calculate momentum-weighted index value using same formula as historical
-  const weightedMomentumSum = weightedTokens.slice(0, 20).reduce((sum, coin) => sum + (coin.current_price * coin.momentumWeight * 20), 0);
-  const currentValue = Math.round((1000 + weightedMomentumSum) * 100); // Base 1000 with momentum scaling, multiply by 100
-  
-  // Create composition (show all 100 tokens by momentum for display)
-  const composition: TokenComposition[] = weightedTokens.map(coin => ({
-    id: coin.id,
-    symbol: coin.symbol.toUpperCase(),
-    name: coin.name,
-    weight: coin.momentumWeight * 100,
-    price: coin.current_price,
-    change_24h: coin.price_change_percentage_24h || 0,
-    market_cap: coin.market_cap,
-    volume: coin.total_volume
-  }));
-  
-  // Fetch real historical data for top momentum coins and calculate weighted index values
-  const days = timePeriod === 'daily' ? '1' : timePeriod === 'month' ? '30' : timePeriod === 'year' ? '365' : 'max';
-  const top20ForHistory = weightedTokens.slice(0, 20); // Use top 20 for historical calculation
-  const historicalDataPromises = top20ForHistory.map(coin => fetchHistoricalData(coin.id, days, apiKey));
-  const historicalDataArrays = await Promise.all(historicalDataPromises);
-  
-  // Calculate historical OHLC candlestick data
-  const data: CandlestickDataPoint[] = timeRanges.map((date, index) => {
-    const values: number[] = [];
-    let totalVolume = 0;
+  try {
+    console.log('[Wave100] Starting calculation with timePeriod:', timePeriod);
     
-    // Calculate momentum-weighted values for this time point
-    top20ForHistory.forEach((coin, coinIndex) => {
-      const historicalData = historicalDataArrays[coinIndex];
-      const price = historicalData.prices.length > index ? historicalData.prices[index] : coin.current_price;
-      const volume = historicalData.volumes.length > index ? historicalData.volumes[index] : coin.total_volume;
-      values.push((price || coin.current_price) * coin.momentumWeight * 20);
-      totalVolume += volume || 0;
+    // Filter out stablecoins only, focus on price appreciation based on time period
+    const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
+    
+    // Determine which price change percentage to use based on time period
+    const getPriceChange = (coin: CoinData): number => {
+      switch (timePeriod) {
+        case 'daily':
+          return coin.price_change_percentage_24h ?? coin.price_change_percentage_7d ?? 0;
+        case 'month':
+          return coin.price_change_percentage_30d ?? coin.price_change_percentage_7d ?? coin.price_change_percentage_24h ?? 0;
+        case 'year':
+        case 'all':
+          return coin.price_change_percentage_30d ?? coin.price_change_percentage_7d ?? 0;
+        default:
+          return coin.price_change_percentage_30d ?? coin.price_change_percentage_7d ?? coin.price_change_percentage_24h ?? 0;
+      }
+    };
+    
+    // Select coins with ANY price data (much less restrictive)
+    const candidateCoins = marketData
+      .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
+      .filter(coin => coin.current_price > 0 && coin.market_cap > 0)
+      .map(coin => ({
+        ...coin,
+        momentum: getPriceChange(coin)
+      }))
+      .sort((a, b) => b.momentum - a.momentum);
+    
+    console.log('[Wave100] Candidate coins found:', candidateCoins.length);
+    
+    // Ensure we have at least 20 coins, take up to 100
+    const targetCount = Math.min(100, Math.max(20, candidateCoins.length));
+    const momentumCoins = candidateCoins.slice(0, targetCount);
+    
+    console.log('[Wave100] Selected momentum coins:', momentumCoins.length);
+    
+    if (momentumCoins.length === 0) {
+      console.error('[Wave100] No coins available for calculation');
+      // Return default values
+      return {
+        name: 'Wave100',
+        data: timeRanges.map(date => ({
+          date: date.includes('T') ? date.split('T')[0] : date,
+          open: 100000,
+          high: 100000,
+          low: 100000,
+          close: 100000,
+          volume: 0
+        })),
+        currentValue: 100000,
+        change_24h_percentage: 0,
+        composition: []
+      };
+    }
+    
+    // Calculate total positive momentum
+    const totalPositiveMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, coin.momentum), 0);
+    console.log('[Wave100] Total positive momentum:', totalPositiveMomentum);
+    
+    // Return-proportional weighting with better fallback
+    const weightedTokens = momentumCoins.map(coin => {
+      const momentum = Math.max(0, coin.momentum);
+      let weight: number;
+      
+      if (totalPositiveMomentum > 0) {
+        weight = momentum / totalPositiveMomentum;
+      } else {
+        // Equal weighting fallback
+        weight = 1 / momentumCoins.length;
+      }
+      
+      return { ...coin, momentumWeight: weight };
     });
     
-    // Calculate OHLC from collected values
-    const scaledValues = values.map(v => (1000 + v) * 100);
-    const open = scaledValues[0];
-    const close = scaledValues[scaledValues.length - 1];
-    const high = Math.max(...scaledValues);
-    const low = Math.min(...scaledValues);
+    // Calculate momentum-weighted index value
+    const top20 = weightedTokens.slice(0, Math.min(20, weightedTokens.length));
+    const weightedMomentumSum = top20.reduce((sum, coin) => {
+      return sum + (coin.current_price * coin.momentumWeight * 20);
+    }, 0);
+    const currentValue = Math.round((1000 + weightedMomentumSum) * 100);
     
-    return { 
-      date: date.includes('T') ? date.split('T')[0] : date,
-      open: Math.round(open),
-      high: Math.round(high),
-      low: Math.round(low),
-      close: Math.round(close),
-      volume: totalVolume
+    console.log('[Wave100] Current value calculated:', currentValue);
+    
+    // Create composition (show all tokens)
+    const composition: TokenComposition[] = weightedTokens.map(coin => ({
+      id: coin.id,
+      symbol: coin.symbol.toUpperCase(),
+      name: coin.name,
+      weight: coin.momentumWeight * 100,
+      price: coin.current_price,
+      change_24h: coin.price_change_percentage_24h ?? 0,
+      market_cap: coin.market_cap,
+      volume: coin.total_volume
+    }));
+    
+    console.log('[Wave100] Composition created with', composition.length, 'tokens');
+    
+    // Fetch historical data only if we have tokens
+    const days = timePeriod === 'daily' ? '1' : timePeriod === 'month' ? '30' : timePeriod === 'year' ? '365' : 'max';
+    const top20ForHistory = weightedTokens.slice(0, Math.min(20, weightedTokens.length));
+    
+    if (top20ForHistory.length === 0) {
+      console.error('[Wave100] No tokens for historical data');
+      // Return with default chart data
+      return {
+        name: 'Wave100',
+        data: timeRanges.map(date => ({
+          date: date.includes('T') ? date.split('T')[0] : date,
+          open: currentValue,
+          high: currentValue,
+          low: currentValue,
+          close: currentValue,
+          volume: 0
+        })),
+        currentValue,
+        change_24h_percentage: 0,
+        composition
+      };
+    }
+    
+    console.log('[Wave100] Fetching historical data for', top20ForHistory.length, 'tokens');
+    const historicalDataPromises = top20ForHistory.map(coin => fetchHistoricalData(coin.id, days, apiKey));
+    const historicalDataArrays = await Promise.all(historicalDataPromises);
+    
+    // Calculate historical OHLC candlestick data
+    const data: CandlestickDataPoint[] = timeRanges.map((date, index) => {
+      const values: number[] = [];
+      let totalVolume = 0;
+      
+      // Calculate momentum-weighted values for this time point
+      top20ForHistory.forEach((coin, coinIndex) => {
+        const historicalData = historicalDataArrays[coinIndex];
+        const price = historicalData.prices.length > index ? historicalData.prices[index] : coin.current_price;
+        const volume = historicalData.volumes.length > index ? historicalData.volumes[index] : coin.total_volume;
+        values.push((price || coin.current_price) * coin.momentumWeight * 20);
+        totalVolume += volume || 0;
+      });
+      
+      // Ensure we have values
+      if (values.length === 0) {
+        values.push(1000); // Fallback base value
+      }
+      
+      // Calculate OHLC from collected values
+      const scaledValues = values.map(v => (1000 + v) * 100);
+      const open = scaledValues[0] || 100000;
+      const close = scaledValues[scaledValues.length - 1] || 100000;
+      const high = scaledValues.length > 0 ? Math.max(...scaledValues) : 100000;
+      const low = scaledValues.length > 0 ? Math.min(...scaledValues) : 100000;
+      
+      return { 
+        date: date.includes('T') ? date.split('T')[0] : date,
+        open: Math.round(open),
+        high: Math.round(high),
+        low: Math.round(low),
+        close: Math.round(close),
+        volume: totalVolume
+      };
+    });
+    
+    console.log('[Wave100] Historical data calculated with', data.length, 'points');
+    
+    // Calculate 24-hour percentage change using EST
+    const now = new Date();
+    const estOffset = -5;
+    const nowEST = new Date(now.getTime() + (estOffset * 60 * 60 * 1000));
+    const yesterday = new Date(nowEST.getTime() - (24 * 60 * 60 * 1000));
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    
+    // Find the closest data point to 24 hours ago
+    const yesterdayData = data.find(d => d.date === yesterdayStr) || data[Math.max(0, data.length - 2)];
+    const change_24h_percentage = yesterdayData && yesterdayData.close > 0 ? 
+      ((currentValue - yesterdayData.close) / yesterdayData.close) * 100 : 0;
+    
+    console.log('[Wave100] Change 24h:', change_24h_percentage, '%');
+    
+    return { name: 'Wave100', data, currentValue, change_24h_percentage, composition };
+  } catch (error) {
+    console.error('[Wave100] Error in calculation:', error);
+    // Return safe default values
+    return {
+      name: 'Wave100',
+      data: timeRanges.map(date => ({
+        date: date.includes('T') ? date.split('T')[0] : date,
+        open: 100000,
+        high: 100000,
+        low: 100000,
+        close: 100000,
+        volume: 0
+      })),
+      currentValue: 100000,
+      change_24h_percentage: 0,
+      composition: []
     };
-  });
-  
-  // Calculate 24-hour percentage change using EST
-  const now = new Date();
-  const estOffset = -5; // EST is UTC-5
-  const nowEST = new Date(now.getTime() + (estOffset * 60 * 60 * 1000));
-  const yesterday = new Date(nowEST.getTime() - (24 * 60 * 60 * 1000));
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-  
-  // Find the closest data point to 24 hours ago
-  const yesterdayData = data.find(d => d.date === yesterdayStr) || data[data.length - 2];
-  const change_24h_percentage = yesterdayData ? 
-    ((currentValue - yesterdayData.close) / yesterdayData.close) * 100 : 0;
-  
-  return { name: 'Wave100', data, currentValue, change_24h_percentage, composition };
+  }
 }
