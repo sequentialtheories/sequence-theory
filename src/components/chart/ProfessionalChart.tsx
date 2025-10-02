@@ -19,7 +19,7 @@ interface ProfessionalChartProps {
   timePeriod: string;
   isRefreshing?: boolean;
   lastUpdated?: Date;
-  formatXAxisLabel: (value: string) => string;
+  formatXAxisLabel: (value: string | number) => string;
   formatLargeNumber: (value: number) => string;
 }
 

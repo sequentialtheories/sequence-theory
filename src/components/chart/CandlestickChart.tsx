@@ -23,7 +23,7 @@ interface CandlestickChartProps {
   data: CandlestickDataPoint[];
   color: string;
   showGrid: boolean;
-  formatXAxisLabel: (value: string) => string;
+  formatXAxisLabel: (value: string | number) => string;
   formatLargeNumber: (value: number) => string;
   indexName: string;
 }

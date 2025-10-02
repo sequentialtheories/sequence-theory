@@ -7,6 +7,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { ProfessionalChart } from '@/components/chart/ProfessionalChart';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 
+interface Candle {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volumeUsd: number;
+}
+
 interface CandlestickDataPoint {
   date: string;
   open: number;
@@ -19,20 +28,22 @@ interface CandlestickDataPoint {
 interface TokenComposition {
   id: string;
   symbol: string;
-  name: string;
   weight: number;
   price: number;
-  change_24h: number;
-  market_cap: number;
-  volume: number;
 }
 
 interface IndexData {
-  name: string;
-  data: CandlestickDataPoint[];
+  index: string;
+  baseValue: number;
+  timeframe: string;
+  candles: Candle[];
   currentValue: number;
-  change_24h_percentage?: number;
-  composition?: TokenComposition[];
+  change_24h_percentage: number;
+  meta: {
+    tz: string;
+    constituents: TokenComposition[];
+    rebalanceFrequency: string;
+  };
 }
 
 type TimePeriod = 'daily' | 'month' | 'year' | 'all';
@@ -92,38 +103,36 @@ const Indices: React.FC = () => {
     }
   };
 
-  const formatXAxisLabel = (value: string) => {
-    const date = new Date(value);
-    // Display in EST timezone
-    const estOffset = -5 * 60; // EST is UTC-5
-    const estDate = new Date(date.getTime() + (estOffset * 60 * 1000));
+  const formatXAxisLabel = (value: string | number) => {
+    // Convert Unix timestamp to Date if it's a number
+    const date = typeof value === 'number' ? new Date(value * 1000) : new Date(value);
     
     switch (timePeriod) {
       case 'daily':
-        return estDate.toLocaleTimeString('en-US', {
+        return date.toLocaleTimeString('en-US', {
           hour: 'numeric',
           hour12: true,
           timeZone: 'America/New_York'
         });
       case 'month':
-        return estDate.toLocaleDateString('en-US', {
+        return date.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           timeZone: 'America/New_York'
         });
       case 'year':
-        return estDate.toLocaleDateString('en-US', {
+        return date.toLocaleDateString('en-US', {
           month: 'short',
           timeZone: 'America/New_York'
         });
       case 'all':
-        return estDate.toLocaleDateString('en-US', {
+        return date.toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
           timeZone: 'America/New_York'
         });
       default:
-        return value;
+        return typeof value === 'number' ? date.toLocaleString() : value;
     }
   };
 
@@ -184,6 +193,18 @@ const Indices: React.FC = () => {
     chartColor: '#f59e0b',
     data: waveData
   }];
+
+  // Convert candles to chart data format
+  const convertCandlesToChartData = (candles: Candle[]): CandlestickDataPoint[] => {
+    return candles.map(candle => ({
+      date: new Date(candle.time * 1000).toISOString(),
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+      volume: candle.volumeUsd
+    }));
+  };
 
   const toggleIndex = (name: string) => {
     setExpandedIndex(expandedIndex === name ? null : name);
@@ -269,7 +290,7 @@ const Indices: React.FC = () => {
                   </div>
 
                   {/* Token Composition Table */}
-                  {index.data?.composition && index.data.composition.length > 0 && (
+                  {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && (
                     <div className="mb-4">
                       <h4 className="text-sm font-semibold mb-2">Index Composition</h4>
                       <div className="max-h-96 overflow-y-auto border rounded-lg">
@@ -277,29 +298,18 @@ const Indices: React.FC = () => {
                           <thead className="bg-muted sticky top-0">
                             <tr>
                               <th className="text-left p-2">Token</th>
-                              <th className="text-right p-2">Market Cap</th>
-                              <th className="text-right p-2">Volume</th>
                               <th className="text-right p-2">Weight</th>
                               <th className="text-right p-2">Price</th>
-                              <th className="text-right p-2">24h</th>
                             </tr>
                           </thead>
                           <tbody>
-                             {index.data.composition.map((token, tokenIndex) => (
+                             {index.data.meta.constituents.map((token, tokenIndex) => (
                                <tr key={tokenIndex} className="border-t">
                                  <td className="p-2">
-                                   <div>
-                                     <div className="font-medium">{token.symbol}</div>
-                                     <div className="text-muted-foreground text-xs truncate">{token.name}</div>
-                                   </div>
+                                   <div className="font-medium">{token.symbol}</div>
                                  </td>
-                                 <td className="text-right p-2">${formatLargeNumber(token.market_cap)}</td>
-                                 <td className="text-right p-2">${formatLargeNumber(token.volume)}</td>
                                  <td className="text-right p-2">{(token.weight || 0).toFixed(1)}%</td>
                                  <td className="text-right p-2">${formatLargeNumber(token.price)}</td>
-                                 <td className={`text-right p-2 ${(token.change_24h || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                   {(token.change_24h || 0).toFixed(1)}%
-                                 </td>
                                </tr>
                              ))}
                           </tbody>
@@ -312,10 +322,10 @@ const Indices: React.FC = () => {
                     {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                  {expandedIndex === index.name && index.data?.data && (
+                  {expandedIndex === index.name && index.data?.candles && index.data.candles.length > 0 && (
                     <div className="border-t pt-4">
                       <ProfessionalChart
-                        data={index.data.data}
+                        data={convertCandlesToChartData(index.data.candles)}
                         color={index.chartColor}
                         indexName={index.name}
                         timePeriod={timePeriod}
