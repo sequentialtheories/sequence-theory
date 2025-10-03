@@ -203,7 +203,7 @@ async function calculateAnchor5(
   // Price-weighted (like Dow Jones)
   const divisor = 10;
   const totalCurrentPrice = scoredCoins.reduce((sum, c) => sum + c.current_price, 0);
-  const currentValue = Math.round((totalCurrentPrice / divisor) * 1000);
+  const currentValue = Math.round((totalCurrentPrice / divisor));
   
   // Fetch historical data for all constituents
   const historicalPromises = scoredCoins.map(coin => 
@@ -238,7 +238,7 @@ async function calculateAnchor5(
     }
     
     if (validCount > 0) {
-      const indexValue = (priceSum / divisor) * 1000;
+      const indexValue = (priceSum / divisor);
       indexLevels.push({
         timestamp,
         value: indexValue,
@@ -262,7 +262,7 @@ async function calculateAnchor5(
   
   return {
     index: 'Anchor5',
-    baseValue: 1000,
+    baseValue: 1,
     timeframe,
     candles,
     currentValue,
@@ -298,10 +298,10 @@ async function calculateVibe20(
   if (top20.length === 0) {
     return {
       index: 'Vibe20',
-      baseValue: 1000,
+      baseValue: 1,
       timeframe: '1h',
       candles: [],
-      currentValue: 1000,
+      currentValue: 1,
       change_24h_percentage: 0,
       meta: {
         tz: 'UTC',
@@ -319,7 +319,7 @@ async function calculateVibe20(
   }));
   
   const currentValue = Math.round(
-    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
+    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0)
   );
   
   // Fetch historical data
@@ -354,7 +354,7 @@ async function calculateVibe20(
     }
     
     if (validCount > 0) {
-      const indexValue = weightedPriceSum * 1000;
+      const indexValue = weightedPriceSum;
       indexLevels.push({
         timestamp,
         value: indexValue,
@@ -378,7 +378,7 @@ async function calculateVibe20(
   
   return {
     index: 'Vibe20',
-    baseValue: 1000,
+    baseValue: 1,
     timeframe,
     candles,
     currentValue,
@@ -430,10 +430,10 @@ async function calculateWave100(
   if (momentumCoins.length === 0) {
     return {
       index: 'Wave100',
-      baseValue: 100000,
+      baseValue: 1000,
       timeframe: '1h',
       candles: [],
-      currentValue: 100000,
+      currentValue: 1000,
       change_24h_percentage: 0,
       meta: {
         tz: 'UTC',
@@ -453,7 +453,7 @@ async function calculateWave100(
   }));
   
   const currentValue = Math.round(
-    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 100000
+    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
   );
   
   // Use top 20 for historical data (performance)
@@ -489,7 +489,7 @@ async function calculateWave100(
     }
     
     if (validCount > 0) {
-      const indexValue = weightedPriceSum * 100000;
+      const indexValue = weightedPriceSum * 1000;
       indexLevels.push({
         timestamp,
         value: indexValue,
@@ -513,7 +513,7 @@ async function calculateWave100(
   
   return {
     index: 'Wave100',
-    baseValue: 100000,
+    baseValue: 1000,
     timeframe,
     candles,
     currentValue,
