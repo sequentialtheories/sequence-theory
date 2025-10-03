@@ -30,6 +30,9 @@ interface TokenComposition {
   symbol: string;
   weight: number;
   price: number;
+  market_cap: number;
+  total_volume: number;
+  price_change_percentage_24h: number;
 }
 
 interface IndexData {
@@ -300,6 +303,9 @@ const Indices: React.FC = () => {
                               <th className="text-left p-2">Token</th>
                               <th className="text-right p-2">Weight</th>
                               <th className="text-right p-2">Price</th>
+                              <th className="text-right p-2">Market Cap</th>
+                              <th className="text-right p-2">Volume</th>
+                              <th className="text-right p-2">24h %</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -310,6 +316,14 @@ const Indices: React.FC = () => {
                                  </td>
                                  <td className="text-right p-2">{(token.weight || 0).toFixed(1)}%</td>
                                  <td className="text-right p-2">${formatLargeNumber(token.price)}</td>
+                                 <td className="text-right p-2">${formatLargeNumber(token.market_cap)}</td>
+                                 <td className="text-right p-2">${formatLargeNumber(token.total_volume)}</td>
+                                 <td className={`text-right p-2 ${
+                                   token.price_change_percentage_24h >= 0 ? 'text-green-600' : 'text-red-600'
+                                 }`}>
+                                   {token.price_change_percentage_24h >= 0 ? '+' : ''}
+                                   {token.price_change_percentage_24h.toFixed(2)}%
+                                 </td>
                                </tr>
                              ))}
                           </tbody>

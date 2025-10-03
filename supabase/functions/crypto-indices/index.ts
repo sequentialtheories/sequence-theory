@@ -38,7 +38,7 @@ interface IndexResponse {
   change_24h_percentage: number;
   meta: {
     tz: 'UTC';
-    constituents: Array<{symbol: string; weight: number; id: string; price: number}>;
+    constituents: Array<{symbol: string; weight: number; id: string; price: number; market_cap: number; total_volume: number; price_change_percentage_24h: number}>;
     rebalanceFrequency: 'daily' | 'weekly' | 'monthly';
   };
 }
@@ -273,7 +273,10 @@ async function calculateAnchor5(
         symbol: c.symbol.toUpperCase(),
         weight: (c.current_price / totalCurrentPrice) * 100,
         id: c.id,
-        price: c.current_price
+        price: c.current_price,
+        market_cap: c.market_cap,
+        total_volume: c.total_volume,
+        price_change_percentage_24h: c.price_change_percentage_24h
       })),
       rebalanceFrequency: 'weekly'
     }
@@ -389,7 +392,10 @@ async function calculateVibe20(
         symbol: c.symbol.toUpperCase(),
         weight: c.weight * 100,
         id: c.id,
-        price: c.current_price
+        price: c.current_price,
+        market_cap: c.market_cap,
+        total_volume: c.total_volume,
+        price_change_percentage_24h: c.price_change_percentage_24h
       })),
       rebalanceFrequency: 'daily'
     }
@@ -524,7 +530,10 @@ async function calculateWave100(
         symbol: c.symbol.toUpperCase(),
         weight: c.weight * 100,
         id: c.id,
-        price: c.current_price
+        price: c.current_price,
+        market_cap: c.market_cap,
+        total_volume: c.total_volume,
+        price_change_percentage_24h: c.price_change_percentage_24h
       })),
       rebalanceFrequency: 'daily'
     }
