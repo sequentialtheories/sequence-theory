@@ -22,7 +22,7 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
           variant="outline"
           size="sm"
           onClick={onToggleGrid}
-          className={`h-8 px-2 transition-colors ${showGrid ? 'bg-primary text-primary-foreground' : ''}`}
+          className={`h-8 px-2 ${showGrid ? 'bg-primary text-primary-foreground' : ''}`}
         >
           <Grid3X3 className="h-3 w-3" />
         </Button>
