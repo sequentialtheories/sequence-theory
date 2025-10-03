@@ -68,7 +68,7 @@ function validateCandle(candle: Candle): boolean {
   );
 }
 
-function aggregateToCan dles(indexLevels: IndexLevel[], periodSeconds: number): Candle[] {
+function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): Candle[] {
   if (indexLevels.length === 0) return [];
   
   // Group by period
