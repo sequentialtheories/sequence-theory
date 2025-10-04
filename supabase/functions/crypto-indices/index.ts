@@ -526,15 +526,17 @@ async function calculateWave100(
     change_24h_percentage,
     meta: {
       tz: 'UTC',
-      constituents: weightedCoins.map(c => ({
-        symbol: c.symbol.toUpperCase(),
-        weight: c.weight * 100,
-        id: c.id,
-        price: c.current_price,
-        market_cap: c.market_cap,
-        total_volume: c.total_volume,
-        price_change_percentage_24h: c.price_change_percentage_24h
-      })),
+      constituents: weightedCoins
+        .sort((a, b) => (b.price_change_percentage_24h ?? -Infinity) - (a.price_change_percentage_24h ?? -Infinity))
+        .map(c => ({
+          symbol: c.symbol.toUpperCase(),
+          weight: c.weight * 100,
+          id: c.id,
+          price: c.current_price,
+          market_cap: c.market_cap,
+          total_volume: c.total_volume,
+          price_change_percentage_24h: c.price_change_percentage_24h
+        })),
       rebalanceFrequency: 'daily'
     }
   };
