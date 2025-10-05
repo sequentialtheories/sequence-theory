@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Navigation from '@/components/Navigation';
 import { TrendingUp, BarChart3, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -336,10 +336,10 @@ const Indices: React.FC = () => {
                     {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                  {expandedIndex === index.name && index.data?.candles && index.data.candles.length > 0 && (
+                   {expandedIndex === index.name && index.data?.candles && index.data.candles.length > 0 && (
                     <div className="border-t pt-4">
                       <ProfessionalChart
-                        data={convertCandlesToChartData(index.data.candles)}
+                        data={useMemo(() => convertCandlesToChartData(index.data.candles), [index.data.candles])}
                         color={index.chartColor}
                         indexName={index.name}
                         timePeriod={timePeriod}

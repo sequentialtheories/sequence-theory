@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { ChartControls } from './ChartControls';
+import React from 'react';
 import { RefreshIndicator } from './RefreshIndicator';
-import { CandlestickChart } from './CandlestickChart';
+import { LightweightCandlestickChart } from './LightweightCandlestickChart';
 
 interface CandlestickDataPoint {
   date: string;
@@ -33,7 +32,15 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
   formatXAxisLabel,
   formatLargeNumber
 }) => {
-  const [showGrid, setShowGrid] = useState(true);
+  // Transform CandlestickDataPoint[] to Candle[] format for LightweightCandlestickChart
+  const transformedCandles = data.map(point => ({
+    time: Math.floor(new Date(point.date).getTime() / 1000),
+    open: point.open,
+    high: point.high,
+    low: point.low,
+    close: point.close,
+    volumeUsd: point.volume
+  }));
 
   return (
     <div className="space-y-4">
@@ -48,22 +55,11 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         <RefreshIndicator isRefreshing={isRefreshing} lastUpdated={lastUpdated} />
       </div>
 
-      <ChartControls
-        showGrid={showGrid}
-        showLegend={false}
-        chartType="line"
-        onToggleGrid={() => setShowGrid(!showGrid)}
-        onToggleLegend={() => {}}
-        onToggleChartType={() => {}}
-      />
-
-      <CandlestickChart
-        data={data}
-        color={color}
-        showGrid={showGrid}
-        formatXAxisLabel={formatXAxisLabel}
-        formatLargeNumber={formatLargeNumber}
+      <LightweightCandlestickChart
+        candles={transformedCandles}
         indexName={indexName}
+        timePeriod={timePeriod}
+        formatLargeNumber={formatLargeNumber}
       />
     </div>
   );
