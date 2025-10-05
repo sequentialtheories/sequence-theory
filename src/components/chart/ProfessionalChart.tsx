@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, IChartApi, Time } from 'lightweight-charts';
+import { createChart, IChartApi, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { RefreshIndicator } from './RefreshIndicator';
@@ -101,7 +101,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     chartRef.current = chart;
 
-    const candlestickSeries = (chart as any).addCandlestickSeries({
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#10b981',
       downColor: '#ef4444',
       borderUpColor: '#10b981',
@@ -112,7 +112,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     candlestickSeriesRef.current = candlestickSeries;
 
-    const volumeSeries = (chart as any).addHistogramSeries({
+    const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: {
         type: 'volume',
       },

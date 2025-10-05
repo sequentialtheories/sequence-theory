@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, IChartApi, Time } from 'lightweight-charts';
+import { createChart, IChartApi, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { ChartTooltip } from './ChartTooltip';
@@ -95,7 +95,7 @@ export const LightweightCandlestickChart: React.FC<LightweightCandlestickChartPr
     chartRef.current = chart;
 
     // Add candlestick series
-    const candlestickSeries = (chart as any).addCandlestickSeries({
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#10b981',
       downColor: '#ef4444',
       borderUpColor: '#10b981',
@@ -107,7 +107,7 @@ export const LightweightCandlestickChart: React.FC<LightweightCandlestickChartPr
     candlestickSeriesRef.current = candlestickSeries;
 
     // Add volume series
-    const volumeSeries = (chart as any).addHistogramSeries({
+    const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: {
         type: 'volume',
       },
