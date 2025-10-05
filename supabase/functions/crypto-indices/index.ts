@@ -542,6 +542,27 @@ async function calculateWave100(
   };
 }
 
+// ===== Cache Management =====
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 120000; // 2 minutes
+
+function getCacheKey(timePeriod: string): string {
+  return `indices_${timePeriod}`;
+}
+
+function getFromCache(key: string): any | null {
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  cache.delete(key);
+  return null;
+}
+
+function setCache(key: string, data: any): void {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
 // ===== Main Handler =====
 
 serve(async (req) => {
@@ -551,6 +572,24 @@ serve(async (req) => {
 
   try {
     const { timePeriod = 'year' } = await req.json();
+    
+    // Check cache first
+    const cacheKey = getCacheKey(timePeriod);
+    const cached = getFromCache(cacheKey);
+    if (cached) {
+      console.log(`Serving cached data for ${timePeriod}`);
+      return new Response(
+        JSON.stringify(cached),
+        {
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'X-Cache': 'HIT'
+          },
+        }
+      );
+    }
+
     const apiKey = Deno.env.get('COINGECKO_API_KEY');
     
     if (!apiKey) {
@@ -601,18 +640,23 @@ serve(async (req) => {
       calculateWave100(marketData, fromTimestamp, now, apiKey, timePeriod)
     ]);
 
+    const responseData = {
+      anchor5,
+      vibe20,
+      wave100,
+      lastUpdated: new Date(now * 1000).toISOString(),
+    };
+
+    // Cache the result
+    setCache(cacheKey, responseData);
+
     return new Response(
-      JSON.stringify({
-        anchor5,
-        vibe20,
-        wave100,
-        lastUpdated: new Date(now * 1000).toISOString(),
-      }),
+      JSON.stringify(responseData),
       {
         headers: { 
           ...corsHeaders, 
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=60, s-maxage=120'
+          'X-Cache': 'MISS'
         },
       }
     );

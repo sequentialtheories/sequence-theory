@@ -72,6 +72,7 @@ const Indices: React.FC = () => {
   const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('year');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [anchorData, setAnchorData] = useState<IndexData | null>(null);
@@ -91,15 +92,18 @@ const Indices: React.FC = () => {
       });
       if (error) throw error;
       
+      setError(null);
       setLastUpdated(new Date());
       return {
         anchor5: data.anchor5,
         vibe20: data.vibe20,
         wave100: data.wave100
       };
-    } catch (error) {
-      console.error('Error fetching indices data:', error);
-      throw error;
+    } catch (err: any) {
+      const errorMsg = err?.message || 'Failed to load market data';
+      console.error('Error fetching indices data:', err);
+      setError(errorMsg);
+      throw err;
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -145,8 +149,8 @@ const Indices: React.FC = () => {
       setAnchorData(data.anchor5);
       setVibeData(data.vibe20);
       setWaveData(data.wave100);
-    } catch (error) {
-      console.error('Failed to load indices data:', error);
+    } catch (err) {
+      console.error('Failed to load indices data:', err);
       if (!isRefresh) {
         setAnchorData(null);
         setVibeData(null);
@@ -224,6 +228,12 @@ const Indices: React.FC = () => {
               Track the performance of curated cryptocurrency investment indices
             </p>
             
+            {error && (
+              <div className="mt-4 p-4 bg-destructive/10 border border-destructive rounded-lg">
+                <p className="text-destructive text-sm">{error}</p>
+              </div>
+            )}
+            
             {/* Time Period Selector */}
             <div className="flex gap-2 mt-6">
               {(['daily', 'month', 'year', 'all'] as TimePeriod[]).map(period => (
@@ -244,6 +254,12 @@ const Indices: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {loading && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading market data...</p>
+            </div>
+          )}
 
           <div className="grid gap-6">
             {indices.map(index => (
