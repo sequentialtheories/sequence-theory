@@ -21,4 +21,13 @@ export default defineConfig(({ mode }) => ({
     // Ensure single React instance to prevent hook dispatcher null errors
     dedupe: ["react", "react-dom"],
   },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "lightweight-charts",
+      "@tanstack/react-query"
+    ],
+    exclude: [],
+  },
 }));
