@@ -363,13 +363,15 @@ const Indices: React.FC = () => {
                     {chartVisibility[index.name as keyof typeof chartVisibility] ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                  {/* Chart always mounted, visibility controlled by CSS */}
-                  {index.data?.candles && index.data.candles.length > 0 && (
-                    <div 
-                      className={`border-t pt-4 transition-all duration-300 ${
-                        chartVisibility[index.name as keyof typeof chartVisibility] ? 'block' : 'hidden'
-                      }`}
-                    >
+                  {/* Chart always mounted for persistence, visibility controlled by opacity */}
+                  <div 
+                    className={`border-t pt-4 transition-all duration-300 ${
+                      chartVisibility[index.name as keyof typeof chartVisibility] 
+                        ? 'opacity-100 h-auto' 
+                        : 'opacity-0 h-0 overflow-hidden pointer-events-none'
+                    }`}
+                  >
+                    {index.data?.candles && index.data.candles.length > 0 ? (
                       <ProfessionalChart
                         key={index.name}
                         data={convertCandlesToChartData(index.data.candles)}
@@ -382,8 +384,12 @@ const Indices: React.FC = () => {
                         formatXAxisLabel={formatXAxisLabel}
                         formatLargeNumber={formatLargeNumber}
                       />
-                    </div>
-                  )}
+                    ) : (
+                      <div className="py-8 text-center text-muted-foreground">
+                        {loading ? 'Loading chart data...' : 'No chart data available for this time period'}
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}

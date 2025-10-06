@@ -54,7 +54,13 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
   // Initialize chart ONCE - persist across renders
   useEffect(() => {
-    if (!chartContainerRef.current || typeof window === 'undefined' || chartRef.current) return;
+    if (!chartContainerRef.current || typeof window === 'undefined') return;
+    
+    // Prevent duplicate initialization
+    if (chartRef.current) {
+      console.log(`[${indexName}] Chart already initialized, skipping`);
+      return;
+    }
 
     console.log(`[${indexName}] Initializing chart instance`);
 
@@ -182,7 +188,15 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
   // Update chart data when data or time period changes
   useEffect(() => {
-    if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !data.length) return;
+    if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
+    
+    // Handle empty data gracefully
+    if (!data.length) {
+      console.log(`[${indexName}] No data to display, clearing chart`);
+      candlestickSeriesRef.current.setData([]);
+      volumeSeriesRef.current.setData([]);
+      return;
+    }
 
     const sortedData = [...data].sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
