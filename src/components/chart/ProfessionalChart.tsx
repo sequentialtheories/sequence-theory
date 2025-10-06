@@ -18,6 +18,7 @@ interface ProfessionalChartProps {
   color: string;
   indexName: string;
   timePeriod: string;
+  isVisible: boolean;
   isRefreshing?: boolean;
   lastUpdated?: Date;
   formatXAxisLabel: (value: string | number) => string;
@@ -29,6 +30,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
   color,
   indexName,
   timePeriod,
+  isVisible,
   isRefreshing = false,
   lastUpdated,
   formatXAxisLabel,
@@ -50,9 +52,11 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
     position: { x: 0, y: 0 }
   });
 
-  // Initialize chart
+  // Initialize chart ONCE - persist across renders
   useEffect(() => {
-    if (!chartContainerRef.current || typeof window === 'undefined') return;
+    if (!chartContainerRef.current || typeof window === 'undefined' || chartRef.current) return;
+
+    console.log(`[${indexName}] Initializing chart instance`);
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
@@ -167,12 +171,16 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
     });
 
     return () => {
+      console.log(`[${indexName}] Cleaning up chart instance`);
       window.removeEventListener('resize', handleResize);
-      chart.remove();
+      if (chartRef.current) {
+        chartRef.current.remove();
+        chartRef.current = null;
+      }
     };
-  }, [timePeriod, formatXAxisLabel]);
+  }, [indexName]);
 
-  // Update chart data
+  // Update chart data when data or time period changes
   useEffect(() => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !data.length) return;
 
@@ -202,43 +210,59 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
     if (chartRef.current) {
       chartRef.current.timeScale().fitContent();
     }
-  }, [data]);
+  }, [data, timePeriod]);
 
-  const handleResetZoom = () => {
-    if (chartRef.current) {
+  // Handle visibility changes - resize when becoming visible
+  useEffect(() => {
+    if (isVisible && chartRef.current && chartContainerRef.current) {
+      chartRef.current.applyOptions({
+        width: chartContainerRef.current.clientWidth,
+      });
       chartRef.current.timeScale().fitContent();
     }
+  }, [isVisible]);
+
+  const handleResetZoom = () => {
+    if (!chartRef.current) {
+      console.warn(`[${indexName}] Chart not initialized for reset`);
+      return;
+    }
+    chartRef.current.timeScale().fitContent();
   };
 
   const handleZoomIn = () => {
-    if (chartRef.current) {
-      const timeScale = chartRef.current.timeScale();
-      const visibleRange = timeScale.getVisibleRange();
-      if (visibleRange) {
-        const diff = (visibleRange.to as number) - (visibleRange.from as number);
-        const newDiff = diff * 0.8;
-        const center = ((visibleRange.from as number) + (visibleRange.to as number)) / 2;
-        timeScale.setVisibleRange({
-          from: (center - newDiff / 2) as Time,
-          to: (center + newDiff / 2) as Time,
-        });
-      }
+    if (!chartRef.current) {
+      console.warn(`[${indexName}] Chart not initialized for zoom in`);
+      return;
+    }
+    const timeScale = chartRef.current.timeScale();
+    const visibleRange = timeScale.getVisibleRange();
+    if (visibleRange) {
+      const diff = (visibleRange.to as number) - (visibleRange.from as number);
+      const newDiff = diff * 0.8;
+      const center = ((visibleRange.from as number) + (visibleRange.to as number)) / 2;
+      timeScale.setVisibleRange({
+        from: (center - newDiff / 2) as Time,
+        to: (center + newDiff / 2) as Time,
+      });
     }
   };
 
   const handleZoomOut = () => {
-    if (chartRef.current) {
-      const timeScale = chartRef.current.timeScale();
-      const visibleRange = timeScale.getVisibleRange();
-      if (visibleRange) {
-        const diff = (visibleRange.to as number) - (visibleRange.from as number);
-        const newDiff = diff * 1.2;
-        const center = ((visibleRange.from as number) + (visibleRange.to as number)) / 2;
-        timeScale.setVisibleRange({
-          from: (center - newDiff / 2) as Time,
-          to: (center + newDiff / 2) as Time,
-        });
-      }
+    if (!chartRef.current) {
+      console.warn(`[${indexName}] Chart not initialized for zoom out`);
+      return;
+    }
+    const timeScale = chartRef.current.timeScale();
+    const visibleRange = timeScale.getVisibleRange();
+    if (visibleRange) {
+      const diff = (visibleRange.to as number) - (visibleRange.from as number);
+      const newDiff = diff * 1.2;
+      const center = ((visibleRange.from as number) + (visibleRange.to as number)) / 2;
+      timeScale.setVisibleRange({
+        from: (center - newDiff / 2) as Time,
+        to: (center + newDiff / 2) as Time,
+      });
     }
   };
 

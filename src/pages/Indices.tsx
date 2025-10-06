@@ -69,7 +69,11 @@ const formatLargeNumber = (value: number): string => {
 };
 
 const Indices: React.FC = () => {
-  const [expandedIndex, setExpandedIndex] = useState<string | null>(null);
+  const [chartVisibility, setChartVisibility] = useState({
+    Anchor5: false,
+    Vibe20: false,
+    Wave100: false
+  });
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('year');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -172,8 +176,15 @@ const Indices: React.FC = () => {
     interval: 60000
   });
 
-  const indices = [{
-    name: 'Anchor5',
+  const toggleChartVisibility = (indexName: string) => {
+    setChartVisibility(prev => ({
+      ...prev,
+      [indexName]: !prev[indexName as keyof typeof prev]
+    }));
+  };
+
+  const indices = React.useMemo(() => [{
+    name: 'Anchor5' as const,
     subtitle: 'Price-Weighted Top 5',
     icon: TrendingUp,
     description: 'A price-weighted index of the top 5 cryptocurrencies by longevity indicators such as market capitalization, holding wallets, security, etc.',
@@ -182,7 +193,7 @@ const Indices: React.FC = () => {
     chartColor: '#3b82f6',
     data: anchorData
   }, {
-    name: 'Vibe20',
+    name: 'Vibe20' as const,
     subtitle: 'Volume-Weighted Top 20',
     icon: BarChart3,
     description: 'A volume-weighted index focusing on the 20 most actively traded cryptocurrencies.',
@@ -191,7 +202,7 @@ const Indices: React.FC = () => {
     chartColor: '#10b981',
     data: vibeData
   }, {
-    name: 'Wave100',
+    name: 'Wave100' as const,
     subtitle: 'Momentum Top 100',
     icon: Activity,
     description: 'A momentum-based index tracking the performance of the top 100 cryptocurrencies.',
@@ -199,10 +210,10 @@ const Indices: React.FC = () => {
     marketScore: waveData?.currentValue || 0,
     chartColor: '#f59e0b',
     data: waveData
-  }];
+  }], [anchorData, vibeData, waveData]);
 
   // Convert candles to chart data format
-  const convertCandlesToChartData = (candles: Candle[]): CandlestickDataPoint[] => {
+  const convertCandlesToChartData = React.useCallback((candles: Candle[]): CandlestickDataPoint[] => {
     return candles.map(candle => ({
       date: new Date(candle.time * 1000).toISOString(),
       open: candle.open,
@@ -211,11 +222,7 @@ const Indices: React.FC = () => {
       close: candle.close,
       volume: candle.volumeUsd
     }));
-  };
-
-  const toggleIndex = (name: string) => {
-    setExpandedIndex(expandedIndex === name ? null : name);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -348,17 +355,28 @@ const Indices: React.FC = () => {
                     </div>
                   )}
 
-                  <Button onClick={() => toggleIndex(index.name)} variant="outline" className="w-full mb-4">
-                    {expandedIndex === index.name ? 'Hide Chart' : 'View Chart'}
+                  <Button 
+                    onClick={() => toggleChartVisibility(index.name)} 
+                    variant="outline" 
+                    className="w-full mb-4"
+                  >
+                    {chartVisibility[index.name as keyof typeof chartVisibility] ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                   {expandedIndex === index.name && index.data?.candles && index.data.candles.length > 0 && (
-                    <div className="border-t pt-4">
+                  {/* Chart always mounted, visibility controlled by CSS */}
+                  {index.data?.candles && index.data.candles.length > 0 && (
+                    <div 
+                      className={`border-t pt-4 transition-all duration-300 ${
+                        chartVisibility[index.name as keyof typeof chartVisibility] ? 'block' : 'hidden'
+                      }`}
+                    >
                       <ProfessionalChart
+                        key={index.name}
                         data={convertCandlesToChartData(index.data.candles)}
                         color={index.chartColor}
                         indexName={index.name}
                         timePeriod={timePeriod}
+                        isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
                         isRefreshing={isRefreshing}
                         lastUpdated={lastUpdated}
                         formatXAxisLabel={formatXAxisLabel}
