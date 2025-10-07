@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ===== Type Definitions =====
+
 interface CoinData {
   id: string;
   symbol: string;
@@ -19,7 +21,7 @@ interface CoinData {
 }
 
 interface Candle {
-  time: number;
+  time: number;          // Unix seconds (UTC)
   open: number;
   high: number;
   low: number;
@@ -53,6 +55,8 @@ interface HistoricalPriceData {
   volume: number;
 }
 
+// ===== Helper Functions =====
+
 function validateCandle(candle: Candle): boolean {
   const {open, close, high, low, volumeUsd} = candle;
   return (
@@ -64,64 +68,10 @@ function validateCandle(candle: Candle): boolean {
   );
 }
 
-function interpolateData(data: HistoricalPriceData[], targetCount: number): HistoricalPriceData[] {
-  if (data.length === 0) return [];
-  if (data.length >= targetCount) return data;
-  
-  console.log(`[interpolateData] Interpolating ${data.length} points to ${targetCount}`);
-  
-  const result: HistoricalPriceData[] = [];
-  const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
-  
-  const startTime = sortedData[0].timestamp;
-  const endTime = sortedData[sortedData.length - 1].timestamp;
-  const interval = (endTime - startTime) / (targetCount - 1);
-  
-  for (let i = 0; i < targetCount; i++) {
-    const targetTime = startTime + (interval * i);
-    
-    let before = sortedData[0];
-    let after = sortedData[sortedData.length - 1];
-    
-    for (let j = 0; j < sortedData.length - 1; j++) {
-      if (sortedData[j].timestamp <= targetTime && sortedData[j + 1].timestamp >= targetTime) {
-        before = sortedData[j];
-        after = sortedData[j + 1];
-        break;
-      }
-    }
-    
-    if (before.timestamp === after.timestamp) {
-      result.push({
-        timestamp: Math.floor(targetTime),
-        price: before.price,
-        volume: before.volume
-      });
-    } else {
-      const ratio = (targetTime - before.timestamp) / (after.timestamp - before.timestamp);
-      result.push({
-        timestamp: Math.floor(targetTime),
-        price: before.price + (after.price - before.price) * ratio,
-        volume: before.volume + (after.volume - before.volume) * ratio
-      });
-    }
-  }
-  
-  return result;
-}
-
-function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number, minCandles: number = 0): Candle[] {
+function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): Candle[] {
   if (indexLevels.length === 0) return [];
   
-  if (minCandles > 0 && indexLevels.length < minCandles / 2) {
-    console.log(`[aggregateToCandles] Insufficient data (${indexLevels.length} points), interpolating to ${minCandles * 2}`);
-    const interpolated = interpolateData(
-      indexLevels.map(l => ({ timestamp: l.timestamp, price: l.value, volume: l.volume })),
-      minCandles * 2
-    );
-    indexLevels = interpolated.map(d => ({ timestamp: d.timestamp, value: d.price, volume: d.volume }));
-  }
-  
+  // Group by period
   const periodMap = new Map<number, IndexLevel[]>();
   
   indexLevels.forEach(level => {
@@ -132,6 +82,7 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number, mi
     periodMap.get(periodStart)!.push(level);
   });
   
+  // Convert to candles
   const candles: Candle[] = [];
   const sortedPeriods = Array.from(periodMap.keys()).sort((a, b) => a - b);
   
@@ -159,8 +110,6 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number, mi
     }
   }
   
-  console.log(`[aggregateToCandles] Generated ${candles.length} candles from ${indexLevels.length} levels`);
-  
   return candles;
 }
 
@@ -168,17 +117,20 @@ async function fetchHistoricalPrices(
   coinId: string, 
   fromTimestamp: number, 
   toTimestamp: number,
-  apiKey: string,
-  timePeriod: string
+  apiKey: string
 ): Promise<HistoricalPriceData[]> {
   try {
-    const endpoint = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`;
+    const days = Math.max(1, Math.ceil((toTimestamp - fromTimestamp) / 86400));
+    const interval = days === 1 ? 'minutely' : days <= 90 ? 'hourly' : 'daily';
     
-    const response = await fetch(endpoint, {
-      headers: {
-        'x-cg-demo-api-key': apiKey,
-      },
-    });
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`,
+      {
+        headers: {
+          'x-cg-demo-api-key': apiKey,
+        },
+      }
+    );
 
     if (!response.ok) {
       console.error(`Failed to fetch ${coinId}: ${response.status}`);
@@ -199,14 +151,14 @@ async function fetchHistoricalPrices(
       });
     }
     
-    console.log(`[fetchHistoricalPrices] ${coinId}: Got ${result.length} data points for ${timePeriod}`);
-    
     return result;
   } catch (error) {
     console.error(`Error fetching historical data for ${coinId}:`, error);
     return [];
   }
 }
+
+// ===== Index Calculations =====
 
 async function calculateAnchor5(
   marketData: CoinData[], 
@@ -217,6 +169,7 @@ async function calculateAnchor5(
 ): Promise<IndexResponse> {
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
+  // Select top 5 by stability score
   const scoredCoins = marketData
     .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
     .filter(coin => coin.market_cap_rank <= 50)
@@ -247,15 +200,18 @@ async function calculateAnchor5(
     };
   }
   
+  // Price-weighted (like Dow Jones)
   const divisor = 10;
   const totalCurrentPrice = scoredCoins.reduce((sum, c) => sum + c.current_price, 0);
   const currentValue = Math.round((totalCurrentPrice / divisor));
   
+  // Fetch historical data for all constituents
   const historicalPromises = scoredCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey, timePeriod)
+    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
   
+  // Build index level time series
   const timestampSet = new Set<number>();
   historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
@@ -269,13 +225,14 @@ async function calculateAnchor5(
     
     for (let i = 0; i < scoredCoins.length; i++) {
       const hist = historicalArrays[i];
-      const dataPoint = hist.find(d => Math.abs(d.timestamp - timestamp) < 1800);
+      const dataPoint = hist.find(d => d.timestamp === timestamp);
       
       if (dataPoint) {
         priceSum += dataPoint.price;
         volumeSum += dataPoint.volume;
         validCount++;
       } else {
+        // Use current price as fallback
         priceSum += scoredCoins[i].current_price;
       }
     }
@@ -290,44 +247,22 @@ async function calculateAnchor5(
     }
   }
   
-  let periodSeconds: number;
-  let timeframe: '5m' | '15m' | '1h' | '4h' | '1d' | '1w';
-  let minCandles: number;
+  // Aggregate to candles
+  const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
+  const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
+  const candles = aggregateToCandles(indexLevels, periodSeconds);
   
-  switch (timePeriod) {
-    case 'daily':
-      periodSeconds = 1800;
-      timeframe = '15m';
-      minCandles = 48;
-      break;
-    case 'month':
-      periodSeconds = 3600;
-      timeframe = '1h';
-      minCandles = 720;
-      break;
-    case 'year':
-      periodSeconds = 86400;
-      timeframe = '1d';
-      minCandles = 365;
-      break;
-    default:
-      periodSeconds = 604800;
-      timeframe = '1w';
-      minCandles = 52;
-  }
-  
-  const candles = aggregateToCandles(indexLevels, periodSeconds, minCandles);
-  
+  // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
   const yesterday = now - 86400;
   const yesterdayCandle = candles.find(c => Math.abs(c.time - yesterday) < 3600) || candles[Math.max(0, candles.length - 2)];
   const change_24h_percentage = yesterdayCandle ? ((currentValue - yesterdayCandle.close) / yesterdayCandle.close) * 100 : 0;
   
-  console.log(`[Anchor5] Generated ${candles.length} candles for ${timePeriod}`);
+  console.log(`[Anchor5] Generated ${candles.length} candles, first:`, candles[0], 'last:', candles[candles.length-1]);
   
   return {
     index: 'Anchor5',
-    baseValue: 1000,
+    baseValue: 1,
     timeframe,
     candles,
     currentValue,
@@ -357,6 +292,7 @@ async function calculateVibe20(
 ): Promise<IndexResponse> {
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
+  // Top 20 by 24h trading volume
   const top20 = marketData
     .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
     .sort((a, b) => b.total_volume - a.total_volume)
@@ -365,10 +301,10 @@ async function calculateVibe20(
   if (top20.length === 0) {
     return {
       index: 'Vibe20',
-      baseValue: 1000,
+      baseValue: 1,
       timeframe: '1h',
       candles: [],
-      currentValue: 1000,
+      currentValue: 1,
       change_24h_percentage: 0,
       meta: {
         tz: 'UTC',
@@ -378,6 +314,7 @@ async function calculateVibe20(
     };
   }
   
+  // Volume × Market Cap weighting
   const totalWeightBase = top20.reduce((sum, coin) => sum + (coin.total_volume * coin.market_cap), 0);
   const weightedCoins = top20.map(coin => ({
     ...coin,
@@ -385,14 +322,16 @@ async function calculateVibe20(
   }));
   
   const currentValue = Math.round(
-    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
+    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0)
   );
   
+  // Fetch historical data
   const historicalPromises = weightedCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey, timePeriod)
+    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
   
+  // Build index level time series
   const timestampSet = new Set<number>();
   historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
@@ -406,7 +345,7 @@ async function calculateVibe20(
     
     for (let i = 0; i < weightedCoins.length; i++) {
       const hist = historicalArrays[i];
-      const dataPoint = hist.find(d => Math.abs(d.timestamp - timestamp) < 1800);
+      const dataPoint = hist.find(d => d.timestamp === timestamp);
       
       if (dataPoint) {
         weightedPriceSum += dataPoint.price * weightedCoins[i].weight;
@@ -418,7 +357,7 @@ async function calculateVibe20(
     }
     
     if (validCount > 0) {
-      const indexValue = weightedPriceSum * 1000;
+      const indexValue = weightedPriceSum;
       indexLevels.push({
         timestamp,
         value: indexValue,
@@ -427,44 +366,22 @@ async function calculateVibe20(
     }
   }
   
-  let periodSeconds: number;
-  let timeframe: '5m' | '15m' | '1h' | '4h' | '1d' | '1w';
-  let minCandles: number;
+  // Aggregate to candles
+  const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
+  const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
+  const candles = aggregateToCandles(indexLevels, periodSeconds);
   
-  switch (timePeriod) {
-    case 'daily':
-      periodSeconds = 1800;
-      timeframe = '15m';
-      minCandles = 48;
-      break;
-    case 'month':
-      periodSeconds = 3600;
-      timeframe = '1h';
-      minCandles = 720;
-      break;
-    case 'year':
-      periodSeconds = 86400;
-      timeframe = '1d';
-      minCandles = 365;
-      break;
-    default:
-      periodSeconds = 604800;
-      timeframe = '1w';
-      minCandles = 52;
-  }
-  
-  const candles = aggregateToCandles(indexLevels, periodSeconds, minCandles);
-  
+  // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
   const yesterday = now - 86400;
   const yesterdayCandle = candles.find(c => Math.abs(c.time - yesterday) < 3600) || candles[Math.max(0, candles.length - 2)];
   const change_24h_percentage = yesterdayCandle ? ((currentValue - yesterdayCandle.close) / yesterdayCandle.close) * 100 : 0;
   
-  console.log(`[Vibe20] Generated ${candles.length} candles for ${timePeriod}`);
+  console.log(`[Vibe20] Generated ${candles.length} candles, first:`, candles[0], 'last:', candles[candles.length-1]);
   
   return {
     index: 'Vibe20',
-    baseValue: 1000,
+    baseValue: 1,
     timeframe,
     candles,
     currentValue,
@@ -505,6 +422,7 @@ async function calculateWave100(
     }
   };
   
+  // Select top 100 momentum coins
   const momentumCoins = marketData
     .filter(coin => !stablecoins.has(coin.symbol.toLowerCase()))
     .filter(coin => coin.current_price > 0 && coin.market_cap > 0)
@@ -531,21 +449,27 @@ async function calculateWave100(
     };
   }
   
+  // Momentum-proportional weighting
+  const totalPositiveMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, coin.momentum), 0);
   const weightedCoins = momentumCoins.map(coin => ({
     ...coin,
-    weight: 1 / momentumCoins.length
+    weight: totalPositiveMomentum > 0 
+      ? Math.max(0, coin.momentum) / totalPositiveMomentum 
+      : 1 / momentumCoins.length
   }));
   
   const currentValue = Math.round(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
   );
   
+  // Use top 20 for historical data (performance)
   const top20 = weightedCoins.slice(0, 20);
   const historicalPromises = top20.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey, timePeriod)
+    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
   
+  // Build index level time series
   const timestampSet = new Set<number>();
   historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
@@ -559,7 +483,7 @@ async function calculateWave100(
     
     for (let i = 0; i < top20.length; i++) {
       const hist = historicalArrays[i];
-      const dataPoint = hist.find(d => Math.abs(d.timestamp - timestamp) < 1800);
+      const dataPoint = hist.find(d => d.timestamp === timestamp);
       
       if (dataPoint) {
         weightedPriceSum += dataPoint.price * top20[i].weight;
@@ -580,40 +504,18 @@ async function calculateWave100(
     }
   }
   
-  let periodSeconds: number;
-  let timeframe: '5m' | '15m' | '1h' | '4h' | '1d' | '1w';
-  let minCandles: number;
+  // Aggregate to candles
+  const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
+  const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
+  const candles = aggregateToCandles(indexLevels, periodSeconds);
   
-  switch (timePeriod) {
-    case 'daily':
-      periodSeconds = 1800;
-      timeframe = '15m';
-      minCandles = 48;
-      break;
-    case 'month':
-      periodSeconds = 3600;
-      timeframe = '1h';
-      minCandles = 720;
-      break;
-    case 'year':
-      periodSeconds = 86400;
-      timeframe = '1d';
-      minCandles = 365;
-      break;
-    default:
-      periodSeconds = 604800;
-      timeframe = '1w';
-      minCandles = 52;
-  }
-  
-  const candles = aggregateToCandles(indexLevels, periodSeconds, minCandles);
-  
+  // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
   const yesterday = now - 86400;
   const yesterdayCandle = candles.find(c => Math.abs(c.time - yesterday) < 3600) || candles[Math.max(0, candles.length - 2)];
   const change_24h_percentage = yesterdayCandle ? ((currentValue - yesterdayCandle.close) / yesterdayCandle.close) * 100 : 0;
   
-  console.log(`[Wave100] Generated ${candles.length} candles for ${timePeriod}`);
+  console.log(`[Wave100] Generated ${candles.length} candles, first:`, candles[0], 'last:', candles[candles.length-1]);
   
   return {
     index: 'Wave100',
@@ -625,7 +527,6 @@ async function calculateWave100(
     meta: {
       tz: 'UTC',
       constituents: weightedCoins
-        .slice(0, 20)
         .sort((a, b) => (b.price_change_percentage_24h ?? -Infinity) - (a.price_change_percentage_24h ?? -Infinity))
         .map(c => ({
           symbol: c.symbol.toUpperCase(),
@@ -641,8 +542,9 @@ async function calculateWave100(
   };
 }
 
+// ===== Cache Management =====
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 120000;
+const CACHE_TTL = 120000; // 2 minutes
 
 function getCacheKey(timePeriod: string): string {
   return `indices_${timePeriod}`;
@@ -651,7 +553,6 @@ function getCacheKey(timePeriod: string): string {
 function getFromCache(key: string): any | null {
   const cached = cache.get(key);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    console.log(`[Cache] HIT for ${key}`);
     return cached.data;
   }
   cache.delete(key);
@@ -660,8 +561,9 @@ function getFromCache(key: string): any | null {
 
 function setCache(key: string, data: any): void {
   cache.set(key, { data, timestamp: Date.now() });
-  console.log(`[Cache] SET for ${key}`);
 }
+
+// ===== Main Handler =====
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -671,11 +573,11 @@ serve(async (req) => {
   try {
     const { timePeriod = 'year' } = await req.json();
     
-    console.log(`[crypto-indices] Request for timePeriod: ${timePeriod}`);
-    
+    // Check cache first
     const cacheKey = getCacheKey(timePeriod);
     const cached = getFromCache(cacheKey);
     if (cached) {
+      console.log(`Serving cached data for ${timePeriod}`);
       return new Response(
         JSON.stringify(cached),
         {
@@ -694,6 +596,7 @@ serve(async (req) => {
       throw new Error('CoinGecko API key not configured');
     }
 
+    // Fetch market data
     const marketResponse = await fetch(
       `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=false&price_change_percentage=24h%2C7d%2C30d&page=1`,
       {
@@ -709,28 +612,28 @@ serve(async (req) => {
 
     const marketData: CoinData[] = await marketResponse.json();
     
+    // Calculate time range
     const now = Math.floor(Date.now() / 1000);
     let fromTimestamp: number;
     
     switch (timePeriod) {
       case 'daily':
-        fromTimestamp = now - 86400;
+        fromTimestamp = now - 86400; // 24 hours
         break;
       case 'month':
-        fromTimestamp = now - (30 * 86400);
+        fromTimestamp = now - (30 * 86400); // 30 days
         break;
       case 'year':
-        fromTimestamp = now - (365 * 86400);
+        fromTimestamp = now - (365 * 86400); // 1 year
         break;
       case 'all':
-        fromTimestamp = now - (730 * 86400);
+        fromTimestamp = now - (730 * 86400); // 2 years
         break;
       default:
         fromTimestamp = now - (365 * 86400);
     }
     
-    console.log(`[crypto-indices] Fetching data from ${new Date(fromTimestamp * 1000).toISOString()} to ${new Date(now * 1000).toISOString()}`);
-    
+    // Calculate indices in parallel
     const [anchor5, vibe20, wave100] = await Promise.all([
       calculateAnchor5(marketData, fromTimestamp, now, apiKey, timePeriod),
       calculateVibe20(marketData, fromTimestamp, now, apiKey, timePeriod),
@@ -744,9 +647,8 @@ serve(async (req) => {
       lastUpdated: new Date(now * 1000).toISOString(),
     };
 
+    // Cache the result
     setCache(cacheKey, responseData);
-
-    console.log(`[crypto-indices] Success! Anchor5: ${anchor5.candles.length} candles, Vibe20: ${vibe20.candles.length} candles, Wave100: ${wave100.candles.length} candles`);
 
     return new Response(
       JSON.stringify(responseData),
