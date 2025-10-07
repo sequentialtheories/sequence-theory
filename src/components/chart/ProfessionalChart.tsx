@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, IChartApi, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
+import { 
+  createChart, 
+  IChartApi, 
+  ISeriesApi, 
+  CandlestickData, 
+  HistogramData, 
+  UTCTimestamp,
+  CandlestickSeries,
+  HistogramSeries
+} from 'lightweight-charts';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { RefreshIndicator } from './RefreshIndicator';
-
-interface CandlestickDataPoint {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
+import { NormalizedCandle } from '@/utils/candleUtils';
 
 interface ProfessionalChartProps {
-  data: CandlestickDataPoint[];
+  data: NormalizedCandle[];
   color: string;
   indexName: string;
   timePeriod: string;
@@ -38,8 +39,8 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const candlestickSeriesRef = useRef<any>(null);
-  const volumeSeriesRef = useRef<any>(null);
+  const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
   
   const [tooltip, setTooltip] = useState({
     visible: false,
@@ -107,29 +108,39 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         mouseWheel: true,
         pressedMouseMove: true,
       },
+      autoSize: true,
     });
 
     chartRef.current = chart;
 
+    // Add candlestick series with proper API
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#10b981',
+      upColor: '#22c55e',
       downColor: '#ef4444',
-      borderUpColor: '#10b981',
+      borderUpColor: '#22c55e',
       borderDownColor: '#ef4444',
-      wickUpColor: '#10b981',
+      wickUpColor: '#22c55e',
       wickDownColor: '#ef4444',
+      priceFormat: {
+        type: 'price',
+        precision: 2,
+        minMove: 0.01,
+      },
     });
 
     candlestickSeriesRef.current = candlestickSeries;
 
     const volumeSeries = chart.addSeries(HistogramSeries, {
+      priceScaleId: '',
       priceFormat: {
         type: 'volume',
       },
-      priceScaleId: '',
+      color: 'rgba(148, 163, 184, 0.35)',
     });
 
     volumeSeriesRef.current = volumeSeries;
+    
+    // Set proper volume scale margins
     volumeSeries.priceScale().applyOptions({
       scaleMargins: {
         top: 0.8,
@@ -147,6 +158,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     window.addEventListener('resize', handleResize);
 
+    // Setup crosshair for tooltip
     chart.subscribeCrosshairMove((param) => {
       if (!param.time || !param.point || !candlestickSeriesRef.current) {
         setTooltip(prev => ({ ...prev, visible: false }));
@@ -154,11 +166,10 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       }
 
       const candleData = param.seriesData.get(candlestickSeriesRef.current);
-      const volumeData = param.seriesData.get(volumeSeriesRef.current);
+      const volumeData = param.seriesData.get(volumeSeriesRef.current!);
       
       if (candleData && 'open' in candleData) {
-        const date = new Date((param.time as number) * 1000);
-        const timeStr = formatXAxisLabel ? formatXAxisLabel(param.time as number) : date.toLocaleString();
+        const timeStr = formatXAxisLabel(param.time as number);
         
         setTooltip({
           visible: true,
@@ -176,6 +187,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       }
     });
 
+    // ONLY cleanup on unmount (component destroyed)
     return () => {
       console.log(`[${indexName}] Cleaning up chart instance`);
       window.removeEventListener('resize', handleResize);
@@ -184,51 +196,75 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         chartRef.current = null;
       }
     };
-  }, [indexName]);
+  }, [indexName]); // Only recreate if indexName changes (shouldn't happen)
 
   // Update chart data when data or time period changes
   useEffect(() => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
     
     // Handle empty data gracefully
-    if (!data.length) {
+    if (!data || data.length === 0) {
       console.log(`[${indexName}] No data to display, clearing chart`);
       candlestickSeriesRef.current.setData([]);
       volumeSeriesRef.current.setData([]);
       return;
     }
 
-    const sortedData = [...data].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    console.log(`[${indexName}] Updating chart with ${data.length} candles`);
+    console.log(`[${indexName}] First candle:`, data[0]);
 
-    const candlestickData = sortedData.map(point => ({
-      time: Math.floor(new Date(point.date).getTime() / 1000) as Time,
-      open: point.open,
-      high: point.high,
-      low: point.low,
-      close: point.close,
-    }));
+    // Data is already normalized and sorted from normalizeCandles
+    // Double-check for NaN values before passing to chart
+    const candlestickData: CandlestickData[] = data
+      .filter(point => {
+        const valid = !isNaN(point.time) && point.time > 0 && 
+                     !isNaN(point.open) && !isNaN(point.high) && 
+                     !isNaN(point.low) && !isNaN(point.close);
+        if (!valid) {
+          console.error(`[${indexName}] Invalid candle data:`, point);
+        }
+        return valid;
+      })
+      .map(point => ({
+        time: point.time as UTCTimestamp, // Already in seconds
+        open: point.open,
+        high: point.high,
+        low: point.low,
+        close: point.close,
+      }));
 
-    const volumeData = sortedData.map(point => ({
-      time: Math.floor(new Date(point.date).getTime() / 1000) as Time,
-      value: point.volume,
-      color: point.close > point.open 
-        ? 'rgba(16, 185, 129, 0.3)' 
-        : 'rgba(239, 68, 68, 0.3)',
-    }));
+    const volumeData: HistogramData[] = data
+      .filter(point => !isNaN(point.time) && point.time > 0)
+      .map(point => ({
+        time: point.time as UTCTimestamp,
+        value: point.volumeUsd || 0,
+        color: point.close >= point.open 
+          ? 'rgba(34, 197, 94, 0.5)' 
+          : 'rgba(239, 68, 68, 0.5)',
+      }));
 
+    if (candlestickData.length === 0) {
+      console.warn(`[${indexName}] No valid candlestick data after filtering`);
+      candlestickSeriesRef.current.setData([]);
+      volumeSeriesRef.current.setData([]);
+      return;
+    }
+
+    console.log(`[${indexName}] Setting ${candlestickData.length} valid candles to chart`);
+
+    // Update existing series WITHOUT recreating chart
     candlestickSeriesRef.current.setData(candlestickData);
     volumeSeriesRef.current.setData(volumeData);
 
     if (chartRef.current) {
       chartRef.current.timeScale().fitContent();
     }
-  }, [data, timePeriod]);
+  }, [data, timePeriod, indexName]);
 
   // Handle visibility changes - resize when becoming visible
   useEffect(() => {
     if (isVisible && chartRef.current && chartContainerRef.current) {
+      // Resize chart when becoming visible (in case container size changed)
       chartRef.current.applyOptions({
         width: chartContainerRef.current.clientWidth,
       });
@@ -256,8 +292,8 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       const newDiff = diff * 0.8;
       const center = ((visibleRange.from as number) + (visibleRange.to as number)) / 2;
       timeScale.setVisibleRange({
-        from: (center - newDiff / 2) as Time,
-        to: (center + newDiff / 2) as Time,
+        from: (center - newDiff / 2) as UTCTimestamp,
+        to: (center + newDiff / 2) as UTCTimestamp,
       });
     }
   };
@@ -274,8 +310,8 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       const newDiff = diff * 1.2;
       const center = ((visibleRange.from as number) + (visibleRange.to as number)) / 2;
       timeScale.setVisibleRange({
-        from: (center - newDiff / 2) as Time,
-        to: (center + newDiff / 2) as Time,
+        from: (center - newDiff / 2) as UTCTimestamp,
+        to: (center + newDiff / 2) as UTCTimestamp,
       });
     }
   };
@@ -298,7 +334,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       {/* Tooltip */}
       {tooltip.visible && (
         <div
-          className="fixed z-50 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-strong pointer-events-none"
+          className="fixed z-50 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg pointer-events-none"
           style={{
             left: `${tooltip.position.x + 15}px`,
             top: `${tooltip.position.y + 15}px`,
@@ -360,7 +396,11 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       </div>
 
       {/* Chart container */}
-      <div ref={chartContainerRef} className="w-full" />
+      <div 
+        ref={chartContainerRef} 
+        className="w-full"
+        style={{ height: 400 }}
+      />
     </div>
   );
 };
