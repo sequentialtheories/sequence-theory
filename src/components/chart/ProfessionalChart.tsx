@@ -113,7 +113,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     chartRef.current = chart;
 
-    // Add candlestick series with proper API
+    // Add candlestick series using v5 API with series definition
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#22c55e',
       downColor: '#ef4444',
@@ -130,6 +130,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     candlestickSeriesRef.current = candlestickSeries;
 
+    // Add volume histogram using v5 API with series definition
     const volumeSeries = chart.addSeries(HistogramSeries, {
       priceScaleId: '',
       priceFormat: {
