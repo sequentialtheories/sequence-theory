@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { supabase } from '@/integrations/supabase/client';
 import { ProfessionalChart } from '@/components/chart/ProfessionalChart';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
-import { normalizeCandles, NormalizedCandle } from '@/utils/candleUtils';
 
 interface Candle {
   time: number;
@@ -15,6 +14,15 @@ interface Candle {
   low: number;
   close: number;
   volumeUsd: number;
+}
+
+interface CandlestickDataPoint {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
 }
 
 interface TokenComposition {
@@ -87,10 +95,6 @@ const Indices: React.FC = () => {
         body: { timePeriod: period }
       });
       if (error) throw error;
-      
-      console.log('[fetchIndicesData] Received data for period:', period);
-      console.log('[fetchIndicesData] Anchor5 candles:', data.anchor5?.candles?.length || 0);
-      console.log('[fetchIndicesData] First Anchor5 candle:', data.anchor5?.candles?.[0]);
       
       setError(null);
       setLastUpdated(new Date());
@@ -208,15 +212,16 @@ const Indices: React.FC = () => {
     data: waveData
   }], [anchorData, vibeData, waveData]);
 
-  // Normalize candles for professional chart rendering
-  const getNormalizedCandles = React.useCallback((candles: Candle[] | undefined): NormalizedCandle[] => {
-    if (!candles || candles.length === 0) {
-      console.log('[getNormalizedCandles] No candles provided');
-      return [];
-    }
-    console.log(`[getNormalizedCandles] Received ${candles.length} candles`);
-    console.log('[getNormalizedCandles] First raw candle:', candles[0]);
-    return normalizeCandles(candles);
+  // Convert candles to chart data format
+  const convertCandlesToChartData = React.useCallback((candles: Candle[]): CandlestickDataPoint[] => {
+    return candles.map(candle => ({
+      date: new Date(candle.time * 1000).toISOString(),
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+      volume: candle.volumeUsd
+    }));
   }, []);
 
   return (
@@ -358,28 +363,32 @@ const Indices: React.FC = () => {
                     {chartVisibility[index.name as keyof typeof chartVisibility] ? 'Hide Chart' : 'View Chart'}
                   </Button>
 
-                  {/* Chart always mounted for persistence */}
+                  {/* Chart always mounted for persistence, visibility controlled by opacity */}
                   <div 
-                    className="border-t pt-4 transition-opacity duration-300"
-                    style={{
-                      opacity: chartVisibility[index.name as keyof typeof chartVisibility] ? 1 : 0,
-                      pointerEvents: chartVisibility[index.name as keyof typeof chartVisibility] ? 'auto' : 'none',
-                      height: chartVisibility[index.name as keyof typeof chartVisibility] ? 'auto' : 0,
-                      overflow: chartVisibility[index.name as keyof typeof chartVisibility] ? 'visible' : 'hidden',
-                    }}
+                    className={`border-t pt-4 transition-all duration-300 ${
+                      chartVisibility[index.name as keyof typeof chartVisibility] 
+                        ? 'opacity-100 h-auto' 
+                        : 'opacity-0 h-0 overflow-hidden pointer-events-none'
+                    }`}
                   >
-                    <ProfessionalChart
-                      key={index.name}
-                      data={getNormalizedCandles(index.data?.candles)}
-                      color={index.chartColor}
-                      indexName={index.name}
-                      timePeriod={timePeriod}
-                      isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
-                      isRefreshing={isRefreshing}
-                      lastUpdated={lastUpdated}
-                      formatXAxisLabel={formatXAxisLabel}
-                      formatLargeNumber={formatLargeNumber}
-                    />
+                    {index.data?.candles && index.data.candles.length > 0 ? (
+                      <ProfessionalChart
+                        key={index.name}
+                        data={convertCandlesToChartData(index.data.candles)}
+                        color={index.chartColor}
+                        indexName={index.name}
+                        timePeriod={timePeriod}
+                        isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
+                        isRefreshing={isRefreshing}
+                        lastUpdated={lastUpdated}
+                        formatXAxisLabel={formatXAxisLabel}
+                        formatLargeNumber={formatLargeNumber}
+                      />
+                    ) : (
+                      <div className="py-8 text-center text-muted-foreground">
+                        {loading ? 'Loading chart data...' : 'No chart data available for this time period'}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
