@@ -88,6 +88,10 @@ const Indices: React.FC = () => {
       });
       if (error) throw error;
       
+      console.log('[fetchIndicesData] Received data for period:', period);
+      console.log('[fetchIndicesData] Anchor5 candles:', data.anchor5?.candles?.length || 0);
+      console.log('[fetchIndicesData] First Anchor5 candle:', data.anchor5?.candles?.[0]);
+      
       setError(null);
       setLastUpdated(new Date());
       return {
@@ -206,7 +210,12 @@ const Indices: React.FC = () => {
 
   // Normalize candles for professional chart rendering
   const getNormalizedCandles = React.useCallback((candles: Candle[] | undefined): NormalizedCandle[] => {
-    if (!candles || candles.length === 0) return [];
+    if (!candles || candles.length === 0) {
+      console.log('[getNormalizedCandles] No candles provided');
+      return [];
+    }
+    console.log(`[getNormalizedCandles] Received ${candles.length} candles`);
+    console.log('[getNormalizedCandles] First raw candle:', candles[0]);
     return normalizeCandles(candles);
   }, []);
 

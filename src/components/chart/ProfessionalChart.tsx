@@ -210,22 +210,47 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       return;
     }
 
-    // Data is already normalized and sorted from normalizeCandles
-    const candlestickData: CandlestickData[] = data.map(point => ({
-      time: point.time as UTCTimestamp, // Already in seconds
-      open: point.open,
-      high: point.high,
-      low: point.low,
-      close: point.close,
-    }));
+    console.log(`[${indexName}] Updating chart with ${data.length} candles`);
+    console.log(`[${indexName}] First candle:`, data[0]);
 
-    const volumeData: HistogramData[] = data.map(point => ({
-      time: point.time as UTCTimestamp,
-      value: point.volumeUsd,
-      color: point.close >= point.open 
-        ? 'rgba(34, 197, 94, 0.5)' 
-        : 'rgba(239, 68, 68, 0.5)',
-    }));
+    // Data is already normalized and sorted from normalizeCandles
+    // Double-check for NaN values before passing to chart
+    const candlestickData: CandlestickData[] = data
+      .filter(point => {
+        const valid = !isNaN(point.time) && point.time > 0 && 
+                     !isNaN(point.open) && !isNaN(point.high) && 
+                     !isNaN(point.low) && !isNaN(point.close);
+        if (!valid) {
+          console.error(`[${indexName}] Invalid candle data:`, point);
+        }
+        return valid;
+      })
+      .map(point => ({
+        time: point.time as UTCTimestamp, // Already in seconds
+        open: point.open,
+        high: point.high,
+        low: point.low,
+        close: point.close,
+      }));
+
+    const volumeData: HistogramData[] = data
+      .filter(point => !isNaN(point.time) && point.time > 0)
+      .map(point => ({
+        time: point.time as UTCTimestamp,
+        value: point.volumeUsd || 0,
+        color: point.close >= point.open 
+          ? 'rgba(34, 197, 94, 0.5)' 
+          : 'rgba(239, 68, 68, 0.5)',
+      }));
+
+    if (candlestickData.length === 0) {
+      console.warn(`[${indexName}] No valid candlestick data after filtering`);
+      candlestickSeriesRef.current.setData([]);
+      volumeSeriesRef.current.setData([]);
+      return;
+    }
+
+    console.log(`[${indexName}] Setting ${candlestickData.length} valid candles to chart`);
 
     // Update existing series WITHOUT recreating chart
     candlestickSeriesRef.current.setData(candlestickData);

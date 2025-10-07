@@ -24,7 +24,12 @@ export interface NormalizedCandle {
  * - Coerces all values to numbers
  */
 export function normalizeCandles(raw: RawCandle[]): NormalizedCandle[] {
-  if (!raw || raw.length === 0) return [];
+  if (!raw || raw.length === 0) {
+    console.log('[normalizeCandles] Empty or undefined input');
+    return [];
+  }
+
+  console.log(`[normalizeCandles] Processing ${raw.length} candles, first candle:`, raw[0]);
 
   // 1) Sort by time
   const sorted = [...raw].sort((a, b) => Number(a.time) - Number(b.time));
@@ -33,8 +38,10 @@ export function normalizeCandles(raw: RawCandle[]): NormalizedCandle[] {
   const map = new Map<number, RawCandle>();
   for (const c of sorted) {
     const t = Number(c.time);
-    if (!isNaN(t)) {
+    if (!isNaN(t) && t > 0) {
       map.set(t, c);
+    } else {
+      console.warn('[normalizeCandles] Skipping invalid time:', c);
     }
   }
 
@@ -48,8 +55,9 @@ export function normalizeCandles(raw: RawCandle[]): NormalizedCandle[] {
     const close = Number(c.close);
     const vol = Number(c.volumeUsd) || 0;
 
-    // Skip invalid data
-    if (isNaN(time) || isNaN(open) || isNaN(high) || isNaN(low) || isNaN(close)) {
+    // Skip invalid data - must have valid time and OHLC
+    if (isNaN(time) || time <= 0 || isNaN(open) || isNaN(high) || isNaN(low) || isNaN(close)) {
+      console.warn('[normalizeCandles] Skipping invalid candle:', { time, open, high, low, close });
       continue;
     }
 
@@ -67,5 +75,13 @@ export function normalizeCandles(raw: RawCandle[]): NormalizedCandle[] {
     });
   }
 
-  return cleaned.sort((a, b) => a.time - b.time);
+  const result = cleaned.sort((a, b) => a.time - b.time);
+  console.log(`[normalizeCandles] Cleaned ${result.length} valid candles from ${raw.length} raw`);
+  
+  if (result.length > 0) {
+    console.log('[normalizeCandles] First cleaned candle:', result[0]);
+    console.log('[normalizeCandles] Last cleaned candle:', result[result.length - 1]);
+  }
+
+  return result;
 }
