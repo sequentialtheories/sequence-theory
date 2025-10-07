@@ -18,7 +18,7 @@ interface Candle {
 }
 
 interface CandlestickDataPoint {
-  time: number; // ✅ Fixed: Unix timestamp instead of ISO string
+  time: number;
   open: number;
   high: number;
   low: number;
@@ -29,11 +29,11 @@ interface CandlestickDataPoint {
 interface TokenComposition {
   id: string;
   symbol: string;
-  weight: number;
-  price: number;
-  market_cap: number;
-  total_volume: number;
-  price_change_percentage_24h: number;
+  weight: number | null;
+  price: number | null;
+  market_cap: number | null;
+  total_volume: number | null;
+  price_change_percentage_24h: number | null;
 }
 
 interface IndexData {
@@ -52,7 +52,9 @@ interface IndexData {
 
 type TimePeriod = 'daily' | 'month' | 'year' | 'all';
 
-const formatLargeNumber = (value: number): string => {
+const formatLargeNumber = (value: number | null): string => {
+  if (value == null) return 'N/A';
+  
   const abs = Math.abs(value);
   
   if (abs >= 1e12) {
@@ -274,10 +276,10 @@ const Indices: React.FC = () => {
     }
   ], [anchorData, vibeData, waveData]);
 
-  // ✅ FIXED: Convert candles to chart data format with time as number
+  // Convert candles to chart data format with time as number
   const convertCandlesToChartData = useCallback((candles: Candle[]): CandlestickDataPoint[] => {
     return candles.map(candle => ({
-      time: candle.time, // Keep as Unix timestamp (seconds)
+      time: candle.time,
       open: candle.open,
       high: candle.high,
       low: candle.low,
@@ -419,7 +421,7 @@ const Indices: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* Token Composition Table */}
+                  {/* Token Composition Table - NULL SAFE */}
                   {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && (
                     <div className="mb-4">
                       <h4 className="text-sm font-semibold mb-2">Index Composition</h4>
@@ -439,17 +441,31 @@ const Indices: React.FC = () => {
                             {index.data.meta.constituents.map((token, tokenIndex) => (
                               <tr key={`${token.id}-${tokenIndex}`} className="border-t hover:bg-muted/50 transition-colors">
                                 <td className="p-2">
-                                  <div className="font-medium">{token.symbol}</div>
+                                  <div className="font-medium">{token.symbol || 'N/A'}</div>
                                 </td>
-                                <td className="text-right p-2">{(token.weight || 0).toFixed(1)}%</td>
-                                <td className="text-right p-2 hidden sm:table-cell">${formatLargeNumber(token.price)}</td>
-                                <td className="text-right p-2 hidden md:table-cell">${formatLargeNumber(token.market_cap)}</td>
-                                <td className="text-right p-2 hidden lg:table-cell">${formatLargeNumber(token.total_volume)}</td>
+                                <td className="text-right p-2">
+                                  {token.weight != null ? `${token.weight.toFixed(1)}%` : 'N/A'}
+                                </td>
+                                <td className="text-right p-2 hidden sm:table-cell">
+                                  ${formatLargeNumber(token.price)}
+                                </td>
+                                <td className="text-right p-2 hidden md:table-cell">
+                                  ${formatLargeNumber(token.market_cap)}
+                                </td>
+                                <td className="text-right p-2 hidden lg:table-cell">
+                                  ${formatLargeNumber(token.total_volume)}
+                                </td>
                                 <td className={`text-right p-2 ${
-                                  token.price_change_percentage_24h >= 0 ? 'text-green-600' : 'text-red-600'
+                                  token.price_change_percentage_24h != null 
+                                    ? (token.price_change_percentage_24h >= 0 ? 'text-green-600' : 'text-red-600')
+                                    : 'text-muted-foreground'
                                 }`}>
-                                  {token.price_change_percentage_24h >= 0 ? '+' : ''}
-                                  {token.price_change_percentage_24h.toFixed(2)}%
+                                  {token.price_change_percentage_24h != null ? (
+                                    <>
+                                      {token.price_change_percentage_24h >= 0 ? '+' : ''}
+                                      {token.price_change_percentage_24h.toFixed(2)}%
+                                    </>
+                                  ) : 'N/A'}
                                 </td>
                               </tr>
                             ))}
@@ -505,4 +521,4 @@ const Indices: React.FC = () => {
   );
 };
 
-export default Indices; 
+export default Indices;
