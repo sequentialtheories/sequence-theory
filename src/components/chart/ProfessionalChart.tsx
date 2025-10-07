@@ -5,7 +5,7 @@ import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { RefreshIndicator } from './RefreshIndicator';
 
 interface CandlestickDataPoint {
-  date: string;
+  time: number; // ✅ Fixed: Changed from date: string to time: number
   open: number;
   high: number;
   low: number;
@@ -101,7 +101,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     chartRef.current = chart;
 
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
+    const candlestickSeries = chart.addCandlestickSeries({
       upColor: '#10b981',
       downColor: '#ef4444',
       borderUpColor: '#10b981',
@@ -112,7 +112,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     candlestickSeriesRef.current = candlestickSeries;
 
-    const volumeSeries = chart.addSeries(HistogramSeries, {
+    const volumeSeries = chart.addHistogramSeries({
       priceFormat: {
         type: 'volume',
       },
@@ -147,8 +147,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       const volumeData = param.seriesData.get(volumeSeriesRef.current);
       
       if (candleData && 'open' in candleData) {
-        const date = new Date((param.time as number) * 1000);
-        const timeStr = formatXAxisLabel ? formatXAxisLabel(param.time as number) : date.toLocaleString();
+        const timeStr = formatXAxisLabel ? formatXAxisLabel(param.time as number) : new Date((param.time as number) * 1000).toLocaleString();
         
         setTooltip({
           visible: true,
@@ -176,12 +175,12 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
   useEffect(() => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !data.length) return;
 
-    const sortedData = [...data].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // ✅ FIXED: Sort by time (already a number, no need to parse)
+    const sortedData = [...data].sort((a, b) => a.time - b.time);
 
+    // ✅ FIXED: Use time directly (it's already a Unix timestamp in seconds)
     const candlestickData = sortedData.map(point => ({
-      time: Math.floor(new Date(point.date).getTime() / 1000) as Time,
+      time: point.time as Time,
       open: point.open,
       high: point.high,
       low: point.low,
@@ -189,7 +188,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
     }));
 
     const volumeData = sortedData.map(point => ({
-      time: Math.floor(new Date(point.date).getTime() / 1000) as Time,
+      time: point.time as Time,
       value: point.volume,
       color: point.close > point.open 
         ? 'rgba(16, 185, 129, 0.3)' 
@@ -246,7 +245,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <h4 className="text-lg font-semibold">
           {indexName} Performance ({
             timePeriod === 'daily' ? '12AM-Current' : 
@@ -260,7 +259,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       {/* Tooltip */}
       {tooltip.visible && (
         <div
-          className="fixed z-50 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-strong pointer-events-none"
+          className="fixed z-50 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg pointer-events-none"
           style={{
             left: `${tooltip.position.x + 15}px`,
             top: `${tooltip.position.y + 15}px`,
@@ -300,6 +299,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
           size="sm"
           onClick={handleZoomIn}
           className="h-8 px-2"
+          aria-label="Zoom in"
         >
           <ZoomIn className="h-3 w-3" />
         </Button>
@@ -308,6 +308,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
           size="sm"
           onClick={handleZoomOut}
           className="h-8 px-2"
+          aria-label="Zoom out"
         >
           <ZoomOut className="h-3 w-3" />
         </Button>
@@ -316,13 +317,14 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
           size="sm"
           onClick={handleResetZoom}
           className="h-8 px-2"
+          aria-label="Reset zoom"
         >
           <Maximize2 className="h-3 w-3" />
         </Button>
       </div>
 
       {/* Chart container */}
-      <div ref={chartContainerRef} className="w-full" />
+      <div ref={chartContainerRef} className="w-full" role="img" aria-label={`${indexName} candlestick chart`} />
     </div>
   );
 };
