@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, IChartApi, Time, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
+import { createChart, IChartApi, Time } from 'lightweight-charts';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { RefreshIndicator } from './RefreshIndicator';
 
 interface CandlestickDataPoint {
-  time: number; // ✅ Fixed: Changed from date: string to time: number
+  time: number;
   open: number;
   high: number;
   low: number;
@@ -54,6 +54,8 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
   useEffect(() => {
     if (!chartContainerRef.current || typeof window === 'undefined') return;
 
+    console.log('Initializing chart for', indexName);
+
     const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { color: 'transparent' },
@@ -101,6 +103,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     chartRef.current = chart;
 
+    // ✅ Version 3.x syntax: use addCandlestickSeries() method
     const candlestickSeries = chart.addCandlestickSeries({
       upColor: '#10b981',
       downColor: '#ef4444',
@@ -112,6 +115,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
 
     candlestickSeriesRef.current = candlestickSeries;
 
+    // ✅ Version 3.x syntax: use addHistogramSeries() method
     const volumeSeries = chart.addHistogramSeries({
       priceFormat: {
         type: 'volume',
@@ -169,16 +173,18 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [timePeriod, formatXAxisLabel]);
+  }, [timePeriod, formatXAxisLabel, indexName]);
 
   // Update chart data
   useEffect(() => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !data.length) return;
 
-    // ✅ FIXED: Sort by time (already a number, no need to parse)
+    console.log(`Setting data for ${indexName}:`, data.slice(0, 3));
+
+    // Sort by time (already a number)
     const sortedData = [...data].sort((a, b) => a.time - b.time);
 
-    // ✅ FIXED: Use time directly (it's already a Unix timestamp in seconds)
+    // Use time directly (it's already a Unix timestamp in seconds)
     const candlestickData = sortedData.map(point => ({
       time: point.time as Time,
       open: point.open,
@@ -195,13 +201,16 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         : 'rgba(239, 68, 68, 0.3)',
     }));
 
+    console.log('Candlestick data sample:', candlestickData.slice(0, 3));
+    console.log('Volume data sample:', volumeData.slice(0, 3));
+
     candlestickSeriesRef.current.setData(candlestickData);
     volumeSeriesRef.current.setData(volumeData);
 
     if (chartRef.current) {
       chartRef.current.timeScale().fitContent();
     }
-  }, [data]);
+  }, [data, indexName]);
 
   const handleResetZoom = () => {
     if (chartRef.current) {
