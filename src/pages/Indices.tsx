@@ -165,49 +165,214 @@ const calculateDaysUntilRebalance = (nextRebalance: string): number => {
 };
 
 // ============================================================================
-// MOCK DATA GENERATORS (Remove when backend is ready)
+// REAL CALCULATION FUNCTIONS
 // ============================================================================
 
-const generateMockPerformanceMetrics = (): PerformanceMetrics => ({
-  ytd: Math.random() * 200 - 50,
-  one_month: Math.random() * 40 - 10,
-  three_month: Math.random() * 60 - 20,
-  one_year: Math.random() * 150 - 30,
-  since_inception: Math.random() * 300 - 50,
-  high_52_week: 1500 + Math.random() * 500,
-  low_52_week: 800 + Math.random() * 200,
-});
-
-const generateMockRiskMetrics = (): RiskMetrics => ({
-  volatility_30d: 20 + Math.random() * 40,
-  volatility_90d: 25 + Math.random() * 35,
-  sharpe_ratio: Math.random() * 3 - 0.5,
-  max_drawdown: -(10 + Math.random() * 40),
-  max_drawdown_date: '2024-08-05',
-  beta_vs_btc: 0.5 + Math.random() * 1.5,
-  correlation_with_btc: 0.4 + Math.random() * 0.5,
-});
-
-const generateMockRebalanceInfo = (frequency: string): RebalanceInfo => {
-  const now = new Date();
-  const lastRebalance = new Date(now);
-  lastRebalance.setDate(1); // First of current month
-  
-  const nextRebalance = new Date(lastRebalance);
-  if (frequency === 'Monthly') {
-    nextRebalance.setMonth(nextRebalance.getMonth() + 1);
-  } else if (frequency === 'Quarterly') {
-    nextRebalance.setMonth(nextRebalance.getMonth() + 3);
+const calculatePerformanceMetrics = (candles: Candle[], baseValue: number): PerformanceMetrics => {
+  if (!candles || candles.length === 0) {
+    return {
+      ytd: 0,
+      one_month: 0,
+      three_month: 0,
+      one_year: 0,
+      since_inception: 0,
+      high_52_week: baseValue,
+      low_52_week: baseValue,
+    };
   }
+
+  const currentCandle = candles[candles.length - 1];
+  const currentPrice = currentCandle.close;
+  const now = new Date();
+  const nowTime = Math.floor(now.getTime() / 1000);
+
+  // Helper: Find candle closest to target timestamp
+  const findCandleAtTime = (targetTime: number): Candle | null => {
+    if (candles[0].time > targetTime) return null;
+    
+    let closest = candles[0];
+    for (const candle of candles) {
+      if (candle.time <= targetTime) {
+        closest = candle;
+      } else {
+        break;
+      }
+    }
+    return closest;
+  };
+
+  // Calculate returns
+  const calculateReturn = (pastCandle: Candle | null): number => {
+    if (!pastCandle) return 0;
+    return ((currentPrice - pastCandle.close) / pastCandle.close) * 100;
+  };
+
+  // YTD: First candle of current year
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const ytdCandle = findCandleAtTime(Math.floor(yearStart.getTime() / 1000));
+  const ytd = calculateReturn(ytdCandle);
+
+  // 1 month ago
+  const oneMonthAgo = nowTime - (30 * 24 * 60 * 60);
+  const oneMonthCandle = findCandleAtTime(oneMonthAgo);
+  const one_month = calculateReturn(oneMonthCandle);
+
+  // 3 months ago
+  const threeMonthAgo = nowTime - (90 * 24 * 60 * 60);
+  const threeMonthCandle = findCandleAtTime(threeMonthAgo);
+  const three_month = calculateReturn(threeMonthCandle);
+
+  // 1 year ago
+  const oneYearAgo = nowTime - (365 * 24 * 60 * 60);
+  const oneYearCandle = findCandleAtTime(oneYearAgo);
+  const one_year = calculateReturn(oneYearCandle);
+
+  // Since inception
+  const inceptionCandle = candles[0];
+  const since_inception = ((currentPrice - inceptionCandle.open) / inceptionCandle.open) * 100;
+
+  // 52-week high/low
+  const fiftyTwoWeeksAgo = nowTime - (365 * 24 * 60 * 60);
+  const recentCandles = candles.filter(c => c.time >= fiftyTwoWeeksAgo);
   
+  let high_52_week = currentPrice;
+  let low_52_week = currentPrice;
+  
+  if (recentCandles.length > 0) {
+    high_52_week = Math.max(...recentCandles.map(c => c.high));
+    low_52_week = Math.min(...recentCandles.map(c => c.low));
+  }
+
+  return {
+    ytd,
+    one_month,
+    three_month,
+    one_year,
+    since_inception,
+    high_52_week,
+    low_52_week,
+  };
+};
+
+const calculateRiskMetrics = (candles: Candle[]): RiskMetrics => {
+  if (!candles || candles.length < 2) {
+    return {
+      volatility_30d: 0,
+      volatility_90d: 0,
+      sharpe_ratio: 0,
+      max_drawdown: 0,
+      beta_vs_btc: 0,
+      correlation_with_btc: 0,
+    };
+  }
+
+  // Calculate daily returns
+  const dailyReturns: number[] = [];
+  for (let i = 1; i < candles.length; i++) {
+    const ret = (candles[i].close - candles[i - 1].close) / candles[i - 1].close;
+    dailyReturns.push(ret);
+  }
+
+  // Helper: Calculate standard deviation
+  const calculateStdDev = (values: number[]): number => {
+    if (values.length === 0) return 0;
+    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+    return Math.sqrt(variance);
+  };
+
+  // Helper: Get returns for last N days
+  const getReturnsForDays = (days: number): number[] => {
+    const targetCount = Math.min(days, dailyReturns.length);
+    return dailyReturns.slice(-targetCount);
+  };
+
+  // 30-day volatility (annualized)
+  const returns30d = getReturnsForDays(30);
+  const volatility_30d = calculateStdDev(returns30d) * Math.sqrt(365) * 100;
+
+  // 90-day volatility (annualized)
+  const returns90d = getReturnsForDays(90);
+  const volatility_90d = calculateStdDev(returns90d) * Math.sqrt(365) * 100;
+
+  // Sharpe Ratio (assume 0% risk-free rate for crypto)
+  const avgReturn = dailyReturns.reduce((sum, val) => sum + val, 0) / dailyReturns.length;
+  const annualizedReturn = avgReturn * 365;
+  const annualizedVol = calculateStdDev(dailyReturns) * Math.sqrt(365);
+  const sharpe_ratio = annualizedVol !== 0 ? annualizedReturn / annualizedVol : 0;
+
+  // Max Drawdown
+  let maxDrawdown = 0;
+  let maxDrawdownDate = '';
+  let peak = candles[0].close;
+  let peakDate = new Date(candles[0].time * 1000);
+
+  for (let i = 1; i < candles.length; i++) {
+    const current = candles[i].close;
+    
+    if (current > peak) {
+      peak = current;
+      peakDate = new Date(candles[i].time * 1000);
+    } else {
+      const drawdown = ((current - peak) / peak) * 100;
+      if (drawdown < maxDrawdown) {
+        maxDrawdown = drawdown;
+        maxDrawdownDate = new Date(candles[i].time * 1000).toISOString().split('T')[0];
+      }
+    }
+  }
+
+  return {
+    volatility_30d,
+    volatility_90d,
+    sharpe_ratio,
+    max_drawdown: maxDrawdown,
+    max_drawdown_date: maxDrawdownDate || undefined,
+    beta_vs_btc: 0, // Requires BTC data
+    correlation_with_btc: 0, // Requires BTC data
+  };
+};
+
+const calculateRebalanceInfo = (frequency: string, constituents: TokenComposition[]): RebalanceInfo => {
+  const now = new Date();
+  
+  let lastRebalance: Date;
+  let nextRebalance: Date;
+
+  if (frequency === 'Monthly') {
+    // Last rebalance: First day of current month
+    lastRebalance = new Date(now.getFullYear(), now.getMonth(), 1);
+    // Next rebalance: First day of next month
+    nextRebalance = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  } else if (frequency === 'Quarterly') {
+    // Find current quarter (0=Q1, 1=Q2, 2=Q3, 3=Q4)
+    const currentQuarter = Math.floor(now.getMonth() / 3);
+    // Last rebalance: First day of current quarter
+    lastRebalance = new Date(now.getFullYear(), currentQuarter * 3, 1);
+    // Next rebalance: First day of next quarter
+    nextRebalance = new Date(now.getFullYear(), (currentQuarter + 1) * 3, 1);
+  } else {
+    // Default to monthly
+    lastRebalance = new Date(now.getFullYear(), now.getMonth(), 1);
+    nextRebalance = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  }
+
+  const daysUntil = Math.ceil((nextRebalance.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
   return {
     last_rebalance: lastRebalance.toISOString(),
     next_rebalance: nextRebalance.toISOString(),
-    days_until_rebalance: calculateDaysUntilRebalance(nextRebalance.toISOString()),
+    days_until_rebalance: daysUntil,
     frequency,
-    constituents_added: ['NEW'],
-    constituents_removed: ['OLD'],
+    constituents_added: [],
+    constituents_removed: [],
   };
+};
+
+const calculateDivisor = (indexData: IndexData): number => {
+  // Simplified divisor calculation - in production this would be more complex
+  const totalMarketCap = indexData.meta.constituents?.reduce((sum, token) => sum + token.market_cap, 0) || 0;
+  return totalMarketCap > 0 ? totalMarketCap / indexData.baseValue : 1.0;
 };
 
 // ============================================================================
@@ -253,23 +418,29 @@ const Indices: React.FC = () => {
       
       console.log('[fetchIndicesData] Received data for period:', period);
       
-      // Enhance data with mock metrics (remove when backend provides real data)
+      // Enhance data with real calculated metrics
       const enhanceData = (indexData: IndexData | null, frequency: string): IndexData | null => {
-        if (!indexData) return null;
+        if (!indexData || !indexData.candles || indexData.candles.length === 0) return null;
+        
+        const performance = calculatePerformanceMetrics(indexData.candles, indexData.baseValue);
+        const risk = calculateRiskMetrics(indexData.candles);
+        const rebalanceInfo = calculateRebalanceInfo(frequency, indexData.meta.constituents || []);
         
         return {
           ...indexData,
           meta: {
             ...indexData.meta,
-            performance: generateMockPerformanceMetrics(),
-            risk: generateMockRiskMetrics(),
+            performance,
+            risk,
             metadata: {
               base_value: indexData.baseValue || 1000,
-              base_date: '2024-01-01',
-              divisor: 42.90050, // Example divisor
+              base_date: indexData.candles[0] 
+                ? new Date(indexData.candles[0].time * 1000).toISOString().split('T')[0] 
+                : '2024-01-01',
+              divisor: calculateDivisor(indexData),
               methodology_version: '1.0',
               total_constituents: indexData.meta.constituents?.length || 0,
-              rebalance_info: generateMockRebalanceInfo(frequency),
+              rebalance_info: rebalanceInfo,
             }
           }
         };
