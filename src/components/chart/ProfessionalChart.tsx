@@ -332,15 +332,16 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         <RefreshIndicator isRefreshing={isRefreshing} lastUpdated={lastUpdated} />
       </div>
 
-      {/* Tooltip */}
-      {tooltip.visible && (
-        <div
-          className="fixed z-50 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg pointer-events-none"
-          style={{
-            left: `${tooltip.position.x + 15}px`,
-            top: `${tooltip.position.y + 15}px`,
-          }}
-        >
+      <div className="relative">
+        {/* Tooltip */}
+        {tooltip.visible && (
+          <div
+            className="absolute z-50 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg pointer-events-none"
+            style={{
+              left: `${tooltip.position.x + 15}px`,
+              top: `${tooltip.position.y - 60}px`,
+            }}
+          >
           <div className="space-y-1 text-sm">
             <div className="font-semibold text-foreground">{indexName}</div>
             <div className="text-muted-foreground text-xs">{tooltip.time}</div>
@@ -366,42 +367,43 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
             </div>
           </div>
         </div>
-      )}
+        )}
 
-      {/* Zoom controls */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleZoomIn}
-          className="h-8 px-2"
-        >
-          <ZoomIn className="h-3 w-3" />
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleZoomOut}
-          className="h-8 px-2"
-        >
-          <ZoomOut className="h-3 w-3" />
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleResetZoom}
-          className="h-8 px-2"
-        >
-          <Maximize2 className="h-3 w-3" />
-        </Button>
+        {/* Zoom controls */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleZoomIn}
+            className="h-8 px-2"
+          >
+            <ZoomIn className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleZoomOut}
+            className="h-8 px-2"
+          >
+            <ZoomOut className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleResetZoom}
+            className="h-8 px-2"
+          >
+            <Maximize2 className="h-3 w-3" />
+          </Button>
+        </div>
+
+        {/* Chart container */}
+        <div 
+          ref={chartContainerRef} 
+          className="w-full"
+          style={{ height: 400 }}
+        />
       </div>
-
-      {/* Chart container */}
-      <div 
-        ref={chartContainerRef} 
-        className="w-full"
-        style={{ height: 400 }}
-      />
     </div>
   );
 };
