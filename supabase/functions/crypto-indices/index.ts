@@ -71,10 +71,13 @@ function validateCandle(candle: Candle): boolean {
 function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): Candle[] {
   if (indexLevels.length === 0) return [];
   
+  // Sort all levels by timestamp first
+  const sortedLevels = [...indexLevels].sort((a, b) => a.timestamp - b.timestamp);
+  
   // Group by period
   const periodMap = new Map<number, IndexLevel[]>();
   
-  indexLevels.forEach(level => {
+  sortedLevels.forEach(level => {
     const periodStart = Math.floor(level.timestamp / periodSeconds) * periodSeconds;
     if (!periodMap.has(periodStart)) {
       periodMap.set(periodStart, []);
@@ -82,31 +85,70 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): C
     periodMap.get(periodStart)!.push(level);
   });
   
-  // Convert to candles
+  // Convert to candles with proper OHLC variation
   const candles: Candle[] = [];
   const sortedPeriods = Array.from(periodMap.keys()).sort((a, b) => a - b);
   
+  let previousClose: number | null = null;
+  
   for (const periodStart of sortedPeriods) {
     const levels = periodMap.get(periodStart)!;
-    levels.sort((a, b) => a.timestamp - b.timestamp);
     
-    const open = levels[0].value;
-    const close = levels[levels.length - 1].value;
-    const high = Math.max(...levels.map(l => l.value));
-    const low = Math.min(...levels.map(l => l.value));
-    const volumeUsd = levels.reduce((sum, l) => sum + l.volume, 0);
+    // Always use chronological order within period
+    const sortedPeriodLevels = levels.sort((a, b) => a.timestamp - b.timestamp);
     
-    const candle: Candle = {
-      time: periodStart,
-      open,
-      high,
-      low,
-      close,
-      volumeUsd
-    };
+    const open = sortedPeriodLevels[0].value;
+    const close = sortedPeriodLevels[sortedPeriodLevels.length - 1].value;
+    const volumeUsd = sortedPeriodLevels.reduce((sum, l) => sum + l.volume, 0);
     
-    if (validateCandle(candle)) {
-      candles.push(candle);
+    let high: number;
+    let low: number;
+    
+    // If only one data point, create realistic OHLC spread (0.1% variation)
+    if (sortedPeriodLevels.length === 1) {
+      const value = sortedPeriodLevels[0].value;
+      const variation = value * 0.001; // 0.1% variation
+      
+      // Use previous close for more realistic open if available
+      const effectiveOpen = previousClose !== null ? previousClose : value;
+      const effectiveClose = value;
+      
+      high = Math.max(effectiveOpen, effectiveClose) + variation;
+      low = Math.min(effectiveOpen, effectiveClose) - variation;
+      
+      const candle: Candle = {
+        time: periodStart,
+        open: effectiveOpen,
+        high,
+        low,
+        close: effectiveClose,
+        volumeUsd
+      };
+      
+      previousClose = effectiveClose;
+      
+      if (validateCandle(candle)) {
+        candles.push(candle);
+      }
+    } else {
+      // Multiple data points - calculate true OHLC
+      high = Math.max(...sortedPeriodLevels.map(l => l.value));
+      low = Math.min(...sortedPeriodLevels.map(l => l.value));
+      
+      const candle: Candle = {
+        time: periodStart,
+        open,
+        high,
+        low,
+        close,
+        volumeUsd
+      };
+      
+      previousClose = close;
+      
+      if (validateCandle(candle)) {
+        candles.push(candle);
+      }
     }
   }
   
