@@ -828,48 +828,114 @@ const Indices: React.FC = () => {
   };
 
   // ============================================================================
-  // RENDER: INDEX METADATA
+  // RENDER: COMPARATIVE METRICS
   // ============================================================================
 
-  const IndexMetadataCard: React.FC<{ metadata: IndexMetadata | undefined }> = ({ metadata }) => {
-    if (!metadata) return null;
+  const ComparativeMetricsCard: React.FC<{ 
+    currentIndex: string;
+    performance: PerformanceMetrics | undefined;
+  }> = ({ currentIndex, performance }) => {
+    if (!performance) return null;
+    
+    // Get performance data for all indices
+    const allIndices = [
+      { name: 'Anchor5', data: anchorData, color: '#3b82f6' },
+      { name: 'Vibe20', data: vibeData, color: '#8b5cf6' },
+      { name: 'Wave100', data: waveData, color: '#06b6d4' }
+    ];
+    
+    const currentPerf = performance.ytd;
     
     return (
       <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            Index Information
+            <TrendingUp className="h-5 w-5" />
+            Comparative Metrics
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-xs text-muted-foreground mb-1">Base Value</div>
-              <div className="text-sm font-medium">{formatLargeNumber(metadata.base_value, 0)}</div>
+        <CardContent className="space-y-4">
+          {/* Crypto Indices Comparison */}
+          <div>
+            <div className="text-xs text-muted-foreground mb-3 font-semibold">vs. Other Indices (YTD)</div>
+            <div className="space-y-2">
+              {allIndices.map(idx => {
+                if (idx.name === currentIndex) return null;
+                const idxPerf = idx.data?.meta?.performance?.ytd || 0;
+                const diff = currentPerf - idxPerf;
+                return (
+                  <div key={idx.name} className="flex items-center justify-between py-2 border-b last:border-0">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-2 h-2 rounded-full" 
+                        style={{ backgroundColor: idx.color }}
+                      />
+                      <span className="text-sm font-medium">{idx.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-muted-foreground">
+                        {formatPercentage(idxPerf)}
+                      </span>
+                      <div className={`text-sm font-semibold ${getPercentageColor(diff)}`}>
+                        {diff > 0 ? '+' : ''}{formatPercentage(diff)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <div className="text-xs text-muted-foreground mb-1">Base Date</div>
-              <div className="text-sm font-medium">{formatDate(metadata.base_date)}</div>
+          </div>
+
+          {/* Traditional Markets Comparison */}
+          <div className="pt-2">
+            <div className="text-xs text-muted-foreground mb-3 font-semibold">vs. Traditional Markets (Typical YTD)</div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between py-2 border-b">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="text-sm font-medium">S&P 500</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">~10-15%</span>
+                  <div className={`text-sm font-semibold ${currentPerf > 12.5 ? 'text-green-600' : 'text-red-600'}`}>
+                    {currentPerf > 12.5 ? 'Outperforming' : 'Underperforming'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-purple-500" />
+                  <span className="text-sm font-medium">Nasdaq</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">~15-25%</span>
+                  <div className={`text-sm font-semibold ${currentPerf > 20 ? 'text-green-600' : 'text-red-600'}`}>
+                    {currentPerf > 20 ? 'Outperforming' : 'Underperforming'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                  <span className="text-sm font-medium">Gold</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">~5-8%</span>
+                  <div className={`text-sm font-semibold ${currentPerf > 6.5 ? 'text-green-600' : 'text-red-600'}`}>
+                    {currentPerf > 6.5 ? 'Outperforming' : 'Underperforming'}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-muted-foreground mb-1">Current Divisor</div>
-              <div className="text-sm font-medium">{metadata.divisor.toFixed(5)}</div>
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground mb-1">Methodology</div>
-              <div className="text-sm font-medium">Version {metadata.methodology_version}</div>
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground mb-1">Constituents</div>
-              <div className="text-sm font-medium">{metadata.total_constituents} tokens</div>
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground mb-1">Status</div>
-              <Badge variant="outline" className="text-green-600 border-green-600">
-                <CheckCircle2 className="h-3 w-3 mr-1" />
-                Active
-              </Badge>
+          </div>
+
+          {/* Performance Summary */}
+          <div className="pt-2 mt-2 border-t">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Current Index Performance</span>
+              <span className={`text-lg font-bold ${getPercentageColor(currentPerf)}`}>
+                {formatPercentage(currentPerf)}
+              </span>
             </div>
           </div>
         </CardContent>
@@ -1042,10 +1108,13 @@ const Indices: React.FC = () => {
                         <RiskMetricsCard risk={index.data?.meta?.risk} />
                       </div>
 
-                      {/* Rebalance Info & Metadata */}
+                      {/* Rebalance Info & Comparative Metrics */}
                       <div className="grid md:grid-cols-2 gap-4">
                         <RebalanceInfoCard info={index.data?.meta?.metadata?.rebalance_info} />
-                        <IndexMetadataCard metadata={index.data?.meta?.metadata} />
+                        <ComparativeMetricsCard 
+                          currentIndex={index.name} 
+                          performance={index.data?.meta?.performance} 
+                        />
                       </div>
 
                       {/* Token Composition Table */}
