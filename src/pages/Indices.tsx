@@ -394,6 +394,7 @@ const Indices: React.FC = () => {
   const [anchorData, setAnchorData] = useState<IndexData | null>(null);
   const [vibeData, setVibeData] = useState<IndexData | null>(null);
   const [waveData, setWaveData] = useState<IndexData | null>(null);
+  const [traditionalMarkets, setTraditionalMarkets] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'methodology'>('overview');
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('none');
   const [selectedIndices, setSelectedIndices] = useState<string[]>([]);
@@ -401,6 +402,25 @@ const Indices: React.FC = () => {
   // ============================================================================
   // DATA FETCHING
   // ============================================================================
+
+  const fetchTraditionalMarkets = async (period: string) => {
+    try {
+      console.log('[Indices] Fetching traditional markets data');
+      const { data, error } = await supabase.functions.invoke('traditional-markets', {
+        body: { timePeriod: period }
+      });
+
+      if (error) throw error;
+      
+      // Handle both direct data and fallback structure
+      const markets = data?.fallback || data;
+      console.log('[Indices] Traditional markets data:', markets);
+      return markets;
+    } catch (err) {
+      console.error('[Indices] Error fetching traditional markets:', err);
+      return [];
+    }
+  };
 
   const fetchIndicesData = async (period: TimePeriod, isRefresh = false) => {
     if (isRefresh) {
@@ -467,18 +487,23 @@ const Indices: React.FC = () => {
 
   const loadData = useCallback(async (isRefresh = false) => {
     try {
-      const data = await fetchIndicesData(timePeriod, isRefresh);
+      const [indicesData, marketsData] = await Promise.all([
+        fetchIndicesData(timePeriod, isRefresh),
+        fetchTraditionalMarkets(timePeriod)
+      ]);
       
       // During refresh, only update if we have valid data
       // This prevents rate-limit errors from wiping existing charts
       if (isRefresh) {
-        if (data.anchor5) setAnchorData(data.anchor5);
-        if (data.vibe20) setVibeData(data.vibe20);
-        if (data.wave100) setWaveData(data.wave100);
+        if (indicesData.anchor5) setAnchorData(indicesData.anchor5);
+        if (indicesData.vibe20) setVibeData(indicesData.vibe20);
+        if (indicesData.wave100) setWaveData(indicesData.wave100);
+        if (marketsData) setTraditionalMarkets(marketsData);
       } else {
-        setAnchorData(data.anchor5);
-        setVibeData(data.vibe20);
-        setWaveData(data.wave100);
+        setAnchorData(indicesData.anchor5);
+        setVibeData(indicesData.vibe20);
+        setWaveData(indicesData.wave100);
+        setTraditionalMarkets(marketsData || []);
       }
     } catch (err) {
       console.error('Failed to load indices data:', err);
@@ -834,7 +859,8 @@ const Indices: React.FC = () => {
   const ComparativeMetricsCard: React.FC<{ 
     currentIndex: string;
     performance: PerformanceMetrics | undefined;
-  }> = ({ currentIndex, performance }) => {
+    traditionalMarkets: any[];
+  }> = ({ currentIndex, performance, traditionalMarkets }) => {
     if (!performance) return null;
     
     // Get performance data for all indices
@@ -888,44 +914,33 @@ const Indices: React.FC = () => {
 
           {/* Traditional Markets Comparison */}
           <div className="pt-2">
-            <div className="text-xs text-muted-foreground mb-3 font-semibold">vs. Traditional Markets (Typical YTD)</div>
+            <div className="text-xs text-muted-foreground mb-3 font-semibold">vs. Traditional Markets (YTD)</div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span className="text-sm font-medium">S&P 500</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">~10-15%</span>
-                  <div className={`text-sm font-semibold ${currentPerf > 12.5 ? 'text-green-600' : 'text-red-600'}`}>
-                    {currentPerf > 12.5 ? 'Outperforming' : 'Underperforming'}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-2 border-b">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-purple-500" />
-                  <span className="text-sm font-medium">Nasdaq</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">~15-25%</span>
-                  <div className={`text-sm font-semibold ${currentPerf > 20 ? 'text-green-600' : 'text-red-600'}`}>
-                    {currentPerf > 20 ? 'Outperforming' : 'Underperforming'}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                  <span className="text-sm font-medium">Gold</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">~5-8%</span>
-                  <div className={`text-sm font-semibold ${currentPerf > 6.5 ? 'text-green-600' : 'text-red-600'}`}>
-                    {currentPerf > 6.5 ? 'Outperforming' : 'Underperforming'}
-                  </div>
-                </div>
-              </div>
+              {traditionalMarkets.length > 0 ? (
+                traditionalMarkets.map((market, idx) => {
+                  const marketPerf = market.ytd;
+                  const diff = currentPerf - marketPerf;
+                  const colors = ['bg-blue-500', 'bg-purple-500', 'bg-yellow-500'];
+                  return (
+                    <div key={market.symbol} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${colors[idx] || 'bg-gray-500'}`} />
+                        <span className="text-sm font-medium">{market.symbol}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">
+                          {formatPercentage(marketPerf)}
+                        </span>
+                        <div className={`text-sm font-semibold ${getPercentageColor(diff)}`}>
+                          {diff > 0 ? '+' : ''}{formatPercentage(diff)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-sm text-muted-foreground">Loading market data...</div>
+              )}
             </div>
           </div>
 
@@ -1113,7 +1128,8 @@ const Indices: React.FC = () => {
                         <RebalanceInfoCard info={index.data?.meta?.metadata?.rebalance_info} />
                         <ComparativeMetricsCard 
                           currentIndex={index.name} 
-                          performance={index.data?.meta?.performance} 
+                          performance={index.data?.meta?.performance}
+                          traditionalMarkets={traditionalMarkets}
                         />
                       </div>
 

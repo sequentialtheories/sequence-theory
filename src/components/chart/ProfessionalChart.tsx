@@ -108,7 +108,7 @@ export const ProfessionalChart: React.FC<ProfessionalChartProps> = ({
         mouseWheel: true,
         pressedMouseMove: true,
       },
-      autoSize: true,
+      autoSize: false,
     });
 
     chartRef.current = chart;

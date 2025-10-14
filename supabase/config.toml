@@ -35,3 +35,6 @@ verify_jwt = true
 
 [functions.vault-harvest]
 verify_jwt = true
+
+[functions.traditional-markets]
+verify_jwt = false
