@@ -649,6 +649,24 @@ serve(async (req) => {
     );
 
     if (!marketResponse.ok) {
+      if (marketResponse.status === 429) {
+        // Rate limit hit - try to return stale cache if available
+        const staleCacheKey = getCacheKey(timePeriod);
+        const staleCache = cache.get(staleCacheKey);
+        if (staleCache) {
+          console.log(`Rate limit hit, serving stale cache for ${timePeriod}`);
+          return new Response(
+            JSON.stringify(staleCache.data),
+            {
+              headers: { 
+                ...corsHeaders, 
+                'Content-Type': 'application/json',
+                'X-Cache': 'STALE'
+              },
+            }
+          );
+        }
+      }
       throw new Error(`CoinGecko API error: ${marketResponse.status}`);
     }
 
