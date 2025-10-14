@@ -48,12 +48,18 @@ export function normalizeCandles(raw: RawCandle[]): NormalizedCandle[] {
   // 3) Validate invariants & coerce numbers
   const cleaned: NormalizedCandle[] = [];
   for (const c of map.values()) {
-    const time = Number(c.time);
+    let time = Number(c.time);
     const open = Number(c.open);
     const high = Number(c.high);
     const low = Number(c.low);
     const close = Number(c.close);
     const vol = Number(c.volumeUsd) || 0;
+
+    // Convert milliseconds to seconds if needed (lightweight-charts expects seconds)
+    // Timestamps > 10^10 are likely in milliseconds
+    if (time > 10000000000) {
+      time = Math.floor(time / 1000);
+    }
 
     // Skip invalid data - must have valid time and OHLC
     if (isNaN(time) || time <= 0 || isNaN(open) || isNaN(high) || isNaN(low) || isNaN(close)) {
