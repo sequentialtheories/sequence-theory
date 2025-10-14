@@ -468,9 +468,18 @@ const Indices: React.FC = () => {
   const loadData = useCallback(async (isRefresh = false) => {
     try {
       const data = await fetchIndicesData(timePeriod, isRefresh);
-      setAnchorData(data.anchor5);
-      setVibeData(data.vibe20);
-      setWaveData(data.wave100);
+      
+      // During refresh, only update if we have valid data
+      // This prevents rate-limit errors from wiping existing charts
+      if (isRefresh) {
+        if (data.anchor5) setAnchorData(data.anchor5);
+        if (data.vibe20) setVibeData(data.vibe20);
+        if (data.wave100) setWaveData(data.wave100);
+      } else {
+        setAnchorData(data.anchor5);
+        setVibeData(data.vibe20);
+        setWaveData(data.wave100);
+      }
     } catch (err) {
       console.error('Failed to load indices data:', err);
       if (!isRefresh) {
