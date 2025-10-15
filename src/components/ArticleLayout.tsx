@@ -1,12 +1,12 @@
-
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Award, CheckCircle } from "lucide-react";
+import { Award, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLearningProgress } from "@/hooks/useLearningProgress";
 import { allModules } from '@/data/moduleData';
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import Navigation from "@/components/Navigation";
 
 interface ArticleLayoutProps {
   title: string;
@@ -66,13 +66,10 @@ const ArticleLayout = ({ title, level, children }: ArticleLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navigation />
       {/* Header */}
-      <header className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white py-6">
+      <header className="bg-gradient-to-r from-cyan-600 to-purple-600 text-white pt-20 pb-6">
         <div className="container mx-auto px-6">
-          <Link to="/learn-now" className="inline-flex items-center gap-2 text-gray-100 hover:text-white transition-colors mb-4">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Learn Now
-          </Link>
           <div className="flex items-center gap-4">
             <img 
               src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 

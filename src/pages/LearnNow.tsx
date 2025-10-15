@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, PlayCircle, Users, Award, Target, DollarSign, TrendingUp, Zap, Coins, AlertTriangle, Lock, CheckCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLearningProgress } from "@/hooks/useLearningProgress";
+import Navigation from "@/components/Navigation";
 const LearnNow = () => {
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const { isModuleUnlocked, isModuleCompleted, isCategoryCompleted, areAllCategoriesCompleted, getCompletionStats } = useLearningProgress();
   
@@ -166,16 +166,10 @@ const LearnNow = () => {
     }]
   }];
   return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50">
+      <Navigation />
+      <div className="pt-16">
       {/* Header */}
       <header className="relative bg-gradient-to-r from-cyan-600 via-purple-600 to-indigo-600 text-white py-8 overflow-hidden">
-        <Button
-          onClick={() => navigate("/")}
-          variant="outline"
-          size="sm"
-          className="absolute top-6 left-6 z-10 w-10 h-10 rounded-full bg-primary/10 border-primary text-primary hover:bg-primary hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-32 translate-x-32"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl translate-y-32 -translate-x-32"></div>
@@ -806,7 +800,7 @@ const LearnNow = () => {
           </div>
         </div>
       </section>
-
+      </div>
     </div>;
 };
 export default LearnNow;
