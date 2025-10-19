@@ -242,9 +242,10 @@ async function calculateAnchor5(
     };
   }
   
-  // Equal-weighted (20% per coin)
-  const equalWeight = 1 / 5; // 0.2 = 20%
-  const baseValue = 1000;
+  // Price-weighted (like Dow Jones)
+  const divisor = 10;
+  const totalCurrentPrice = scoredCoins.reduce((sum, c) => sum + c.current_price, 0);
+  const currentValue = Math.round((totalCurrentPrice / divisor));
   
   // Fetch historical data for all constituents
   const historicalPromises = scoredCoins.map(coin => 
@@ -252,48 +253,15 @@ async function calculateAnchor5(
   );
   const historicalArrays = await Promise.all(historicalPromises);
   
-  // Get starting prices (earliest timestamp)
+  // Build index level time series
   const timestampSet = new Set<number>();
   historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
   
-  if (timestamps.length === 0) {
-    return {
-      index: 'Anchor5',
-      baseValue: 1000,
-      timeframe: '1h',
-      candles: [],
-      currentValue: 1000,
-      change_24h_percentage: 0,
-      meta: {
-        tz: 'UTC',
-        constituents: [],
-        rebalanceFrequency: 'weekly'
-      }
-    };
-  }
-  
-  // Get base prices (first timestamp)
-  const basePrices: number[] = [];
-  for (let i = 0; i < scoredCoins.length; i++) {
-    const hist = historicalArrays[i];
-    const firstDataPoint = hist.find(d => d.timestamp === timestamps[0]);
-    basePrices[i] = firstDataPoint ? firstDataPoint.price : scoredCoins[i].current_price;
-  }
-  
-  // Calculate current value using equal-weighted normalized returns
-  let currentValue = 0;
-  for (let i = 0; i < scoredCoins.length; i++) {
-    const priceReturn = scoredCoins[i].current_price / basePrices[i];
-    currentValue += priceReturn * equalWeight * baseValue;
-  }
-  currentValue = Math.round(currentValue);
-  
-  // Build index level time series with equal weighting
   const indexLevels: IndexLevel[] = [];
   
   for (const timestamp of timestamps) {
-    let indexValue = 0;
+    let priceSum = 0;
     let volumeSum = 0;
     let validCount = 0;
     
@@ -302,18 +270,17 @@ async function calculateAnchor5(
       const dataPoint = hist.find(d => d.timestamp === timestamp);
       
       if (dataPoint) {
-        const priceReturn = dataPoint.price / basePrices[i];
-        indexValue += priceReturn * equalWeight * baseValue;
+        priceSum += dataPoint.price;
         volumeSum += dataPoint.volume;
         validCount++;
       } else {
         // Use current price as fallback
-        const priceReturn = scoredCoins[i].current_price / basePrices[i];
-        indexValue += priceReturn * equalWeight * baseValue;
+        priceSum += scoredCoins[i].current_price;
       }
     }
     
     if (validCount > 0) {
+      const indexValue = (priceSum / divisor);
       indexLevels.push({
         timestamp,
         value: indexValue,
@@ -346,7 +313,7 @@ async function calculateAnchor5(
       tz: 'UTC',
       constituents: scoredCoins.map(c => ({
         symbol: c.symbol.toUpperCase(),
-        weight: 20, // Equal weight: 20% per coin
+        weight: (c.current_price / totalCurrentPrice) * 100,
         id: c.id,
         price: c.current_price,
         market_cap: c.market_cap,
@@ -389,30 +356,12 @@ async function calculateVibe20(
     };
   }
   
-  // Volume × Market Cap weighting with 20% cap
-  const MAX_WEIGHT = 0.20;
+  // Volume × Market Cap weighting
   const totalWeightBase = top20.reduce((sum, coin) => sum + (coin.total_volume * coin.market_cap), 0);
-  
-  // Calculate raw weights
-  let rawWeights = top20.map(coin => ({
+  const weightedCoins = top20.map(coin => ({
     ...coin,
     weight: (coin.total_volume * coin.market_cap) / totalWeightBase
   }));
-  
-  // Apply cap
-  let cappedWeights = rawWeights.map(coin => ({
-    ...coin,
-    weight: Math.min(coin.weight, MAX_WEIGHT)
-  }));
-  
-  // Renormalize to ensure weights sum to 1.0
-  const totalCapped = cappedWeights.reduce((sum, coin) => sum + coin.weight, 0);
-  const weightedCoins = cappedWeights.map(coin => ({
-    ...coin,
-    weight: coin.weight / totalCapped
-  }));
-  
-  console.log(`[Vibe20] Weight distribution:`, weightedCoins.map(c => ({ symbol: c.symbol, weight: (c.weight * 100).toFixed(2) + '%' })));
   
   const currentValue = Math.round(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0)
@@ -542,20 +491,22 @@ async function calculateWave100(
     };
   }
   
-  // Equal-weighted across top 50 coins (2% per coin)
-  const top50 = momentumCoins.slice(0, 50);
-  const equalWeight = 1 / 50; // 0.02 = 2%
-  const baseValue = 1000;
-  
-  const weightedCoins = top50.map(coin => ({
+  // Momentum-proportional weighting
+  const totalPositiveMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, coin.momentum), 0);
+  const weightedCoins = momentumCoins.map(coin => ({
     ...coin,
-    weight: equalWeight
+    weight: totalPositiveMomentum > 0 
+      ? Math.max(0, coin.momentum) / totalPositiveMomentum 
+      : 1 / momentumCoins.length
   }));
   
-  console.log(`[Wave100] Tracking ${top50.length} coins with equal ${(equalWeight * 100).toFixed(2)}% weight each`);
+  const currentValue = Math.round(
+    weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
+  );
   
-  // Fetch historical data for all top 50
-  const historicalPromises = top50.map(coin => 
+  // Use top 20 for historical data (performance)
+  const top20 = weightedCoins.slice(0, 20);
+  const historicalPromises = top20.map(coin => 
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
@@ -565,61 +516,28 @@ async function calculateWave100(
   historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
   
-  if (timestamps.length === 0) {
-    return {
-      index: 'Wave100',
-      baseValue: 1000,
-      timeframe: '1h',
-      candles: [],
-      currentValue: 1000,
-      change_24h_percentage: 0,
-      meta: {
-        tz: 'UTC',
-        constituents: [],
-        rebalanceFrequency: 'daily'
-      }
-    };
-  }
-  
-  // Get base prices (first timestamp)
-  const basePrices: number[] = [];
-  for (let i = 0; i < top50.length; i++) {
-    const hist = historicalArrays[i];
-    const firstDataPoint = hist.find(d => d.timestamp === timestamps[0]);
-    basePrices[i] = firstDataPoint ? firstDataPoint.price : top50[i].current_price;
-  }
-  
-  // Calculate current value using equal-weighted normalized returns
-  let currentValue = 0;
-  for (let i = 0; i < top50.length; i++) {
-    const priceReturn = top50[i].current_price / basePrices[i];
-    currentValue += priceReturn * equalWeight * baseValue;
-  }
-  currentValue = Math.round(currentValue);
-  
   const indexLevels: IndexLevel[] = [];
   
   for (const timestamp of timestamps) {
-    let indexValue = 0;
+    let weightedPriceSum = 0;
     let volumeSum = 0;
     let validCount = 0;
     
-    for (let i = 0; i < top50.length; i++) {
+    for (let i = 0; i < top20.length; i++) {
       const hist = historicalArrays[i];
       const dataPoint = hist.find(d => d.timestamp === timestamp);
       
       if (dataPoint) {
-        const priceReturn = dataPoint.price / basePrices[i];
-        indexValue += priceReturn * equalWeight * baseValue;
+        weightedPriceSum += dataPoint.price * top20[i].weight;
         volumeSum += dataPoint.volume;
         validCount++;
       } else {
-        const priceReturn = top50[i].current_price / basePrices[i];
-        indexValue += priceReturn * equalWeight * baseValue;
+        weightedPriceSum += top20[i].current_price * top20[i].weight;
       }
     }
     
     if (validCount > 0) {
+      const indexValue = weightedPriceSum * 1000;
       indexLevels.push({
         timestamp,
         value: indexValue,
@@ -654,7 +572,7 @@ async function calculateWave100(
         .sort((a, b) => (b.price_change_percentage_24h ?? -Infinity) - (a.price_change_percentage_24h ?? -Infinity))
         .map(c => ({
           symbol: c.symbol.toUpperCase(),
-          weight: 2, // Equal weight: 2% per coin (50 coins)
+          weight: c.weight * 100,
           id: c.id,
           price: c.current_price,
           market_cap: c.market_cap,
