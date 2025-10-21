@@ -5,6 +5,87 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ===== RATE LIMITER CLASS =====
+class RateLimiter {
+  private queue: Array<() => Promise<any>> = [];
+  private processing = false;
+  private lastRequestTime = 0;
+  private minDelay = 2500; // 2.5 seconds between requests (safe for free tier)
+
+  async add<T>(fn: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.queue.push(async () => {
+        try {
+          const result = await fn();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      });
+      this.processQueue();
+    });
+  }
+
+  private async processQueue() {
+    if (this.processing || this.queue.length === 0) return;
+    
+    this.processing = true;
+    
+    while (this.queue.length > 0) {
+      const now = Date.now();
+      const timeSinceLastRequest = now - this.lastRequestTime;
+      
+      if (timeSinceLastRequest < this.minDelay) {
+        await new Promise(resolve => setTimeout(resolve, this.minDelay - timeSinceLastRequest));
+      }
+      
+      const task = this.queue.shift();
+      if (task) {
+        this.lastRequestTime = Date.now();
+        await task();
+      }
+    }
+    
+    this.processing = false;
+  }
+}
+
+const rateLimiter = new RateLimiter();
+
+// ===== INDIVIDUAL COIN CACHE =====
+const coinCache = new Map<string, { data: any; timestamp: number }>();
+
+function getCoinCacheKey(coinId: string, fromTs: number, toTs: number): string {
+  return `${coinId}_${fromTs}_${toTs}`;
+}
+
+function getFromCoinCache(key: string, maxAge: number): any | null {
+  const cached = coinCache.get(key);
+  if (cached && Date.now() - cached.timestamp < maxAge) {
+    console.log(`[CACHE HIT] ${key}`);
+    return cached.data;
+  }
+  coinCache.delete(key);
+  return null;
+}
+
+function setToCoinCache(key: string, data: any): void {
+  coinCache.set(key, { data, timestamp: Date.now() });
+  // Cleanup if cache gets too large
+  if (coinCache.size > 500) {
+    const oldestKey = coinCache.keys().next().value;
+    coinCache.delete(oldestKey);
+  }
+}
+
+// Cache duration config (in milliseconds)
+const CACHE_CONFIG = {
+  daily: 5 * 60 * 1000,      // 5 minutes
+  month: 15 * 60 * 1000,     // 15 minutes
+  year: 30 * 60 * 1000,      // 30 minutes
+  all: 60 * 60 * 1000,       // 1 hour
+};
+
 // ===== Type Definitions =====
 
 interface CoinData {
@@ -159,45 +240,64 @@ async function fetchHistoricalPrices(
   coinId: string, 
   fromTimestamp: number, 
   toTimestamp: number,
-  apiKey: string
+  apiKey: string,
+  cacheMaxAge: number = 30 * 60 * 1000
 ): Promise<HistoricalPriceData[]> {
-  try {
-    const days = Math.max(1, Math.ceil((toTimestamp - fromTimestamp) / 86400));
-    const interval = days === 1 ? 'minutely' : days <= 90 ? 'hourly' : 'daily';
-    
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`,
-      {
-        headers: {
-          'x-cg-demo-api-key': apiKey,
-        },
-      }
-    );
+  const cacheKey = getCoinCacheKey(coinId, fromTimestamp, toTimestamp);
+  
+  // Check cache first
+  const cached = getFromCoinCache(cacheKey, cacheMaxAge);
+  if (cached) {
+    return cached;
+  }
 
-    if (!response.ok) {
-      console.error(`Failed to fetch ${coinId}: ${response.status}`);
+  // Use rate limiter for API call
+  return rateLimiter.add(async () => {
+    try {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`,
+        {
+          headers: {
+            'x-cg-demo-api-key': apiKey,
+          },
+        }
+      );
+
+      if (response.status === 429) {
+        console.error(`[RATE LIMITED] ${coinId} - waiting 10s before retry`);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        throw new Error('Rate limit exceeded - retry needed');
+      }
+
+      if (!response.ok) {
+        console.error(`[API ERROR] ${coinId}: ${response.status}`);
+        return [];
+      }
+
+      const data = await response.json();
+      
+      const result: HistoricalPriceData[] = [];
+      const prices = data.prices || [];
+      const volumes = data.total_volumes || [];
+      
+      for (let i = 0; i < prices.length; i++) {
+        result.push({
+          timestamp: Math.floor(prices[i][0] / 1000),
+          price: prices[i][1],
+          volume: volumes[i] ? volumes[i][1] : 0
+        });
+      }
+      
+      // Cache the successful result
+      setToCoinCache(cacheKey, result);
+      console.log(`[API CALL] ${coinId} - fetched ${result.length} data points`);
+      
+      return result;
+    } catch (error) {
+      console.error(`[ERROR] ${coinId}:`, error);
       return [];
     }
-
-    const data = await response.json();
-    
-    const result: HistoricalPriceData[] = [];
-    const prices = data.prices || [];
-    const volumes = data.total_volumes || [];
-    
-    for (let i = 0; i < prices.length; i++) {
-      result.push({
-        timestamp: Math.floor(prices[i][0] / 1000),
-        price: prices[i][1],
-        volume: volumes[i] ? volumes[i][1] : 0
-      });
-    }
-    
-    return result;
-  } catch (error) {
-    console.error(`Error fetching historical data for ${coinId}:`, error);
-    return [];
-  }
+  });
 }
 
 // ===== Index Calculations =====
@@ -207,7 +307,8 @@ async function calculateAnchor5(
   fromTimestamp: number, 
   toTimestamp: number,
   apiKey: string,
-  timePeriod: string
+  timePeriod: string,
+  cacheMaxAge: number
 ): Promise<IndexResponse> {
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
@@ -247,11 +348,19 @@ async function calculateAnchor5(
   const totalCurrentPrice = scoredCoins.reduce((sum, c) => sum + c.current_price, 0);
   const currentValue = Math.round((totalCurrentPrice / divisor));
   
-  // Fetch historical data for all constituents
-  const historicalPromises = scoredCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
-  );
-  const historicalArrays = await Promise.all(historicalPromises);
+  // Fetch historical data sequentially with rate limiting
+  const historicalArrays = [];
+  for (const coin of scoredCoins) {
+    const data = await fetchHistoricalPrices(
+      coin.id, 
+      fromTimestamp, 
+      toTimestamp, 
+      apiKey,
+      cacheMaxAge
+    );
+    historicalArrays.push(data);
+    console.log(`[Anchor5] Loaded ${historicalArrays.length}/${scoredCoins.length} coins`);
+  }
   
   // Build index level time series
   const timestampSet = new Set<number>();
@@ -330,7 +439,8 @@ async function calculateVibe20(
   fromTimestamp: number, 
   toTimestamp: number,
   apiKey: string,
-  timePeriod: string
+  timePeriod: string,
+  cacheMaxAge: number
 ): Promise<IndexResponse> {
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
@@ -367,11 +477,19 @@ async function calculateVibe20(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0)
   );
   
-  // Fetch historical data
-  const historicalPromises = weightedCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
-  );
-  const historicalArrays = await Promise.all(historicalPromises);
+  // Fetch historical data sequentially with rate limiting
+  const historicalArrays = [];
+  for (const coin of weightedCoins) {
+    const data = await fetchHistoricalPrices(
+      coin.id, 
+      fromTimestamp, 
+      toTimestamp, 
+      apiKey,
+      cacheMaxAge
+    );
+    historicalArrays.push(data);
+    console.log(`[Vibe20] Loaded ${historicalArrays.length}/${weightedCoins.length} coins`);
+  }
   
   // Build index level time series
   const timestampSet = new Set<number>();
@@ -449,7 +567,8 @@ async function calculateWave100(
   fromTimestamp: number, 
   toTimestamp: number,
   apiKey: string,
-  timePeriod: string
+  timePeriod: string,
+  cacheMaxAge: number
 ): Promise<IndexResponse> {
   const stablecoins = new Set(['usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'pyusd', 'frax']);
   
@@ -502,11 +621,19 @@ async function calculateWave100(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
   );
   
-  // Use all 100 coins for historical data
-  const historicalPromises = weightedCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
-  );
-  const historicalArrays = await Promise.all(historicalPromises);
+  // Fetch historical data sequentially with rate limiting
+  const historicalArrays = [];
+  for (const coin of weightedCoins) {
+    const data = await fetchHistoricalPrices(
+      coin.id, 
+      fromTimestamp, 
+      toTimestamp, 
+      apiKey,
+      cacheMaxAge
+    );
+    historicalArrays.push(data);
+    console.log(`[Wave100] Loaded ${historicalArrays.length}/${weightedCoins.length} coins`);
+  }
   
   // Build index level time series
   const timestampSet = new Set<number>();
@@ -690,12 +817,18 @@ serve(async (req) => {
         fromTimestamp = now - (365 * 86400);
     }
     
-    // Calculate indices in parallel
-    const [anchor5, vibe20, wave100] = await Promise.all([
-      calculateAnchor5(marketData, fromTimestamp, now, apiKey, timePeriod),
-      calculateVibe20(marketData, fromTimestamp, now, apiKey, timePeriod),
-      calculateWave100(marketData, fromTimestamp, now, apiKey, timePeriod)
-    ]);
+    // Calculate indices sequentially to respect rate limits
+    const cacheMaxAge = CACHE_CONFIG[timePeriod] || CACHE_CONFIG.year;
+    
+    console.log('[LOADING] Starting sequential index calculation...');
+    const anchor5 = await calculateAnchor5(marketData, fromTimestamp, now, apiKey, timePeriod, cacheMaxAge);
+    console.log('[LOADED] Anchor5 complete');
+    
+    const vibe20 = await calculateVibe20(marketData, fromTimestamp, now, apiKey, timePeriod, cacheMaxAge);
+    console.log('[LOADED] Vibe20 complete');
+    
+    const wave100 = await calculateWave100(marketData, fromTimestamp, now, apiKey, timePeriod, cacheMaxAge);
+    console.log('[LOADED] Wave100 complete');
 
     const responseData = {
       anchor5,

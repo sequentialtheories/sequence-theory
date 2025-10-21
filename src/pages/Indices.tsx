@@ -376,6 +376,48 @@ const calculateDivisor = (indexData: IndexData): number => {
 };
 
 // ============================================================================
+// PROGRESS INDICATOR COMPONENT
+// ============================================================================
+
+const ProgressiveLoadingIndicator: React.FC<{ 
+  status: 'idle' | 'loading' | 'done' | 'error';
+  indexName: string;
+}> = ({ status, indexName }) => {
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center gap-2 text-sm text-blue-600">
+        <RefreshCw className="h-4 w-4 animate-spin" />
+        <span>Loading {indexName}...</span>
+      </div>
+    );
+  }
+  
+  if (status === 'done') {
+    return (
+      <div className="flex items-center gap-2 text-sm text-green-600">
+        <CheckCircle2 className="h-4 w-4" />
+        <span>Ready</span>
+      </div>
+    );
+  }
+  
+  if (status === 'error') {
+    return (
+      <div className="flex items-center gap-2 text-sm text-red-600">
+        <AlertCircle className="h-4 w-4" />
+        <span>Failed - Retry?</span>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="text-sm text-muted-foreground">
+      Waiting...
+    </div>
+  );
+};
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -398,6 +440,23 @@ const Indices: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'methodology'>('overview');
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('none');
   const [selectedIndices, setSelectedIndices] = useState<string[]>([]);
+  const [loadingProgress, setLoadingProgress] = useState<{
+    anchor5: 'idle' | 'loading' | 'done' | 'error';
+    vibe20: 'idle' | 'loading' | 'done' | 'error';
+    wave100: 'idle' | 'loading' | 'done' | 'error';
+  }>({
+    anchor5: 'idle',
+    vibe20: 'idle',
+    wave100: 'idle'
+  });
+  const [isPartiallyLoaded, setIsPartiallyLoaded] = useState(false);
+
+  // Helper to get loading progress key from index name
+  const getProgressKey = (indexName: string): 'anchor5' | 'vibe20' | 'wave100' => {
+    if (indexName === 'Anchor5') return 'anchor5';
+    if (indexName === 'Vibe20') return 'vibe20';
+    return 'wave100';
+  };
 
   // ============================================================================
   // DATA FETCHING
@@ -486,32 +545,101 @@ const Indices: React.FC = () => {
   };
 
   const loadData = useCallback(async (isRefresh = false) => {
+    if (!isRefresh) {
+      setLoading(true);
+      setLoadingProgress({
+        anchor5: 'loading',
+        vibe20: 'loading',
+        wave100: 'loading'
+      });
+    }
+    
+    setError(null);
+    setIsPartiallyLoaded(false);
+
     try {
-      const [indicesData, marketsData] = await Promise.all([
-        fetchIndicesData(timePeriod, isRefresh),
-        fetchTraditionalMarkets(timePeriod)
-      ]);
+      // Fetch traditional markets first
+      console.log('[Frontend] Fetching traditional markets...');
+      const marketsData = await fetchTraditionalMarkets(timePeriod);
+      if (marketsData) setTraditionalMarkets(marketsData);
+
+      // Fetch all indices (backend handles rate limiting now)
+      console.log('[Frontend] Loading all indices...');
+      const { data, error: indicesError } = await supabase.functions.invoke('crypto-indices', {
+        body: { timePeriod }
+      });
       
-      // During refresh, only update if we have valid data
-      // This prevents rate-limit errors from wiping existing charts
-      if (isRefresh) {
-        if (indicesData.anchor5) setAnchorData(indicesData.anchor5);
-        if (indicesData.vibe20) setVibeData(indicesData.vibe20);
-        if (indicesData.wave100) setWaveData(indicesData.wave100);
-        if (marketsData) setTraditionalMarkets(marketsData);
+      if (indicesError) throw indicesError;
+
+      // Enhance data with metrics
+      const enhanceData = (indexData: IndexData | null, frequency: string): IndexData | null => {
+        if (!indexData || !indexData.candles || indexData.candles.length === 0) return null;
+        
+        const performance = calculatePerformanceMetrics(indexData.candles, indexData.baseValue);
+        const risk = calculateRiskMetrics(indexData.candles);
+        const rebalanceInfo = calculateRebalanceInfo(frequency, indexData.meta.constituents || []);
+        
+        return {
+          ...indexData,
+          meta: {
+            ...indexData.meta,
+            performance,
+            risk,
+            metadata: {
+              base_value: indexData.baseValue || 1000,
+              base_date: indexData.candles[0] 
+                ? new Date(indexData.candles[0].time * 1000).toISOString().split('T')[0] 
+                : '2024-01-01',
+              divisor: calculateDivisor(indexData),
+              methodology_version: '1.0',
+              total_constituents: indexData.meta.constituents?.length || 0,
+              rebalance_info: rebalanceInfo,
+            }
+          }
+        };
+      };
+
+      // Update indices and their loading states
+      if (data?.anchor5) {
+        setAnchorData(enhanceData(data.anchor5, 'Quarterly'));
+        setLoadingProgress(prev => ({ ...prev, anchor5: 'done' }));
+        setIsPartiallyLoaded(true);
+        console.log('[Frontend] ✅ Anchor5 loaded');
       } else {
-        setAnchorData(indicesData.anchor5);
-        setVibeData(indicesData.vibe20);
-        setWaveData(indicesData.wave100);
-        setTraditionalMarkets(marketsData || []);
+        setLoadingProgress(prev => ({ ...prev, anchor5: 'error' }));
       }
+
+      if (data?.vibe20) {
+        setVibeData(enhanceData(data.vibe20, 'Monthly'));
+        setLoadingProgress(prev => ({ ...prev, vibe20: 'done' }));
+        setIsPartiallyLoaded(true);
+        console.log('[Frontend] ✅ Vibe20 loaded');
+      } else {
+        setLoadingProgress(prev => ({ ...prev, vibe20: 'error' }));
+      }
+
+      if (data?.wave100) {
+        setWaveData(enhanceData(data.wave100, 'Monthly'));
+        setLoadingProgress(prev => ({ ...prev, wave100: 'done' }));
+        console.log('[Frontend] ✅ Wave100 loaded');
+      } else {
+        setLoadingProgress(prev => ({ ...prev, wave100: 'error' }));
+      }
+
+      setLastUpdated(new Date());
+      console.log('[Frontend] All indices loading complete');
+      
     } catch (err) {
-      console.error('Failed to load indices data:', err);
-      if (!isRefresh) {
-        setAnchorData(null);
-        setVibeData(null);
-        setWaveData(null);
-      }
+      const errorMsg = err?.message || 'Failed to load market data';
+      console.error('[Frontend] Critical error:', err);
+      setError(errorMsg);
+      setLoadingProgress({
+        anchor5: 'error',
+        vibe20: 'error',
+        wave100: 'error'
+      });
+    } finally {
+      setLoading(false);
     }
   }, [timePeriod]);
 
@@ -1018,6 +1146,17 @@ const Indices: React.FC = () => {
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
+              {/* Rate Limit Notice */}
+              <Alert className="mb-4">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Free API Notice</AlertTitle>
+                <AlertDescription>
+                  We're using CoinGecko's free API tier. Loading all indices may take 1-5 minutes 
+                  due to rate limits. Data is cached after the first load for faster subsequent views. 
+                  The <strong>Year</strong> view loads fastest!
+                </AlertDescription>
+              </Alert>
+
               {/* Time Period Selector */}
               <div className="flex gap-2">
                 {(['daily', 'month', 'year', 'all'] as TimePeriod[]).map(period => (
@@ -1038,8 +1177,37 @@ const Indices: React.FC = () => {
                 ))}
               </div>
 
+              {/* Loading Progress Banner */}
+              {(loading || isPartiallyLoaded) && (
+                <Alert className="mb-6">
+                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  <AlertTitle>Loading Indices...</AlertTitle>
+                  <AlertDescription>
+                    {loading && !isPartiallyLoaded && (
+                      <span>Fetching market data. This may take 1-5 minutes depending on the time period...</span>
+                    )}
+                    {isPartiallyLoaded && (
+                      <div className="space-y-1 mt-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${loadingProgress.anchor5 === 'done' ? 'bg-green-500' : loadingProgress.anchor5 === 'loading' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'}`}></div>
+                          <span className="text-sm">Anchor5 (5 coins)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${loadingProgress.vibe20 === 'done' ? 'bg-green-500' : loadingProgress.vibe20 === 'loading' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'}`}></div>
+                          <span className="text-sm">Vibe20 (20 coins)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${loadingProgress.wave100 === 'done' ? 'bg-green-500' : loadingProgress.wave100 === 'loading' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'}`}></div>
+                          <span className="text-sm">Wave100 (100 coins)</span>
+                        </div>
+                      </div>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Loading State */}
-              {loading && (
+              {loading && !isPartiallyLoaded && (
                 <div className="text-center py-12">
                   <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
                   <p className="text-muted-foreground">Loading market data...</p>
@@ -1065,31 +1233,66 @@ const Indices: React.FC = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <div className="text-2xl font-bold" style={{ color: index.chartColor }}>
-                              {formatLargeNumber(index.marketScore, 2)}
-                            </div>
-                            {index.data?.change_24h_percentage != null && (
-                              <div className={`text-lg font-semibold ${getPercentageColor(index.data.change_24h_percentage)}`}>
-                                {formatPercentage(index.data.change_24h_percentage)}
+                          {/* Loading Progress Indicator */}
+                          <ProgressiveLoadingIndicator 
+                            status={loadingProgress[getProgressKey(index.name)]} 
+                            indexName={index.name}
+                          />
+                          
+                          {/* Only show data when loaded */}
+                          {loadingProgress[getProgressKey(index.name)] === 'done' && (
+                            <>
+                              <div className="flex items-center justify-end gap-2 mt-2">
+                                <div className="text-2xl font-bold" style={{ color: index.chartColor }}>
+                                  {formatLargeNumber(index.marketScore, 2)}
+                                </div>
+                                {index.data?.change_24h_percentage != null && (
+                                  <div className={`text-lg font-semibold ${getPercentageColor(index.data.change_24h_percentage)}`}>
+                                    {formatPercentage(index.data.change_24h_percentage)}
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Current value (24h change)
-                          </div>
-                          {index.data?.change_7d_percentage != null && (
-                            <div className={`text-xs mt-1 ${getPercentageColor(index.data.change_7d_percentage)}`}>
-                              7d: {formatPercentage(index.data.change_7d_percentage)}
-                            </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                Current value (24h change)
+                              </div>
+                              {index.data?.change_7d_percentage != null && (
+                                <div className={`text-xs mt-1 ${getPercentageColor(index.data.change_7d_percentage)}`}>
+                                  7d: {formatPercentage(index.data.change_7d_percentage)}
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
                     </CardHeader>
                     
                     <CardContent className="space-y-4">
-                      {/* Methodology Quick Facts */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-muted/50 rounded-lg">
+                      {/* Show skeleton while loading */}
+                      {loadingProgress[getProgressKey(index.name)] === 'loading' && (
+                        <div className="space-y-4 animate-pulse">
+                          <div className="h-20 bg-muted rounded-lg"></div>
+                          <div className="h-40 bg-muted rounded-lg"></div>
+                          <div className="h-32 bg-muted rounded-lg"></div>
+                        </div>
+                      )}
+                      
+                      {/* Show error message */}
+                      {loadingProgress[getProgressKey(index.name)] === 'error' && (
+                        <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertTitle>Loading Failed</AlertTitle>
+                          <AlertDescription>
+                            Failed to load {index.name}. This might be due to rate limiting. 
+                            Try refreshing or waiting a minute.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                      
+                      {/* Show content when loaded */}
+                      {loadingProgress[getProgressKey(index.name)] === 'done' && index.data && (
+                        <>
+                          {/* Methodology Quick Facts */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-muted/50 rounded-lg">
                         <div>
                           <div className="text-xs text-muted-foreground">Weighting</div>
                           <div className="text-sm font-medium">{index.methodology.weighting}</div>
@@ -1205,30 +1408,32 @@ const Indices: React.FC = () => {
                         </Button>
                       </div>
 
-                      {/* Chart */}
-                      <div 
-                        className="border-t pt-4 transition-all duration-300"
-                        style={{
-                          opacity: chartVisibility[index.name as keyof typeof chartVisibility] ? 1 : 0,
-                          maxHeight: chartVisibility[index.name as keyof typeof chartVisibility] ? '600px' : 0,
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {chartVisibility[index.name as keyof typeof chartVisibility] && (
-                          <ProfessionalChart
-                            key={`${index.name}-${timePeriod}`}
-                            data={getNormalizedCandles(index.data?.candles)}
-                            color={index.chartColor}
-                            indexName={index.name}
-                            timePeriod={timePeriod}
-                            isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
-                            isRefreshing={isRefreshing}
-                            lastUpdated={lastUpdated}
-                            formatXAxisLabel={formatXAxisLabel}
-                            formatLargeNumber={formatLargeNumber}
-                          />
-                        )}
-                      </div>
+                       {/* Chart */}
+                       <div 
+                         className="border-t pt-4 transition-all duration-300"
+                         style={{
+                           opacity: chartVisibility[index.name as keyof typeof chartVisibility] ? 1 : 0,
+                           maxHeight: chartVisibility[index.name as keyof typeof chartVisibility] ? '600px' : 0,
+                           overflow: 'hidden',
+                         }}
+                       >
+                         {chartVisibility[index.name as keyof typeof chartVisibility] && (
+                           <ProfessionalChart
+                             key={`${index.name}-${timePeriod}`}
+                             data={getNormalizedCandles(index.data?.candles)}
+                             color={index.chartColor}
+                             indexName={index.name}
+                             timePeriod={timePeriod}
+                             isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
+                             isRefreshing={isRefreshing}
+                             lastUpdated={lastUpdated}
+                             formatXAxisLabel={formatXAxisLabel}
+                             formatLargeNumber={formatLargeNumber}
+                           />
+                         )}
+                       </div>
+                        </>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
