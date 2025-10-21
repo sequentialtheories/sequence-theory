@@ -356,11 +356,11 @@ async function calculateVibe20(
     };
   }
   
-  // Volume × Market Cap weighting
-  const totalWeightBase = top20.reduce((sum, coin) => sum + (coin.total_volume * coin.market_cap), 0);
+  // Equal weighting: 5% per coin
+  const equalWeight = 0.05; // 5% per coin (20 coins × 5% = 100%)
   const weightedCoins = top20.map(coin => ({
     ...coin,
-    weight: (coin.total_volume * coin.market_cap) / totalWeightBase
+    weight: equalWeight
   }));
   
   const currentValue = Math.round(
@@ -491,22 +491,19 @@ async function calculateWave100(
     };
   }
   
-  // Momentum-proportional weighting
-  const totalPositiveMomentum = momentumCoins.reduce((sum, coin) => sum + Math.max(0, coin.momentum), 0);
+  // Equal weighting: 1% per coin
+  const equalWeight = 0.01; // 1% per coin (100 coins × 1% = 100%)
   const weightedCoins = momentumCoins.map(coin => ({
     ...coin,
-    weight: totalPositiveMomentum > 0 
-      ? Math.max(0, coin.momentum) / totalPositiveMomentum 
-      : 1 / momentumCoins.length
+    weight: equalWeight
   }));
   
   const currentValue = Math.round(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
   );
   
-  // Use top 20 for historical data (performance)
-  const top20 = weightedCoins.slice(0, 20);
-  const historicalPromises = top20.map(coin => 
+  // Use all 100 coins for historical data
+  const historicalPromises = weightedCoins.map(coin => 
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
@@ -523,16 +520,16 @@ async function calculateWave100(
     let volumeSum = 0;
     let validCount = 0;
     
-    for (let i = 0; i < top20.length; i++) {
+    for (let i = 0; i < weightedCoins.length; i++) {
       const hist = historicalArrays[i];
       const dataPoint = hist.find(d => d.timestamp === timestamp);
       
       if (dataPoint) {
-        weightedPriceSum += dataPoint.price * top20[i].weight;
+        weightedPriceSum += dataPoint.price * weightedCoins[i].weight;
         volumeSum += dataPoint.volume;
         validCount++;
       } else {
-        weightedPriceSum += top20[i].current_price * top20[i].weight;
+        weightedPriceSum += weightedCoins[i].current_price * weightedCoins[i].weight;
       }
     }
     
