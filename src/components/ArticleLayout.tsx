@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Award, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useLearningProgress } from "@/hooks/useLearningProgress";
 import { allModules } from '@/data/moduleData';
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
+import { navigateToSignup } from "@/utils/navigation";
 
 interface ArticleLayoutProps {
   title: string;
@@ -17,6 +18,8 @@ interface ArticleLayoutProps {
 const ArticleLayout = ({ title, level, children }: ArticleLayoutProps) => {
   const { completeModule, isModuleCompleted } = useLearningProgress();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [progress, setProgress] = useState(0);
   const [hasCompletedModule, setHasCompletedModule] = useState(false);
 
@@ -145,14 +148,13 @@ const ArticleLayout = ({ title, level, children }: ArticleLayoutProps) => {
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Join The Vault Club and start applying what you've learned with our structured investment contracts.
           </p>
-          <Link to="/#signup">
-            <Button 
-              size="lg" 
-              className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105"
-            >
-              Join The Vault Club
-            </Button>
-          </Link>
+          <Button 
+            onClick={() => navigateToSignup(location.pathname, navigate)}
+            size="lg" 
+            className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105"
+          >
+            Join The Vault Club
+          </Button>
         </div>
       </section>
     </div>

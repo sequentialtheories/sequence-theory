@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { ProfileDropdown } from "./ProfileDropdown";
+import { navigateToSignup } from "@/utils/navigation";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -76,7 +77,7 @@ const Navigation = () => {
             <div className="flex items-center space-x-3">
               {!user && (
                 <Button 
-                  onClick={() => document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => navigateToSignup(location.pathname, navigate)}
                   size="sm"
                   className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-2 rounded-full transition-spring hover:scale-105 animate-glow"
                 >
@@ -135,7 +136,7 @@ const Navigation = () => {
                   <Button 
                     onClick={() => {
                       setIsMenuOpen(false);
-                      document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+                      navigateToSignup(location.pathname, navigate);
                     }}
                     size="lg"
                     className="bg-gradient-primary hover:shadow-glow text-primary-foreground px-6 py-3 rounded-full transition-spring hover:scale-105 w-full mobile-text-base"

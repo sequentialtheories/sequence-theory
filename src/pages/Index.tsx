@@ -6,11 +6,23 @@ import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 const Index = () => {
   const {
     user
   } = useAuth();
+  const location = useLocation();
+
+  // Handle navigation with scroll-to-signup state
+  React.useEffect(() => {
+    if (location.state?.scrollToSignup) {
+      setTimeout(() => {
+        document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+        // Clear the state to prevent scroll on subsequent navigations
+        window.history.replaceState({}, document.title);
+      }, 300);
+    }
+  }, [location]);
 
   // Add document title and meta description for better SEO
   React.useEffect(() => {

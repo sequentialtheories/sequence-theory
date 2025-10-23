@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Users, Target, CheckCircle } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { navigateToSignup } from "@/utils/navigation";
+
 const VaultClubMain = () => {
-  const scrollToSignup = () => {
-    document.getElementById('signup')?.scrollIntoView({
-      behavior: 'smooth'
-    });
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleJoinClick = () => {
+    navigateToSignup(location.pathname, navigate);
   };
   const features = [{
     icon: Shield,
@@ -123,7 +127,7 @@ const VaultClubMain = () => {
             <p className="text-lg mb-6 opacity-90">
               Join The Vault Club and let automated DeFi work for you.
             </p>
-            <Button onClick={scrollToSignup} size="lg" className="bg-background text-primary hover:bg-secondary px-8 py-3 rounded-full text-lg font-semibold transition-bounce hover:scale-110 shadow-medium hover:shadow-strong">
+            <Button onClick={handleJoinClick} size="lg" className="bg-background text-primary hover:bg-secondary px-8 py-3 rounded-full text-lg font-semibold transition-bounce hover:scale-110 shadow-medium hover:shadow-strong">
               Get Priority Access
             </Button>
           </div>
