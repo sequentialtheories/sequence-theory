@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User, LogOut } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { User, LogOut, Copy, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
@@ -41,6 +42,30 @@ export const ProfileDropdown = () => {
     },
     enabled: !!user?.id,
   });
+
+  // Fetch user wallet
+  const { data: wallet } = useQuery({
+    queryKey: ['wallet', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase
+        .from('user_wallets')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const copyAddress = () => {
+    if (!wallet?.wallet_address) return;
+    navigator.clipboard.writeText(wallet.wallet_address);
+    toast({ 
+      title: "Copied!", 
+      description: "Wallet address copied to clipboard" 
+    });
+  };
 
 
   const handleLogout = async () => {
@@ -116,6 +141,42 @@ export const ProfileDropdown = () => {
               </p>
             </div>
           </div>
+          
+          {wallet && (
+            <>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">Wallet Address</span>
+                  <Badge variant="outline" className="text-xs">
+                    {wallet.provider === 'turnkey' ? 'Turnkey • Polygon' : 'Polygon'}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <code className="text-xs bg-muted px-2 py-1 rounded flex-1 truncate font-mono">
+                    {wallet.wallet_address.slice(0, 6)}...{wallet.wallet_address.slice(-4)}
+                  </code>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={copyAddress}
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => window.open(`https://polygonscan.com/address/${wallet.wallet_address}`, '_blank')}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+          
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate('/profile')}>
             <User className="mr-2 h-4 w-4" />

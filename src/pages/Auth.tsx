@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useValidation } from '@/hooks/useValidation';
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { WalletSetup } from '@/components/WalletSetup';
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -16,6 +17,8 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [showWalletSetup, setShowWalletSetup] = useState(false);
+  const [signupEmail, setSignupEmail] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -77,7 +80,7 @@ export default function Auth() {
         navigate('/');
       } else {
         // For signup, include sanitized name in metadata
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: sanitizedEmail,
           password,
           options: {
@@ -88,11 +91,27 @@ export default function Auth() {
           }
         });
         if (error) throw error;
-        toast({
-          title: "Account created!",
-          description: "Welcome to Sequence Theory! You can now access all features."
-        });
-        navigate('/');
+
+        // Check if wallet exists
+        if (data.user) {
+          const { data: wallet } = await supabase
+            .from('user_wallets')
+            .select('wallet_address')
+            .eq('user_id', data.user.id)
+            .maybeSingle();
+
+          if (!wallet) {
+            // Show wallet setup
+            setSignupEmail(sanitizedEmail);
+            setShowWalletSetup(true);
+          } else {
+            toast({
+              title: "Account created!",
+              description: "Welcome to Sequence Theory! You can now access all features."
+            });
+            navigate('/');
+          }
+        }
       }
     } catch (error: any) {
       toast({
@@ -104,6 +123,24 @@ export default function Auth() {
       setLoading(false);
     }
   };
+  // Show wallet setup after signup
+  if (showWalletSetup) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
+        <WalletSetup 
+          userEmail={signupEmail} 
+          onComplete={() => {
+            toast({
+              title: "Account created!",
+              description: "Welcome to Sequence Theory! You can now access all features."
+            });
+            navigate('/');
+          }} 
+        />
+      </div>
+    );
+  }
+
   return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4 relative">
       {/* Back Arrow */}
       <Button 

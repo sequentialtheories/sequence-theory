@@ -20,7 +20,7 @@ export type Database = {
           created_at: string
           endpoint: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           request_data: Json | null
           response_status: number | null
           user_agent: string | null
@@ -30,7 +30,7 @@ export type Database = {
           created_at?: string
           endpoint: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           request_data?: Json | null
           response_status?: number | null
           user_agent?: string | null
@@ -40,7 +40,7 @@ export type Database = {
           created_at?: string
           endpoint?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           request_data?: Json | null
           response_status?: number | null
           user_agent?: string | null
@@ -610,9 +610,12 @@ export type Database = {
           created_at: string
           created_via: string
           id: string
+          last_used_at: string | null
           network: string
           provenance: Database["public"]["Enums"]["wallet_provenance"]
           provider: string
+          turnkey_sub_org_id: string | null
+          turnkey_wallet_id: string | null
           updated_at: string
           user_id: string
           wallet_address: string
@@ -621,9 +624,12 @@ export type Database = {
           created_at?: string
           created_via?: string
           id?: string
+          last_used_at?: string | null
           network?: string
           provenance?: Database["public"]["Enums"]["wallet_provenance"]
           provider?: string
+          turnkey_sub_org_id?: string | null
+          turnkey_wallet_id?: string | null
           updated_at?: string
           user_id: string
           wallet_address: string
@@ -632,9 +638,12 @@ export type Database = {
           created_at?: string
           created_via?: string
           id?: string
+          last_used_at?: string | null
           network?: string
           provenance?: Database["public"]["Enums"]["wallet_provenance"]
           provider?: string
+          turnkey_sub_org_id?: string | null
+          turnkey_wallet_id?: string | null
           updated_at?: string
           user_id?: string
           wallet_address?: string
@@ -646,10 +655,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_access_api_keys: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      can_access_api_keys: { Args: never; Returns: boolean }
       check_contract_owner: {
         Args: { p_contract_id: string }
         Returns: boolean
@@ -672,16 +678,13 @@ export type Database = {
         }
         Returns: boolean
       }
-      generate_api_key: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_api_key: { Args: never; Returns: string }
       get_current_user_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_user_contracts: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           contract_id: string
           contract_name: string
@@ -695,7 +698,7 @@ export type Database = {
         }[]
       }
       get_user_progress: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           category_index: number
           completed_at: string
@@ -710,26 +713,14 @@ export type Database = {
         }
         Returns: boolean
       }
-      hash_api_key: {
-        Args: { api_key: string }
-        Returns: string
-      }
-      is_contract_owner: {
-        Args: { contract_id: string }
-        Returns: boolean
-      }
+      hash_api_key: { Args: { api_key: string }; Returns: string }
+      is_contract_owner: { Args: { contract_id: string }; Returns: boolean }
       is_contract_participant: {
         Args: { p_contract_id: string }
         Returns: boolean
       }
-      is_owner_of_subclub: {
-        Args: { p_subclub_id: string }
-        Returns: boolean
-      }
-      is_wallet_owner: {
-        Args: { wallet_user_id: string }
-        Returns: boolean
-      }
+      is_owner_of_subclub: { Args: { p_subclub_id: string }; Returns: boolean }
+      is_wallet_owner: { Args: { wallet_user_id: string }; Returns: boolean }
       join_contract: {
         Args: {
           p_contract_id: string
@@ -757,10 +748,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      sync_user_email: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      sync_user_email: { Args: never; Returns: undefined }
       validate_api_key: {
         Args: { input_api_key: string }
         Returns: {
