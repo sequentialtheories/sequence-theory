@@ -27,12 +27,13 @@ export default function Auth() {
   // Check if there's an email passed from early access signup
   const searchParams = new URLSearchParams(location.search);
   const prefilledEmail = searchParams.get('email');
-  useState(() => {
+  
+  useEffect(() => {
     if (prefilledEmail) {
       setEmail(prefilledEmail);
       setIsLogin(false); // Show signup form for password creation
     }
-  });
+  }, [prefilledEmail]);
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
