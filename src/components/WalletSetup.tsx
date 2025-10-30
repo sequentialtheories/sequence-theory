@@ -21,6 +21,17 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
     try {
       console.log('Starting wallet creation for:', userEmail);
 
+      // Check if we're in an iframe without proper permissions
+      if (window.self !== window.top) {
+        toast({
+          title: "Preview Limitation",
+          description: "Wallet creation requires testing outside the preview iframe. Please test in the deployed version or open in a new tab.",
+          variant: "destructive",
+        });
+        setIsCreating(false);
+        return;
+      }
+
       // Initialize WebAuthn stamper
       const stamper = new WebauthnStamper({
         rpId: window.location.hostname,
@@ -118,7 +129,11 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
       
       // Handle specific WebAuthn errors
       if (error.name === 'NotAllowedError') {
-        errorMessage = "Biometric authentication was cancelled. Please try again.";
+        if (error.message?.includes('publickey-credentials-create')) {
+          errorMessage = "WebAuthn is blocked in this context. Please open the app in a new tab or test the deployed version.";
+        } else {
+          errorMessage = "Biometric authentication was cancelled. Please try again.";
+        }
       } else if (error.name === 'NotSupportedError') {
         errorMessage = "Your device doesn't support biometric authentication. Please use a different device.";
       }
@@ -199,6 +214,14 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
         <p className="text-xs text-center text-muted-foreground">
           You'll be prompted to use your device's biometric authentication.
         </p>
+        
+        {window.self !== window.top && (
+          <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+            <p className="text-xs text-yellow-600 dark:text-yellow-400 text-center">
+              ⚠️ Preview Mode: Wallet creation may not work in this iframe. Test in the deployed version.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
