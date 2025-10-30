@@ -101,19 +101,14 @@ export default function Auth() {
             .eq('user_id', data.user.id)
             .maybeSingle();
 
-          // Skip wallet setup in iframe (preview mode)
-          const isInIframe = window.self !== window.top;
-
-          if (!wallet && !isInIframe) {
+          if (!wallet) {
             // Show wallet setup
             setSignupEmail(sanitizedEmail);
             setShowWalletSetup(true);
           } else {
             toast({
               title: "Account created!",
-              description: isInIframe 
-                ? "Welcome! Set up your wallet in the deployed version for full access."
-                : "Welcome to Sequence Theory! You can now access all features."
+              description: "Welcome to Sequence Theory! You can now access all features."
             });
             navigate('/');
           }
