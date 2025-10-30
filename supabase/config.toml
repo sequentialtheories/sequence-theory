@@ -3,6 +3,9 @@ project_id = "qldjhlnsphlixmzzrdwi"
 [functions.security-headers]
 verify_jwt = false
 
+[functions.dev-create-dormant-wallet]
+verify_jwt = true
+
 [functions.delete-account]
 verify_jwt = true
 
