@@ -16,13 +16,7 @@ const PreSignup = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
-
   const { validateEmail, sanitizeInput } = useValidation();
-
-  // Don't render if user is logged in
-  if (user) {
-    return null;
-  }
 
   // Rate limiting: 1 submission per 30 seconds
   const isRateLimited = useCallback((): boolean => {
@@ -76,6 +70,11 @@ const PreSignup = () => {
       setIsLoading(false);
     }
   };
+
+  // Don't render if user is logged in
+  if (user) {
+    return null;
+  }
 
   return (
     <section id="signup" className="py-20 bg-gradient-primary text-primary-foreground relative overflow-hidden">
