@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Wallet, Shield, CheckCircle, AlertCircle, Key } from 'lucide-react';
+import { Loader2, Wallet, Shield, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { WebauthnStamper } from '@turnkey/webauthn-stamper';
@@ -14,18 +13,24 @@ interface WalletSetupProps {
 
 export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
   const [isCreating, setIsCreating] = useState(false);
-  const [isCreatingDormant, setIsCreatingDormant] = useState(false);
   const { toast } = useToast();
-
-  // Check if we're in an iframe or dev environment
-  const isInIframe = window.self !== window.top;
-  const isDev = window.location.hostname === 'localhost' || window.location.hostname.includes('lovable.app');
 
   const createWallet = async () => {
     setIsCreating(true);
     
     try {
       console.log('Starting wallet creation for:', userEmail);
+
+      // Check if we're in an iframe without proper permissions
+      if (window.self !== window.top) {
+        toast({
+          title: "Preview Limitation",
+          description: "Wallet creation requires testing outside the preview iframe. Please test in the deployed version or open in a new tab.",
+          variant: "destructive",
+        });
+        setIsCreating(false);
+        return;
+      }
 
       // Initialize WebAuthn stamper
       const stamper = new WebauthnStamper({
@@ -143,45 +148,6 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
     }
   };
 
-  const createDormantWallet = async () => {
-    setIsCreatingDormant(true);
-    try {
-      console.log('Creating dormant wallet for dev/preview...');
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('No active session');
-      }
-
-      const { data, error } = await supabase.functions.invoke('dev-create-dormant-wallet', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        toast({
-          title: "Dev Wallet Created",
-          description: `Dormant wallet created: ${data.wallet_address.slice(0, 6)}...${data.wallet_address.slice(-4)}`,
-        });
-        onComplete();
-      } else {
-        throw new Error(data.error || 'Failed to create dormant wallet');
-      }
-    } catch (error) {
-      console.error('Error creating dormant wallet:', error);
-      toast({
-        variant: "destructive",
-        title: "Wallet Creation Failed",
-        description: error instanceof Error ? error.message : "Failed to create dormant wallet",
-      });
-    } finally {
-      setIsCreatingDormant(false);
-    }
-  };
-
   return (
     <Card className="max-w-md mx-auto">
       <CardHeader>
@@ -196,15 +162,6 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isInIframe && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              You're in preview mode. WebAuthn may not work in iframes. Use the dev wallet option below or test in a new tab/deployed version.
-            </AlertDescription>
-          </Alert>
-        )}
-
         <div className="space-y-3">
           <div className="flex items-start gap-3">
             <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -235,52 +192,36 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Button 
-            onClick={createWallet} 
-            disabled={isCreating || isCreatingDormant}
-            className="w-full"
-            size="lg"
-          >
-            {isCreating ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creating Secure Wallet...
-              </>
-            ) : (
-              <>
-                <Wallet className="h-4 w-4 mr-2" />
-                Create My Wallet
-              </>
-            )}
-          </Button>
-
-          {isDev && (
-            <Button 
-              onClick={createDormantWallet} 
-              disabled={isCreating || isCreatingDormant}
-              variant="outline"
-              className="w-full"
-              size="lg"
-            >
-              {isCreatingDormant ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Creating Dev Wallet...
-                </>
-              ) : (
-                <>
-                  <Key className="h-4 w-4 mr-2" />
-                  Create Dormant Wallet (Dev)
-                </>
-              )}
-            </Button>
+        <Button 
+          onClick={createWallet} 
+          disabled={isCreating}
+          className="w-full"
+          size="lg"
+        >
+          {isCreating ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Creating Secure Wallet...
+            </>
+          ) : (
+            <>
+              <Wallet className="h-4 w-4 mr-2" />
+              Create My Wallet
+            </>
           )}
-        </div>
+        </Button>
 
         <p className="text-xs text-center text-muted-foreground">
-          {isDev ? "Use the dev wallet for testing in preview mode." : "You'll be prompted to use your device's biometric authentication."}
+          You'll be prompted to use your device's biometric authentication.
         </p>
+        
+        {window.self !== window.top && (
+          <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+            <p className="text-xs text-yellow-600 dark:text-yellow-400 text-center">
+              ⚠️ Preview Mode: Wallet creation may not work in this iframe. Test in the deployed version.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
