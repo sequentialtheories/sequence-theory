@@ -142,8 +142,7 @@ export default function Auth() {
     );
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4 relative">
+  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4 relative">
       {/* Back Arrow */}
       <Button 
         variant="outline" 
@@ -224,6 +223,5 @@ export default function Auth() {
             </div>}
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 }
