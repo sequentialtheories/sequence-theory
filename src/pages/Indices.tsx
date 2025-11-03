@@ -1025,18 +1025,6 @@ const Indices: React.FC = () => {
                           </span>)}
                       </div>
 
-                      {/* Performance & Risk Metrics */}
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <PerformanceMetricsCard metrics={index.data?.meta?.performance} />
-                        <RiskMetricsCard risk={index.data?.meta?.risk} />
-                      </div>
-
-                      {/* Rebalance Info & Comparative Metrics */}
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <RebalanceInfoCard info={index.data?.meta?.metadata?.rebalance_info} />
-                        <ComparativeMetricsCard currentIndex={index.name} performance={index.data?.meta?.performance} traditionalMarkets={traditionalMarkets} />
-                      </div>
-
                       {/* Token Composition Table */}
                       {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && <div>
                           <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -1087,9 +1075,6 @@ const Indices: React.FC = () => {
 
                       {/* Composition Chart */}
                       {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && <IndexCompositionChart constituents={index.data.meta.constituents} indexName={index.name} indexColor={index.chartColor} />}
-
-                      {/* Data Integrity */}
-                      {index.data?.candles && index.data.candles.length > 0 && index.data?.meta?.constituents && <DataIntegrityCard candles={index.data.candles} constituents={index.data.meta.constituents} indexName={index.name} indexColor={index.chartColor} />}
 
                       {/* Chart Actions */}
                       <div className="flex gap-2 items-center">
@@ -1146,8 +1131,8 @@ const Indices: React.FC = () => {
                     </AlertDescription>
                   </Alert>
 
-                  <div className="mt-6 space-y-6">
-                    {indices.map(index => <div key={index.name} className="border-l-4 pl-4" style={{
+                  <div className="mt-6 space-y-8">
+                    {indices.map(index => <div key={index.name} className="border-l-4 pl-4 pb-8 border-b last:border-b-0" style={{
                     borderColor: index.chartColor
                   }}>
                         <h3 className="text-xl font-bold flex items-center gap-2 mb-2">
@@ -1156,7 +1141,7 @@ const Indices: React.FC = () => {
                         </h3>
                         <p className="text-muted-foreground mb-4">{index.fullDescription}</p>
                         
-                        <div className="grid md:grid-cols-2 gap-4 mt-4">
+                        <div className="grid md:grid-cols-2 gap-4 mt-4 mb-6">
                           <div>
                             <h4 className="font-semibold mb-2">Methodology</h4>
                             <dl className="space-y-2 text-sm">
@@ -1179,6 +1164,21 @@ const Indices: React.FC = () => {
                             <p className="text-sm text-muted-foreground">{index.methodology.eligibility}</p>
                           </div>
                         </div>
+
+                        {/* Performance & Risk Metrics */}
+                        <div className="grid md:grid-cols-2 gap-4 mb-4">
+                          <PerformanceMetricsCard metrics={index.data?.meta?.performance} />
+                          <RiskMetricsCard risk={index.data?.meta?.risk} />
+                        </div>
+
+                        {/* Rebalance Info & Comparative Metrics */}
+                        <div className="grid md:grid-cols-2 gap-4 mb-4">
+                          <RebalanceInfoCard info={index.data?.meta?.metadata?.rebalance_info} />
+                          <ComparativeMetricsCard currentIndex={index.name} performance={index.data?.meta?.performance} traditionalMarkets={traditionalMarkets} />
+                        </div>
+
+                        {/* Data Integrity */}
+                        {index.data?.candles && index.data.candles.length > 0 && index.data?.meta?.constituents && <DataIntegrityCard candles={index.data.candles} constituents={index.data.meta.constituents} indexName={index.name} indexColor={index.chartColor} />}
                       </div>)}
                   </div>
 
