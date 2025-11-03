@@ -1,19 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Navigation from '@/components/Navigation';
-import { 
-  TrendingUp, 
-  BarChart3, 
-  Activity, 
-  Download,
-  RefreshCw,
-  Calendar,
-  Info,
-  LineChart,
-  TrendingDown,
-  Shield,
-  AlertCircle,
-  CheckCircle2
-} from 'lucide-react';
+import { TrendingUp, BarChart3, Activity, Download, RefreshCw, Calendar, Info, LineChart, TrendingDown, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -38,7 +25,6 @@ interface Candle {
   close: number;
   volumeUsd: number;
 }
-
 interface TokenComposition {
   id: string;
   symbol: string;
@@ -50,7 +36,6 @@ interface TokenComposition {
   price_change_percentage_7d?: number;
   price_change_percentage_30d?: number;
 }
-
 interface PerformanceMetrics {
   ytd: number;
   one_month: number;
@@ -60,7 +45,6 @@ interface PerformanceMetrics {
   high_52_week: number;
   low_52_week: number;
 }
-
 interface RiskMetrics {
   volatility_30d: number;
   volatility_90d: number;
@@ -70,7 +54,6 @@ interface RiskMetrics {
   beta_vs_btc: number;
   correlation_with_btc: number;
 }
-
 interface RebalanceInfo {
   last_rebalance: string;
   next_rebalance: string;
@@ -79,7 +62,6 @@ interface RebalanceInfo {
   constituents_added?: string[];
   constituents_removed?: string[];
 }
-
 interface IndexMetadata {
   base_value: number;
   base_date: string;
@@ -88,7 +70,6 @@ interface IndexMetadata {
   total_constituents: number;
   rebalance_info: RebalanceInfo;
 }
-
 interface IndexData {
   index: string;
   baseValue: number;
@@ -106,7 +87,6 @@ interface IndexData {
     risk?: RiskMetrics;
   };
 }
-
 type TimePeriod = 'daily' | 'month' | 'year' | 'all';
 type ComparisonMode = 'none' | 'overlay' | 'relative';
 
@@ -116,9 +96,7 @@ type ComparisonMode = 'none' | 'overlay' | 'relative';
 
 const formatLargeNumber = (value: number, precision: number = 2): string => {
   if (value === null || value === undefined || isNaN(value)) return 'N/A';
-  
   const abs = Math.abs(value);
-  
   if (abs >= 1e12) {
     return `${(value / 1e12).toFixed(precision)}T`;
   } else if (abs >= 1e9) {
@@ -131,13 +109,11 @@ const formatLargeNumber = (value: number, precision: number = 2): string => {
     return value.toFixed(precision);
   }
 };
-
 const formatPercentage = (value: number | undefined, showSign: boolean = true): string => {
   if (value === null || value === undefined || isNaN(value)) return 'N/A';
   const sign = showSign && value >= 0 ? '+' : '';
   return `${sign}${value.toFixed(2)}%`;
 };
-
 const formatDate = (dateString: string): string => {
   try {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -149,12 +125,10 @@ const formatDate = (dateString: string): string => {
     return dateString;
   }
 };
-
 const getPercentageColor = (value: number | undefined): string => {
   if (!value || isNaN(value)) return 'text-muted-foreground';
   return value >= 0 ? 'text-green-600' : 'text-red-600';
 };
-
 const calculateDaysUntilRebalance = (nextRebalance: string): number => {
   try {
     const next = new Date(nextRebalance);
@@ -179,10 +153,9 @@ const calculatePerformanceMetrics = (candles: Candle[], baseValue: number): Perf
       one_year: 0,
       since_inception: 0,
       high_52_week: baseValue,
-      low_52_week: baseValue,
+      low_52_week: baseValue
     };
   }
-
   const currentCandle = candles[candles.length - 1];
   const currentPrice = currentCandle.close;
   const now = new Date();
@@ -191,7 +164,6 @@ const calculatePerformanceMetrics = (candles: Candle[], baseValue: number): Perf
   // Helper: Find candle closest to target timestamp
   const findCandleAtTime = (targetTime: number): Candle | null => {
     if (candles[0].time > targetTime) return null;
-    
     let closest = candles[0];
     for (const candle of candles) {
       if (candle.time <= targetTime) {
@@ -206,7 +178,7 @@ const calculatePerformanceMetrics = (candles: Candle[], baseValue: number): Perf
   // Calculate returns
   const calculateReturn = (pastCandle: Candle | null): number => {
     if (!pastCandle) return 0;
-    return ((currentPrice - pastCandle.close) / pastCandle.close) * 100;
+    return (currentPrice - pastCandle.close) / pastCandle.close * 100;
   };
 
   // YTD: First candle of current year
@@ -215,36 +187,33 @@ const calculatePerformanceMetrics = (candles: Candle[], baseValue: number): Perf
   const ytd = calculateReturn(ytdCandle);
 
   // 1 month ago
-  const oneMonthAgo = nowTime - (30 * 24 * 60 * 60);
+  const oneMonthAgo = nowTime - 30 * 24 * 60 * 60;
   const oneMonthCandle = findCandleAtTime(oneMonthAgo);
   const one_month = calculateReturn(oneMonthCandle);
 
   // 3 months ago
-  const threeMonthAgo = nowTime - (90 * 24 * 60 * 60);
+  const threeMonthAgo = nowTime - 90 * 24 * 60 * 60;
   const threeMonthCandle = findCandleAtTime(threeMonthAgo);
   const three_month = calculateReturn(threeMonthCandle);
 
   // 1 year ago
-  const oneYearAgo = nowTime - (365 * 24 * 60 * 60);
+  const oneYearAgo = nowTime - 365 * 24 * 60 * 60;
   const oneYearCandle = findCandleAtTime(oneYearAgo);
   const one_year = calculateReturn(oneYearCandle);
 
   // Since inception
   const inceptionCandle = candles[0];
-  const since_inception = ((currentPrice - inceptionCandle.open) / inceptionCandle.open) * 100;
+  const since_inception = (currentPrice - inceptionCandle.open) / inceptionCandle.open * 100;
 
   // 52-week high/low
-  const fiftyTwoWeeksAgo = nowTime - (365 * 24 * 60 * 60);
+  const fiftyTwoWeeksAgo = nowTime - 365 * 24 * 60 * 60;
   const recentCandles = candles.filter(c => c.time >= fiftyTwoWeeksAgo);
-  
   let high_52_week = currentPrice;
   let low_52_week = currentPrice;
-  
   if (recentCandles.length > 0) {
     high_52_week = Math.max(...recentCandles.map(c => c.high));
     low_52_week = Math.min(...recentCandles.map(c => c.low));
   }
-
   return {
     ytd,
     one_month,
@@ -252,10 +221,9 @@ const calculatePerformanceMetrics = (candles: Candle[], baseValue: number): Perf
     one_year,
     since_inception,
     high_52_week,
-    low_52_week,
+    low_52_week
   };
 };
-
 const calculateRiskMetrics = (candles: Candle[]): RiskMetrics => {
   if (!candles || candles.length < 2) {
     return {
@@ -264,7 +232,7 @@ const calculateRiskMetrics = (candles: Candle[]): RiskMetrics => {
       sharpe_ratio: 0,
       max_drawdown: 0,
       beta_vs_btc: 0,
-      correlation_with_btc: 0,
+      correlation_with_btc: 0
     };
   }
 
@@ -308,39 +276,34 @@ const calculateRiskMetrics = (candles: Candle[]): RiskMetrics => {
   let maxDrawdownDate = '';
   let peak = candles[0].close;
   let peakDate = new Date(candles[0].time * 1000);
-
   for (let i = 1; i < candles.length; i++) {
     const current = candles[i].close;
-    
     if (current > peak) {
       peak = current;
       peakDate = new Date(candles[i].time * 1000);
     } else {
-      const drawdown = ((current - peak) / peak) * 100;
+      const drawdown = (current - peak) / peak * 100;
       if (drawdown < maxDrawdown) {
         maxDrawdown = drawdown;
         maxDrawdownDate = new Date(candles[i].time * 1000).toISOString().split('T')[0];
       }
     }
   }
-
   return {
     volatility_30d,
     volatility_90d,
     sharpe_ratio,
     max_drawdown: maxDrawdown,
     max_drawdown_date: maxDrawdownDate || undefined,
-    beta_vs_btc: 0, // Requires BTC data
-    correlation_with_btc: 0, // Requires BTC data
+    beta_vs_btc: 0,
+    // Requires BTC data
+    correlation_with_btc: 0 // Requires BTC data
   };
 };
-
 const calculateRebalanceInfo = (frequency: string, constituents: TokenComposition[]): RebalanceInfo => {
   const now = new Date();
-  
   let lastRebalance: Date;
   let nextRebalance: Date;
-
   if (frequency === 'Monthly') {
     // Last rebalance: First day of current month
     lastRebalance = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -358,19 +321,16 @@ const calculateRebalanceInfo = (frequency: string, constituents: TokenCompositio
     lastRebalance = new Date(now.getFullYear(), now.getMonth(), 1);
     nextRebalance = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   }
-
   const daysUntil = Math.ceil((nextRebalance.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
   return {
     last_rebalance: lastRebalance.toISOString(),
     next_rebalance: nextRebalance.toISOString(),
     days_until_rebalance: daysUntil,
     frequency,
     constituents_added: [],
-    constituents_removed: [],
+    constituents_removed: []
   };
 };
-
 const calculateDivisor = (indexData: IndexData): number => {
   // Simplified divisor calculation - in production this would be more complex
   const totalMarketCap = indexData.meta.constituents?.reduce((sum, token) => sum + token.market_cap, 0) || 0;
@@ -409,12 +369,16 @@ const Indices: React.FC = () => {
   const fetchTraditionalMarkets = async (period: string) => {
     try {
       console.log('[Indices] Fetching traditional markets data');
-      const { data, error } = await supabase.functions.invoke('traditional-markets', {
-        body: { timePeriod: period }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('traditional-markets', {
+        body: {
+          timePeriod: period
+        }
       });
-
       if (error) throw error;
-      
+
       // Handle both direct data and fallback structure
       const markets = data?.fallback || data;
       console.log('[Indices] Traditional markets data:', markets);
@@ -424,31 +388,30 @@ const Indices: React.FC = () => {
       return [];
     }
   };
-
   const fetchIndicesData = async (period: TimePeriod, isRefresh = false) => {
     if (isRefresh) {
       setIsRefreshing(true);
     } else {
       setLoading(true);
     }
-    
     try {
-      const { data, error } = await supabase.functions.invoke('crypto-indices', {
-        body: { timePeriod: period }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('crypto-indices', {
+        body: {
+          timePeriod: period
+        }
       });
-      
       if (error) throw error;
-      
       console.log('[fetchIndicesData] Received data for period:', period);
-      
+
       // Enhance data with real calculated metrics
       const enhanceData = (indexData: IndexData | null, frequency: string): IndexData | null => {
         if (!indexData || !indexData.candles || indexData.candles.length === 0) return null;
-        
         const performance = calculatePerformanceMetrics(indexData.candles, indexData.baseValue);
         const risk = calculateRiskMetrics(indexData.candles);
         const rebalanceInfo = calculateRebalanceInfo(frequency, indexData.meta.constituents || []);
-        
         return {
           ...indexData,
           meta: {
@@ -457,21 +420,17 @@ const Indices: React.FC = () => {
             risk,
             metadata: {
               base_value: indexData.baseValue || 1000,
-              base_date: indexData.candles[0] 
-                ? new Date(indexData.candles[0].time * 1000).toISOString().split('T')[0] 
-                : '2024-01-01',
+              base_date: indexData.candles[0] ? new Date(indexData.candles[0].time * 1000).toISOString().split('T')[0] : '2024-01-01',
               divisor: calculateDivisor(indexData),
               methodology_version: '1.0',
               total_constituents: indexData.meta.constituents?.length || 0,
-              rebalance_info: rebalanceInfo,
+              rebalance_info: rebalanceInfo
             }
           }
         };
       };
-      
       setError(null);
       setLastUpdated(new Date());
-      
       return {
         anchor5: enhanceData(data.anchor5, 'Quarterly'),
         vibe20: enhanceData(data.vibe20, 'Monthly'),
@@ -487,14 +446,10 @@ const Indices: React.FC = () => {
       setIsRefreshing(false);
     }
   };
-
   const loadData = useCallback(async (isRefresh = false) => {
     try {
-      const [indicesData, marketsData] = await Promise.all([
-        fetchIndicesData(timePeriod, isRefresh),
-        fetchTraditionalMarkets(timePeriod)
-      ]);
-      
+      const [indicesData, marketsData] = await Promise.all([fetchIndicesData(timePeriod, isRefresh), fetchTraditionalMarkets(timePeriod)]);
+
       // During refresh, only update if we have valid data
       // This prevents rate-limit errors from wiping existing charts
       if (isRefresh) {
@@ -517,9 +472,7 @@ const Indices: React.FC = () => {
       }
     }
   }, [timePeriod]);
-
   const refreshData = useCallback(() => loadData(true), [loadData]);
-
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -537,7 +490,6 @@ const Indices: React.FC = () => {
 
   const formatXAxisLabel = (value: string | number) => {
     const date = typeof value === 'number' ? new Date(value * 1000) : new Date(value);
-    
     switch (timePeriod) {
       case 'daily':
         return date.toLocaleTimeString('en-US', {
@@ -566,7 +518,6 @@ const Indices: React.FC = () => {
         return typeof value === 'number' ? date.toLocaleString() : value;
     }
   };
-
   const getNormalizedCandles = useCallback((candles: Candle[] | undefined): NormalizedCandle[] => {
     if (!candles || candles.length === 0) return [];
     return normalizeCandles(candles);
@@ -575,20 +526,17 @@ const Indices: React.FC = () => {
   // Normalize candles to base 100 for comparison
   const normalizeToBase100 = useCallback((candles: Candle[]): NormalizedCandle[] => {
     if (!candles || candles.length === 0) return [];
-    
     const baseValue = candles[0].open;
     const normalized = candles.map(candle => ({
       time: candle.time,
-      open: (candle.open / baseValue) * 100,
-      high: (candle.high / baseValue) * 100,
-      low: (candle.low / baseValue) * 100,
-      close: (candle.close / baseValue) * 100,
+      open: candle.open / baseValue * 100,
+      high: candle.high / baseValue * 100,
+      low: candle.low / baseValue * 100,
+      close: candle.close / baseValue * 100,
       volumeUsd: candle.volumeUsd
     }));
-    
     return normalizeCandles(normalized);
   }, []);
-
   const toggleChartVisibility = (indexName: string) => {
     setChartVisibility(prev => ({
       ...prev,
@@ -602,20 +550,10 @@ const Indices: React.FC = () => {
 
   const exportIndexData = (indexName: string, data: IndexData | null) => {
     if (!data) return;
-    
-    const csvContent = [
-      ['Time', 'Open', 'High', 'Low', 'Close', 'Volume'],
-      ...data.candles.map(c => [
-        new Date(c.time * 1000).toISOString(),
-        c.open,
-        c.high,
-        c.low,
-        c.close,
-        c.volumeUsd
-      ])
-    ].map(row => row.join(',')).join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const csvContent = [['Time', 'Open', 'High', 'Low', 'Close', 'Volume'], ...data.candles.map(c => [new Date(c.time * 1000).toISOString(), c.open, c.high, c.low, c.close, c.volumeUsd])].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], {
+      type: 'text/csv'
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -640,12 +578,7 @@ const Indices: React.FC = () => {
       constituents: '5 Blue-Chip Assets',
       eligibility: 'Min 3 years old, $5B market cap, institutional adoption'
     },
-    characteristics: [
-      'High correlation with major coins',
-      'Lower volatility',
-      'Blue-chip focus',
-      'Institutional grade'
-    ],
+    characteristics: ['High correlation with major coins', 'Lower volatility', 'Blue-chip focus', 'Institutional grade'],
     marketScore: anchorData?.currentValue || 0,
     chartColor: '#3b82f6',
     data: anchorData
@@ -661,12 +594,7 @@ const Indices: React.FC = () => {
       constituents: '20 High-Volume Assets',
       eligibility: '$1B market cap, $50M daily volume, multi-exchange listing'
     },
-    characteristics: [
-      'High liquidity focus',
-      'Trading activity based',
-      'Market sentiment indicator',
-      'Manipulation resistant'
-    ],
+    characteristics: ['High liquidity focus', 'Trading activity based', 'Market sentiment indicator', 'Manipulation resistant'],
     marketScore: vibeData?.currentValue || 0,
     chartColor: '#10b981',
     data: vibeData
@@ -682,12 +610,7 @@ const Indices: React.FC = () => {
       constituents: '100 Momentum Leaders',
       eligibility: '$50M market cap, $10M daily volume, 90-day history'
     },
-    characteristics: [
-      'Broad market exposure',
-      'Momentum-driven',
-      'Higher volatility potential',
-      'Bear market resilience'
-    ],
+    characteristics: ['Broad market exposure', 'Momentum-driven', 'Higher volatility potential', 'Bear market resilience'],
     marketScore: waveData?.currentValue || 0,
     chartColor: '#f59e0b',
     data: waveData
@@ -697,11 +620,13 @@ const Indices: React.FC = () => {
   // RENDER: PERFORMANCE METRICS CARD
   // ============================================================================
 
-  const PerformanceMetricsCard: React.FC<{ metrics: PerformanceMetrics | undefined }> = ({ metrics }) => {
+  const PerformanceMetricsCard: React.FC<{
+    metrics: PerformanceMetrics | undefined;
+  }> = ({
+    metrics
+  }) => {
     if (!metrics) return null;
-    
-    return (
-      <Card className="mt-4">
+    return <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
@@ -748,19 +673,20 @@ const Indices: React.FC = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   };
 
   // ============================================================================
   // RENDER: RISK METRICS CARD
   // ============================================================================
 
-  const RiskMetricsCard: React.FC<{ risk: RiskMetrics | undefined }> = ({ risk }) => {
+  const RiskMetricsCard: React.FC<{
+    risk: RiskMetrics | undefined;
+  }> = ({
+    risk
+  }) => {
     if (!risk) return null;
-    
-    return (
-      <Card className="mt-4">
+    return <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
@@ -788,11 +714,9 @@ const Indices: React.FC = () => {
               <div className="text-lg font-semibold text-red-600">
                 {formatPercentage(risk.max_drawdown)}
               </div>
-              {risk.max_drawdown_date && (
-                <div className="text-xs text-muted-foreground">
+              {risk.max_drawdown_date && <div className="text-xs text-muted-foreground">
                   {formatDate(risk.max_drawdown_date)}
-                </div>
-              )}
+                </div>}
             </div>
             <div>
               <div className="text-xs text-muted-foreground mb-1">Beta vs BTC</div>
@@ -804,22 +728,22 @@ const Indices: React.FC = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   };
 
   // ============================================================================
   // RENDER: REBALANCE INFO
   // ============================================================================
 
-  const RebalanceInfoCard: React.FC<{ info: RebalanceInfo | undefined }> = ({ info }) => {
+  const RebalanceInfoCard: React.FC<{
+    info: RebalanceInfo | undefined;
+  }> = ({
+    info
+  }) => {
     if (!info) return null;
-    
     const daysUntil = info.days_until_rebalance;
     const isImminent = daysUntil <= 7;
-    
-    return (
-      <Card className="mt-4">
+    return <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Calendar className="h-5 w-5" />
@@ -849,51 +773,53 @@ const Indices: React.FC = () => {
               </div>
             </div>
 
-            {(info.constituents_added?.length || info.constituents_removed?.length) && (
-              <div className="pt-2 border-t">
+            {(info.constituents_added?.length || info.constituents_removed?.length) && <div className="pt-2 border-t">
                 <div className="text-xs text-muted-foreground mb-2">Last Changes</div>
                 <div className="flex gap-2 flex-wrap">
-                  {info.constituents_added?.map(token => (
-                    <Badge key={token} variant="outline" className="text-green-600 border-green-600">
+                  {info.constituents_added?.map(token => <Badge key={token} variant="outline" className="text-green-600 border-green-600">
                       +{token}
-                    </Badge>
-                  ))}
-                  {info.constituents_removed?.map(token => (
-                    <Badge key={token} variant="outline" className="text-red-600 border-red-600">
+                    </Badge>)}
+                  {info.constituents_removed?.map(token => <Badge key={token} variant="outline" className="text-red-600 border-red-600">
                       -{token}
-                    </Badge>
-                  ))}
+                    </Badge>)}
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   };
 
   // ============================================================================
   // RENDER: COMPARATIVE METRICS
   // ============================================================================
 
-  const ComparativeMetricsCard: React.FC<{ 
+  const ComparativeMetricsCard: React.FC<{
     currentIndex: string;
     performance: PerformanceMetrics | undefined;
     traditionalMarkets: any[];
-  }> = ({ currentIndex, performance, traditionalMarkets }) => {
+  }> = ({
+    currentIndex,
+    performance,
+    traditionalMarkets
+  }) => {
     if (!performance) return null;
-    
+
     // Get performance data for all indices
-    const allIndices = [
-      { name: 'Anchor5', data: anchorData, color: '#3b82f6' },
-      { name: 'Vibe20', data: vibeData, color: '#8b5cf6' },
-      { name: 'Wave100', data: waveData, color: '#06b6d4' }
-    ];
-    
+    const allIndices = [{
+      name: 'Anchor5',
+      data: anchorData,
+      color: '#3b82f6'
+    }, {
+      name: 'Vibe20',
+      data: vibeData,
+      color: '#8b5cf6'
+    }, {
+      name: 'Wave100',
+      data: waveData,
+      color: '#06b6d4'
+    }];
     const currentPerf = performance.ytd;
-    
-    return (
-      <Card className="mt-4">
+    return <Card className="mt-4">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
@@ -906,16 +832,14 @@ const Indices: React.FC = () => {
             <div className="text-xs text-muted-foreground mb-3 font-semibold">vs. Other Indices (YTD)</div>
             <div className="space-y-2">
               {allIndices.map(idx => {
-                if (idx.name === currentIndex) return null;
-                const idxPerf = idx.data?.meta?.performance?.ytd || 0;
-                const diff = currentPerf - idxPerf;
-                return (
-                  <div key={idx.name} className="flex items-center justify-between py-2 border-b last:border-0">
+              if (idx.name === currentIndex) return null;
+              const idxPerf = idx.data?.meta?.performance?.ytd || 0;
+              const diff = currentPerf - idxPerf;
+              return <div key={idx.name} className="flex items-center justify-between py-2 border-b last:border-0">
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-2 h-2 rounded-full" 
-                        style={{ backgroundColor: idx.color }}
-                      />
+                      <div className="w-2 h-2 rounded-full" style={{
+                    backgroundColor: idx.color
+                  }} />
                       <span className="text-sm font-medium">{idx.name}</span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -926,9 +850,8 @@ const Indices: React.FC = () => {
                         {diff > 0 ? '+' : ''}{formatPercentage(diff)}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  </div>;
+            })}
             </div>
           </div>
 
@@ -936,13 +859,11 @@ const Indices: React.FC = () => {
           <div className="pt-2">
             <div className="text-xs text-muted-foreground mb-3 font-semibold">vs. Traditional Markets (YTD)</div>
             <div className="space-y-2">
-              {traditionalMarkets.length > 0 ? (
-                traditionalMarkets.map((market, idx) => {
-                  const marketPerf = market.ytd;
-                  const diff = currentPerf - marketPerf;
-                  const colors = ['bg-blue-500', 'bg-purple-500', 'bg-yellow-500'];
-                  return (
-                    <div key={market.symbol} className="flex items-center justify-between py-2 border-b last:border-0">
+              {traditionalMarkets.length > 0 ? traditionalMarkets.map((market, idx) => {
+              const marketPerf = market.ytd;
+              const diff = currentPerf - marketPerf;
+              const colors = ['bg-blue-500', 'bg-purple-500', 'bg-yellow-500'];
+              return <div key={market.symbol} className="flex items-center justify-between py-2 border-b last:border-0">
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${colors[idx] || 'bg-gray-500'}`} />
                         <span className="text-sm font-medium">{market.symbol}</span>
@@ -955,12 +876,8 @@ const Indices: React.FC = () => {
                           {diff > 0 ? '+' : ''}{formatPercentage(diff)}
                         </div>
                       </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-sm text-muted-foreground">Loading market data...</div>
-              )}
+                    </div>;
+            }) : <div className="text-sm text-muted-foreground">Loading market data...</div>}
             </div>
           </div>
 
@@ -974,16 +891,14 @@ const Indices: React.FC = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   };
 
   // ============================================================================
   // RENDER: MAIN COMPONENT
   // ============================================================================
 
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-6">
@@ -996,12 +911,7 @@ const Indices: React.FC = () => {
                   Professional-grade cryptocurrency market indices with transparent, rules-based methodologies
                 </p>
               </div>
-              <Button
-                onClick={refreshData}
-                disabled={isRefreshing}
-                variant="outline"
-                size="sm"
-              >
+              <Button onClick={refreshData} disabled={isRefreshing} variant="outline" size="sm">
                 <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh'}
               </Button>
@@ -1010,28 +920,26 @@ const Indices: React.FC = () => {
             {/* Last Updated */}
             <div className="text-xs text-muted-foreground">
               Last updated: {lastUpdated.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-                timeZone: 'America/New_York',
-                timeZoneName: 'short'
-              })}
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZone: 'America/New_York',
+              timeZoneName: 'short'
+            })}
             </div>
             
             {/* Error Alert */}
-            {error && (
-              <Alert variant="destructive" className="mt-4">
+            {error && <Alert variant="destructive" className="mt-4">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Error Loading Data</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+              </Alert>}
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="mb-6">
+          <Tabs value={activeTab} onValueChange={v => setActiveTab(v as any)} className="mb-6">
             <TabsList>
               <TabsTrigger value="overview">Index Overview</TabsTrigger>
               <TabsTrigger value="methodology">Methodology</TabsTrigger>
@@ -1040,36 +948,20 @@ const Indices: React.FC = () => {
             <TabsContent value="overview" className="space-y-6">
               {/* Time Period Selector */}
               <div className="flex gap-2">
-                {(['daily', 'month', 'year', 'all'] as TimePeriod[]).map(period => (
-                  <button 
-                    key={period} 
-                    onClick={() => setTimePeriod(period)} 
-                    disabled={loading} 
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      timePeriod === period 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    {period === 'daily' ? 'Daily' : 
-                     period === 'month' ? 'Month' : 
-                     period === 'year' ? 'Year' : 'All Time'}
-                  </button>
-                ))}
+                {(['daily', 'month', 'year', 'all'] as TimePeriod[]).map(period => <button key={period} onClick={() => setTimePeriod(period)} disabled={loading} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${timePeriod === period ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                    {period === 'daily' ? 'Daily' : period === 'month' ? 'Month' : period === 'year' ? 'Year' : 'All Time'}
+                  </button>)}
               </div>
 
               {/* Loading State */}
-              {loading && (
-                <div className="text-center py-12">
+              {loading && <div className="text-center py-12">
                   <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
                   <p className="text-muted-foreground">Loading market data...</p>
-                </div>
-              )}
+                </div>}
 
               {/* Index Cards */}
               <div className="grid gap-6">
-                {indices.map(index => (
-                  <Card key={index.name} className="border border-border">
+                {indices.map(index => <Card key={index.name} className="border border-border">
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
@@ -1086,23 +978,21 @@ const Indices: React.FC = () => {
                         </div>
                         <div className="text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <div className="text-2xl font-bold" style={{ color: index.chartColor }}>
+                            <div className="text-2xl font-bold" style={{
+                          color: index.chartColor
+                        }}>
                               {formatLargeNumber(index.marketScore, 2)}
                             </div>
-                            {index.data?.change_24h_percentage != null && (
-                              <div className={`text-lg font-semibold ${getPercentageColor(index.data.change_24h_percentage)}`}>
+                            {index.data?.change_24h_percentage != null && <div className={`text-lg font-semibold ${getPercentageColor(index.data.change_24h_percentage)}`}>
                                 {formatPercentage(index.data.change_24h_percentage)}
-                              </div>
-                            )}
+                              </div>}
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
                             Current value (24h change)
                           </div>
-                          {index.data?.change_7d_percentage != null && (
-                            <div className={`text-xs mt-1 ${getPercentageColor(index.data.change_7d_percentage)}`}>
+                          {index.data?.change_7d_percentage != null && <div className={`text-xs mt-1 ${getPercentageColor(index.data.change_7d_percentage)}`}>
                               7d: {formatPercentage(index.data.change_7d_percentage)}
-                            </div>
-                          )}
+                            </div>}
                         </div>
                       </div>
                     </CardHeader>
@@ -1130,11 +1020,9 @@ const Indices: React.FC = () => {
 
                       {/* Characteristics */}
                       <div className="flex flex-wrap gap-2">
-                        {index.characteristics.map((char, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-full">
+                        {index.characteristics.map((char, idx) => <span key={idx} className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                             {char}
-                          </span>
-                        ))}
+                          </span>)}
                       </div>
 
                       {/* Performance & Risk Metrics */}
@@ -1146,16 +1034,11 @@ const Indices: React.FC = () => {
                       {/* Rebalance Info & Comparative Metrics */}
                       <div className="grid md:grid-cols-2 gap-4">
                         <RebalanceInfoCard info={index.data?.meta?.metadata?.rebalance_info} />
-                        <ComparativeMetricsCard 
-                          currentIndex={index.name} 
-                          performance={index.data?.meta?.performance}
-                          traditionalMarkets={traditionalMarkets}
-                        />
+                        <ComparativeMetricsCard currentIndex={index.name} performance={index.data?.meta?.performance} traditionalMarkets={traditionalMarkets} />
                       </div>
 
                       {/* Token Composition Table */}
-                      {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && (
-                        <div>
+                      {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && <div>
                           <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                             <BarChart3 className="h-4 w-4" />
                             Index Composition ({index.data.meta.constituents.length} tokens)
@@ -1174,8 +1057,7 @@ const Indices: React.FC = () => {
                                 </tr>
                               </thead>
                               <tbody>
-                                {index.data.meta.constituents.map((token, idx) => (
-                                  <tr key={idx} className="border-t hover:bg-muted/30 transition-colors">
+                                {index.data.meta.constituents.map((token, idx) => <tr key={idx} className="border-t hover:bg-muted/30 transition-colors">
                                     <td className="p-2">
                                       <div className="font-medium">{token.symbol}</div>
                                     </td>
@@ -1197,99 +1079,53 @@ const Indices: React.FC = () => {
                                     <td className={`text-right p-2 ${getPercentageColor(token.price_change_percentage_7d)}`}>
                                       {formatPercentage(token.price_change_percentage_7d || 0, false)}
                                     </td>
-                                  </tr>
-                                ))}
+                                  </tr>)}
                               </tbody>
                             </table>
                           </div>
-                        </div>
-                      )}
+                        </div>}
 
                       {/* Composition Chart */}
-                      {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && (
-                        <IndexCompositionChart
-                          constituents={index.data.meta.constituents}
-                          indexName={index.name}
-                          indexColor={index.chartColor}
-                        />
-                      )}
+                      {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && <IndexCompositionChart constituents={index.data.meta.constituents} indexName={index.name} indexColor={index.chartColor} />}
 
                       {/* Data Integrity */}
-                      {index.data?.candles && index.data.candles.length > 0 && index.data?.meta?.constituents && (
-                        <DataIntegrityCard
-                          candles={index.data.candles}
-                          constituents={index.data.meta.constituents}
-                          indexName={index.name}
-                          indexColor={index.chartColor}
-                        />
-                      )}
+                      {index.data?.candles && index.data.candles.length > 0 && index.data?.meta?.constituents && <DataIntegrityCard candles={index.data.candles} constituents={index.data.meta.constituents} indexName={index.name} indexColor={index.chartColor} />}
 
                       {/* Chart Actions */}
                       <div className="flex gap-2 items-center">
-                        <Button 
-                          onClick={() => toggleChartVisibility(index.name)} 
-                          variant="outline" 
-                          className="flex-1"
-                        >
+                        <Button onClick={() => toggleChartVisibility(index.name)} variant="outline" className="flex-1">
                           <LineChart className="h-4 w-4 mr-2" />
                           {chartVisibility[index.name as keyof typeof chartVisibility] ? 'Hide Chart' : 'View Chart'}
                         </Button>
-                        <Button 
-                          onClick={() => setIsNormalized(!isNormalized)}
-                          variant={isNormalized ? "default" : "outline"}
-                          size="sm"
-                        >
+                        <Button onClick={() => setIsNormalized(!isNormalized)} variant={isNormalized ? "default" : "outline"} size="sm">
                           {isNormalized ? 'Absolute' : 'Normalized'}
                         </Button>
-                        <Button 
-                          onClick={() => exportIndexData(index.name, index.data)}
-                          variant="outline"
-                          disabled={!index.data}
-                        >
+                        <Button onClick={() => exportIndexData(index.name, index.data)} variant="outline" disabled={!index.data}>
                           <Download className="h-4 w-4 mr-2" />
                           Export CSV
                         </Button>
                       </div>
 
                       {/* Chart */}
-                      <div 
-                        className="border-t pt-4 transition-all duration-300"
-                        style={{
-                          opacity: chartVisibility[index.name as keyof typeof chartVisibility] ? 1 : 0,
-                          maxHeight: chartVisibility[index.name as keyof typeof chartVisibility] ? '600px' : 0,
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {chartVisibility[index.name as keyof typeof chartVisibility] && (
-                          <>
-                            {isNormalized && (
-                              <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                      <div className="border-t pt-4 transition-all duration-300" style={{
+                    opacity: chartVisibility[index.name as keyof typeof chartVisibility] ? 1 : 0,
+                    maxHeight: chartVisibility[index.name as keyof typeof chartVisibility] ? '600px' : 0,
+                    overflow: 'hidden'
+                  }}>
+                        {chartVisibility[index.name as keyof typeof chartVisibility] && <>
+                            {isNormalized && <div className="mb-4 p-3 bg-muted/50 rounded-lg">
                                 <div className="flex items-center gap-2 text-sm">
                                   <Info className="h-4 w-4 text-muted-foreground" />
                                   <span className="text-muted-foreground">
                                     Normalized to base 100 for easy comparison. All indices start at 100.
                                   </span>
                                 </div>
-                              </div>
-                            )}
-                            <ProfessionalChart
-                              key={`${index.name}-${timePeriod}-${isNormalized ? 'norm' : 'abs'}`}
-                              data={isNormalized ? normalizeToBase100(index.data?.candles || []) : getNormalizedCandles(index.data?.candles)}
-                              color={index.chartColor}
-                              indexName={index.name}
-                              timePeriod={timePeriod}
-                              isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
-                              isRefreshing={isRefreshing}
-                              lastUpdated={lastUpdated}
-                              formatXAxisLabel={formatXAxisLabel}
-                              formatLargeNumber={formatLargeNumber}
-                            />
-                          </>
-                        )}
+                              </div>}
+                            <ProfessionalChart key={`${index.name}-${timePeriod}-${isNormalized ? 'norm' : 'abs'}`} data={isNormalized ? normalizeToBase100(index.data?.candles || []) : getNormalizedCandles(index.data?.candles)} color={index.chartColor} indexName={index.name} timePeriod={timePeriod} isVisible={chartVisibility[index.name as keyof typeof chartVisibility]} isRefreshing={isRefreshing} lastUpdated={lastUpdated} formatXAxisLabel={formatXAxisLabel} formatLargeNumber={formatLargeNumber} />
+                          </>}
                       </div>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
             </TabsContent>
 
@@ -1311,8 +1147,9 @@ const Indices: React.FC = () => {
                   </Alert>
 
                   <div className="mt-6 space-y-6">
-                    {indices.map(index => (
-                      <div key={index.name} className="border-l-4 pl-4" style={{ borderColor: index.chartColor }}>
+                    {indices.map(index => <div key={index.name} className="border-l-4 pl-4" style={{
+                    borderColor: index.chartColor
+                  }}>
                         <h3 className="text-xl font-bold flex items-center gap-2 mb-2">
                           <index.icon className="h-5 w-5" />
                           {index.name} - {index.subtitle}
@@ -1342,27 +1179,16 @@ const Indices: React.FC = () => {
                             <p className="text-sm text-muted-foreground">{index.methodology.eligibility}</p>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
 
-                  <div className="mt-8 p-4 bg-muted rounded-lg">
-                    <h4 className="font-semibold mb-2">Additional Resources</h4>
-                    <ul className="text-sm space-y-1">
-                      <li>• Full methodology document available for download</li>
-                      <li>• Historical constituent changes tracked quarterly</li>
-                      <li>• Data sources: Tier-1 exchanges (Binance, Coinbase, Kraken, OKX, Bybit)</li>
-                      <li>• All indices exclude stablecoins and wrapped tokens</li>
-                    </ul>
-                  </div>
+                  
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
         </div>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Indices;
