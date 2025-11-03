@@ -21,6 +21,8 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfessionalChart } from '@/components/chart/ProfessionalChart';
+import { IndexCompositionChart } from '@/components/chart/IndexCompositionChart';
+import { DataIntegrityCard } from '@/components/chart/DataIntegrityCard';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 import { normalizeCandles, NormalizedCandle } from '@/utils/candleUtils';
 
@@ -398,6 +400,7 @@ const Indices: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'methodology'>('overview');
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('none');
   const [selectedIndices, setSelectedIndices] = useState<string[]>([]);
+  const [isNormalized, setIsNormalized] = useState(false);
 
   // ============================================================================
   // DATA FETCHING
@@ -567,6 +570,23 @@ const Indices: React.FC = () => {
   const getNormalizedCandles = useCallback((candles: Candle[] | undefined): NormalizedCandle[] => {
     if (!candles || candles.length === 0) return [];
     return normalizeCandles(candles);
+  }, []);
+
+  // Normalize candles to base 100 for comparison
+  const normalizeToBase100 = useCallback((candles: Candle[]): NormalizedCandle[] => {
+    if (!candles || candles.length === 0) return [];
+    
+    const baseValue = candles[0].open;
+    const normalized = candles.map(candle => ({
+      time: candle.time,
+      open: (candle.open / baseValue) * 100,
+      high: (candle.high / baseValue) * 100,
+      low: (candle.low / baseValue) * 100,
+      close: (candle.close / baseValue) * 100,
+      volumeUsd: candle.volumeUsd
+    }));
+    
+    return normalizeCandles(normalized);
   }, []);
 
   const toggleChartVisibility = (indexName: string) => {
@@ -1185,8 +1205,27 @@ const Indices: React.FC = () => {
                         </div>
                       )}
 
+                      {/* Composition Chart */}
+                      {index.data?.meta?.constituents && index.data.meta.constituents.length > 0 && (
+                        <IndexCompositionChart
+                          constituents={index.data.meta.constituents}
+                          indexName={index.name}
+                          indexColor={index.chartColor}
+                        />
+                      )}
+
+                      {/* Data Integrity */}
+                      {index.data?.candles && index.data.candles.length > 0 && index.data?.meta?.constituents && (
+                        <DataIntegrityCard
+                          candles={index.data.candles}
+                          constituents={index.data.meta.constituents}
+                          indexName={index.name}
+                          indexColor={index.chartColor}
+                        />
+                      )}
+
                       {/* Chart Actions */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                         <Button 
                           onClick={() => toggleChartVisibility(index.name)} 
                           variant="outline" 
@@ -1194,6 +1233,13 @@ const Indices: React.FC = () => {
                         >
                           <LineChart className="h-4 w-4 mr-2" />
                           {chartVisibility[index.name as keyof typeof chartVisibility] ? 'Hide Chart' : 'View Chart'}
+                        </Button>
+                        <Button 
+                          onClick={() => setIsNormalized(!isNormalized)}
+                          variant={isNormalized ? "default" : "outline"}
+                          size="sm"
+                        >
+                          {isNormalized ? 'Absolute' : 'Normalized'}
                         </Button>
                         <Button 
                           onClick={() => exportIndexData(index.name, index.data)}
@@ -1215,18 +1261,30 @@ const Indices: React.FC = () => {
                         }}
                       >
                         {chartVisibility[index.name as keyof typeof chartVisibility] && (
-                          <ProfessionalChart
-                            key={`${index.name}-${timePeriod}`}
-                            data={getNormalizedCandles(index.data?.candles)}
-                            color={index.chartColor}
-                            indexName={index.name}
-                            timePeriod={timePeriod}
-                            isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
-                            isRefreshing={isRefreshing}
-                            lastUpdated={lastUpdated}
-                            formatXAxisLabel={formatXAxisLabel}
-                            formatLargeNumber={formatLargeNumber}
-                          />
+                          <>
+                            {isNormalized && (
+                              <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Info className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-muted-foreground">
+                                    Normalized to base 100 for easy comparison. All indices start at 100.
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            <ProfessionalChart
+                              key={`${index.name}-${timePeriod}-${isNormalized ? 'norm' : 'abs'}`}
+                              data={isNormalized ? normalizeToBase100(index.data?.candles || []) : getNormalizedCandles(index.data?.candles)}
+                              color={index.chartColor}
+                              indexName={index.name}
+                              timePeriod={timePeriod}
+                              isVisible={chartVisibility[index.name as keyof typeof chartVisibility]}
+                              isRefreshing={isRefreshing}
+                              lastUpdated={lastUpdated}
+                              formatXAxisLabel={formatXAxisLabel}
+                              formatLargeNumber={formatLargeNumber}
+                            />
+                          </>
                         )}
                       </div>
                     </CardContent>
