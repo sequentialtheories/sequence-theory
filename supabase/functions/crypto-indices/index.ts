@@ -324,8 +324,10 @@ async function calculateAnchor5(
   console.log(`[Anchor5] Selected coins:`, scoredCoins.map(c => c.symbol.toUpperCase()));
   console.log(`[Anchor5] Weights:`, scoredCoins.map(c => `${c.symbol.toUpperCase()}: ${((c.current_price / totalCurrentPrice) * 100).toFixed(2)}%`));
   console.log(`[Anchor5] Generated ${candles.length} candles`);
-  console.log(`[Anchor5] First candle:`, JSON.stringify({time: candles[0].time, open: candles[0].open.toFixed(2), close: candles[0].close.toFixed(2)}));
-  console.log(`[Anchor5] Last candle:`, JSON.stringify({time: candles[candles.length-1].time, open: candles[candles.length-1].open.toFixed(2), close: candles[candles.length-1].close.toFixed(2)}));
+  if (candles.length > 0) {
+    console.log(`[Anchor5] First candle:`, JSON.stringify({time: candles[0].time, open: candles[0].open.toFixed(2), close: candles[0].close.toFixed(2)}));
+    console.log(`[Anchor5] Last candle:`, JSON.stringify({time: candles[candles.length-1].time, open: candles[candles.length-1].open.toFixed(2), close: candles[candles.length-1].close.toFixed(2)}));
+  }
   console.log(`[Anchor5] Current value: ${currentValue.toFixed(2)}, Divisor: ${divisor}`);
   
   return {
@@ -450,8 +452,10 @@ async function calculateVibe20(
   console.log(`[Vibe20] Equal weights: ${(equalWeight * 100).toFixed(2)}% each`);
   console.log(`[Vibe20] Top 5 by volume:`, top20.slice(0, 5).map(c => `${c.symbol.toUpperCase()}: $${formatLargeNumber(c.total_volume)}`));
   console.log(`[Vibe20] Generated ${candles.length} candles`);
-  console.log(`[Vibe20] First candle:`, JSON.stringify({time: candles[0].time, open: candles[0].open.toFixed(2), close: candles[0].close.toFixed(2)}));
-  console.log(`[Vibe20] Last candle:`, JSON.stringify({time: candles[candles.length-1].time, open: candles[candles.length-1].open.toFixed(2), close: candles[candles.length-1].close.toFixed(2)}));
+  if (candles.length > 0) {
+    console.log(`[Vibe20] First candle:`, JSON.stringify({time: candles[0].time, open: candles[0].open.toFixed(2), close: candles[0].close.toFixed(2)}));
+    console.log(`[Vibe20] Last candle:`, JSON.stringify({time: candles[candles.length-1].time, open: candles[candles.length-1].open.toFixed(2), close: candles[candles.length-1].close.toFixed(2)}));
+  }
   console.log(`[Vibe20] Current value: ${currentValue.toFixed(2)}`);
   
   return {
@@ -592,8 +596,10 @@ async function calculateWave100(
   console.log(`[Wave100] Equal weights: ${(equalWeight * 100).toFixed(2)}% each (${weightedCoins.length} tokens)`);
   console.log(`[Wave100] Top 5 by momentum:`, momentumCoins.slice(0, 5).map(c => `${c.symbol.toUpperCase()}: ${c.momentum.toFixed(2)}%`));
   console.log(`[Wave100] Generated ${candles.length} candles`);
-  console.log(`[Wave100] First candle:`, JSON.stringify({time: candles[0].time, open: candles[0].open.toFixed(2), close: candles[0].close.toFixed(2)}));
-  console.log(`[Wave100] Last candle:`, JSON.stringify({time: candles[candles.length-1].time, open: candles[candles.length-1].open.toFixed(2), close: candles[candles.length-1].close.toFixed(2)}));
+  if (candles.length > 0) {
+    console.log(`[Wave100] First candle:`, JSON.stringify({time: candles[0].time, open: candles[0].open.toFixed(2), close: candles[0].close.toFixed(2)}));
+    console.log(`[Wave100] Last candle:`, JSON.stringify({time: candles[candles.length-1].time, open: candles[candles.length-1].open.toFixed(2), close: candles[candles.length-1].close.toFixed(2)}));
+  }
   console.log(`[Wave100] Current value: ${currentValue.toFixed(2)}`);
   
   return {
