@@ -5,6 +5,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ===== Helper Functions =====
+
+function formatLargeNumber(value: number, precision: number = 2): string {
+  if (value === null || value === undefined || isNaN(value)) return 'N/A';
+  
+  const abs = Math.abs(value);
+  
+  if (abs >= 1e12) {
+    return `${(value / 1e12).toFixed(precision)}T`;
+  } else if (abs >= 1e9) {
+    return `${(value / 1e9).toFixed(precision)}B`;
+  } else if (abs >= 1e6) {
+    return `${(value / 1e6).toFixed(precision)}M`;
+  } else if (abs >= 1e3) {
+    return `${(value / 1e3).toFixed(precision)}K`;
+  } else {
+    return value.toFixed(precision);
+  }
+}
+
 // ===== Type Definitions =====
 
 interface CoinData {
