@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { TurnkeyClient } from 'https://esm.sh/@turnkey/http@3.13.1';
+import { ApiKeyStamper } from 'https://esm.sh/@turnkey/api-key-stamper@0.4.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -73,6 +75,17 @@ serve(async (req) => {
       throw new Error('Turnkey credentials not configured');
     }
 
+    // Create Turnkey client with API key stamper for signing requests
+    const stamper = new ApiKeyStamper({
+      apiPublicKey: turnkeyApiPublicKey,
+      apiPrivateKey: turnkeyApiPrivateKey,
+    });
+
+    const turnkeyClient = new TurnkeyClient(
+      { baseUrl: 'https://api.turnkey.com' },
+      stamper
+    );
+
     // Prepare Turnkey API request
     const createSubOrgPayload: TurnkeyCreateSubOrgRequest = {
       subOrganizationName: `User-${user.id.slice(0, 8)}`,
@@ -97,29 +110,14 @@ serve(async (req) => {
       },
     };
 
-    // Call Turnkey API to create sub-organization
-    console.log('Calling Turnkey API...');
-    const turnkeyResponse = await fetch('https://api.turnkey.com/public/v1/submit/create_sub_organization', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': turnkeyApiPublicKey,
-      },
-      body: JSON.stringify({
-        organizationId: turnkeyOrgId,
-        parameters: createSubOrgPayload,
-        timestampMs: Date.now().toString(),
-        type: 'ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V4',
-      }),
+    // Call Turnkey API to create sub-organization with signed request
+    console.log('Calling Turnkey API with signed request...');
+    const turnkeyData = await turnkeyClient.createSubOrganization({
+      type: 'ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V4',
+      organizationId: turnkeyOrgId,
+      timestampMs: Date.now().toString(),
+      parameters: createSubOrgPayload,
     });
-
-    if (!turnkeyResponse.ok) {
-      const errorText = await turnkeyResponse.text();
-      console.error('Turnkey API error:', errorText);
-      throw new Error(`Turnkey API error: ${turnkeyResponse.status} - ${errorText}`);
-    }
-
-    const turnkeyData = await turnkeyResponse.json();
     console.log('Turnkey response:', JSON.stringify(turnkeyData, null, 2));
 
     // Extract wallet info from response
