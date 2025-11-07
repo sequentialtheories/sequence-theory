@@ -117,14 +117,18 @@ serve(async (req) => {
     };
 
     // Call Turnkey API to create sub-organization with signed request
-    console.log('Calling Turnkey API with signed request...');
+    console.log('Calling Turnkey API with signed request for user:', user.id);
     const turnkeyData = await turnkeyClient.createSubOrganization({
       type: 'ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V4',
       organizationId: turnkeyOrgId,
       timestampMs: Date.now().toString(),
       parameters: createSubOrgPayload,
     });
-    console.log('Turnkey response:', JSON.stringify(turnkeyData, null, 2));
+    
+    console.log('Turnkey API success:', {
+      subOrgId: turnkeyData.activity?.result?.createSubOrganizationResultV4?.subOrganizationId,
+      walletId: turnkeyData.activity?.result?.createSubOrganizationResultV4?.wallet?.walletId,
+    });
 
     // Extract wallet info from response
     const subOrgId = turnkeyData.activity?.result?.createSubOrganizationResultV4?.subOrganizationId;
@@ -132,11 +136,20 @@ serve(async (req) => {
     const walletAddress = turnkeyData.activity?.result?.createSubOrganizationResultV4?.wallet?.addresses?.[0];
 
     if (!subOrgId || !walletAddress) {
-      console.error('Missing data in Turnkey response:', turnkeyData);
+      console.error('Missing data in Turnkey response:', {
+        hasSubOrg: !!subOrgId,
+        hasWalletAddress: !!walletAddress,
+        fullResponse: JSON.stringify(turnkeyData, null, 2)
+      });
       throw new Error('Failed to extract wallet data from Turnkey response');
     }
 
-    console.log('Wallet created:', walletAddress);
+    console.log('Wallet created successfully:', {
+      address: walletAddress,
+      subOrgId,
+      walletId,
+      userId: user.id
+    });
 
     // Store in database
     const { error: upsertError } = await supabaseAdmin

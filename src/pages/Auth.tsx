@@ -94,25 +94,38 @@ export default function Auth() {
         });
         if (error) throw error;
 
-        // Check if wallet exists
-        if (data.user) {
-          const { data: wallet } = await supabase
-            .from('user_wallets')
-            .select('wallet_address')
-            .eq('user_id', data.user.id)
-            .maybeSingle();
+        // Ensure user and session exist
+        if (!data.user || !data.session) {
+          toast({
+            title: "Please verify your email",
+            description: "Check your inbox for a confirmation link to complete signup.",
+          });
+          return;
+        }
 
-          if (!wallet) {
-            // Show wallet setup
-            setSignupEmail(sanitizedEmail);
-            setShowWalletSetup(true);
-          } else {
-            toast({
-              title: "Account created!",
-              description: "Welcome to Sequence Theory! You can now access all features."
-            });
-            navigate('/');
-          }
+        // Check if wallet exists for this user
+        const { data: wallet, error: walletError } = await supabase
+          .from('user_wallets')
+          .select('wallet_address')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+
+        if (walletError) {
+          console.error('Error checking wallet:', walletError);
+          // Continue to wallet setup on error to be safe
+        }
+
+        if (!wallet) {
+          // No wallet found - show wallet setup flow
+          setSignupEmail(sanitizedEmail);
+          setShowWalletSetup(true);
+        } else {
+          // Wallet already exists
+          toast({
+            title: "Account created!",
+            description: "Welcome to Sequence Theory! You can now access all features."
+          });
+          navigate('/');
         }
       }
     } catch (error: any) {

@@ -90,9 +90,10 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
       console.log('Calling edge function...');
 
       // Get session for auth header
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('No active session');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        console.error('Session error:', sessionError);
+        throw new Error('No active session. Please log in and try again.');
       }
 
       // Call edge function
