@@ -8,21 +8,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface TurnkeyAttestation {
+  credentialId: string;
+  clientDataJson: string;
+  attestationObject: string;
+  transports: string[];
+}
+
 interface TurnkeyCreateSubOrgRequest {
   subOrganizationName: string;
   rootUsers: Array<{
     userName: string;
     userEmail: string;
+    apiKeys?: never[];
     authenticators: Array<{
       authenticatorName: string;
       challenge: string;
-      attestation: {
-        credentialId: string;
-        clientDataJson: string;
-        attestationObject: string;
-        transports: string[];
-      };
+      attestation: TurnkeyAttestation;
     }>;
+    oauthProviders?: never[];
   }>;
   rootQuorumThreshold: number;
   wallet: {
@@ -86,17 +90,19 @@ serve(async (req) => {
       stamper
     );
 
-    // Prepare Turnkey API request
+    // Prepare Turnkey API request with proper structure
     const createSubOrgPayload: TurnkeyCreateSubOrgRequest = {
       subOrganizationName: `User-${user.id.slice(0, 8)}`,
       rootUsers: [{
         userName: email.split('@')[0],
         userEmail: email,
+        apiKeys: [],
         authenticators: [{
           authenticatorName: "Primary Passkey",
           challenge: challenge,
           attestation: attestation,
         }],
+        oauthProviders: [],
       }],
       rootQuorumThreshold: 1,
       wallet: {

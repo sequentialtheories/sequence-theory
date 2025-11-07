@@ -67,12 +67,24 @@ export const WalletSetup = ({ userEmail, onComplete }: WalletSetupProps) => {
 
       const attestationResponse = credential.response as AuthenticatorAttestationResponse;
 
+      // Map WebAuthn transports to Turnkey format
+      const transportMapping: Record<string, string> = {
+        'internal': 'AUTHENTICATOR_TRANSPORT_INTERNAL',
+        'usb': 'AUTHENTICATOR_TRANSPORT_USB',
+        'nfc': 'AUTHENTICATOR_TRANSPORT_NFC',
+        'ble': 'AUTHENTICATOR_TRANSPORT_BLE',
+        'hybrid': 'AUTHENTICATOR_TRANSPORT_HYBRID',
+      };
+
+      const rawTransports = attestationResponse.getTransports ? attestationResponse.getTransports() : ['internal'];
+      const transports = rawTransports.map(t => transportMapping[t] || 'AUTHENTICATOR_TRANSPORT_INTERNAL');
+
       // Prepare attestation data
       const attestation = {
         credentialId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
         clientDataJson: btoa(String.fromCharCode(...new Uint8Array(attestationResponse.clientDataJSON))),
         attestationObject: btoa(String.fromCharCode(...new Uint8Array(attestationResponse.attestationObject))),
-        transports: attestationResponse.getTransports ? attestationResponse.getTransports() : ['internal'],
+        transports: transports,
       };
 
       console.log('Calling edge function...');
