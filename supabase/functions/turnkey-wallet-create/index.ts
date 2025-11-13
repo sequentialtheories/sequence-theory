@@ -1,7 +1,73 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { TurnkeyClient } from 'https://esm.sh/@turnkey/http@3.13.1';
-import { ApiKeyStamper } from 'https://esm.sh/@turnkey/api-key-stamper@0.4.1';
+
+// Deno-compatible API key stamper using Web Crypto API
+class DenoApiKeyStamper {
+  private apiPublicKey: string;
+  private apiPrivateKey: string;
+
+  constructor(config: { apiPublicKey: string; apiPrivateKey: string }) {
+    this.apiPublicKey = config.apiPublicKey;
+    this.apiPrivateKey = config.apiPrivateKey;
+  }
+
+  async stamp(payload: string): Promise<{ publicKey: string; signature: string; scheme: string }> {
+    // Import the private key for signing
+    const privateKeyBuffer = this.base64UrlToBuffer(this.apiPrivateKey);
+    
+    const cryptoKey = await crypto.subtle.importKey(
+      'pkcs8',
+      privateKeyBuffer,
+      {
+        name: 'ECDSA',
+        namedCurve: 'P-256',
+      },
+      false,
+      ['sign']
+    );
+
+    // Sign the payload
+    const encoder = new TextEncoder();
+    const data = encoder.encode(payload);
+    
+    const signature = await crypto.subtle.sign(
+      {
+        name: 'ECDSA',
+        hash: { name: 'SHA-256' },
+      },
+      cryptoKey,
+      data
+    );
+
+    // Convert signature to base64url
+    const signatureBase64 = this.bufferToBase64Url(new Uint8Array(signature));
+
+    return {
+      publicKey: this.apiPublicKey,
+      signature: signatureBase64,
+      scheme: 'SIGNATURE_SCHEME_TK_API_P256',
+    };
+  }
+
+  private base64UrlToBuffer(base64url: string): ArrayBuffer {
+    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  private bufferToBase64Url(buffer: Uint8Array): string {
+    let binary = '';
+    for (let i = 0; i < buffer.length; i++) {
+      binary += String.fromCharCode(buffer[i]);
+    }
+    const base64 = btoa(binary);
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -79,16 +145,14 @@ serve(async (req) => {
       throw new Error('Turnkey credentials not configured');
     }
 
-    // Create Turnkey client with API key stamper for signing requests
-    const stamper = new ApiKeyStamper({
+    // Create Turnkey client with Deno-compatible stamper
+    const stamper = new DenoApiKeyStamper({
       apiPublicKey: turnkeyApiPublicKey,
       apiPrivateKey: turnkeyApiPrivateKey,
     });
 
-    const turnkeyClient = new TurnkeyClient(
-      { baseUrl: 'https://api.turnkey.com' },
-      stamper
-    );
+    // Make direct API call to Turnkey with stamped request
+    const timestamp = Date.now().toString();
 
     // Prepare Turnkey API request with proper structure
     const createSubOrgPayload: TurnkeyCreateSubOrgRequest = {
@@ -116,14 +180,36 @@ serve(async (req) => {
       },
     };
 
-    // Call Turnkey API to create sub-organization with signed request
-    console.log('Calling Turnkey API with signed request for user:', user.id);
-    const turnkeyData = await turnkeyClient.createSubOrganization({
+    // Prepare signed request payload
+    const requestBody = {
       type: 'ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V4',
       organizationId: turnkeyOrgId,
-      timestampMs: Date.now().toString(),
+      timestampMs: timestamp,
       parameters: createSubOrgPayload,
+    };
+
+    const payloadString = JSON.stringify(requestBody);
+    const stampResult = await stamper.stamp(payloadString);
+
+    console.log('Calling Turnkey API with signed request for user:', user.id);
+
+    // Make the API call with signed headers
+    const turnkeyResponse = await fetch('https://api.turnkey.com/public/v1/submit/create_sub_organization', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Stamp-WebAuthn': JSON.stringify(stampResult),
+      },
+      body: payloadString,
     });
+
+    if (!turnkeyResponse.ok) {
+      const errorText = await turnkeyResponse.text();
+      console.error('Turnkey API error:', errorText);
+      throw new Error(`Turnkey API error: ${turnkeyResponse.status} - ${errorText}`);
+    }
+
+    const turnkeyData = await turnkeyResponse.json();
     
     console.log('Turnkey API success:', {
       subOrgId: turnkeyData.activity?.result?.createSubOrganizationResultV4?.subOrganizationId,
