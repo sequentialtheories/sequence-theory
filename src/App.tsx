@@ -13,7 +13,6 @@ import Index from "./pages/Index";
 import LearnMore from "./pages/LearnMore";
 import LearnNow from "./pages/LearnNow";
 import NotFound from "./pages/NotFound";
-import WhitePaper from "./pages/WhitePaper";
 import Indices from "./pages/Indices";
 import FinancialBasics from "./pages/FinancialBasics";
 import DigitalAssetFundamentals from "./pages/DigitalAssetFundamentals";
@@ -93,7 +92,6 @@ const App = () => (
           <Route path="/education-quiz" element={<EducationQuiz />} />
           <Route path="/comprehensive-exam" element={<ComprehensiveExam />} />
           <Route path="/indices" element={<Indices />} />
-          <Route path="/white-paper" element={<WhitePaper />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/learn/financial-basics" element={<FinancialBasics />} />
           <Route path="/learn/digital-asset-fundamentals" element={<DigitalAssetFundamentals />} />
