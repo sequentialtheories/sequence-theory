@@ -31,13 +31,13 @@ const Index = () => {
     // Add additional meta tags dynamically
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments. Build wealth through structured investing without traditional barriers.');
+      metaDescription.setAttribute('content', 'Your Money, Your Power. Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments. Take control of your wealth through structured investing.');
     }
 
     // Add keywords meta tag
     const keywordsMeta = document.createElement('meta');
     keywordsMeta.name = 'keywords';
-    keywordsMeta.content = 'Sequence Theory, Vault Club, cryptocurrency investing, financial education, wealth building, community investing, digital assets, blockchain, financial literacy, DeFi, compound interest';
+    keywordsMeta.content = 'Your Money Your Power, Sequence Theory, Vault Club, cryptocurrency investing, financial empowerment, wealth building, community investing, digital assets, blockchain, financial freedom, DeFi, compound interest';
     document.head.appendChild(keywordsMeta);
 
     // Add author meta tag
