@@ -19,6 +19,9 @@ const getCorsHeaders = (origin: string | null) => {
 };
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -28,6 +31,11 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const vaultClubApiKey = Deno.env.get('VAULT_CLUB_EDGE_KEY')!;
+    
+    const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown';
+
+    // Create admin client for logging
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
     // Validate headers
     const authHeader = req.headers.get('authorization');
@@ -40,7 +48,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 401, headers: corsHeaders });
+      }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     if (apiKey !== vaultClubApiKey) {
@@ -51,7 +59,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 403, headers: corsHeaders });
+      }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -76,7 +84,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 401, headers: corsHeaders });
+      }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     if (req.method !== 'GET') {
@@ -86,7 +94,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 405, headers: corsHeaders });
+      }), { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const url = new URL(req.url);
@@ -99,7 +107,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 400, headers: corsHeaders });
+      }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // Verify user is a member of this subclub
@@ -117,7 +125,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 403, headers: corsHeaders });
+      }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // Get latest vault state
@@ -136,7 +144,7 @@ Deno.serve(async (req) => {
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
-      }), { status: 404, headers: corsHeaders });
+      }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // Get total member count for per-user share calculation
@@ -191,7 +199,7 @@ Deno.serve(async (req) => {
       data: null,
       ts: new Date().toISOString(),
       version: '1.0'
-    }), { status: 500, headers: corsHeaders });
+    }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 });
 

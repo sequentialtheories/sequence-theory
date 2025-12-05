@@ -2,11 +2,20 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import { ethers } from 'https://esm.sh/ethers@6.15.0';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://vaultclub.io', // Restrict to Vault Club domain
+  'Access-Control-Allow-Origin': 'https://vaultclub.io',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key',
 };
+
+// Input validation schema
+const CreateUserSchema = z.object({
+  email: z.string().email().max(254),
+  password: z.string().min(8).max(128),
+  name: z.string().max(100).optional(),
+  metadata: z.record(z.unknown()).optional().default({})
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -18,7 +27,7 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const vaultClubApiKey = Deno.env.get('VAULT_CLUB_API_KEY');
     
-    // Validate Vault Club API key
+    // Validate Vault Club API key first
     const apiKey = req.headers.get('x-vault-club-api-key');
     if (!vaultClubApiKey || apiKey !== vaultClubApiKey) {
       return new Response(JSON.stringify({ 
@@ -31,17 +40,47 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { email, password, name, metadata = {} } = await req.json();
-
-    if (!email || !password) {
+    
+    // Rate limiting
+    const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for') || 'unknown';
+    const rateLimitIdentifier = `vault-user-creation:${clientIp}`;
+    
+    const rateLimitOk = await supabase.rpc('check_enhanced_rate_limit', {
+      p_identifier: rateLimitIdentifier,
+      p_limit: 5,
+      p_window_minutes: 60,
+      p_burst_limit: 2,
+      p_burst_window_minutes: 1
+    });
+    
+    if (rateLimitOk.error || !rateLimitOk.data) {
+      console.warn('Rate limit exceeded for:', clientIp);
       return new Response(JSON.stringify({ 
         success: false, 
-        error: 'Email and password are required' 
+        error: 'Rate limit exceeded. Please try again later.' 
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    // Parse and validate input with Zod
+    let validatedInput;
+    try {
+      const rawBody = await req.json();
+      validatedInput = CreateUserSchema.parse(rawBody);
+    } catch (validationError) {
+      console.error('Input validation error:', validationError);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Invalid input: Please check email and password requirements' 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const { email, password, name, metadata } = validatedInput;
 
     console.log('Creating Sequence Theory user for Vault Club:', email);
 
@@ -54,14 +93,19 @@ serve(async (req) => {
         created_via: 'vault_club',
         ...metadata
       },
-      email_confirm: true // Auto-confirm email for Vault Club users
+      email_confirm: true
     });
 
     if (authError) {
       console.error('Auth creation error:', authError);
+      // Map specific errors to safe user messages
+      let userMessage = 'Failed to create user account';
+      if (authError.message?.includes('already registered')) {
+        userMessage = 'An account with this email already exists';
+      }
       return new Response(JSON.stringify({ 
         success: false, 
-        error: `Failed to create user: ${authError.message}` 
+        error: userMessage 
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -70,7 +114,14 @@ serve(async (req) => {
 
     const userId = authData.user?.id;
     if (!userId) {
-      throw new Error('User ID not found after creation');
+      console.error('User ID not found after creation');
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Failed to create user account' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Create a deterministic wallet address (server-side) and store it
@@ -141,7 +192,6 @@ serve(async (req) => {
         api_key: generatedApiKey,
         credentials: {
           email,
-          // Don't return password for security
           user_id: userId
         }
       }
@@ -153,7 +203,7 @@ serve(async (req) => {
     console.error('Error in vault-club-user-creation:', error);
     return new Response(JSON.stringify({ 
       success: false, 
-      error: error.message 
+      error: 'An internal error occurred' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
