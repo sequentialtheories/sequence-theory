@@ -69,9 +69,19 @@ class DenoApiKeyStamper {
   }
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  'https://vaultclub.io',
+  'https://sequence-theory.lovable.app',
+  'https://sequencetheory.com'
+];
+
+const getCorsHeaders = (origin: string | null) => {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
 };
 
 interface TurnkeyAttestation {
@@ -107,6 +117,8 @@ interface TurnkeyCreateSubOrgRequest {
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get('origin'));
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -279,11 +291,14 @@ serve(async (req) => {
     );
 
   } catch (error) {
+    // Log detailed error server-side for debugging
     console.error('Error creating Turnkey wallet:', error);
+    console.error('Error details:', error.toString());
+    
+    // Return generic error to client
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        details: error.toString(),
+        error: 'Wallet creation failed. Please try again.',
       }),
       { 
         status: 500, 
