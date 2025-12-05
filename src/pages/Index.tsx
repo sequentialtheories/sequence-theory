@@ -26,7 +26,7 @@ const Index = () => {
 
   // Add document title and meta description for better SEO
   React.useEffect(() => {
-    document.title = "Sequence Theory - Democratizing Financial Empowerment Through The Vault Club";
+    document.title = "Sequence Theory - Your Money, Your Power. Through The Vault Club";
 
     // Add additional meta tags dynamically
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -81,7 +81,7 @@ const Index = () => {
               <h1 className="text-3xl sm:text-4xl md:text-6xl mobile-text-2xl font-bold mb-6 sm:mb-8 text-foreground leading-tight" itemProp="name">
                 Sequence Theory, Inc.
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-lg sm:text-2xl md:text-3xl mobile-text-lg" itemProp="slogan">
-                  Democratizing Financial Empowerment
+                  Your Money, Your Power.
                 </span>
               </h1>
             </header>
