@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -11,7 +12,6 @@ const isAllowedOrigin = (origin: string | null): boolean => {
   if (!origin) return false;
   if (ALLOWED_ORIGINS.includes(origin)) return true;
   if (origin.endsWith('.lovableproject.com')) return true;
-  // Allow localhost for development
   if (origin.startsWith('http://localhost:')) return true;
   return false;
 };
@@ -23,6 +23,18 @@ const getCorsHeaders = (origin: string | null) => {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-vault-club-api-key, x-idempotency-key',
   };
 };
+
+// Input validation schema
+const DepositSchema = z.object({
+  subclub_id: z.string().uuid(),
+  amount_usdc: z.union([z.string(), z.number()]).transform((val) => {
+    const num = typeof val === 'string' ? parseFloat(val) : val;
+    if (isNaN(num) || num <= 0) {
+      throw new Error('Amount must be a positive number');
+    }
+    return num;
+  })
+});
 
 // Helper function to calculate deposit split (60/10/30)
 function calculateDepositSplit(amount: number) {
@@ -116,28 +128,23 @@ Deno.serve(async (req) => {
       }), { status: 405, headers: corsHeaders });
     }
 
-    const { subclub_id, amount_usdc } = await req.json();
-
-    if (!subclub_id || !amount_usdc) {
+    // Parse and validate input with Zod
+    let validatedInput;
+    try {
+      const rawBody = await req.json();
+      validatedInput = DepositSchema.parse(rawBody);
+    } catch (validationError) {
+      console.error('Input validation error:', validationError);
       return new Response(JSON.stringify({
         success: false,
-        error: 'Missing required fields: subclub_id, amount_usdc',
+        error: 'Invalid input: subclub_id must be a valid UUID and amount_usdc must be a positive number',
         data: null,
         ts: new Date().toISOString(),
         version: '1.0'
       }), { status: 400, headers: corsHeaders });
     }
 
-    const amount = parseFloat(amount_usdc);
-    if (amount <= 0) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: 'Amount must be positive',
-        data: null,
-        ts: new Date().toISOString(),
-        version: '1.0'
-      }), { status: 400, headers: corsHeaders });
-    }
+    const { subclub_id, amount_usdc: amount } = validatedInput;
 
     // Check for existing transaction with same idempotency key
     const { data: existingTx, error: existingTxError } = await supabase
@@ -293,6 +300,6 @@ Deno.serve(async (req) => {
       data: null,
       ts: new Date().toISOString(),
       version: '1.0'
-    }), { status: 500, headers: corsHeaders });
+    }), { status: 500, headers: getCorsHeaders(null) });
   }
 });

@@ -2,6 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import { ethers } from 'https://esm.sh/ethers@6.15.0';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 // Get allowed origins from environment
 const getAllowedOrigins = () => {
@@ -20,6 +21,25 @@ const getCorsHeaders = (origin: string | null) => {
     'Pragma': 'no-cache'
   };
 };
+
+// Input validation schemas
+const UpdateUserSchema = z.object({
+  user_id: z.string().uuid(),
+  email: z.string().email().max(254).optional(),
+  name: z.string().max(100).optional(),
+  metadata: z.record(z.unknown()).optional().default({})
+});
+
+const MigrateUserSchema = z.object({
+  email: z.string().email().max(254),
+  password: z.string().min(8).max(128),
+  name: z.string().max(100).optional(),
+  metadata: z.record(z.unknown()).optional().default({})
+});
+
+const MigrateUsersSchema = z.object({
+  users: z.array(MigrateUserSchema)
+});
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get('origin'));
@@ -70,7 +90,6 @@ serve(async (req) => {
       });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const url = new URL(req.url);
     const action = url.searchParams.get('action') || 'get';
 
@@ -147,23 +166,28 @@ serve(async (req) => {
       });
 
     } else if (req.method === 'POST' && action === 'update') {
-      // Update user data
-      const { user_id, email, name, metadata = {} } = await req.json();
-
-      if (!user_id) {
+      // Parse and validate input with Zod
+      let validatedInput;
+      try {
+        const rawBody = await req.json();
+        validatedInput = UpdateUserSchema.parse(rawBody);
+      } catch (validationError) {
+        console.error('Input validation error:', validationError);
         return new Response(JSON.stringify({ 
           success: false, 
-          error: 'user_id is required' 
+          error: 'Invalid input: Please check user_id (UUID) and optional email/name fields' 
         }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
+      const { user_id, email, name, metadata } = validatedInput;
+
       // Update auth user metadata
       const updateData: any = {};
       if (email) updateData.email = email;
-      if (name || metadata) {
+      if (name || Object.keys(metadata).length > 0) {
         updateData.user_metadata = {
           name,
           ...metadata
@@ -176,9 +200,10 @@ serve(async (req) => {
       );
 
       if (updateError) {
+        console.error('User update error:', updateError);
         return new Response(JSON.stringify({ 
           success: false, 
-          error: updateError.message 
+          error: 'Failed to update user' 
         }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -208,24 +233,28 @@ serve(async (req) => {
       });
 
     } else if (req.method === 'POST' && action === 'migrate') {
-      // Migrate users from Vault Club to Sequence Theory
-      const { users } = await req.json();
-
-      if (!Array.isArray(users)) {
+      // Parse and validate input with Zod
+      let validatedInput;
+      try {
+        const rawBody = await req.json();
+        validatedInput = MigrateUsersSchema.parse(rawBody);
+      } catch (validationError) {
+        console.error('Input validation error:', validationError);
         return new Response(JSON.stringify({ 
           success: false, 
-          error: 'users must be an array' 
+          error: 'Invalid input: users must be an array of valid user objects with email (required), password (8-128 chars), and optional name/metadata' 
         }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
+      const { users } = validatedInput;
       const results = [];
       
       for (const userData of users) {
         try {
-          const { email, password, name, metadata = {} } = userData;
+          const { email, password, name, metadata } = userData;
           
           // Create user
           const { data: authData, error: authError } = await supabase.auth.admin.createUser({
@@ -243,8 +272,9 @@ serve(async (req) => {
             results.push({
               email,
               success: false,
-              error: authError.message
+              error: 'Failed to create user account'
             });
+            console.error('Migration auth error for', email, authError);
             continue;
           }
 
@@ -257,8 +287,7 @@ serve(async (req) => {
               {
                 user_id: authData.user!.id,
                 wallet_address: deterministicAddress,
-                network: 'polygon',
-                email
+                network: 'polygon'
               },
               { onConflict: 'user_id' }
             );
@@ -274,10 +303,11 @@ serve(async (req) => {
           });
 
         } catch (error) {
+          console.error('Migration error for user:', userData.email, error);
           results.push({
             email: userData.email,
             success: false,
-            error: error.message
+            error: 'An unexpected error occurred'
           });
         }
       }
@@ -307,7 +337,7 @@ serve(async (req) => {
     const corsHeaders = getCorsHeaders(req.headers.get('origin'));
     return new Response(JSON.stringify({ 
       success: false, 
-      error: error.message 
+      error: 'An internal error occurred' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
