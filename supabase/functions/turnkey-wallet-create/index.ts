@@ -80,6 +80,8 @@ const isAllowedOrigin = (origin: string | null): boolean => {
   if (!origin) return false;
   if (ALLOWED_ORIGINS.includes(origin)) return true;
   if (origin.endsWith('.lovableproject.com')) return true;
+  // Allow localhost for development
+  if (origin.startsWith('http://localhost:')) return true;
   return false;
 };
 
