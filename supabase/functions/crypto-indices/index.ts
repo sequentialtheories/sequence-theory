@@ -211,9 +211,9 @@ class RateLimiter {
   }
 }
 
-// CoinGecko: keep requests paced, but fast enough to avoid edge timeouts.
-// We rely on overall response caching + stale fallback on 429s for resilience.
-const coingeckoLimiter = new RateLimiter(400);
+// CoinGecko: keep requests paced to avoid 429s. Edge functions have a limited runtime,
+// so we trade speed for reliability and use cache to keep UX snappy.
+const coingeckoLimiter = new RateLimiter(1200);
 
 async function fetchHistoricalPrices(
   coinId: string,
@@ -234,9 +234,11 @@ async function fetchHistoricalPrices(
     );
 
     if (!response.ok) {
-      // Let callers decide how to handle rate limits (usually serve stale cache)
+      // On rate limit, return empty so the index can still be computed using fallbacks
+      // (and the handler can still serve cached/stale data).
       if (response.status === 429) {
-        throw new Error(`COINGECKO_RATE_LIMIT:${coinId}`);
+        console.warn(`CoinGecko rate limit hit for ${coinId} (429). Returning empty history.`);
+        return [];
       }
       console.error(`Failed to fetch ${coinId}: ${response.status}`);
       return [];
@@ -259,7 +261,8 @@ async function fetchHistoricalPrices(
     return result;
   } catch (error) {
     console.error(`Error fetching historical data for ${coinId}:`, error);
-    throw error;
+    // Never throw here: a single coin shouldn't 500 the whole endpoint.
+    return [];
   }
 }
 
@@ -438,12 +441,22 @@ async function calculateVibe20(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0)
   );
   
+  // For longer periods, limit historical fetches to top 10 coins to prevent API overload
+  const coinsForHistorical = (timePeriod === 'year' || timePeriod === 'all')
+    ? weightedCoins.slice(0, 10)
+    : weightedCoins;
+
   // Fetch historical data
-  const historicalPromises = weightedCoins.map((coin) =>
+  const historicalPromises = coinsForHistorical.map((coin) =>
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
-  
+
+  // Pad with empty arrays for coins we didn't fetch
+  while (historicalArrays.length < weightedCoins.length) {
+    historicalArrays.push([]);
+  }
+
   // Build index level time series
   const timestampSet = new Set<number>();
   historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
