@@ -559,11 +559,20 @@ async function calculateWave100(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
   );
   
-  // Use all 100 coins for historical data
-  const historicalPromises = weightedCoins.map(coin => 
+  // For longer periods, limit historical fetches to top 30 coins to prevent API overload
+  const coinsForHistorical = (timePeriod === 'year' || timePeriod === 'all') 
+    ? weightedCoins.slice(0, 30) 
+    : weightedCoins.slice(0, 50);
+  
+  const historicalPromises = coinsForHistorical.map(coin => 
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
+  
+  // Pad with empty arrays for coins we didn't fetch
+  while (historicalArrays.length < weightedCoins.length) {
+    historicalArrays.push([]);
+  }
   
   // Build index level time series
   const timestampSet = new Set<number>();
@@ -760,7 +769,9 @@ serve(async (req) => {
         fromTimestamp = now - (365 * 86400); // 1 year
         break;
       case 'all':
-        fromTimestamp = now - (730 * 86400); // 2 years
+        // Limit to 1 year for "all time" to prevent API overload
+        // CoinGecko free tier can't handle 125 coins × 2 years of data
+        fromTimestamp = now - (365 * 86400); // 1 year max
         break;
       default:
         fromTimestamp = now - (365 * 86400);
