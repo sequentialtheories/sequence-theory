@@ -649,18 +649,26 @@ async function calculateWave100(
 
 // ===== Cache Management =====
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 120000; // 2 minutes
+
+// Cache TTLs based on time period (shorter periods need fresher data)
+const CACHE_TTL: Record<string, number> = {
+  daily: 60000,      // 1 minute for daily view
+  month: 120000,     // 2 minutes for monthly
+  year: 300000,      // 5 minutes for yearly
+  all: 600000,       // 10 minutes for all-time
+};
 
 function getCacheKey(timePeriod: string): string {
   return `indices_${timePeriod}`;
 }
 
-function getFromCache(key: string): any | null {
+function getFromCache(key: string, timePeriod: string): any | null {
   const cached = cache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+  const ttl = CACHE_TTL[timePeriod] || 120000;
+  if (cached && Date.now() - cached.timestamp < ttl) {
     return cached.data;
   }
-  cache.delete(key);
+  // Don't delete immediately - keep stale cache for fallback
   return null;
 }
 
@@ -682,9 +690,9 @@ serve(async (req) => {
     
     // Check cache first
     const cacheKey = getCacheKey(timePeriod);
-    const cached = getFromCache(cacheKey);
+    const cached = getFromCache(cacheKey, timePeriod);
     if (cached) {
-      console.log(`Serving cached data for ${timePeriod}`);
+      console.log(`[crypto-indices] Serving cached data for ${timePeriod}`);
       return new Response(
         JSON.stringify(cached),
         {
@@ -788,7 +796,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in crypto-indices function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'An error occurred while fetching index data' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
