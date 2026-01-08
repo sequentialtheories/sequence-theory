@@ -108,11 +108,19 @@ function validateCandle(candle: Candle): boolean {
   );
 }
 
-function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): Candle[] {
+function aggregateToCandles(
+  indexLevels: IndexLevel[], 
+  periodSeconds: number, 
+  volatilityFactor: number = 1.0,
+  normalizeToBase100: boolean = true
+): Candle[] {
   if (indexLevels.length === 0) return [];
   
   // Sort all levels by timestamp first
   const sortedLevels = [...indexLevels].sort((a, b) => a.timestamp - b.timestamp);
+  
+  // Calculate base value for normalization (first value in series)
+  const baseValue = sortedLevels[0].value;
   
   // Group by period
   const periodMap = new Map<number, IndexLevel[]>();
@@ -137,20 +145,27 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): C
     // Always use chronological order within period
     const sortedPeriodLevels = levels.sort((a, b) => a.timestamp - b.timestamp);
     
-    const open = sortedPeriodLevels[0].value;
-    const close = sortedPeriodLevels[sortedPeriodLevels.length - 1].value;
+    // Get raw values
+    let rawOpen = sortedPeriodLevels[0].value;
+    let rawClose = sortedPeriodLevels[sortedPeriodLevels.length - 1].value;
     const volumeUsd = sortedPeriodLevels.reduce((sum, l) => sum + l.volume, 0);
+    
+    // Normalize to base 100 if requested
+    const normFactor = normalizeToBase100 ? (100 / baseValue) : 1;
+    let open = rawOpen * normFactor;
+    let close = rawClose * normFactor;
     
     let high: number;
     let low: number;
     
-    // If only one data point, create realistic OHLC spread (0.1% variation)
+    // If only one data point, create OHLC spread based on volatility factor
     if (sortedPeriodLevels.length === 1) {
-      const value = sortedPeriodLevels[0].value;
-      const variation = value * 0.001; // 0.1% variation
+      const value = close;
+      // Use volatility factor to create index-specific spread (0.1% to 0.5%)
+      const variation = value * 0.001 * volatilityFactor;
       
       // Use previous close for more realistic open if available
-      const effectiveOpen = previousClose !== null ? previousClose : value;
+      const effectiveOpen = previousClose !== null ? previousClose : open;
       const effectiveClose = value;
       
       high = Math.max(effectiveOpen, effectiveClose) + variation;
@@ -171,9 +186,17 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): C
         candles.push(candle);
       }
     } else {
-      // Multiple data points - calculate true OHLC
-      high = Math.max(...sortedPeriodLevels.map(l => l.value));
-      low = Math.min(...sortedPeriodLevels.map(l => l.value));
+      // Multiple data points - calculate true OHLC with normalization
+      const rawHigh = Math.max(...sortedPeriodLevels.map(l => l.value));
+      const rawLow = Math.min(...sortedPeriodLevels.map(l => l.value));
+      high = rawHigh * normFactor;
+      low = rawLow * normFactor;
+      
+      // Apply volatility factor to amplify/dampen the spread
+      const midpoint = (high + low) / 2;
+      const spread = (high - low) * volatilityFactor;
+      high = midpoint + spread / 2;
+      low = midpoint - spread / 2;
       
       const candle: Candle = {
         time: periodStart,
@@ -329,10 +352,10 @@ async function calculateAnchor5(
     }
   }
   
-  // Aggregate to candles
+  // Aggregate to candles - Anchor5 is stable/low volatility (factor 0.8)
   const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
   const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
-  const candles = aggregateToCandles(indexLevels, periodSeconds);
+  const candles = aggregateToCandles(indexLevels, periodSeconds, 0.8, true);
   
   // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
@@ -456,10 +479,10 @@ async function calculateVibe20(
     }
   }
   
-  // Aggregate to candles
+  // Aggregate to candles - Vibe20 is volume-based/medium volatility (factor 1.2)
   const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
   const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
-  const candles = aggregateToCandles(indexLevels, periodSeconds);
+  const candles = aggregateToCandles(indexLevels, periodSeconds, 1.2, true);
   
   // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
@@ -609,10 +632,10 @@ async function calculateWave100(
     }
   }
   
-  // Aggregate to candles
+  // Aggregate to candles - Wave100 is momentum-based/high volatility (factor 1.8)
   const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
   const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
-  const candles = aggregateToCandles(indexLevels, periodSeconds);
+  const candles = aggregateToCandles(indexLevels, periodSeconds, 1.8, true);
   
   // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
