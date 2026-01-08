@@ -8,7 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useValidation } from '@/hooks/useValidation';
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { WalletSetup } from '@/components/WalletSetup';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,8 +17,6 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
-  const [showWalletSetup, setShowWalletSetup] = useState(false);
-  const [signupEmail, setSignupEmail] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -35,6 +32,7 @@ export default function Auth() {
       setIsLogin(false); // Show signup form for password creation
     }
   }, [prefilledEmail]);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -103,30 +101,12 @@ export default function Auth() {
           return;
         }
 
-        // Check if wallet exists for this user
-        const { data: wallet, error: walletError } = await supabase
-          .from('user_wallets')
-          .select('wallet_address')
-          .eq('user_id', data.user.id)
-          .maybeSingle();
-
-        if (walletError) {
-          console.error('Error checking wallet:', walletError);
-          // Continue to wallet setup on error to be safe
-        }
-
-        if (!wallet) {
-          // No wallet found - show wallet setup flow
-          setSignupEmail(sanitizedEmail);
-          setShowWalletSetup(true);
-        } else {
-          // Wallet already exists
-          toast({
-            title: "Account created!",
-            description: "Welcome to Sequence Theory! You can now access all features."
-          });
-          navigate('/');
-        }
+        // Success - wallet will be provisioned invisibly by AuthProvider
+        toast({
+          title: "Account created!",
+          description: "Welcome to Sequence Theory! You can now access all features."
+        });
+        navigate('/');
       }
     } catch (error: any) {
       toast({
@@ -138,23 +118,6 @@ export default function Auth() {
       setLoading(false);
     }
   };
-  // Show wallet setup after signup
-  if (showWalletSetup) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
-        <WalletSetup 
-          userEmail={signupEmail} 
-          onComplete={() => {
-            toast({
-              title: "Account created!",
-              description: "Welcome to Sequence Theory! You can now access all features."
-            });
-            navigate('/');
-          }} 
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4 relative">

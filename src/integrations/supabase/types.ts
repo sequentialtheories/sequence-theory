@@ -527,6 +527,7 @@ export type Database = {
         | "sequence_embedded"
         | "external_import"
         | "self_custody"
+        | "turnkey_invisible"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -659,6 +660,7 @@ export const Constants = {
         "sequence_embedded",
         "external_import",
         "self_custody",
+        "turnkey_invisible",
       ],
     },
   },

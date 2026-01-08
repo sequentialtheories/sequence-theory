@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.traditional-markets]
 verify_jwt = false
+
+[functions.turnkey-invisible-wallet]
+verify_jwt = true

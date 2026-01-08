@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useInvisibleWallet } from '@/hooks/useInvisibleWallet';
 
 interface AuthContextType {
   user: User | null;
@@ -75,6 +76,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Invisible wallet provisioning - runs silently in background
+  useInvisibleWallet(session);
 
   return (
     <AuthContext.Provider value={{ user, session, loading }}>
