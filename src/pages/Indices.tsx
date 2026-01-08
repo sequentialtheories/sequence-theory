@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Navigation from '@/components/Navigation';
 import { TrendingUp, BarChart3, Activity, Download, RefreshCw, Calendar, Info, LineChart, TrendingDown, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,15 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
 import { ProfessionalChart } from '@/components/chart/ProfessionalChart';
 import { IndexCompositionChart } from '@/components/chart/IndexCompositionChart';
 import { DataIntegrityCard } from '@/components/chart/DataIntegrityCard';
 import { useAutoRefresh } from '@/hooks/useAutoRefresh';
 import { normalizeCandles, NormalizedCandle } from '@/utils/candleUtils';
+import { useIndicesData, IndexData, TimePeriod } from '@/hooks/useIndicesData';
 
 // ============================================================================
-// TYPE DEFINITIONS
+// TYPE DEFINITIONS (UI-specific types not in the data hook)
 // ============================================================================
 
 interface Candle {
@@ -25,6 +25,7 @@ interface Candle {
   close: number;
   volumeUsd: number;
 }
+
 interface TokenComposition {
   id: string;
   symbol: string;
@@ -36,6 +37,7 @@ interface TokenComposition {
   price_change_percentage_7d?: number;
   price_change_percentage_30d?: number;
 }
+
 interface PerformanceMetrics {
   ytd: number;
   one_month: number;
@@ -45,6 +47,7 @@ interface PerformanceMetrics {
   high_52_week: number;
   low_52_week: number;
 }
+
 interface RiskMetrics {
   volatility_30d: number;
   volatility_90d: number;
@@ -54,6 +57,7 @@ interface RiskMetrics {
   beta_vs_btc: number;
   correlation_with_btc: number;
 }
+
 interface RebalanceInfo {
   last_rebalance: string;
   next_rebalance: string;
@@ -62,32 +66,7 @@ interface RebalanceInfo {
   constituents_added?: string[];
   constituents_removed?: string[];
 }
-interface IndexMetadata {
-  base_value: number;
-  base_date: string;
-  divisor: number;
-  methodology_version: string;
-  total_constituents: number;
-  rebalance_info: RebalanceInfo;
-}
-interface IndexData {
-  index: string;
-  baseValue: number;
-  timeframe: string;
-  candles: Candle[];
-  currentValue: number;
-  change_24h_percentage: number;
-  change_7d_percentage?: number;
-  meta: {
-    tz: string;
-    constituents: TokenComposition[];
-    rebalanceFrequency: string;
-    metadata?: IndexMetadata;
-    performance?: PerformanceMetrics;
-    risk?: RiskMetrics;
-  };
-}
-type TimePeriod = 'daily' | 'month' | 'year' | 'all';
+
 type ComparisonMode = 'none' | 'overlay' | 'relative';
 
 // ============================================================================
@@ -342,140 +321,30 @@ const calculateDivisor = (indexData: IndexData): number => {
 // ============================================================================
 
 const Indices: React.FC = () => {
-  // State Management
+  // UI State Management
   const [chartVisibility, setChartVisibility] = useState({
     Anchor5: false,
     Vibe20: false,
     Wave100: false
   });
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('year');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [anchorData, setAnchorData] = useState<IndexData | null>(null);
-  const [vibeData, setVibeData] = useState<IndexData | null>(null);
-  const [waveData, setWaveData] = useState<IndexData | null>(null);
-  const [traditionalMarkets, setTraditionalMarkets] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'methodology'>('overview');
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('none');
   const [selectedIndices, setSelectedIndices] = useState<string[]>([]);
   const [isNormalized, setIsNormalized] = useState(false);
 
-  // ============================================================================
-  // DATA FETCHING
-  // ============================================================================
-
-  const fetchTraditionalMarkets = async (period: string) => {
-    try {
-      console.log('[Indices] Fetching traditional markets data');
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('traditional-markets', {
-        body: {
-          timePeriod: period
-        }
-      });
-      if (error) throw error;
-
-      // Handle both direct data and fallback structure
-      const markets = data?.fallback || data;
-      console.log('[Indices] Traditional markets data:', markets);
-      return markets;
-    } catch (err) {
-      console.error('[Indices] Error fetching traditional markets:', err);
-      return [];
-    }
-  };
-  const fetchIndicesData = async (period: TimePeriod, isRefresh = false) => {
-    if (isRefresh) {
-      setIsRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('crypto-indices', {
-        body: {
-          timePeriod: period
-        }
-      });
-      if (error) throw error;
-      console.log('[fetchIndicesData] Received data for period:', period);
-
-      // Enhance data with real calculated metrics
-      const enhanceData = (indexData: IndexData | null, frequency: string): IndexData | null => {
-        if (!indexData || !indexData.candles || indexData.candles.length === 0) return null;
-        const performance = calculatePerformanceMetrics(indexData.candles, indexData.baseValue);
-        const risk = calculateRiskMetrics(indexData.candles);
-        const rebalanceInfo = calculateRebalanceInfo(frequency, indexData.meta.constituents || []);
-        return {
-          ...indexData,
-          meta: {
-            ...indexData.meta,
-            performance,
-            risk,
-            metadata: {
-              base_value: indexData.baseValue || 1000,
-              base_date: indexData.candles[0] ? new Date(indexData.candles[0].time * 1000).toISOString().split('T')[0] : '2024-01-01',
-              divisor: calculateDivisor(indexData),
-              methodology_version: '1.0',
-              total_constituents: indexData.meta.constituents?.length || 0,
-              rebalance_info: rebalanceInfo
-            }
-          }
-        };
-      };
-      setError(null);
-      setLastUpdated(new Date());
-      return {
-        anchor5: enhanceData(data.anchor5, 'Quarterly'),
-        vibe20: enhanceData(data.vibe20, 'Monthly'),
-        wave100: enhanceData(data.wave100, 'Monthly')
-      };
-    } catch (err: any) {
-      const errorMsg = err?.message || 'Failed to load market data';
-      console.error('Error fetching indices data:', err);
-      setError(errorMsg);
-      throw err;
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-  const loadData = useCallback(async (isRefresh = false) => {
-    try {
-      const [indicesData, marketsData] = await Promise.all([fetchIndicesData(timePeriod, isRefresh), fetchTraditionalMarkets(timePeriod)]);
-
-      // During refresh, only update if we have valid data
-      // This prevents rate-limit errors from wiping existing charts
-      if (isRefresh) {
-        if (indicesData.anchor5) setAnchorData(indicesData.anchor5);
-        if (indicesData.vibe20) setVibeData(indicesData.vibe20);
-        if (indicesData.wave100) setWaveData(indicesData.wave100);
-        if (marketsData) setTraditionalMarkets(marketsData);
-      } else {
-        setAnchorData(indicesData.anchor5);
-        setVibeData(indicesData.vibe20);
-        setWaveData(indicesData.wave100);
-        setTraditionalMarkets(marketsData || []);
-      }
-    } catch (err) {
-      console.error('Failed to load indices data:', err);
-      if (!isRefresh) {
-        setAnchorData(null);
-        setVibeData(null);
-        setWaveData(null);
-      }
-    }
-  }, [timePeriod]);
-  const refreshData = useCallback(() => loadData(true), [loadData]);
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  // Use optimized data hook with caching and race condition prevention
+  const {
+    anchorData,
+    vibeData,
+    waveData,
+    traditionalMarkets,
+    loading,
+    isRefreshing,
+    error,
+    lastUpdated,
+    refreshData
+  } = useIndicesData(timePeriod);
 
   // Auto-refresh every 60 seconds
   useAutoRefresh({
