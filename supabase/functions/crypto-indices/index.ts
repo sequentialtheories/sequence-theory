@@ -196,16 +196,34 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number, vo
   return candles;
 }
 
+class RateLimiter {
+  private lastRequestAt = 0;
+  constructor(private readonly minDelayMs: number) {}
+
+  async wait(): Promise<void> {
+    const now = Date.now();
+    const elapsed = now - this.lastRequestAt;
+    const waitMs = Math.max(0, this.minDelayMs - elapsed);
+    if (waitMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+    this.lastRequestAt = Date.now();
+  }
+}
+
+// CoinGecko: keep requests paced, but fast enough to avoid edge timeouts.
+// We rely on overall response caching + stale fallback on 429s for resilience.
+const coingeckoLimiter = new RateLimiter(400);
+
 async function fetchHistoricalPrices(
-  coinId: string, 
-  fromTimestamp: number, 
+  coinId: string,
+  fromTimestamp: number,
   toTimestamp: number,
   apiKey: string
 ): Promise<HistoricalPriceData[]> {
   try {
-    const days = Math.max(1, Math.ceil((toTimestamp - fromTimestamp) / 86400));
-    const interval = days === 1 ? 'minutely' : days <= 90 ? 'hourly' : 'daily';
-    
+    await coingeckoLimiter.wait();
+
     const response = await fetch(
       `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`,
       {
@@ -216,28 +234,32 @@ async function fetchHistoricalPrices(
     );
 
     if (!response.ok) {
+      // Let callers decide how to handle rate limits (usually serve stale cache)
+      if (response.status === 429) {
+        throw new Error(`COINGECKO_RATE_LIMIT:${coinId}`);
+      }
       console.error(`Failed to fetch ${coinId}: ${response.status}`);
       return [];
     }
 
     const data = await response.json();
-    
+
     const result: HistoricalPriceData[] = [];
     const prices = data.prices || [];
     const volumes = data.total_volumes || [];
-    
+
     for (let i = 0; i < prices.length; i++) {
       result.push({
         timestamp: Math.floor(prices[i][0] / 1000),
         price: prices[i][1],
-        volume: volumes[i] ? volumes[i][1] : 0
+        volume: volumes[i] ? volumes[i][1] : 0,
       });
     }
-    
+
     return result;
   } catch (error) {
     console.error(`Error fetching historical data for ${coinId}:`, error);
-    return [];
+    throw error;
   }
 }
 
@@ -289,7 +311,7 @@ async function calculateAnchor5(
   const currentValue = Math.round((totalCurrentPrice / divisor));
   
   // Fetch historical data for all constituents
-  const historicalPromises = scoredCoins.map(coin => 
+  const historicalPromises = scoredCoins.map((coin) =>
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
@@ -417,7 +439,7 @@ async function calculateVibe20(
   );
   
   // Fetch historical data
-  const historicalPromises = weightedCoins.map(coin => 
+  const historicalPromises = weightedCoins.map((coin) =>
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
@@ -565,7 +587,7 @@ async function calculateWave100(
     ? weightedCoins.slice(0, 30) 
     : weightedCoins.slice(0, 50);
   
-  const historicalPromises = coinsForHistorical.map(coin => 
+  const historicalPromises = coinsForHistorical.map((coin) =>
     fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
   );
   const historicalArrays = await Promise.all(historicalPromises);
@@ -778,7 +800,7 @@ serve(async (req) => {
         fromTimestamp = now - (365 * 86400);
     }
     
-    // Calculate indices in parallel
+    // Calculate indices in parallel (faster); historical fetches are rate-limited + cached
     const [anchor5, vibe20, wave100] = await Promise.all([
       calculateAnchor5(marketData, fromTimestamp, now, apiKey, timePeriod),
       calculateVibe20(marketData, fromTimestamp, now, apiKey, timePeriod),
@@ -792,27 +814,60 @@ serve(async (req) => {
       lastUpdated: new Date(now * 1000).toISOString(),
     };
 
-    // Cache the result
-    setCache(cacheKey, responseData);
+    // Only cache healthy responses (prevents flat/empty charts from being cached)
+    const allHaveCandles =
+      (anchor5.candles?.length ?? 0) > 0 &&
+      (vibe20.candles?.length ?? 0) > 0 &&
+      (wave100.candles?.length ?? 0) > 0;
 
-    return new Response(
-      JSON.stringify(responseData),
-      {
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json',
-          'X-Cache': 'MISS'
-        },
+    if (allHaveCandles) {
+      setCache(cacheKey, responseData);
+    } else {
+      console.warn(`[crypto-indices] Not caching ${timePeriod} response (empty candles detected)`);
+      const stale = cache.get(cacheKey);
+      if (stale) {
+        return new Response(JSON.stringify(stale.data), {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'X-Cache': 'STALE',
+          },
+        });
       }
-    );
+    }
+
+    return new Response(JSON.stringify(responseData), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+        'X-Cache': 'MISS',
+      },
+    });
   } catch (error) {
     console.error('Error in crypto-indices function:', error);
-    return new Response(
-      JSON.stringify({ error: 'An error occurred while fetching index data' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+
+    // If we hit CoinGecko limits or partial failures, serve stale cache instead of breaking charts.
+    try {
+      const body = await req.clone().json().catch(() => ({}));
+      const timePeriod = (body as any)?.timePeriod ?? 'year';
+      const cacheKey = getCacheKey(timePeriod);
+      const stale = cache.get(cacheKey);
+      if (stale) {
+        return new Response(JSON.stringify(stale.data), {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'X-Cache': 'STALE',
+          },
+        });
       }
-    );
+    } catch {
+      // ignore
+    }
+
+    return new Response(JSON.stringify({ error: 'An error occurred while fetching index data' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });
