@@ -196,23 +196,28 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): C
 }
 
 async function fetchHistoricalPrices(
-  coinId: string, 
-  fromTimestamp: number, 
+  coinId: string,
+  fromTimestamp: number,
   toTimestamp: number,
-  apiKey: string
+  apiKey: string,
+  timePeriod: string
 ): Promise<HistoricalPriceData[]> {
   try {
     const days = Math.max(1, Math.ceil((toTimestamp - fromTimestamp) / 86400));
-    const interval = days === 1 ? 'minutely' : days <= 90 ? 'hourly' : 'daily';
-    
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`,
-      {
-        headers: {
-          'x-cg-demo-api-key': apiKey,
-        },
-      }
-    );
+
+    // For longer views, prefer a bounded payload (daily interval) to avoid timeouts.
+    // CoinGecko's market_chart endpoint is more stable for this than a wide range query.
+    const useMarketChart = timePeriod === 'year' || timePeriod === 'all';
+
+    const url = useMarketChart
+      ? `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${Math.min(days, 800)}&interval=daily`
+      : `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`;
+
+    const response = await fetch(url, {
+      headers: {
+        'x-cg-demo-api-key': apiKey,
+      },
+    });
 
     if (!response.ok) {
       console.error(`Failed to fetch ${coinId}: ${response.status}`);
@@ -220,19 +225,19 @@ async function fetchHistoricalPrices(
     }
 
     const data = await response.json();
-    
+
     const result: HistoricalPriceData[] = [];
     const prices = data.prices || [];
     const volumes = data.total_volumes || [];
-    
+
     for (let i = 0; i < prices.length; i++) {
       result.push({
         timestamp: Math.floor(prices[i][0] / 1000),
         price: prices[i][1],
-        volume: volumes[i] ? volumes[i][1] : 0
+        volume: volumes[i] ? volumes[i][1] : 0,
       });
     }
-    
+
     return result;
   } catch (error) {
     console.error(`Error fetching historical data for ${coinId}:`, error);
@@ -287,28 +292,36 @@ async function calculateAnchor5(
   const totalCurrentPrice = scoredCoins.reduce((sum, c) => sum + c.current_price, 0);
   const currentValue = Math.round((totalCurrentPrice / divisor));
   
-  // Fetch historical data for all constituents
-  const historicalPromises = scoredCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
+  // Fetch historical data for constituents (optimize for long ranges)
+  const maxHistoricalCoins = timePeriod === 'all' ? 5 : timePeriod === 'year' ? 5 : scoredCoins.length;
+  const coinsForHistorical = scoredCoins.slice(0, maxHistoricalCoins);
+
+  const historicalPromises = coinsForHistorical.map((coin) =>
+    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey, timePeriod)
   );
   const historicalArrays = await Promise.all(historicalPromises);
-  
+
+  // Build fast lookup maps per coin to avoid O(n^2) scans
+  const historicalMaps = historicalArrays.map(
+    (arr) => new Map<number, HistoricalPriceData>(arr.map((d) => [d.timestamp, d]))
+  );
+
   // Build index level time series
   const timestampSet = new Set<number>();
-  historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
+  historicalArrays.forEach((arr) => arr.forEach((d) => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
-  
+
   const indexLevels: IndexLevel[] = [];
-  
+
   for (const timestamp of timestamps) {
     let priceSum = 0;
     let volumeSum = 0;
     let validCount = 0;
-    
+
     for (let i = 0; i < scoredCoins.length; i++) {
-      const hist = historicalArrays[i];
-      const dataPoint = hist.find(d => d.timestamp === timestamp);
-      
+      const map = historicalMaps[i];
+      const dataPoint = map ? map.get(timestamp) : undefined;
+
       if (dataPoint) {
         priceSum += dataPoint.price;
         volumeSum += dataPoint.volume;
@@ -318,13 +331,13 @@ async function calculateAnchor5(
         priceSum += scoredCoins[i].current_price;
       }
     }
-    
+
     if (validCount > 0) {
-      const indexValue = (priceSum / divisor);
+      const indexValue = priceSum / divisor;
       indexLevels.push({
         timestamp,
         value: indexValue,
-        volume: volumeSum
+        volume: volumeSum,
       });
     }
   }
@@ -415,28 +428,35 @@ async function calculateVibe20(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0)
   );
   
-  // Fetch historical data
-  const historicalPromises = weightedCoins.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
+  // Fetch historical data (optimize for long ranges)
+  const maxHistoricalCoins = timePeriod === 'all' ? 10 : timePeriod === 'year' ? 15 : weightedCoins.length;
+  const coinsForHistorical = weightedCoins.slice(0, maxHistoricalCoins);
+
+  const historicalPromises = coinsForHistorical.map((coin) =>
+    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey, timePeriod)
   );
   const historicalArrays = await Promise.all(historicalPromises);
-  
+
+  const historicalMaps = historicalArrays.map(
+    (arr) => new Map<number, HistoricalPriceData>(arr.map((d) => [d.timestamp, d]))
+  );
+
   // Build index level time series
   const timestampSet = new Set<number>();
-  historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
+  historicalArrays.forEach((arr) => arr.forEach((d) => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
-  
+
   const indexLevels: IndexLevel[] = [];
-  
+
   for (const timestamp of timestamps) {
     let weightedPriceSum = 0;
     let volumeSum = 0;
     let validCount = 0;
-    
+
     for (let i = 0; i < weightedCoins.length; i++) {
-      const hist = historicalArrays[i];
-      const dataPoint = hist.find(d => d.timestamp === timestamp);
-      
+      const map = historicalMaps[i];
+      const dataPoint = map ? map.get(timestamp) : undefined;
+
       if (dataPoint) {
         weightedPriceSum += dataPoint.price * weightedCoins[i].weight;
         volumeSum += dataPoint.volume;
@@ -445,13 +465,13 @@ async function calculateVibe20(
         weightedPriceSum += weightedCoins[i].current_price * weightedCoins[i].weight;
       }
     }
-    
+
     if (validCount > 0) {
       const indexValue = weightedPriceSum;
       indexLevels.push({
         timestamp,
         value: indexValue,
-        volume: volumeSum
+        volume: volumeSum,
       });
     }
   }
@@ -559,37 +579,43 @@ async function calculateWave100(
     weightedCoins.reduce((sum, coin) => sum + (coin.current_price * coin.weight), 0) * 1000
   );
   
-  // For longer periods, limit historical fetches to top 30 coins to prevent API overload
-  const coinsForHistorical = (timePeriod === 'year' || timePeriod === 'all') 
-    ? weightedCoins.slice(0, 30) 
-    : weightedCoins.slice(0, 50);
-  
-  const historicalPromises = coinsForHistorical.map(coin => 
-    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey)
+  // For longer periods, limit historical fetches aggressively to prevent API overload/timeouts
+  const coinsForHistorical = (timePeriod === 'all')
+    ? weightedCoins.slice(0, 20)
+    : (timePeriod === 'year')
+      ? weightedCoins.slice(0, 30)
+      : weightedCoins.slice(0, 50);
+
+  const historicalPromises = coinsForHistorical.map((coin) =>
+    fetchHistoricalPrices(coin.id, fromTimestamp, toTimestamp, apiKey, timePeriod)
   );
   const historicalArrays = await Promise.all(historicalPromises);
-  
+
   // Pad with empty arrays for coins we didn't fetch
   while (historicalArrays.length < weightedCoins.length) {
     historicalArrays.push([]);
   }
-  
+
+  const historicalMaps = historicalArrays.map(
+    (arr) => new Map<number, HistoricalPriceData>(arr.map((d) => [d.timestamp, d]))
+  );
+
   // Build index level time series
   const timestampSet = new Set<number>();
-  historicalArrays.forEach(arr => arr.forEach(d => timestampSet.add(d.timestamp)));
+  historicalArrays.forEach((arr) => arr.forEach((d) => timestampSet.add(d.timestamp)));
   const timestamps = Array.from(timestampSet).sort((a, b) => a - b);
-  
+
   const indexLevels: IndexLevel[] = [];
-  
+
   for (const timestamp of timestamps) {
     let weightedPriceSum = 0;
     let volumeSum = 0;
     let validCount = 0;
-    
+
     for (let i = 0; i < weightedCoins.length; i++) {
-      const hist = historicalArrays[i];
-      const dataPoint = hist.find(d => d.timestamp === timestamp);
-      
+      const map = historicalMaps[i];
+      const dataPoint = map ? map.get(timestamp) : undefined;
+
       if (dataPoint) {
         weightedPriceSum += dataPoint.price * weightedCoins[i].weight;
         volumeSum += dataPoint.volume;
@@ -598,13 +624,13 @@ async function calculateWave100(
         weightedPriceSum += weightedCoins[i].current_price * weightedCoins[i].weight;
       }
     }
-    
+
     if (validCount > 0) {
       const indexValue = weightedPriceSum * 1000;
       indexLevels.push({
         timestamp,
         value: indexValue,
-        volume: volumeSum
+        volume: volumeSum,
       });
     }
   }
@@ -768,11 +794,12 @@ serve(async (req) => {
       case 'year':
         fromTimestamp = now - (365 * 86400); // 1 year
         break;
-      case 'all':
-        // Limit to 1 year for "all time" to prevent API overload
-        // CoinGecko free tier can't handle 125 coins × 2 years of data
-        fromTimestamp = now - (365 * 86400); // 1 year max
+      case 'all': {
+        // Start from Jan 1, 2024 (practical "all time" for stability at scale)
+        const start2024 = 1704067200;
+        fromTimestamp = start2024;
         break;
+      }
       default:
         fromTimestamp = now - (365 * 86400);
     }
