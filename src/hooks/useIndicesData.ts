@@ -298,40 +298,62 @@ export function useIndicesData(timePeriod: TimePeriod) {
     return null;
   }, [isCacheValid]);
 
-  // Fetch data from API
-  const fetchFromAPI = useCallback(async (period: TimePeriod, requestId: number): Promise<{
+  // Fetch data from API (with small retry/backoff for transient edge/network failures)
+  const fetchFromAPI = useCallback(async (
+    period: TimePeriod,
+    requestId: number
+  ): Promise<{
     indices: { anchor5: IndexData | null; vibe20: IndexData | null; wave100: IndexData | null };
     markets: any[];
   } | null> => {
-    try {
-      const [indicesResponse, marketsResponse] = await Promise.all([
-        supabase.functions.invoke('crypto-indices', { body: { timePeriod: period } }),
-        supabase.functions.invoke('traditional-markets', { body: { timePeriod: period } })
-      ]);
+    const maxAttempts = 3;
+    const baseDelayMs = 400;
 
-      // Check if this request is still the current one
-      if (requestId !== currentRequestId.current) {
-        console.log(`[useIndicesData] Request ${requestId} superseded, ignoring results`);
-        return null;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const [indicesResponse, marketsResponse] = await Promise.all([
+          supabase.functions.invoke('crypto-indices', { body: { timePeriod: period } }),
+          supabase.functions.invoke('traditional-markets', { body: { timePeriod: period } })
+        ]);
+
+        // Check if this request is still the current one
+        if (requestId !== currentRequestId.current) {
+          console.log(`[useIndicesData] Request ${requestId} superseded, ignoring results`);
+          return null;
+        }
+
+        if (indicesResponse.error) throw indicesResponse.error;
+
+        const data = indicesResponse.data;
+        const markets = marketsResponse.data?.fallback || marketsResponse.data || [];
+
+        return {
+          indices: {
+            anchor5: enhanceIndexData(data.anchor5, 'Quarterly'),
+            vibe20: enhanceIndexData(data.vibe20, 'Monthly'),
+            wave100: enhanceIndexData(data.wave100, 'Monthly')
+          },
+          markets
+        };
+      } catch (err: any) {
+        const msg = (err?.message || '').toLowerCase();
+        const isTransient =
+          msg.includes('failed to fetch') ||
+          msg.includes('failed to send a request') ||
+          msg.includes('network') ||
+          msg.includes('timeout');
+
+        console.error(`[useIndicesData] Error fetching data (attempt ${attempt}/${maxAttempts}):`, err);
+
+        if (requestId !== currentRequestId.current) return null;
+        if (!isTransient || attempt === maxAttempts) throw err;
+
+        const delay = baseDelayMs * Math.pow(2, attempt - 1);
+        await new Promise((r) => setTimeout(r, delay));
       }
-
-      if (indicesResponse.error) throw indicesResponse.error;
-
-      const data = indicesResponse.data;
-      const markets = marketsResponse.data?.fallback || marketsResponse.data || [];
-
-      return {
-        indices: {
-          anchor5: enhanceIndexData(data.anchor5, 'Quarterly'),
-          vibe20: enhanceIndexData(data.vibe20, 'Monthly'),
-          wave100: enhanceIndexData(data.wave100, 'Monthly')
-        },
-        markets
-      };
-    } catch (err: any) {
-      console.error(`[useIndicesData] Error fetching data:`, err);
-      throw err;
     }
+
+    return null;
   }, []);
 
   // Main data loading function
@@ -431,15 +453,19 @@ export function useIndicesData(timePeriod: TimePeriod) {
     };
   }, [loadData]);
 
-  // Prefetch adjacent time periods in the background
+  // Prefetch adjacent time periods in the background (skip heavy "all" period)
   useEffect(() => {
     const prefetchPeriods: TimePeriod[] = [];
-    
+
     // Determine which periods to prefetch based on current
     if (timePeriod === 'daily') prefetchPeriods.push('month');
     else if (timePeriod === 'month') prefetchPeriods.push('daily', 'year');
-    else if (timePeriod === 'year') prefetchPeriods.push('month', 'all');
-    else if (timePeriod === 'all') prefetchPeriods.push('year');
+    else if (timePeriod === 'year') {
+      // Avoid prefetching 'all' (it's the heaviest view)
+      prefetchPeriods.push('month');
+    } else if (timePeriod === 'all') prefetchPeriods.push('year');
+
+    if (prefetchPeriods.length === 0) return;
 
     // Prefetch after a short delay to not interfere with current load
     const timeoutId = setTimeout(() => {
