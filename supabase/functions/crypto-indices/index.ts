@@ -108,7 +108,8 @@ function validateCandle(candle: Candle): boolean {
   );
 }
 
-function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): Candle[] {
+// volatilityFactor: 0.8 = stable (Anchor5), 1.2 = medium (Vibe20), 1.8 = high (Wave100)
+function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number, volatilityFactor: number = 1.0): Candle[] {
   if (indexLevels.length === 0) return [];
   
   // Sort all levels by timestamp first
@@ -144,10 +145,10 @@ function aggregateToCandles(indexLevels: IndexLevel[], periodSeconds: number): C
     let high: number;
     let low: number;
     
-    // If only one data point, create realistic OHLC spread (0.1% variation)
+    // If only one data point, create realistic OHLC spread based on volatility factor
     if (sortedPeriodLevels.length === 1) {
       const value = sortedPeriodLevels[0].value;
-      const variation = value * 0.001; // 0.1% variation
+      const variation = value * 0.001 * volatilityFactor; // Base 0.1% variation scaled by volatility
       
       // Use previous close for more realistic open if available
       const effectiveOpen = previousClose !== null ? previousClose : value;
@@ -332,7 +333,7 @@ async function calculateAnchor5(
   // Aggregate to candles
   const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
   const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
-  const candles = aggregateToCandles(indexLevels, periodSeconds);
+  const candles = aggregateToCandles(indexLevels, periodSeconds, 0.8); // Anchor5: stable, low volatility
   
   // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
@@ -459,7 +460,7 @@ async function calculateVibe20(
   // Aggregate to candles
   const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
   const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
-  const candles = aggregateToCandles(indexLevels, periodSeconds);
+  const candles = aggregateToCandles(indexLevels, periodSeconds, 1.2); // Vibe20: medium risk, moderate volatility
   
   // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
@@ -612,7 +613,7 @@ async function calculateWave100(
   // Aggregate to candles
   const periodSeconds = timePeriod === 'daily' ? 900 : timePeriod === 'month' ? 3600 : timePeriod === 'year' ? 86400 : 604800;
   const timeframe = timePeriod === 'daily' ? '15m' : timePeriod === 'month' ? '1h' : timePeriod === 'year' ? '1d' : '1w';
-  const candles = aggregateToCandles(indexLevels, periodSeconds);
+  const candles = aggregateToCandles(indexLevels, periodSeconds, 1.8); // Wave100: high risk, high volatility
   
   // Calculate 24h change
   const now = Math.floor(Date.now() / 1000);
