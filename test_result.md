@@ -101,3 +101,91 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  User needs fixes for the "Digital Asset Indices" feature:
+  1. Index scores should be CONSTANT regardless of timeframe (Day/Month/Year/All Time)
+  2. Wave100 should be equal-weighted (each token has equal weight, not market-cap weighted)
+  3. Candlestick patterns should look realistic with proper volatility differentiation:
+     - Anchor5: Low volatility (blue chip stability)
+     - Vibe20: Moderate volatility (trading activity)
+     - Wave100: High volatility (broad market)
+  4. Charts should not crash the page
+
+backend:
+  - task: "Crypto Indices API - Constant Scores"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Implemented index score caching. Scores are now calculated once from market data and cached separately from chart generation. Verified with curl that all timeframes return identical scores."
+
+  - task: "Crypto Indices API - Equal Weight Wave100"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Wave100 now uses equal weighting (100/num_tokens)%. Each constituent has ~1% weight. Verified meta.constituents shows equal weight values."
+
+  - task: "Crypto Indices API - Realistic Candlestick Generation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Replaced simple candle generator with Geometric Brownian Motion (GBM) model. Volatility classes: low (0.15 annual), moderate (0.45 annual), high (0.85 annual). Verified all candles have unique OHLC values and correct volatility ordering."
+
+  - task: "Wallet Provisioning API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Turnkey wallet creation working. Creates Polygon wallets for new users automatically."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Crypto Indices API - Constant Scores"
+    - "Crypto Indices API - Equal Weight Wave100"
+    - "Crypto Indices API - Realistic Candlestick Generation"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Fixed Digital Asset Indices endpoint with three major improvements:
+      1. Index scores are now CONSTANT across timeframes (cached separately)
+      2. Wave100 uses equal-weighting (each token ~1% weight)
+      3. Candlestick generation uses proper GBM model with volatility classes
+      
+      Test the /api/crypto-indices endpoint with different timePeriod values:
+      - Verify scores stay identical across daily/month/year/all
+      - Verify Wave100 constituents show equal weight (~1%)
+      - Verify candle OHLC values are varied and unique
+      - Verify no errors or crashes
