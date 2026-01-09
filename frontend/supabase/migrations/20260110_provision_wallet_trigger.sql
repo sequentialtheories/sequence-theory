@@ -1,18 +1,41 @@
 -- ============================================================
--- INVISIBLE WALLET TRIGGER MIGRATION
--- Purpose: Automatically provision Turnkey wallet when user signs up
+-- INVISIBLE WALLET AUTO-PROVISIONING TRIGGER
+-- ============================================================
+-- 
+-- PURPOSE: Automatically provision a Turnkey wallet when a new user signs up
+-- 
+-- HOW TO USE:
+-- 1. Go to Supabase Dashboard > SQL Editor
+-- 2. Copy and paste this entire script
+-- 3. Click "Run"
+-- 
+-- PREREQUISITES:
+-- Before running this migration, ensure these secrets are in your Supabase Vault:
+-- - TURNKEY_API_PUBLIC_KEY
+-- - TURNKEY_API_PRIVATE_KEY  
+-- - TURNKEY_ORGANIZATION_ID
+--
+-- You can add secrets at: Dashboard > Project Settings > Vault
+--
 -- ============================================================
 
--- IMPORTANT: This migration creates a database webhook trigger
--- that fires when a new user is created in auth.users.
--- The webhook will call the turnkey-invisible-wallet Edge Function.
+-- OPTION A: Database Webhook (Recommended for Supabase Pro/Enterprise)
+-- ============================================================
+-- If you have pg_net extension available, use this approach.
+-- This calls the Edge Function directly when a user is created.
 
--- Step 1: Enable the pg_net extension for HTTP calls (if not already enabled)
--- Note: This may already be enabled in your Supabase project
-CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA extensions;
+-- First, check if pg_net is available
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_net') THEN
+    RAISE NOTICE 'pg_net extension is available - using webhook approach';
+  ELSE
+    RAISE NOTICE 'pg_net extension not available - see alternative approaches below';
+  END IF;
+END $$;
 
--- Step 2: Create the function that will be called by the trigger
-CREATE OR REPLACE FUNCTION public.provision_invisible_wallet()
+-- Create the webhook function (requires pg_net)
+CREATE OR REPLACE FUNCTION public.trigger_provision_invisible_wallet()
 RETURNS TRIGGER
 SECURITY DEFINER
 SET search_path = public
@@ -20,75 +43,138 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
   supabase_url TEXT;
-  service_role_key TEXT;
-  request_id BIGINT;
+  service_key TEXT;
 BEGIN
-  -- Get Supabase URL and service role key from vault secrets
-  -- These should be stored in your Supabase Vault
-  SELECT decrypted_secret INTO supabase_url 
-  FROM vault.decrypted_secrets 
-  WHERE name = 'SUPABASE_URL';
+  -- Get the Supabase URL (adjust if needed)
+  supabase_url := 'https://qldjhlnsphlixmzzrdwi.supabase.co';
   
-  SELECT decrypted_secret INTO service_role_key 
+  -- Get service role key from vault
+  SELECT decrypted_secret INTO service_key 
   FROM vault.decrypted_secrets 
-  WHERE name = 'SUPABASE_SERVICE_ROLE_KEY';
+  WHERE name = 'SUPABASE_SERVICE_ROLE_KEY'
+  LIMIT 1;
 
-  -- If vault secrets aren't set, use environment defaults
-  IF supabase_url IS NULL THEN
-    supabase_url := current_setting('app.settings.supabase_url', true);
-  END IF;
-  
-  IF service_role_key IS NULL THEN
-    service_role_key := current_setting('app.settings.service_role_key', true);
+  -- If vault secret not found, log and exit gracefully
+  IF service_key IS NULL THEN
+    RAISE WARNING 'SUPABASE_SERVICE_ROLE_KEY not found in vault for user %', NEW.id;
+    RETURN NEW;
   END IF;
 
-  -- Log the trigger execution
-  RAISE LOG 'provision_invisible_wallet triggered for user: %', NEW.id;
-
-  -- Call the Edge Function asynchronously using pg_net
-  -- The Edge Function will handle the actual Turnkey wallet creation
-  SELECT INTO request_id net.http_post(
+  -- Call the Edge Function asynchronously
+  PERFORM net.http_post(
     url := supabase_url || '/functions/v1/turnkey-invisible-wallet',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'Authorization', 'Bearer ' || service_role_key
+      'Authorization', 'Bearer ' || service_key
     ),
     body := jsonb_build_object(
-      'user_id', NEW.id,
+      'user_id', NEW.id::text,
       'email', NEW.email,
       'trigger_source', 'auth_user_created'
-    ),
-    timeout_milliseconds := 30000
+    )
   );
 
-  RAISE LOG 'provision_invisible_wallet HTTP request sent, request_id: %', request_id;
-
+  RAISE LOG 'Wallet provisioning triggered for user: %', NEW.id;
   RETURN NEW;
+  
 EXCEPTION WHEN OTHERS THEN
-  -- Log error but don't block user creation
-  RAISE WARNING 'provision_invisible_wallet failed for user %: %', NEW.id, SQLERRM;
+  -- Don't block user creation if wallet provisioning fails
+  RAISE WARNING 'Wallet provisioning trigger failed for user %: %', NEW.id, SQLERRM;
   RETURN NEW;
 END;
 $$;
 
--- Step 3: Create the trigger on auth.users
--- This fires AFTER a new user is inserted
+-- Create the trigger
 DROP TRIGGER IF EXISTS on_auth_user_created_provision_wallet ON auth.users;
 
 CREATE TRIGGER on_auth_user_created_provision_wallet
   AFTER INSERT ON auth.users
   FOR EACH ROW
-  EXECUTE FUNCTION public.provision_invisible_wallet();
+  EXECUTE FUNCTION public.trigger_provision_invisible_wallet();
 
--- Step 4: Grant necessary permissions
-GRANT USAGE ON SCHEMA extensions TO postgres, service_role;
-GRANT EXECUTE ON FUNCTION public.provision_invisible_wallet() TO postgres, service_role;
+-- Grant necessary permissions
+GRANT EXECUTE ON FUNCTION public.trigger_provision_invisible_wallet() TO service_role;
 
--- Step 5: Add comment for documentation
-COMMENT ON FUNCTION public.provision_invisible_wallet() IS 
-'Automatically provisions a Turnkey invisible wallet for new users. 
-This function is triggered when a new row is inserted into auth.users. 
-It calls the turnkey-invisible-wallet Edge Function asynchronously.';
+-- Add documentation
+COMMENT ON FUNCTION public.trigger_provision_invisible_wallet() IS 
+'Automatically provisions a Turnkey invisible wallet when a new user is created.
+This trigger fires AFTER INSERT on auth.users and calls the turnkey-invisible-wallet Edge Function.
+The wallet creation happens asynchronously and does not block the signup process.';
 
-COMMENT ON TRIGGER on_auth_user_created_provision_wallet ON auth.users IS
-'Trigger that provisions an invisible Turnkey wallet immediately when a new user signs up.';
+
+-- ============================================================
+-- OPTION B: Profile Creation Trigger (Alternative)
+-- ============================================================
+-- If pg_net is not available, you can use this simpler approach
+-- that marks users as needing wallet provisioning.
+-- The frontend hook will then pick this up and provision the wallet.
+
+-- This creates a flag in the profiles table that the frontend can check
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS wallet_provisioning_needed BOOLEAN DEFAULT true;
+
+-- When a profile is created, mark it as needing wallet provisioning
+CREATE OR REPLACE FUNCTION public.on_profile_created_mark_wallet_needed()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  -- Only mark as needed if no eth_address exists
+  IF NEW.eth_address IS NULL THEN
+    NEW.wallet_provisioning_needed := true;
+  ELSE
+    NEW.wallet_provisioning_needed := false;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_profile_created_mark_wallet ON public.profiles;
+
+CREATE TRIGGER on_profile_created_mark_wallet
+  BEFORE INSERT ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.on_profile_created_mark_wallet_needed();
+
+-- When eth_address is set, clear the provisioning flag
+CREATE OR REPLACE FUNCTION public.on_wallet_provisioned()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF NEW.eth_address IS NOT NULL AND (OLD.eth_address IS NULL OR OLD.eth_address != NEW.eth_address) THEN
+    NEW.wallet_provisioning_needed := false;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_wallet_provisioned ON public.profiles;
+
+CREATE TRIGGER on_wallet_provisioned
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.on_wallet_provisioned();
+
+
+-- ============================================================
+-- VERIFICATION QUERIES
+-- ============================================================
+-- Run these after applying the migration to verify everything is set up:
+
+-- Check if trigger exists
+SELECT tgname, tgenabled 
+FROM pg_trigger 
+WHERE tgname = 'on_auth_user_created_provision_wallet';
+
+-- Check if function exists
+SELECT routine_name, routine_type 
+FROM information_schema.routines 
+WHERE routine_name = 'trigger_provision_invisible_wallet';
+
+-- Check vault secrets (names only, not values!)
+SELECT name, created_at 
+FROM vault.secrets 
+WHERE name IN ('TURNKEY_API_PUBLIC_KEY', 'TURNKEY_API_PRIVATE_KEY', 'TURNKEY_ORGANIZATION_ID', 'SUPABASE_SERVICE_ROLE_KEY');
