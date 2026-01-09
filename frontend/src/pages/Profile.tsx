@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ContractDashboard } from '@/components/ContractDashboard';
+import { VaultAddressDisplay } from '@/components/VaultAddressDisplay';
 
 
 // Private keys are no longer stored in wallet_config for security
