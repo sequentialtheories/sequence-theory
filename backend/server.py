@@ -7,11 +7,10 @@ import httpx
 import base64
 import json
 import time
-import hashlib
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 from cryptography.hazmat.backends import default_backend
@@ -48,40 +47,34 @@ class WalletProvisionResponse(BaseModel):
 def base64url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')
 
+def base64url_decode(data: str) -> bytes:
+    # Add padding if needed
+    padding = 4 - len(data) % 4
+    if padding != 4:
+        data += '=' * padding
+    return base64.urlsafe_b64decode(data)
+
 def int_to_bytes(n: int, length: int) -> bytes:
     return n.to_bytes(length, byteorder='big')
 
 def sign_turnkey_request(payload: str) -> dict:
     """
-    Sign a Turnkey API request using the API private key.
-    
-    The stamp format is:
-    {
-        "publicKey": "<hex compressed public key>",
-        "signature": "<base64url encoded raw signature (r||s)>",
-        "scheme": "SIGNATURE_SCHEME_TK_API_P256"
-    }
-    
-    The entire stamp JSON is then base64url-encoded for the X-Stamp header.
+    Sign a Turnkey API request using the API private key in PKCS8 base64url format.
     """
     try:
-        # The private key is a raw 32-byte hex scalar
-        private_key_hex = TURNKEY_API_PRIVATE_KEY
-        private_key_int = int(private_key_hex, 16)
+        # Decode the private key from base64url PKCS8 format
+        private_key_der = base64url_decode(TURNKEY_API_PRIVATE_KEY)
         
-        # Create EC private key from the scalar using P-256 curve
-        private_key = ec.derive_private_key(
-            private_key_int,
-            ec.SECP256R1(),  # P-256 curve for API keys
-            default_backend()
+        # Load the private key
+        private_key = serialization.load_der_private_key(
+            private_key_der,
+            password=None,
+            backend=default_backend()
         )
         
-        # Hash the payload with SHA256 first (Turnkey signs the hash)
-        payload_hash = hashlib.sha256(payload.encode('utf-8')).digest()
-        
-        # Sign the hash with ECDSA
+        # Sign the payload directly (not the hash)
         signature_der = private_key.sign(
-            payload_hash,
+            payload.encode('utf-8'),
             ec.ECDSA(hashes.SHA256())
         )
         
@@ -125,7 +118,7 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
             "userName": email.split('@')[0] if email else f"user-{user_id[:8]}",
             "userEmail": email if email else f"user-{user_id[:8]}@sequencetheory.app",
             "apiKeys": [],
-            "authenticators": [],  # No authenticators = invisible wallet
+            "authenticators": [],
             "oauthProviders": []
         }],
         "rootQuorumThreshold": 1,
@@ -150,11 +143,10 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
     payload_string = json.dumps(request_body, separators=(',', ':'))
     stamp = sign_turnkey_request(payload_string)
     
-    # The X-Stamp header should be the JSON stamp (NOT base64 encoded based on error)
+    # X-Stamp header is the JSON stamp
     stamp_header = json.dumps(stamp)
     
     logger.info(f"Creating Turnkey wallet for user: {user_id}")
-    logger.info(f"Stamp header: {stamp_header[:100]}...")
     
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.post(
@@ -170,7 +162,7 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
         
         if response.status_code != 200:
             logger.error(f"Turnkey API error: {response.status_code} - {response_text}")
-            raise HTTPException(status_code=500, detail=f"Turnkey API error: {response.status_code} - {response_text[:200]}")
+            raise HTTPException(status_code=500, detail=f"Turnkey API error: {response.status_code}")
         
         data = response.json()
         
@@ -200,7 +192,7 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
 async def update_supabase_profile(user_id: str, wallet_address: str):
     """Update the user's profile in Supabase with their wallet address"""
     if not SUPABASE_SERVICE_KEY:
-        logger.warning("SUPABASE_SERVICE_ROLE_KEY not configured, skipping profile update")
+        logger.warning("SUPABASE_SERVICE_ROLE_KEY not configured")
         return
     
     async with httpx.AsyncClient(timeout=10.0) as client:
@@ -221,7 +213,7 @@ async def update_supabase_profile(user_id: str, wallet_address: str):
         else:
             logger.info(f"Profile updated with wallet address for user: {user_id}")
         
-        # Also insert into user_wallets table
+        # Insert into user_wallets table
         wallet_data = {
             "user_id": user_id,
             "wallet_address": wallet_address,
@@ -263,7 +255,7 @@ async def provision_wallet(request: WalletProvisionRequest, authorization: Optio
     try:
         logger.info(f"Provisioning wallet for user: {request.user_id}")
         
-        # Check if wallet already exists in Supabase
+        # Check if wallet already exists
         if SUPABASE_SERVICE_KEY:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
@@ -277,7 +269,6 @@ async def provision_wallet(request: WalletProvisionRequest, authorization: Optio
                 if response.status_code == 200:
                     data = response.json()
                     if data and len(data) > 0 and data[0].get('eth_address'):
-                        logger.info(f"Wallet already exists for user: {request.user_id}")
                         return WalletProvisionResponse(
                             success=True,
                             wallet_address=data[0]['eth_address']
@@ -303,7 +294,6 @@ async def provision_wallet(request: WalletProvisionRequest, authorization: Optio
             error=str(e)
         )
 
-# Include the router
 app.include_router(api_router)
 
 app.add_middleware(
