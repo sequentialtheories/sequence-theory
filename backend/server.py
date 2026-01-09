@@ -4,16 +4,17 @@ from starlette.middleware.cors import CORSMiddleware
 import os
 import logging
 import httpx
-import hashlib
 import base64
 import json
 import time
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 from cryptography.hazmat.backends import default_backend
+import binascii
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -47,33 +48,41 @@ class WalletProvisionResponse(BaseModel):
 def base64url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')
 
-def base64url_decode(data: str) -> bytes:
-    padding = 4 - len(data) % 4
-    if padding != 4:
-        data += '=' * padding
-    return base64.urlsafe_b64decode(data)
+def int_to_bytes(n: int, length: int) -> bytes:
+    return n.to_bytes(length, byteorder='big')
 
 def sign_turnkey_request(payload: str) -> dict:
-    """Sign a Turnkey API request using the API private key"""
+    """Sign a Turnkey API request using the API private key (raw hex format)"""
     try:
-        # Decode the private key (base64url encoded PKCS8)
-        private_key_bytes = base64url_decode(TURNKEY_API_PRIVATE_KEY)
+        # The private key is a raw 32-byte hex scalar
+        private_key_hex = TURNKEY_API_PRIVATE_KEY
+        private_key_int = int(private_key_hex, 16)
         
-        # Load the private key
-        private_key = serialization.load_der_private_key(
-            private_key_bytes,
-            password=None,
-            backend=default_backend()
+        # Create EC private key from the scalar
+        private_key = ec.derive_private_key(
+            private_key_int,
+            ec.SECP256R1(),  # P-256 curve
+            default_backend()
         )
         
-        # Sign the payload
-        signature = private_key.sign(
+        # Sign the payload with SHA256
+        signature_der = private_key.sign(
             payload.encode('utf-8'),
             ec.ECDSA(hashes.SHA256())
         )
         
-        # Encode signature as base64url
-        signature_b64 = base64url_encode(signature)
+        # Decode DER signature to get r and s values
+        r, s = decode_dss_signature(signature_der)
+        
+        # Convert r and s to fixed-length bytes (32 bytes each for P-256)
+        r_bytes = int_to_bytes(r, 32)
+        s_bytes = int_to_bytes(s, 32)
+        
+        # Concatenate r and s
+        signature_raw = r_bytes + s_bytes
+        
+        # Encode as base64url
+        signature_b64 = base64url_encode(signature_raw)
         
         return {
             'publicKey': TURNKEY_API_PUBLIC_KEY,
@@ -96,8 +105,8 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
     create_sub_org_payload = {
         "subOrganizationName": f"User-{user_id[:8]}",
         "rootUsers": [{
-            "userName": email.split('@')[0],
-            "userEmail": email,
+            "userName": email.split('@')[0] if email else f"user-{user_id[:8]}",
+            "userEmail": email if email else f"user-{user_id[:8]}@sequencetheory.app",
             "apiKeys": [],
             "authenticators": [],  # No authenticators = invisible wallet
             "oauthProviders": []
