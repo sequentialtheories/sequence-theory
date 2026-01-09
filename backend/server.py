@@ -48,35 +48,26 @@ def int_to_bytes(n: int, length: int) -> bytes:
 
 def sign_turnkey_request(payload: str) -> dict:
     """
-    Sign a Turnkey API request.
-    Sign the raw payload with ECDSA-SHA256 (let the sign function hash it)
+    Sign a Turnkey API request using official Turnkey Python SDK approach.
     """
     try:
         # Parse private key from hex scalar
         private_key_int = int(TURNKEY_API_PRIVATE_KEY, 16)
         private_key = ec.derive_private_key(private_key_int, ec.SECP256R1(), default_backend())
         
-        # Sign the raw payload (sign() will hash it internally with SHA256)
+        # Sign the payload - returns DER-encoded signature
         signature_der = private_key.sign(
             payload.encode('utf-8'),
             ec.ECDSA(hashes.SHA256())
         )
         
-        # Decode DER to get r, s
-        r, s = decode_dss_signature(signature_der)
-        
-        # Convert to 32-byte each
-        r_bytes = int_to_bytes(r, 32)
-        s_bytes = int_to_bytes(s, 32)
-        signature_raw = r_bytes + s_bytes
-        
-        # Turnkey expects hex-encoded signature
-        signature_hex = signature_raw.hex()
+        # Use DER-encoded signature as hex (this is what Turnkey expects!)
+        signature_hex = signature_der.hex()
         
         stamp = {
             'publicKey': TURNKEY_API_PUBLIC_KEY,
+            'scheme': 'SIGNATURE_SCHEME_TK_API_P256',
             'signature': signature_hex,
-            'scheme': 'SIGNATURE_SCHEME_TK_API_P256'
         }
         
         return stamp
