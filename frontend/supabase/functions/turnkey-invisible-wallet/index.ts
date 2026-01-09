@@ -86,26 +86,30 @@ class DenoApiKeyStamper {
   }
 }
 
-// Allowed origins for CORS
+// Allowed origins for CORS - Both platforms for two-way sync
 const ALLOWED_ORIGINS = [
   'https://vaultclub.io',
-  'https://sequence-theory.lovable.app',
-  'https://sequencetheory.com'
+  'https://www.vaultclub.io',
+  'https://sequencetheory.com',
+  'https://www.sequencetheory.com',
+  'https://sequence-theory.lovable.app'
 ];
 
 const isAllowedOrigin = (origin: string | null): boolean => {
-  if (!origin) return false;
+  if (!origin) return true; // Allow server-to-server calls
   if (ALLOWED_ORIGINS.includes(origin)) return true;
   if (origin.endsWith('.lovableproject.com')) return true;
+  if (origin.endsWith('.emergentagent.com')) return true;
   if (origin.startsWith('http://localhost:')) return true;
   return false;
 };
 
 const getCorsHeaders = (origin: string | null) => {
-  const allowedOrigin = isAllowedOrigin(origin) ? origin : ALLOWED_ORIGINS[0];
+  const allowedOrigin = isAllowedOrigin(origin) ? (origin || '*') : ALLOWED_ORIGINS[0];
   return {
-    'Access-Control-Allow-Origin': allowedOrigin!,
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
   };
 };
 
