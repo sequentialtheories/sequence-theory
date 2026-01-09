@@ -143,8 +143,9 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
     payload_string = json.dumps(request_body, separators=(',', ':'))
     stamp = sign_turnkey_request(payload_string)
     
-    # X-Stamp header is the JSON stamp
-    stamp_header = json.dumps(stamp)
+    # X-Stamp header must be the JSON stamp base64url-encoded
+    stamp_json = json.dumps(stamp)
+    stamp_header = base64url_encode(stamp_json.encode('utf-8'))
     
     logger.info(f"Creating Turnkey wallet for user: {user_id}")
     
