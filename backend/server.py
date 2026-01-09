@@ -181,27 +181,32 @@ def calculate_simple_indices(market_data: List[Dict]) -> Dict:
     """Calculate indices without historical data (much faster)"""
     stablecoins = {'usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd'}
     
-    # Filter out stablecoins
-    coins = [c for c in market_data if c.get('symbol', '').lower() not in stablecoins]
+    # Filter out stablecoins and ensure valid data
+    coins = [c for c in market_data 
+             if c.get('symbol', '').lower() not in stablecoins 
+             and c.get('current_price') is not None
+             and c.get('market_cap') is not None]
     
     if not coins:
         return {"anchor5": None, "vibe20": None, "wave100": None}
     
     # Anchor5: Top 5 by market cap (price-weighted like Dow)
-    anchor_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:5]
-    anchor_total_price = sum(c.get('current_price', 0) for c in anchor_coins)
-    anchor_value = anchor_total_price / 10  # Divisor
-    anchor_change = sum(c.get('price_change_percentage_24h', 0) for c in anchor_coins) / len(anchor_coins)
+    anchor_coins = sorted(coins, key=lambda x: x.get('market_cap', 0) or 0, reverse=True)[:5]
+    anchor_total_price = sum(c.get('current_price', 0) or 0 for c in anchor_coins)
+    anchor_value = anchor_total_price / 10 if anchor_total_price > 0 else 1000
+    anchor_change = sum((c.get('price_change_percentage_24h') or 0) for c in anchor_coins) / max(len(anchor_coins), 1)
     
     # Vibe20: Top 20 by volume (equal weighted)
-    vibe_coins = sorted(coins, key=lambda x: x.get('total_volume', 0), reverse=True)[:20]
-    vibe_value = sum(c.get('current_price', 0) * 0.05 for c in vibe_coins)
-    vibe_change = sum(c.get('price_change_percentage_24h', 0) for c in vibe_coins) / len(vibe_coins)
+    vibe_coins = sorted(coins, key=lambda x: x.get('total_volume', 0) or 0, reverse=True)[:20]
+    vibe_value = sum((c.get('current_price', 0) or 0) * 0.05 for c in vibe_coins)
+    vibe_value = vibe_value if vibe_value > 0 else 100
+    vibe_change = sum((c.get('price_change_percentage_24h') or 0) for c in vibe_coins) / max(len(vibe_coins), 1)
     
     # Wave100: Top 100 by momentum (equal weighted)
-    wave_coins = sorted(coins, key=lambda x: x.get('price_change_percentage_24h', 0) or 0, reverse=True)[:min(100, len(coins))]
-    wave_value = sum(c.get('current_price', 0) * 0.01 for c in wave_coins) * 1000
-    wave_change = sum(c.get('price_change_percentage_24h', 0) for c in wave_coins) / len(wave_coins)
+    wave_coins = sorted(coins, key=lambda x: (x.get('price_change_percentage_24h') or 0), reverse=True)[:min(100, len(coins))]
+    wave_value = sum((c.get('current_price', 0) or 0) * 0.01 for c in wave_coins) * 1000
+    wave_value = wave_value if wave_value > 0 else 1000
+    wave_change = sum((c.get('price_change_percentage_24h') or 0) for c in wave_coins) / max(len(wave_coins), 1)
     
     now = int(time.time())
     
