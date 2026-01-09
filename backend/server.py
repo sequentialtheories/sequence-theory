@@ -7,30 +7,26 @@ import httpx
 import base64
 import json
 import time
+import hashlib
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature, Prehashed
 from cryptography.hazmat.backends import default_backend
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Create the main app
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# Supabase config
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://qldjhlnsphlixmzzrdwi.supabase.co')
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
-
-# Turnkey config
 TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
 TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
 TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
@@ -47,48 +43,37 @@ class WalletProvisionResponse(BaseModel):
 def base64url_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b'=').decode('utf-8')
 
-def base64url_decode(data: str) -> bytes:
-    # Add padding if needed
-    padding = 4 - len(data) % 4
-    if padding != 4:
-        data += '=' * padding
-    return base64.urlsafe_b64decode(data)
-
 def int_to_bytes(n: int, length: int) -> bytes:
     return n.to_bytes(length, byteorder='big')
 
 def sign_turnkey_request(payload: str) -> dict:
     """
-    Sign a Turnkey API request using the API private key in PKCS8 base64url format.
+    Sign a Turnkey API request.
+    Turnkey expects: SHA256 hash of payload, then ECDSA sign that hash.
     """
     try:
-        # Decode the private key from base64url PKCS8 format
-        private_key_der = base64url_decode(TURNKEY_API_PRIVATE_KEY)
+        # Parse private key from hex scalar
+        private_key_int = int(TURNKEY_API_PRIVATE_KEY, 16)
+        private_key = ec.derive_private_key(private_key_int, ec.SECP256R1(), default_backend())
         
-        # Load the private key
-        private_key = serialization.load_der_private_key(
-            private_key_der,
-            password=None,
-            backend=default_backend()
-        )
+        # Hash the payload with SHA256
+        payload_hash = hashlib.sha256(payload.encode('utf-8')).digest()
         
-        # Sign the payload directly (not the hash)
+        # Sign the hash using Prehashed (since we already hashed)
         signature_der = private_key.sign(
-            payload.encode('utf-8'),
-            ec.ECDSA(hashes.SHA256())
+            payload_hash,
+            ec.ECDSA(Prehashed(hashes.SHA256()))
         )
         
-        # Decode DER signature to get r and s values
+        # Decode DER to get r, s
         r, s = decode_dss_signature(signature_der)
         
-        # Convert r and s to fixed-length bytes (32 bytes each for P-256)
+        # Convert to 32-byte each
         r_bytes = int_to_bytes(r, 32)
         s_bytes = int_to_bytes(s, 32)
-        
-        # Concatenate r and s (raw signature format)
         signature_raw = r_bytes + s_bytes
         
-        # Encode signature as HEX (not base64url!) - Turnkey expects hex
+        # Turnkey expects hex-encoded signature
         signature_hex = signature_raw.hex()
         
         stamp = {
@@ -104,14 +89,11 @@ def sign_turnkey_request(payload: str) -> dict:
         raise
 
 async def create_turnkey_wallet(user_id: str, email: str) -> dict:
-    """Create a Turnkey sub-organization and wallet for a user"""
-    
     if not all([TURNKEY_API_PUBLIC_KEY, TURNKEY_API_PRIVATE_KEY, TURNKEY_ORGANIZATION_ID]):
         raise HTTPException(status_code=500, detail="Turnkey credentials not configured")
     
     timestamp = str(int(time.time() * 1000))
     
-    # Create sub-organization WITHOUT authenticators (invisible wallet)
     create_sub_org_payload = {
         "subOrganizationName": f"User-{user_id[:8]}",
         "rootUsers": [{
@@ -143,8 +125,8 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
     payload_string = json.dumps(request_body, separators=(',', ':'))
     stamp = sign_turnkey_request(payload_string)
     
-    # X-Stamp header must be the JSON stamp base64url-encoded
-    stamp_json = json.dumps(stamp)
+    # Base64url encode the entire stamp JSON
+    stamp_json = json.dumps(stamp, separators=(',', ':'))
     stamp_header = base64url_encode(stamp_json.encode('utf-8'))
     
     logger.info(f"Creating Turnkey wallet for user: {user_id}")
@@ -159,15 +141,12 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
             content=payload_string
         )
         
-        response_text = response.text
-        
         if response.status_code != 200:
-            logger.error(f"Turnkey API error: {response.status_code} - {response_text}")
+            logger.error(f"Turnkey API error: {response.status_code} - {response.text}")
             raise HTTPException(status_code=500, detail=f"Turnkey API error: {response.status_code}")
         
         data = response.json()
         
-    # Extract wallet info
     result = data.get('activity', {}).get('result', {})
     result_v7 = result.get('createSubOrganizationResultV7', {})
     result_v4 = result.get('createSubOrganizationResultV4', {})
@@ -180,25 +159,18 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
     
     if not wallet_address:
         logger.error(f"No wallet address in response: {data}")
-        raise HTTPException(status_code=500, detail="Failed to get wallet address from Turnkey")
+        raise HTTPException(status_code=500, detail="Failed to get wallet address")
     
-    logger.info(f"Wallet created: {wallet_address} for user: {user_id}")
+    logger.info(f"Wallet created: {wallet_address}")
     
-    return {
-        "wallet_address": wallet_address,
-        "sub_org_id": sub_org_id,
-        "wallet_id": wallet_id
-    }
+    return {"wallet_address": wallet_address, "sub_org_id": sub_org_id, "wallet_id": wallet_id}
 
 async def update_supabase_profile(user_id: str, wallet_address: str):
-    """Update the user's profile in Supabase with their wallet address"""
     if not SUPABASE_SERVICE_KEY:
-        logger.warning("SUPABASE_SERVICE_ROLE_KEY not configured")
         return
     
     async with httpx.AsyncClient(timeout=10.0) as client:
-        # Update profiles table
-        response = await client.patch(
+        await client.patch(
             f"{SUPABASE_URL}/rest/v1/profiles?user_id=eq.{user_id}",
             headers={
                 "apikey": SUPABASE_SERVICE_KEY,
@@ -209,22 +181,7 @@ async def update_supabase_profile(user_id: str, wallet_address: str):
             json={"eth_address": wallet_address}
         )
         
-        if response.status_code not in [200, 204]:
-            logger.error(f"Failed to update profile: {response.status_code} - {response.text}")
-        else:
-            logger.info(f"Profile updated with wallet address for user: {user_id}")
-        
-        # Insert into user_wallets table
-        wallet_data = {
-            "user_id": user_id,
-            "wallet_address": wallet_address,
-            "network": "polygon",
-            "provider": "turnkey",
-            "provenance": "turnkey_invisible",
-            "created_via": "backend_api"
-        }
-        
-        response = await client.post(
+        await client.post(
             f"{SUPABASE_URL}/rest/v1/user_wallets",
             headers={
                 "apikey": SUPABASE_SERVICE_KEY,
@@ -232,11 +189,15 @@ async def update_supabase_profile(user_id: str, wallet_address: str):
                 "Content-Type": "application/json",
                 "Prefer": "return=minimal"
             },
-            json=wallet_data
+            json={
+                "user_id": user_id,
+                "wallet_address": wallet_address,
+                "network": "polygon",
+                "provider": "turnkey",
+                "provenance": "turnkey_invisible",
+                "created_via": "backend_api"
+            }
         )
-        
-        if response.status_code not in [200, 201, 204, 409]:
-            logger.error(f"Failed to insert wallet: {response.status_code} - {response.text}")
 
 @api_router.get("/")
 async def root():
@@ -252,11 +213,9 @@ async def health():
 
 @api_router.post("/provision-wallet", response_model=WalletProvisionResponse)
 async def provision_wallet(request: WalletProvisionRequest, authorization: Optional[str] = Header(None)):
-    """Provision an invisible Turnkey wallet for a user."""
     try:
         logger.info(f"Provisioning wallet for user: {request.user_id}")
         
-        # Check if wallet already exists
         if SUPABASE_SERVICE_KEY:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
@@ -266,34 +225,21 @@ async def provision_wallet(request: WalletProvisionRequest, authorization: Optio
                         "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
                     }
                 )
-                
                 if response.status_code == 200:
                     data = response.json()
                     if data and len(data) > 0 and data[0].get('eth_address'):
-                        return WalletProvisionResponse(
-                            success=True,
-                            wallet_address=data[0]['eth_address']
-                        )
+                        return WalletProvisionResponse(success=True, wallet_address=data[0]['eth_address'])
         
-        # Create Turnkey wallet
         wallet_data = await create_turnkey_wallet(request.user_id, request.email)
-        
-        # Update Supabase
         await update_supabase_profile(request.user_id, wallet_data['wallet_address'])
         
-        return WalletProvisionResponse(
-            success=True,
-            wallet_address=wallet_data['wallet_address']
-        )
+        return WalletProvisionResponse(success=True, wallet_address=wallet_data['wallet_address'])
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error provisioning wallet: {e}")
-        return WalletProvisionResponse(
-            success=False,
-            error=str(e)
-        )
+        return WalletProvisionResponse(success=False, error=str(e))
 
 app.include_router(api_router)
 
@@ -304,7 +250,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("shutdown")
-async def shutdown():
-    pass
