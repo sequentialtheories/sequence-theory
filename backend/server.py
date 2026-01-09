@@ -49,20 +49,17 @@ def int_to_bytes(n: int, length: int) -> bytes:
 def sign_turnkey_request(payload: str) -> dict:
     """
     Sign a Turnkey API request.
-    Turnkey expects: SHA256 hash of payload, then ECDSA sign that hash.
+    Sign the raw payload with ECDSA-SHA256 (let the sign function hash it)
     """
     try:
         # Parse private key from hex scalar
         private_key_int = int(TURNKEY_API_PRIVATE_KEY, 16)
         private_key = ec.derive_private_key(private_key_int, ec.SECP256R1(), default_backend())
         
-        # Hash the payload with SHA256
-        payload_hash = hashlib.sha256(payload.encode('utf-8')).digest()
-        
-        # Sign the hash using Prehashed (since we already hashed)
+        # Sign the raw payload (sign() will hash it internally with SHA256)
         signature_der = private_key.sign(
-            payload_hash,
-            ec.ECDSA(Prehashed(hashes.SHA256()))
+            payload.encode('utf-8'),
+            ec.ECDSA(hashes.SHA256())
         )
         
         # Decode DER to get r, s
