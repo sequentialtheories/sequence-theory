@@ -2,9 +2,13 @@ import { useEffect, useRef, useCallback } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || '';
+
 /**
  * Hook that silently provisions a Turnkey wallet for authenticated users
  * who don't have one yet. Completely invisible to the user.
+ * 
+ * This calls the backend API which handles Turnkey wallet creation.
  */
 export const useInvisibleWallet = (session: Session | null) => {
   const provisioningRef = useRef(false);
@@ -47,22 +51,27 @@ export const useInvisibleWallet = (session: Session | null) => {
         return;
       }
 
-      console.log('[InvisibleWallet] No wallet found, provisioning...');
+      console.log('[InvisibleWallet] No wallet found, provisioning via backend...');
 
-      // Call the invisible wallet edge function
-      const { data, error } = await supabase.functions.invoke('turnkey-invisible-wallet', {
+      // Call the BACKEND API to provision wallet
+      const response = await fetch(`${BACKEND_URL}/api/provision-wallet`, {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${userSession.access_token}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userSession.access_token}`,
         },
+        body: JSON.stringify({
+          user_id: userSession.user.id,
+          email: userSession.user.email || ''
+        })
       });
 
-      if (error) {
-        console.error('[InvisibleWallet] Provisioning error:', error);
-        return;
-      }
+      const data = await response.json();
 
-      if (data?.success) {
+      if (data.success) {
         console.log('[InvisibleWallet] Wallet provisioned:', data.wallet_address?.slice(0, 10) + '...');
+      } else {
+        console.error('[InvisibleWallet] Provisioning failed:', data.error);
       }
     } catch (err) {
       console.error('[InvisibleWallet] Error:', err);
@@ -79,7 +88,7 @@ export const useInvisibleWallet = (session: Session | null) => {
     // Defer to avoid blocking auth flow
     const timer = setTimeout(() => {
       provisionWallet(session);
-    }, 100);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [session, provisionWallet]);
