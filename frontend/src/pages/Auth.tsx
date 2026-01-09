@@ -92,16 +92,45 @@ export default function Auth() {
         });
         if (error) throw error;
 
-        // Ensure user and session exist
-        if (!data.user || !data.session) {
+        // Check if user was created
+        if (!data.user) {
           toast({
-            title: "Please verify your email",
-            description: "Check your inbox for a confirmation link to complete signup.",
+            title: "Signup failed",
+            description: "Could not create account. Please try again.",
+            variant: "destructive"
           });
           return;
         }
 
-        // Success - wallet will be provisioned invisibly by AuthProvider
+        // If no session but user exists, email confirmation might be required
+        // OR Supabase hasn't returned the session yet
+        if (!data.session) {
+          // Try to sign in immediately (works if email confirmation is disabled)
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: sanitizedEmail,
+            password
+          });
+          
+          if (signInError) {
+            // Email confirmation is likely required
+            toast({
+              title: "Account created!",
+              description: "Please check your email to confirm your account, then sign in.",
+            });
+            setIsLogin(true); // Switch to login view
+            return;
+          }
+          
+          // Sign in successful
+          toast({
+            title: "Account created!",
+            description: "Welcome to Sequence Theory!"
+          });
+          navigate('/');
+          return;
+        }
+
+        // Success - session exists, wallet will be provisioned invisibly by AuthProvider
         toast({
           title: "Account created!",
           description: "Welcome to Sequence Theory! You can now access all features."
