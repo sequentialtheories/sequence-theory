@@ -7,6 +7,7 @@ import httpx
 import base64
 import json
 import time
+import hashlib
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
@@ -14,7 +15,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 from cryptography.hazmat.backends import default_backend
-import binascii
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -52,22 +52,36 @@ def int_to_bytes(n: int, length: int) -> bytes:
     return n.to_bytes(length, byteorder='big')
 
 def sign_turnkey_request(payload: str) -> dict:
-    """Sign a Turnkey API request using the API private key (raw hex format)"""
+    """
+    Sign a Turnkey API request using the API private key.
+    
+    The stamp format is:
+    {
+        "publicKey": "<hex compressed public key>",
+        "signature": "<base64url encoded raw signature (r||s)>",
+        "scheme": "SIGNATURE_SCHEME_TK_API_P256"
+    }
+    
+    The entire stamp JSON is then base64url-encoded for the X-Stamp header.
+    """
     try:
         # The private key is a raw 32-byte hex scalar
         private_key_hex = TURNKEY_API_PRIVATE_KEY
         private_key_int = int(private_key_hex, 16)
         
-        # Create EC private key from the scalar
+        # Create EC private key from the scalar using P-256 curve
         private_key = ec.derive_private_key(
             private_key_int,
-            ec.SECP256R1(),  # P-256 curve
+            ec.SECP256R1(),  # P-256 curve for API keys
             default_backend()
         )
         
-        # Sign the payload with SHA256
+        # Hash the payload with SHA256 first (Turnkey signs the hash)
+        payload_hash = hashlib.sha256(payload.encode('utf-8')).digest()
+        
+        # Sign the hash with ECDSA
         signature_der = private_key.sign(
-            payload.encode('utf-8'),
+            payload_hash,
             ec.ECDSA(hashes.SHA256())
         )
         
@@ -78,17 +92,20 @@ def sign_turnkey_request(payload: str) -> dict:
         r_bytes = int_to_bytes(r, 32)
         s_bytes = int_to_bytes(s, 32)
         
-        # Concatenate r and s
+        # Concatenate r and s (raw signature format)
         signature_raw = r_bytes + s_bytes
         
-        # Encode as base64url
+        # Encode signature as base64url
         signature_b64 = base64url_encode(signature_raw)
         
-        return {
+        stamp = {
             'publicKey': TURNKEY_API_PUBLIC_KEY,
             'signature': signature_b64,
             'scheme': 'SIGNATURE_SCHEME_TK_API_P256'
         }
+        
+        return stamp
+        
     except Exception as e:
         logger.error(f"Error signing request: {e}")
         raise
@@ -133,21 +150,27 @@ async def create_turnkey_wallet(user_id: str, email: str) -> dict:
     payload_string = json.dumps(request_body, separators=(',', ':'))
     stamp = sign_turnkey_request(payload_string)
     
+    # The X-Stamp header should be the JSON stamp (NOT base64 encoded based on error)
+    stamp_header = json.dumps(stamp)
+    
     logger.info(f"Creating Turnkey wallet for user: {user_id}")
+    logger.info(f"Stamp header: {stamp_header[:100]}...")
     
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.post(
             "https://api.turnkey.com/public/v1/submit/create_sub_organization",
             headers={
                 "Content-Type": "application/json",
-                "X-Stamp": json.dumps(stamp)
+                "X-Stamp": stamp_header
             },
             content=payload_string
         )
         
+        response_text = response.text
+        
         if response.status_code != 200:
-            logger.error(f"Turnkey API error: {response.status_code} - {response.text}")
-            raise HTTPException(status_code=500, detail=f"Turnkey API error: {response.status_code}")
+            logger.error(f"Turnkey API error: {response.status_code} - {response_text}")
+            raise HTTPException(status_code=500, detail=f"Turnkey API error: {response.status_code} - {response_text[:200]}")
         
         data = response.json()
         
@@ -219,7 +242,7 @@ async def update_supabase_profile(user_id: str, wallet_address: str):
             json=wallet_data
         )
         
-        if response.status_code not in [200, 201, 204, 409]:  # 409 = conflict (already exists)
+        if response.status_code not in [200, 201, 204, 409]:
             logger.error(f"Failed to insert wallet: {response.status_code} - {response.text}")
 
 @api_router.get("/")
@@ -236,10 +259,7 @@ async def health():
 
 @api_router.post("/provision-wallet", response_model=WalletProvisionResponse)
 async def provision_wallet(request: WalletProvisionRequest, authorization: Optional[str] = Header(None)):
-    """
-    Provision an invisible Turnkey wallet for a user.
-    Called automatically after signup - completely invisible to user.
-    """
+    """Provision an invisible Turnkey wallet for a user."""
     try:
         logger.info(f"Provisioning wallet for user: {request.user_id}")
         
@@ -256,7 +276,7 @@ async def provision_wallet(request: WalletProvisionRequest, authorization: Optio
                 
                 if response.status_code == 200:
                     data = response.json()
-                    if data and data[0].get('eth_address'):
+                    if data and len(data) > 0 and data[0].get('eth_address'):
                         logger.info(f"Wallet already exists for user: {request.user_id}")
                         return WalletProvisionResponse(
                             success=True,
