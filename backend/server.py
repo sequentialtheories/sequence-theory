@@ -88,12 +88,12 @@ def sign_turnkey_request(payload: str) -> dict:
         # Concatenate r and s (raw signature format)
         signature_raw = r_bytes + s_bytes
         
-        # Encode signature as base64url
-        signature_b64 = base64url_encode(signature_raw)
+        # Encode signature as HEX (not base64url!) - Turnkey expects hex
+        signature_hex = signature_raw.hex()
         
         stamp = {
             'publicKey': TURNKEY_API_PUBLIC_KEY,
-            'signature': signature_b64,
+            'signature': signature_hex,
             'scheme': 'SIGNATURE_SCHEME_TK_API_P256'
         }
         
