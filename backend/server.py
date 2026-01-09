@@ -205,253 +205,130 @@ async def fetch_historical_prices(coin_ids: List[str], days: int, api_key: str) 
 def generate_realistic_candles(
     current_value: float,
     change_24h: float,
-    volatility: float,
+    volatility_pct: float,
     periods: int,
     interval_seconds: int,
     sparkline: List[float] = None
 ) -> List[Dict]:
-    """Generate realistic OHLC candles with proper market dynamics"""
+    """Generate natural-looking OHLC candles"""
     
     candles = []
     now = int(time.time())
     
-    # Use sparkline data if available for realistic price movement
-    if sparkline and len(sparkline) >= periods:
-        # Normalize sparkline to match current value
-        sparkline_min = min(sparkline)
-        sparkline_max = max(sparkline)
-        sparkline_range = sparkline_max - sparkline_min if sparkline_max != sparkline_min else 1
-        
-        # Sample sparkline at regular intervals
-        step = len(sparkline) / periods
-        sampled_prices = [sparkline[int(i * step)] for i in range(periods)]
-        
-        # Scale to current value
-        scale_factor = current_value / sampled_prices[-1] if sampled_prices[-1] != 0 else 1
-        scaled_prices = [p * scale_factor for p in sampled_prices]
-    else:
-        # Generate synthetic price movement with realistic volatility
-        start_value = current_value / (1 + change_24h / 100) if change_24h != 0 else current_value * 0.99
-        scaled_prices = []
-        
-        # Use geometric brownian motion for realistic price paths
-        price = start_value
-        drift = (current_value - start_value) / periods
-        vol = volatility / 100 / math.sqrt(365 * 24 / periods)  # Annualized to period vol
-        
-        for i in range(periods):
-            # Add trend + random walk
-            random_shock = random.gauss(0, 1) * vol * price
-            mean_reversion = (current_value - price) * 0.1 / periods  # Pull toward target
-            price = price + drift + random_shock + mean_reversion
-            price = max(price, current_value * 0.5)  # Floor at 50% of current
-            scaled_prices.append(price)
-        
-        # Ensure last price matches current value
-        if scaled_prices:
-            adjustment = current_value / scaled_prices[-1]
-            scaled_prices = [p * adjustment for p in scaled_prices]
+    # Calculate start value from 24h change
+    change_factor = 1 + (change_24h / 100) if change_24h else 1
+    start_value = current_value / change_factor if change_factor != 0 else current_value
     
-    # Generate OHLC candles
+    # Scale volatility to per-candle basis (smaller for more candles)
+    candle_vol = (volatility_pct / 100) / math.sqrt(periods) * 0.5
+    
+    prices = []
+    price = start_value
+    
+    # Generate price path
+    for i in range(periods):
+        # Trend toward current value
+        target_progress = (i + 1) / periods
+        target_price = start_value + (current_value - start_value) * target_progress
+        
+        # Random component scaled by volatility
+        noise = random.gauss(0, price * candle_vol)
+        
+        # Blend trend with noise
+        price = target_price * 0.7 + (price + noise) * 0.3
+        price = max(price, current_value * 0.3)  # Floor
+        prices.append(price)
+    
+    # Ensure last price equals current value
+    if prices:
+        prices[-1] = current_value
+    
+    # Generate OHLC from prices
     for i in range(periods):
         t = now - (periods - i) * interval_seconds
-        close_price = scaled_prices[i]
+        close_price = prices[i]
+        open_price = prices[i - 1] if i > 0 else start_value
         
-        # Calculate intracandle volatility (higher for crypto)
-        candle_vol = volatility / 100 * close_price / math.sqrt(24 * 365 / periods) * 2
+        # Wick size based on volatility
+        wick = abs(close_price - open_price) * random.uniform(0.2, 0.8) + close_price * candle_vol * 0.5
         
-        # Generate realistic OHLC
-        open_price = scaled_prices[i - 1] if i > 0 else close_price * (1 - change_24h / 100 / periods)
-        
-        # High and low based on volatility with some randomness
-        wick_up = abs(random.gauss(0, candle_vol)) + candle_vol * 0.3
-        wick_down = abs(random.gauss(0, candle_vol)) + candle_vol * 0.3
-        
-        high_price = max(open_price, close_price) + wick_up
-        low_price = min(open_price, close_price) - wick_down
-        
-        # Ensure OHLC logic is valid
-        high_price = max(high_price, open_price, close_price)
-        low_price = min(low_price, open_price, close_price)
-        
-        # Volume estimation (higher volume on bigger moves)
-        price_change = abs(close_price - open_price) / open_price if open_price > 0 else 0
-        base_volume = current_value * 1000000  # Base volume proportional to value
-        volume = base_volume * (1 + price_change * 10) * random.uniform(0.7, 1.3)
+        high_price = max(open_price, close_price) + abs(random.gauss(0, wick))
+        low_price = min(open_price, close_price) - abs(random.gauss(0, wick))
         
         candles.append({
             "time": t,
-            "open": round(open_price, 6),
-            "high": round(high_price, 6),
-            "low": round(low_price, 6),
-            "close": round(close_price, 6),
-            "volumeUsd": round(volume, 2)
+            "open": round(open_price, 2),
+            "high": round(high_price, 2),
+            "low": round(low_price, 2),
+            "close": round(close_price, 2),
+            "volumeUsd": round(current_value * 50000 * random.uniform(0.8, 1.2), 0)
         })
     
     return candles
 
-def calculate_index_volatility(constituents: List[Dict]) -> float:
-    """Calculate weighted average volatility from constituent 24h changes"""
-    if not constituents:
-        return 50.0  # Default crypto volatility
-    
-    # Use absolute 24h changes as proxy for volatility
-    changes = [abs(c.get('price_change_percentage_24h') or 0) for c in constituents]
-    avg_change = sum(changes) / len(changes) if changes else 2.0
-    
-    # Annualize and scale (daily vol * sqrt(365))
-    annualized_vol = avg_change * math.sqrt(365)
-    return min(max(annualized_vol, 20), 150)  # Clamp between 20% and 150%
-
 def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -> Dict:
-    """Calculate indices with sophisticated, realistic candle data"""
+    """Calculate indices with proper volatility levels"""
     stablecoins = {'usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'frax'}
     
-    # Filter valid coins
     coins = [c for c in market_data 
              if c.get('symbol', '').lower() not in stablecoins 
-             and c.get('current_price') is not None
-             and c.get('market_cap') is not None
-             and c.get('market_cap', 0) > 0]
+             and c.get('current_price') and c.get('market_cap')]
     
     if not coins:
         return {"anchor5": None, "vibe20": None, "wave100": None, "lastUpdated": datetime.utcnow().isoformat()}
     
-    # Time period configuration
     period_config = {
-        'daily': {'periods': 24, 'interval': 3600},      # 24 hours, hourly
-        'month': {'periods': 30, 'interval': 86400},     # 30 days, daily
-        'year': {'periods': 52, 'interval': 604800},     # 52 weeks, weekly
-        'all': {'periods': 60, 'interval': 604800},      # 60 weeks, weekly
+        'daily': {'periods': 24, 'interval': 3600},
+        'month': {'periods': 30, 'interval': 86400},
+        'year': {'periods': 52, 'interval': 604800},
+        'all': {'periods': 60, 'interval': 604800},
     }
     config = period_config.get(time_period, period_config['daily'])
     
-    now = int(time.time())
-    
-    # ==================== ANCHOR5 INDEX ====================
-    # Top 5 by market cap, price-weighted (like Dow Jones)
+    # ANCHOR5 - Least volatile (top 5 market cap)
     anchor_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:5]
-    anchor_divisor = 10.0
-    anchor_value = sum(c.get('current_price', 0) for c in anchor_coins) / anchor_divisor
-    anchor_change = sum(c.get('price_change_percentage_24h') or 0 for c in anchor_coins) / len(anchor_coins)
-    anchor_vol = calculate_index_volatility(anchor_coins)
+    anchor_value = sum(c.get('current_price', 0) for c in anchor_coins) / 10
+    anchor_change = sum(c.get('price_change_percentage_24h') or 0 for c in anchor_coins) / 5
+    anchor_vol = 15  # Low volatility
     
-    # Get sparkline from BTC (dominant constituent)
-    btc_sparkline = next((c.get('sparkline_in_7d', {}).get('price', []) for c in anchor_coins if c.get('symbol', '').lower() == 'btc'), None)
-    
-    anchor_candles = generate_realistic_candles(
-        anchor_value, anchor_change, anchor_vol, 
-        config['periods'], config['interval'],
-        btc_sparkline
-    )
-    
-    # ==================== VIBE20 INDEX ====================
-    # Top 20 by volume, equal-weighted
+    # VIBE20 - Moderate volatility (top 20 by volume)
     vibe_coins = sorted(coins, key=lambda x: x.get('total_volume', 0) or 0, reverse=True)[:20]
-    vibe_weight = 1.0 / len(vibe_coins)
-    vibe_value = sum(c.get('current_price', 0) * vibe_weight * 100 for c in vibe_coins)
-    vibe_change = sum(c.get('price_change_percentage_24h') or 0 for c in vibe_coins) / len(vibe_coins)
-    vibe_vol = calculate_index_volatility(vibe_coins)
+    vibe_value = sum(c.get('current_price', 0) * 5 for c in vibe_coins)
+    vibe_change = sum(c.get('price_change_percentage_24h') or 0 for c in vibe_coins) / 20
+    vibe_vol = 35  # Moderate volatility
     
-    # Use ETH sparkline for Vibe (more diverse)
-    eth_sparkline = next((c.get('sparkline_in_7d', {}).get('price', []) for c in vibe_coins if c.get('symbol', '').lower() == 'eth'), None)
+    # WAVE100 - High volatility (momentum/appreciation)
+    wave_coins = sorted(coins, key=lambda x: abs(x.get('price_change_percentage_24h') or 0), reverse=True)[:50]
+    total_mcap = sum(c.get('market_cap', 0) for c in wave_coins) or 1
+    wave_value = sum(c.get('current_price', 0) * (c.get('market_cap', 0) / total_mcap) * 5000 for c in wave_coins)
+    wave_change = sum((c.get('price_change_percentage_24h') or 0) for c in wave_coins) / len(wave_coins)
+    wave_vol = 60  # High volatility
     
-    vibe_candles = generate_realistic_candles(
-        vibe_value, vibe_change, vibe_vol,
-        config['periods'], config['interval'],
-        eth_sparkline
-    )
-    
-    # ==================== WAVE100 INDEX ====================
-    # Top 100 by market cap, cap-weighted
-    wave_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:min(100, len(coins))]
-    total_mcap = sum(c.get('market_cap', 0) for c in wave_coins)
-    wave_value = sum(c.get('current_price', 0) * (c.get('market_cap', 0) / total_mcap) * 10000 for c in wave_coins) if total_mcap > 0 else 1000
-    wave_change = sum((c.get('price_change_percentage_24h') or 0) * (c.get('market_cap', 0) / total_mcap) for c in wave_coins) if total_mcap > 0 else 0
-    wave_vol = calculate_index_volatility(wave_coins[:20])  # Use top 20 for vol calc
-    
-    # Mix of BTC and ETH sparklines for Wave
-    wave_candles = generate_realistic_candles(
-        wave_value, wave_change, wave_vol,
-        config['periods'], config['interval'],
-        btc_sparkline
-    )
-    
-    def format_constituents(coins_list: List[Dict], weights: List[float] = None) -> List[Dict]:
-        result = []
-        for i, c in enumerate(coins_list):
-            weight = weights[i] if weights else (100.0 / len(coins_list))
-            result.append({
-                "id": c.get('id', ''),
-                "symbol": c.get('symbol', '').upper(),
-                "name": c.get('name', ''),
-                "weight": round(weight, 4),
-                "price": c.get('current_price', 0),
-                "market_cap": c.get('market_cap', 0),
-                "total_volume": c.get('total_volume', 0),
-                "price_change_percentage_1h": c.get('price_change_percentage_1h_in_currency'),
-                "price_change_percentage_24h": c.get('price_change_percentage_24h'),
-                "price_change_percentage_7d": c.get('price_change_percentage_7d_in_currency'),
-                "price_change_percentage_30d": c.get('price_change_percentage_30d_in_currency'),
-            })
-        return result
-    
-    # Calculate weights for Wave100
-    wave_weights = [(c.get('market_cap', 0) / total_mcap * 100) if total_mcap > 0 else 1 for c in wave_coins]
+    def fmt_constituents(coins_list, weight):
+        return [{"id": c.get('id', ''), "symbol": c.get('symbol', '').upper(), "weight": weight,
+                 "price": c.get('current_price', 0), "market_cap": c.get('market_cap', 0),
+                 "price_change_percentage_24h": c.get('price_change_percentage_24h')} for c in coins_list]
     
     return {
         "anchor5": {
-            "index": "Anchor5",
-            "description": "Top 5 cryptocurrencies by market cap, price-weighted index",
-            "methodology": "Price-weighted (Dow-style)",
-            "baseValue": 1000,
-            "timeframe": "1h" if time_period == 'daily' else "1d",
-            "candles": anchor_candles,
-            "currentValue": round(anchor_value, 2),
-            "change_24h_percentage": round(anchor_change, 2),
-            "volatility_annualized": round(anchor_vol, 2),
-            "meta": {
-                "tz": "UTC",
-                "constituents": format_constituents(anchor_coins, [20.0] * 5),
-                "rebalanceFrequency": "quarterly",
-                "divisor": anchor_divisor
-            }
+            "index": "Anchor5", "baseValue": 1000, "timeframe": "1h",
+            "candles": generate_realistic_candles(anchor_value, anchor_change, anchor_vol, config['periods'], config['interval']),
+            "currentValue": round(anchor_value, 2), "change_24h_percentage": round(anchor_change, 2),
+            "meta": {"tz": "UTC", "constituents": fmt_constituents(anchor_coins, 20), "rebalanceFrequency": "quarterly"}
         },
         "vibe20": {
-            "index": "Vibe20",
-            "description": "Top 20 cryptocurrencies by trading volume, equal-weighted",
-            "methodology": "Equal-weighted",
-            "baseValue": 100,
-            "timeframe": "1h" if time_period == 'daily' else "1d",
-            "candles": vibe_candles,
-            "currentValue": round(vibe_value, 2),
-            "change_24h_percentage": round(vibe_change, 2),
-            "volatility_annualized": round(vibe_vol, 2),
-            "meta": {
-                "tz": "UTC",
-                "constituents": format_constituents(vibe_coins, [5.0] * 20),
-                "rebalanceFrequency": "monthly"
-            }
+            "index": "Vibe20", "baseValue": 100, "timeframe": "1h",
+            "candles": generate_realistic_candles(vibe_value, vibe_change, vibe_vol, config['periods'], config['interval']),
+            "currentValue": round(vibe_value, 2), "change_24h_percentage": round(vibe_change, 2),
+            "meta": {"tz": "UTC", "constituents": fmt_constituents(vibe_coins[:10], 5), "rebalanceFrequency": "monthly"}
         },
         "wave100": {
-            "index": "Wave100",
-            "description": "Top 100 cryptocurrencies by market cap, cap-weighted index",
-            "methodology": "Market-cap weighted",
-            "baseValue": 1000,
-            "timeframe": "1h" if time_period == 'daily' else "1d",
-            "candles": wave_candles,
-            "currentValue": round(wave_value, 2),
-            "change_24h_percentage": round(wave_change, 2),
-            "volatility_annualized": round(wave_vol, 2),
-            "meta": {
-                "tz": "UTC",
-                "constituents": format_constituents(wave_coins[:20], wave_weights[:20]),
-                "rebalanceFrequency": "monthly",
-                "totalConstituents": len(wave_coins)
-            }
+            "index": "Wave100", "baseValue": 1000, "timeframe": "1h",
+            "candles": generate_realistic_candles(wave_value, wave_change, wave_vol, config['periods'], config['interval']),
+            "currentValue": round(wave_value, 2), "change_24h_percentage": round(wave_change, 2),
+            "meta": {"tz": "UTC", "constituents": fmt_constituents(wave_coins[:10], 2), "rebalanceFrequency": "weekly"}
         },
-        "lastUpdated": datetime.utcnow().isoformat(),
-        "dataSource": "CoinGecko"
+        "lastUpdated": datetime.utcnow().isoformat()
     }
 
 # ============================================================================
