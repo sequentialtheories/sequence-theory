@@ -179,6 +179,9 @@ const Profile = () => {
         </div>
 
         <div className="grid gap-6">
+          {/* Vault Address - Primary Display */}
+          <VaultAddressDisplay />
+
           {/* Personal Information */}
           <Card>
             <CardHeader>
