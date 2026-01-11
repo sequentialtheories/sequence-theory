@@ -12,8 +12,8 @@ const VaultClubMain = () => {
   };
   const features = [{
     icon: Shield,
-    title: "Non-Custodial Design",
-    description: "Wallets generated client-side. You retain full control at all times."
+    title: "Set & Forget",
+    description: "Automated investing that works for you. No daily decisions required."
   }, {
     icon: TrendingUp,
     title: "Automated Compounding",
