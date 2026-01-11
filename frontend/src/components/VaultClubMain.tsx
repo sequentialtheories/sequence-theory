@@ -114,7 +114,7 @@ const VaultClubMain = () => {
               animationDelay: `${0.6 + index * 0.1}s`
             }}>
                   <CheckCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0 transition-spring group-hover:scale-110" />
-                  <span className="text-muted-foreground text-lg group-hover:text-foreground transition-smooth">{benefit}</span>
+                  <span className="text-gray-600 text-lg group-hover:text-foreground transition-smooth">{benefit}</span>
                 </li>)}
             </ul>
           </div>
