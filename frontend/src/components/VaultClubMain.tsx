@@ -27,7 +27,7 @@ const VaultClubMain = () => {
     title: "Subclub Structure",
     description: "1-8 participants per contract with unanimous governance"
   }];
-  const benefits = ["Structured investment contracts for steady growth", "Professional DeFi strategies for individuals", "Automated diversification across established protocols", "Built-in risk management and capital protection"];
+  const benefits = ["Two-phase strategy: Mega Vault growth then wBTC accumulation", "Three investment strands across Spark, Aave, and QuickSwap protocols", "Weekly profit harvesting with Subscription-Backed Borrowing", "Built-in safeguards: missed deposit redistribution, emergency withdrawal, multisig security"];
   return <section className="py-20 bg-gradient-secondary relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
