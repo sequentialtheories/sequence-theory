@@ -471,14 +471,14 @@ const Index = () => {
                 {/* Features Card */}
                 <div className="bg-card border border-border/50 rounded-2xl p-8">
                   <h3 className="text-xl font-bold mb-6 text-foreground">
-                    Key Features of The Vault Club
+                    What Makes Us Different
                   </h3>
                   <div className="space-y-4">
                     {[
-                      "Three investment strands: Spark (10%), Aave (60%), QuickSwap (30%)",
-                      "Weekly profit harvesting with Routed Reinvestment Logic (RRL)",
-                      "wBTC Dollar-Cost Averaging for wealth preservation",
-                      "Built-in safeguards: missed deposit redistribution, emergency withdrawal, multisig"
+                      "Automated compounding — your money grows without constant attention",
+                      "Structured discipline — built-in commitment keeps you on track",
+                      "Wealth preservation — automatic transition to safer assets over time",
+                      "Community support — invest alongside others with shared goals"
                     ].map((feature, index) => (
                       <div key={index} className="flex items-start gap-4 group">
                         <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
