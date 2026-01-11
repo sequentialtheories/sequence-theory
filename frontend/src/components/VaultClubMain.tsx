@@ -24,7 +24,7 @@ const VaultClubMain = () => {
     description: "Lock-up periods from 1-20 years with customizable rigor tiers"
   }, {
     icon: Users,
-    title: "Subclub Structure",
+    title: "Contract Structure",
     description: "1-8 participants per contract with unanimous governance"
   }];
   const benefits = ["Two-phase strategy: Mega Vault growth then wBTC accumulation", "Three investment strands across Spark, Aave, and QuickSwap protocols", "Weekly profit harvesting with Subscription-Backed Borrowing", "Built-in safeguards: missed deposit redistribution, emergency withdrawal, multisig security"];

@@ -399,7 +399,7 @@ const Index = () => {
                     </h3>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        When you join The Vault Club, you enter a subclub with 1-8 participants and your own structured contract. 
+                        When you join The Vault Club, you enter a contract with 1-8 participants and your own structured agreement. 
                         Contracts set parameters like lock-up period (1-20 years), rigor tier, and deposit schedule.
                         All funds are pooled into the Mega Vault for scale-based efficiency across three investment strands.
                       </p>
