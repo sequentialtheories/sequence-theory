@@ -9,12 +9,13 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Save, User, Mail, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Trash2, Loader2, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ContractDashboard } from '@/components/ContractDashboard';
 import { VaultAddressDisplay } from '@/components/VaultAddressDisplay';
+import { useWallet } from '@/contexts/WalletContext';
 
 
 // Private keys are no longer stored in wallet_config for security
