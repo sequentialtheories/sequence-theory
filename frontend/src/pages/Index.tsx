@@ -469,7 +469,7 @@ const Index = () => {
                 </div>
                 
                 {/* Features Card */}
-                <div className="bg-card border border-border/50 rounded-2xl p-8">
+                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
                   <h3 className="text-xl font-bold mb-6 text-foreground">
                     What Makes Us Different
                   </h3>
@@ -499,7 +499,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* INDICES PREVIEW SECTION */}
         {/* ============================================ */}
-        <section ref={indicesSectionRef} className="py-24 bg-background relative">
+        <section ref={indicesSectionRef} className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
@@ -525,7 +525,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* FAQ PREVIEW SECTION */}
         {/* ============================================ */}
-        <section ref={faqSectionRef} className="py-24 bg-muted/30 relative">
+        <section ref={faqSectionRef} className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-3xl mx-auto">
               {/* Section header */}
