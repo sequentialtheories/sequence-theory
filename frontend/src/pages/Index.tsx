@@ -57,10 +57,13 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Futuristic animated background */}
+      <FuturisticBackground />
+      
       <Navigation />
       
-      <div className="pt-16">
+      <div className="pt-16 relative z-10">
         {/* ============================================ */}
         {/* HERO SECTION - Clean, Trust-Forward Design */}
         {/* ============================================ */}
