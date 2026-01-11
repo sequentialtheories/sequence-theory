@@ -316,19 +316,19 @@ const Index = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold mb-6 text-foreground">
-                      Structured Investment Contracts
+                      Two-Phase Investment Strategy
                     </h3>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        When you join The Vault Club, you enter a subclub with its own structured investment contract. 
-                        These contracts set fixed parameters such as member amount, rigor, and length.
-                        All participants are immediately placed in our secure Mega Vault, providing instant diversification 
-                        and professional-grade risk management.
+                        When you join The Vault Club, you enter a subclub with 1-8 participants and your own structured contract. 
+                        Contracts set parameters like lock-up period (1-20 years), rigor tier, and deposit schedule.
+                        All funds are pooled into the Mega Vault for scale-based efficiency across three investment strands.
                       </p>
                       <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-6 my-6">
                         <p>
-                          Over time, contracts gradually exit the Mega Vault to independently accumulate wBTC through strategic market timing. 
-                          At contract completion, you have full control over your accumulated wBTC.
+                          <strong>Phase 1:</strong> Growth via Routed Reinvestment Logic across Spark, Aave, and QuickSwap protocols.
+                          <br /><br />
+                          <strong>Phase 2:</strong> At 50% completion or ~$2M vault value, transition to weekly wBTC Dollar-Cost Averaging for wealth preservation.
                         </p>
                       </div>
                     </div>
