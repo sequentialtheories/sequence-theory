@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sequence Theory - The Vault Club Updates</title>
+    <description>Latest updates from Sequence Theory about The Vault Club, cryptocurrency investing, and financial education</description>
+    <link>https://sequence-theory.lovable.app/</link>
+    <atom:link href="https://sequence-theory.lovable.app/rss.xml" rel="self" type="application/rss+xml"/>
+    <language>en-US</language>
+    <copyright>Copyright 2025 Sequence Theory, Inc.</copyright>
+    <managingEditor>contact@sequence-theory.com (Sequence Theory)</managingEditor>
+    <webMaster>tech@sequence-theory.com (Sequence Theory Tech Team)</webMaster>
+    <pubDate>Tue, 21 Jan 2025 12:00:00 GMT</pubDate>
+    <lastBuildDate>Tue, 21 Jan 2025 12:00:00 GMT</lastBuildDate>
+    <category>Financial Education</category>
+    <category>Cryptocurrency</category>
+    <category>Investment</category>
+    
+    <item>
+      <title>Introducing The Vault Club: Democratizing Financial Empowerment</title>
+      <description>Learn about our mission to make cryptocurrency investing accessible through community-based education and structured investing.</description>
+      <link>https://sequence-theory.lovable.app/learn-more</link>
+      <guid>https://sequence-theory.lovable.app/learn-more</guid>
+      <pubDate>Tue, 21 Jan 2025 12:00:00 GMT</pubDate>
+      <category>Launch</category>
+    </item>
+    
+    <item>
+      <title>Building Financial Literacy in the Digital Age</title>
+      <description>Explore how Sequence Theory is removing traditional barriers to sophisticated investment strategies through The Vault Club.</description>
+      <link>https://sequence-theory.lovable.app/learn-now</link>
+      <guid>https://sequence-theory.lovable.app/learn-now</guid>
+      <pubDate>Tue, 21 Jan 2025 10:00:00 GMT</pubDate>
+      <category>Education</category>
+    </item>
+  </channel>
+</rss>
