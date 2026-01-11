@@ -277,34 +277,52 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
         vibe_change = sum(c.get('price_change_percentage_24h') or 0 for c in vibe_coins) / 20
     
     # ==========================================================================
-    # WAVE100 - Top 100 by market cap, EQUAL-WEIGHTED
+    # WAVE100 - Top 100 by 24h PRICE APPRECIATION, EQUAL-WEIGHTED
     # ==========================================================================
-    # Methodology: Sum of all constituent prices (equal weight = 1% each)
-    # This creates the highest value index with broad market exposure
-    # Target: Should be in the MILLIONS to reflect broad market
-    wave_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:100]
+    # Methodology: 
+    # - Select top 100 tokens ranked by 24h price change % (best performers first)
+    # - If all tokens are negative, rank by least depreciated (smallest negative change)
+    # - Equal weight (1% each) for index calculation
+    # - ALWAYS exactly 100 tokens, no exceptions
+    #
+    # This captures market momentum - the hottest movers in a bull market,
+    # or the most resilient tokens in a downturn
+    
+    # Sort ALL non-stablecoin coins by 24h change (highest/best first)
+    # This naturally handles downturns: -1% ranks above -5%
+    coins_with_change = [c for c in coins if c.get('price_change_percentage_24h') is not None]
+    wave_candidates = sorted(
+        coins_with_change, 
+        key=lambda x: x.get('price_change_percentage_24h', -999), 
+        reverse=True  # Highest change first (or least negative in downturn)
+    )
+    
+    # ALWAYS take exactly 100 tokens
+    wave_coins = wave_candidates[:100]
     num_wave_coins = len(wave_coins)
     
-    if num_wave_coins > 0:
-        # Equal weight: Each token contributes 1% to the index
-        equal_weight = 100.0 / num_wave_coins
-        
-        # Index value: Sum of all prices
-        # BTC (~90k) + ETH (~3k) + 98 other tokens = substantial sum
-        raw_sum = sum(c.get('current_price', 0) for c in wave_coins)
-        
-        # Scale to ensure it's in millions (multiply by 10 to get proper magnitude)
-        wave_value = raw_sum * 10
-        
-        # 24h change: Simple average (equal-weighted means equal influence on change)
-        wave_change = sum(c.get('price_change_percentage_24h') or 0 for c in wave_coins) / num_wave_coins
-    else:
-        wave_value = 1000000.0
-        wave_change = 0.0
-        equal_weight = 1.0
-        num_wave_coins = 100
+    # If we don't have 100, pad with remaining coins (shouldn't happen with 250 fetch)
+    if num_wave_coins < 100:
+        remaining = [c for c in coins if c not in wave_coins]
+        wave_coins.extend(remaining[:100 - num_wave_coins])
+        num_wave_coins = len(wave_coins)
+    
+    # Final safety: ensure exactly 100
+    wave_coins = wave_coins[:100]
+    num_wave_coins = 100  # Force to 100 for weight calculation
+    
+    # Equal weight: Each token contributes exactly 1%
+    equal_weight = 1.0  # Always 1% for 100 tokens
+    
+    # Index value: Sum of all prices scaled to millions
+    raw_sum = sum(c.get('current_price', 0) for c in wave_coins)
+    wave_value = raw_sum * 10  # Scale to millions
+    
+    # 24h change: Simple average of the 100 top movers
+    wave_change = sum(c.get('price_change_percentage_24h') or 0 for c in wave_coins) / num_wave_coins
     
     logger.info(f"Index Scores - Anchor5: {anchor_value:.2f}, Vibe20: {vibe_value:.2f}, Wave100: {wave_value:.2f}")
+    logger.info(f"Wave100 constituents: {num_wave_coins}, Top performer: {wave_coins[0].get('symbol','?').upper()} ({wave_coins[0].get('price_change_percentage_24h', 0):.2f}%)")
     
     return {
         'anchor5': {
@@ -329,9 +347,10 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
             'coins': wave_coins,
             'equal_weight': equal_weight,
             'volatility_class': 'high',
-            'methodology': 'equal-weighted',
+            'methodology': 'momentum-weighted',  # Changed to reflect 24h change ranking
             'rebalance': 'weekly',
-            'num_constituents': num_wave_coins
+            'num_constituents': num_wave_coins,
+            'selection_criteria': '24h_price_change'  # Document the ranking method
         }
     }
 
