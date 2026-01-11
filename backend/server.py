@@ -462,8 +462,8 @@ def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -
         },
         "wave100": {
             "index": "Wave100", 
-            "description": "Broad market exposure - top 100 assets equal-weighted",
-            "methodology": "equal-weighted",
+            "description": "Top 100 momentum leaders ranked by 24h price appreciation",
+            "methodology": "momentum-ranked, equal-weighted",
             "baseValue": 1000, 
             "timeframe": time_period,
             "candles": generate_gbm_candles(
@@ -477,13 +477,14 @@ def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -
             "currentValue": wave['value'],  # CONSTANT
             "change_24h_percentage": wave['change_24h'],
             "volatility": "high",
+            "selectionCriteria": "24h price change % (best performers or least depreciated)",
             "meta": {
                 "tz": "UTC", 
                 # Wave100 - Equal weighted! All 100 tokens @ 1% each
                 "constituents": fmt_constituents(wave['coins'], wave['equal_weight']),
                 "rebalanceFrequency": "weekly",
                 "weighting": "equal",  # Mark as equal-weighted
-                "total_constituents": wave.get('num_constituents', len(wave['coins']))
+                "total_constituents": 100  # Always exactly 100
             }
         },
         "lastUpdated": datetime.utcnow().isoformat()
