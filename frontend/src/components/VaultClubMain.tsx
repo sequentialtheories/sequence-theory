@@ -56,15 +56,15 @@ const VaultClubMain = () => {
                 <ul className="list-none space-y-3">
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse-soft"></div>
-                    <span className="text-muted-foreground">Deposits auto-allocated across established DeFi protocols like AAVE and Quickswap</span>
+                    <span className="text-gray-600">Deposits auto-allocated across established DeFi protocols like AAVE and Quickswap</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse-soft [animation-delay:0.5s]"></div>
-                    <span className="text-muted-foreground">Profits harvested and reinvested on regular schedules</span>
+                    <span className="text-gray-600">Profits harvested and reinvested on regular schedules</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse-soft [animation-delay:1s]"></div>
-                    <span className="text-muted-foreground">System transitions through growth phases to Bitcoin accumulation for wealth preservation</span>
+                    <span className="text-gray-600">System transitions through growth phases to Bitcoin accumulation for wealth preservation</span>
                   </li>
                 </ul>
               </div>
