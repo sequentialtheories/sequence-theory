@@ -100,7 +100,7 @@ const VaultClubMain = () => {
                   <feature.icon className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <h4 className="text-lg font-semibold mb-3 text-foreground group-hover:text-primary transition-smooth">{feature.title}</h4>
-                <p className="text-muted-foreground group-hover:text-foreground transition-smooth">{feature.description}</p>
+                <p className="text-gray-600 group-hover:text-foreground transition-smooth">{feature.description}</p>
               </div>)}
           </div>
         </div>
