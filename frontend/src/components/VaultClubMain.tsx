@@ -42,8 +42,7 @@ const VaultClubMain = () => {
               The Vault Club
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-slide-up [animation-delay:0.2s]">DeFi investment contracts:
- Bringing hedge fund strategies to investors through automated smart contracts.</p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-slide-up [animation-delay:0.2s]">A private, choreographed financial schematic designed for long-term capital growth through disciplined, automated smart contracts.</p>
         </div>
 
         {/* How It Works */}
