@@ -234,7 +234,7 @@ const Index = () => {
                 ].map((item, index) => (
                   <div 
                     key={index}
-                    className="group bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:border-destructive/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-card/60 backdrop-blur-sm rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                   >
                     <div className="w-14 h-14 bg-destructive/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-destructive/20 transition-colors">
                       <item.icon className="h-7 w-7 text-destructive" />
@@ -283,7 +283,7 @@ const Index = () => {
               {/* Two-column comparison */}
               <div className="grid md:grid-cols-2 gap-8 mb-12">
                 {/* Pain Points */}
-                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+                <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
                       <Target className="h-5 w-5 text-destructive" />
@@ -306,7 +306,7 @@ const Index = () => {
                 </div>
                 
                 {/* Solution */}
-                <div className="bg-primary/5 backdrop-blur-sm border border-primary/20 rounded-2xl p-8">
+                <div className="bg-primary/5 backdrop-blur-sm rounded-2xl p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 text-primary" />
@@ -386,7 +386,7 @@ const Index = () => {
               </div>
               
               {/* Solution card */}
-              <div className="bg-card/60 backdrop-blur-sm border border-border rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="bg-card/60 backdrop-blur-sm rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div className="flex flex-col md:flex-row items-start gap-8">
                   <div className="flex-shrink-0">
                     <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
@@ -445,7 +445,7 @@ const Index = () => {
               
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Philosophy Card */}
-                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+                <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8">
                   <div className="flex items-center gap-2 mb-6">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                     <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
@@ -469,7 +469,7 @@ const Index = () => {
                 </div>
                 
                 {/* Features Card */}
-                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+                <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8">
                   <h3 className="text-xl font-bold mb-6 text-foreground">
                     What Makes Us Different
                   </h3>
