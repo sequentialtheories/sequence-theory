@@ -31,8 +31,7 @@ const LearnMore = () => {
         <PreSignup />
         
         {/* View Preview Section */}
-        <section className="py-8 bg-muted/30 relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+        <section className="py-8 relative overflow-hidden">
           <div className="container mx-auto px-6 text-center relative z-10">
           <div className="flex justify-center items-center animate-slide-up">
               <a href="https://claude.ai/public/artifacts/97b71d10-3256-49a0-82d1-d1b62e6c4543?fullscreen=true" target="_blank" rel="noopener noreferrer">
