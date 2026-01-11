@@ -6,17 +6,17 @@ const CompanyMission = () => {
     {
       icon: Target,
       title: "Our Core Mission",
-      description: "Democratize sophisticated investment strategies previously exclusive to institutions."
+      description: "Democratize financial empowerment through community-based investment and education."
     },
     {
       icon: Lightbulb,
       title: "Our Approach",
-      description: "Combine quantitative finance with blockchain innovation for automated investment opportunities."
+      description: "Automate long-term compounding and wBTC accumulation through disciplined, non-custodial smart contracts."
     },
     {
       icon: Globe,
       title: "Our Vision",
-      description: "Make professional investing accessible through convergence of traditional and blockchain finance."
+      description: "Address growing financial illiteracy and inequality with an accessible wealth-building system."
     }
   ];
 
