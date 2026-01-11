@@ -283,7 +283,7 @@ const Index = () => {
               {/* Two-column comparison */}
               <div className="grid md:grid-cols-2 gap-8 mb-12">
                 {/* Pain Points */}
-                <div className="bg-muted/30 border border-border/50 rounded-2xl p-8">
+                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
                       <Target className="h-5 w-5 text-destructive" />
