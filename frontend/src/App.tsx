@@ -76,7 +76,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             {/* Wallet setup - redirected here immediately after registration */}
             <Route path="/wallet-setup" element={
-              <ProtectedRoute>
+              <ProtectedRoute requireWallet={false}>
                 <WalletSetupPage />
               </ProtectedRoute>
             } />
