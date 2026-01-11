@@ -22,10 +22,12 @@ import { useWallet } from '@/contexts/WalletContext';
 
 const Profile = () => {
   const { user } = useAuth();
+  const { deleteWallet } = useWallet();
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Fetch user profile
   const { data: profile, isLoading: profileLoading } = useQuery({
