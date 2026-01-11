@@ -51,19 +51,19 @@ const VaultClubMain = () => {
           <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-medium border border-primary/10 transition-spring hover:shadow-strong">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="animate-slide-left">
-                <h4 className="text-lg font-semibold mb-4 text-primary">Automated DeFi Investment System</h4>
+                <h4 className="text-lg font-semibold mb-4 text-primary">Phase 1: The Mega Vault</h4>
                 <ul className="list-none space-y-3">
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse-soft"></div>
-                    <span className="text-gray-600">Deposits auto-allocated across established DeFi protocols like AAVE and Quickswap</span>
+                    <span className="text-gray-600">All user funds pooled into the Mega Vault for scale-based efficiency</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse-soft [animation-delay:0.5s]"></div>
-                    <span className="text-gray-600">Profits harvested and reinvested on regular schedules</span>
+                    <span className="text-gray-600">Capital deployed across three strands: Spark (10%), Aave (60%), QuickSwap (30%)</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse-soft [animation-delay:1s]"></div>
-                    <span className="text-gray-600">System transitions through growth phases to Bitcoin accumulation for wealth preservation</span>
+                    <span className="text-gray-600">Routed Reinvestment Logic (RRL) creates compounding "compression"</span>
                   </li>
                 </ul>
               </div>
