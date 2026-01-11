@@ -397,35 +397,22 @@ async def root():
 
 @api_router.get("/health")
 async def health():
+    """
+    Health check endpoint.
+    
+    NOTE: Backend does NOT manage wallets. 
+    Wallets are 100% non-custodial and handled client-side.
+    """
     return {
         "status": "healthy",
-        "turnkey_configured": bool(TURNKEY_API_PUBLIC_KEY and TURNKEY_API_PRIVATE_KEY and TURNKEY_ORGANIZATION_ID),
         "supabase_configured": bool(SUPABASE_SERVICE_KEY),
-        "coingecko_configured": bool(COINGECKO_API_KEY)
+        "coingecko_configured": bool(COINGECKO_API_KEY),
+        "wallet_custody": "none - wallets are 100% client-side non-custodial"
     }
 
-@api_router.post("/provision-wallet", response_model=WalletProvisionResponse)
-async def provision_wallet(request: WalletProvisionRequest):
-    try:
-        if SUPABASE_SERVICE_KEY:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(
-                    f"{SUPABASE_URL}/rest/v1/profiles?user_id=eq.{request.user_id}&select=eth_address",
-                    headers={"apikey": SUPABASE_SERVICE_KEY, "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"}
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    if data and len(data) > 0 and data[0].get('eth_address'):
-                        return WalletProvisionResponse(success=True, wallet_address=data[0]['eth_address'])
-        
-        wallet_data = await create_turnkey_wallet(request.user_id, request.email)
-        await update_supabase_profile(request.user_id, wallet_data['wallet_address'])
-        return WalletProvisionResponse(success=True, wallet_address=wallet_data['wallet_address'])
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error provisioning wallet: {e}")
-        return WalletProvisionResponse(success=False, error=str(e))
+# NOTE: /provision-wallet endpoint has been REMOVED for security
+# All wallet creation now happens client-side using ethers.js
+# Sequence Theory has NO access to user private keys
 
 @api_router.post("/crypto-indices")
 async def get_crypto_indices(request: IndicesRequest):
