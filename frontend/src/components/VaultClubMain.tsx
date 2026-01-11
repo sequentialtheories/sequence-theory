@@ -68,19 +68,19 @@ const VaultClubMain = () => {
                 </ul>
               </div>
               <div className="animate-slide-right">
-                <h4 className="text-lg font-semibold mb-4 text-accent">Group-Based Contracts</h4>
+                <h4 className="text-lg font-semibold mb-4 text-accent">Phase 2: wBTC Accumulation</h4>
                 <ul className="list-none space-y-3">
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft"></div>
-                    <span className="text-gray-600">Small groups (4-8 people) with shared investment contracts and commitment levels</span>
+                    <span className="text-gray-600">Triggered at 50% contract completion OR ~$2M vault value</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft [animation-delay:0.5s]"></div>
-                    <span className="text-gray-600">Weekly or monthly deposit schedules with lock-up periods matching your goals</span>
+                    <span className="text-gray-600">Weekly Dollar-Cost Averaging into Wrapped Bitcoin for wealth preservation</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft [animation-delay:1s]"></div>
-                    <span className="text-gray-600">Blockchain-transparent operations with emergency withdrawal and multi-signature security</span>
+                    <span className="text-gray-600">Target full wBTC allocation by contract completion — you retain full control</span>
                   </li>
                 </ul>
               </div>
