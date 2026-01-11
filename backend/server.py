@@ -400,6 +400,8 @@ def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -
     return {
         "anchor5": {
             "index": "Anchor5", 
+            "description": "Top 5 blue-chip assets by market cap",
+            "methodology": "price-weighted",
             "baseValue": 1000, 
             "timeframe": time_period,
             "candles": generate_gbm_candles(
@@ -412,14 +414,18 @@ def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -
             ),
             "currentValue": anchor['value'],  # CONSTANT - doesn't change with timeframe
             "change_24h_percentage": anchor['change_24h'],
+            "volatility": "low",
             "meta": {
                 "tz": "UTC", 
                 "constituents": fmt_constituents(anchor['coins'], 20.0),  # 5 coins @ 20% each
-                "rebalanceFrequency": "quarterly"
+                "rebalanceFrequency": "quarterly",
+                "total_constituents": 5
             }
         },
         "vibe20": {
             "index": "Vibe20", 
+            "description": "Top 20 most traded assets by volume",
+            "methodology": "volume-weighted",
             "baseValue": 100, 
             "timeframe": time_period,
             "candles": generate_gbm_candles(
@@ -432,14 +438,18 @@ def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -
             ),
             "currentValue": vibe['value'],  # CONSTANT
             "change_24h_percentage": vibe['change_24h'],
+            "volatility": "moderate",
             "meta": {
                 "tz": "UTC", 
                 "constituents": fmt_constituents(vibe['coins'][:10], 5.0),  # Show top 10 @ 5% each
-                "rebalanceFrequency": "monthly"
+                "rebalanceFrequency": "monthly",
+                "total_constituents": 20
             }
         },
         "wave100": {
             "index": "Wave100", 
+            "description": "Broad market exposure - top 100 assets equal-weighted",
+            "methodology": "equal-weighted",
             "baseValue": 1000, 
             "timeframe": time_period,
             "candles": generate_gbm_candles(
@@ -452,13 +462,14 @@ def calculate_sophisticated_indices(market_data: List[Dict], time_period: str) -
             ),
             "currentValue": wave['value'],  # CONSTANT
             "change_24h_percentage": wave['change_24h'],
+            "volatility": "high",
             "meta": {
                 "tz": "UTC", 
                 # Wave100 - Equal weighted! Show weight as 1% per token
                 "constituents": fmt_constituents(wave['coins'][:10], wave['equal_weight']),
                 "rebalanceFrequency": "weekly",
                 "weighting": "equal",  # Mark as equal-weighted
-                "total_constituents": len(wave['coins'])
+                "total_constituents": wave.get('num_constituents', len(wave['coins']))
             }
         },
         "lastUpdated": datetime.utcnow().isoformat()
