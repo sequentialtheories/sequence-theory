@@ -94,8 +94,8 @@ const Index = () => {
               
               {/* Subheadline */}
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                Build lasting wealth through automated investment contracts. 
-                No trading required. No complex decisions. Just disciplined growth while you sleep.
+                A private, choreographed financial schematic for long-term capital growth. 
+                Disciplined, automated contracts that work while you focus on life.
               </p>
               
               {/* CTA Buttons */}
