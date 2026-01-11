@@ -116,15 +116,15 @@ const Index = () => {
                 </Link>
               </div>
               
-              {/* Trust indicators - simplified */}
+              {/* Trust indicators - focused on financial empowerment */}
               <div className="flex items-center justify-center gap-6 pt-8 border-t border-border/50">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Non-custodial wallet</span>
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <span className="text-sm">Grow your wealth automatically</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Lock className="h-5 w-5 text-primary" />
-                  <span className="text-sm">You control your keys</span>
+                  <Target className="h-5 w-5 text-primary" />
+                  <span className="text-sm">Become an investor, not a trader</span>
                 </div>
               </div>
             </div>
