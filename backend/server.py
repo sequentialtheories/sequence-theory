@@ -59,12 +59,12 @@ index_scores_cache: Dict[str, Any] = {}
 INDEX_SCORE_CACHE_TTL = 300  # 5 minutes - scores refresh with market data, not timeframe
 
 async def fetch_coingecko_markets(api_key: str) -> List[Dict]:
-    """Fetch top coins from CoinGecko"""
+    """Fetch top coins from CoinGecko - fetch 250 to ensure we can get 100+ non-stablecoins"""
     url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {
         "vs_currency": "usd",
         "order": "market_cap_desc", 
-        "per_page": 100,
+        "per_page": 250,  # Fetch 250 to ensure 100+ non-stablecoins after filtering
         "sparkline": "true",
         "price_change_percentage": "1h,24h,7d,30d"
     }
