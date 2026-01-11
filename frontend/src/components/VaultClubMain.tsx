@@ -36,7 +36,7 @@ const VaultClubMain = () => {
       <div className="container mx-auto px-6 relative z-10">
         {/* Main Header */}
         <div className="text-center mb-16 animate-slide-up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground shadow-soft">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               The Vault Club
             </span>
