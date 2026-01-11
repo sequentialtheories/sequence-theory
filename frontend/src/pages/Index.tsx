@@ -397,10 +397,10 @@ const Index = () => {
                   </h3>
                   <div className="space-y-4">
                     {[
-                      "Quantitative strategies modeled after hedge funds via Routed Reinvestment Logic",
-                      "Built-in wrapped Bitcoin accumulation for long-term retention",
-                      "Multi-strand reinvestment across risk tiers",
-                      "User-controlled parameters with minimal active management"
+                      "Three investment strands: Spark (10%), Aave (60%), QuickSwap (30%)",
+                      "Weekly profit harvesting with Routed Reinvestment Logic (RRL)",
+                      "wBTC Dollar-Cost Averaging for wealth preservation",
+                      "Built-in safeguards: missed deposit redistribution, emergency withdrawal, multisig"
                     ].map((feature, index) => (
                       <div key={index} className="flex items-start gap-4 group">
                         <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
