@@ -90,8 +90,8 @@ const Index = () => {
               
               {/* Subheadline */}
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                Build lasting wealth through structured cryptocurrency investments. 
-                No trading required. No crypto jargon. Just disciplined growth.
+                Build lasting wealth through automated investment contracts. 
+                No trading required. No complex decisions. Just disciplined growth while you sleep.
               </p>
               
               {/* CTA Buttons */}
