@@ -5,29 +5,31 @@ import { Input } from "@/components/ui/input";
 import { 
   Linkedin, 
   Instagram, 
-  Youtube, 
   Mail,
   ArrowRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+  const handleEarlyAccessSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     
     setIsSubmitting(true);
-    // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 500));
     
     toast({
-      title: "Subscribed!",
-      description: "Thank you for subscribing to our newsletter.",
+      title: "Welcome!",
+      description: "Complete your registration for priority access.",
     });
+    
+    // Redirect to auth page with email
+    navigate(`/auth?email=${encodeURIComponent(email)}`);
     
     setEmail("");
     setIsSubmitting(false);
@@ -42,9 +44,16 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Linkedin, href: "https://linkedin.com/company/sequencetheory", label: "LinkedIn" },
-    { icon: Instagram, href: "https://instagram.com/sequencetheory", label: "Instagram" },
-    { icon: Youtube, href: "https://youtube.com/@sequencetheory", label: "YouTube" },
+    { 
+      icon: Linkedin, 
+      href: "https://www.linkedin.com/company/sequence-theory-inc?trk=public_profile_topcard-current-company", 
+      label: "LinkedIn" 
+    },
+    { 
+      icon: Instagram, 
+      href: "https://www.instagram.com/sequencetheoryinc/", 
+      label: "Instagram" 
+    },
   ];
 
   return (
@@ -89,21 +98,21 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Column 3: Newsletter */}
+          {/* Column 3: Priority Access */}
           <div>
-            <h3 className="text-lg font-semibold mb-6 text-background">Newsletter</h3>
+            <h3 className="text-lg font-semibold mb-6 text-background">Receive Priority Access During Launch</h3>
             <p className="text-background/70 text-sm mb-4">
-              Get the latest insights on wealth building and crypto investing.
+              Be first to know when The Vault Club launches.
             </p>
-            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+            <form onSubmit={handleEarlyAccessSubmit} className="space-y-3">
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
                 <Input
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-background/10 border-background/20 text-background placeholder:text-background/50 focus:border-primary rounded-full"
+                  className="pl-10 bg-background border-background/20 text-foreground placeholder:text-foreground/50 focus:border-primary rounded-full"
                   required
                 />
               </div>
@@ -112,7 +121,7 @@ const Footer = () => {
                 disabled={isSubmitting}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
               >
-                {isSubmitting ? "Subscribing..." : "Subscribe"}
+                {isSubmitting ? "Submitting..." : "Get Priority Access"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>
