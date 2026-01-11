@@ -73,15 +73,15 @@ const VaultClubMain = () => {
                 <ul className="list-none space-y-3">
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft"></div>
-                    <span className="text-muted-foreground">Small groups (4-8 people) with shared investment contracts and commitment levels</span>
+                    <span className="text-gray-600">Small groups (4-8 people) with shared investment contracts and commitment levels</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft [animation-delay:0.5s]"></div>
-                    <span className="text-muted-foreground">Weekly or monthly deposit schedules with lock-up periods matching your goals</span>
+                    <span className="text-gray-600">Weekly or monthly deposit schedules with lock-up periods matching your goals</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft [animation-delay:1s]"></div>
-                    <span className="text-muted-foreground">Blockchain-transparent operations with emergency withdrawal and multi-signature security</span>
+                    <span className="text-gray-600">Blockchain-transparent operations with emergency withdrawal and multi-signature security</span>
                   </li>
                 </ul>
               </div>
