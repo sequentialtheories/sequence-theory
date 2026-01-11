@@ -383,8 +383,8 @@ const Index = () => {
                     </div>
                     <div className="pt-4 border-t border-border">
                       <p className="text-muted-foreground leading-relaxed">
-                        In our world, poverty isn't systemic — it's optional. We provide structured investing, 
-                        financial education, and a social ecosystem to make wealth building accessible.
+                        The goal is not to encourage financial obsession but to replace it with structure. 
+                        100% non-custodial — your keys, your control.
                       </p>
                     </div>
                   </div>
