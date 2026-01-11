@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import WalletSetupPage from "./pages/WalletSetup";
 import { Admin } from "./pages/Admin";
 import Index from "./pages/Index";
 import LearnMore from "./pages/LearnMore";
