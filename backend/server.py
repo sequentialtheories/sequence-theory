@@ -4,18 +4,13 @@ from starlette.middleware.cors import CORSMiddleware
 import os
 import logging
 import httpx
-import base64
 import json
 import time
-import hashlib
 import random
 import math
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.backends import default_backend
 from datetime import datetime, timedelta
 import asyncio
 
@@ -31,14 +26,25 @@ logger = logging.getLogger(__name__)
 # Configuration
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://qldjhlnsphlixmzzrdwi.supabase.co')
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
-TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
-TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
-TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
 COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
+
+# ============================================================================
+# SECURITY NOTE: WALLET PROVISIONING HAS BEEN REMOVED
+# ============================================================================
+# 
+# This backend does NOT create, manage, or sign for user wallets.
+# All wallet functionality is 100% NON-CUSTODIAL and happens CLIENT-SIDE.
+# 
+# Sequence Theory has NO ACCESS to:
+# - User private keys
+# - User seed phrases
+# - Any signing authority
+#
+# The backend only stores PUBLIC wallet addresses for identification.
+# ============================================================================
 
 # Cache
 crypto_cache: Dict[str, Any] = {}
-historical_cache: Dict[str, Any] = {}
 CACHE_TTL = {'daily': 60, 'month': 300, 'year': 600, 'all': 900}
 
 # ============================================================================
