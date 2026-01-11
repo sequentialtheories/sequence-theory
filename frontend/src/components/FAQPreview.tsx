@@ -20,11 +20,11 @@ export const FAQPreview: React.FC = () => {
   const faqs: FAQItem[] = [
     {
       question: "What is The Vault Club?",
-      answer: "The Vault Club is a private, automated investment system designed for long-term capital growth. It uses smart contracts to pool funds into a Mega Vault, deploying capital across three investment strands (Spark, Aave, QuickSwap) before transitioning to wBTC accumulation for wealth preservation."
+      answer: "The Vault Club is a private, automated investment system designed for long-term capital growth. It's a 'Set & Forget' approach — you make regular contributions and the system handles everything else, from compounding to wealth preservation."
     },
     {
       question: "Is my money safe? Who controls my funds?",
-      answer: "The Vault Club is 100% non-custodial. Your wallet is generated client-side, and private keys are never held by Sequence Theory. You retain full control at all times. The system acts as an automated coordinator — not a custodian or bank."
+      answer: "You maintain full control of your funds at all times. The system acts as an automated coordinator — not a custodian or bank. Your investments work for you automatically while you retain complete ownership."
     },
     {
       question: "How much does it cost?",
