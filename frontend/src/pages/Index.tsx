@@ -68,18 +68,8 @@ const Index = () => {
         {/* HERO SECTION - Clean, Trust-Forward Design */}
         {/* ============================================ */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-          {/* Subtle gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/[0.02] to-background" />
-          
-          {/* Refined grid pattern */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px)`,
-            backgroundSize: '48px 48px'
-          }} />
-          
-          {/* Floating accent elements */}
-          <div className="absolute top-1/4 left-[10%] w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-          <div className="absolute bottom-1/4 right-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
           
           <div className="container mx-auto px-6 relative z-10">
             <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
