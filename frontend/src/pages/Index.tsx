@@ -5,6 +5,7 @@ import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
+import { FuturisticBackground } from "@/components/FuturisticBackground";
 import { 
   Shield, 
   TrendingUp, 
