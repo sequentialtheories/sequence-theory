@@ -263,6 +263,30 @@ const Profile = () => {
           {/* Investment Contracts */}
           <ContractDashboard />
 
+          {/* Sign Out */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <LogOut className="h-5 w-5" />
+                <span>Sign Out</span>
+              </CardTitle>
+              <CardDescription>
+                Sign out of your account on this device
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                variant="outline" 
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                className="w-fit"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                {isSigningOut ? 'Signing out...' : 'Sign Out'}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Delete Account */}
           <Card className="border-red-200">
             <CardHeader>
