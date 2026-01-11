@@ -133,7 +133,7 @@ const PreSignup = () => {
             </div>
             <div className="flex items-center gap-2">
               <Lock className="h-4 w-4" />
-              <span>Non-custodial wallet</span>
+              <span>Set & Forget investing</span>
             </div>
           </div>
         </div>
