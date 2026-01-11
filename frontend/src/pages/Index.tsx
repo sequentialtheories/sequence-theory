@@ -12,37 +12,12 @@ import {
   Target, 
   CheckCircle, 
   ArrowRight,
-  Sparkles,
   Lock,
   Layers,
   Zap,
-  BarChart3,
   Globe
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-
-// Animated counter component for live metrics
-const AnimatedCounter = ({ end, duration = 2000, prefix = "", suffix = "" }: { 
-  end: number; 
-  duration?: number; 
-  prefix?: string; 
-  suffix?: string;
-}) => {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    let startTime: number;
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
-  }, [end, duration]);
-  
-  return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
-};
 
 const Index = () => {
   const { user } = useAuth();
