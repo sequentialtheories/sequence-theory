@@ -12,20 +12,20 @@ const VaultClubMain = () => {
   };
   const features = [{
     icon: Shield,
-    title: "Risk Management First",
-    description: "Capital protection through proven institutional techniques"
+    title: "Non-Custodial Design",
+    description: "Wallets generated client-side. You retain full control at all times."
   }, {
     icon: TrendingUp,
-    title: "Steady Growth Focus",
-    description: "Consistent returns over volatile speculation"
+    title: "Automated Compounding",
+    description: "Routed Reinvestment Logic (RRL) systematically reallocates profits"
   }, {
     icon: Target,
-    title: "Automated Strategies",
-    description: "Smart contracts handle investment decisions"
+    title: "Disciplined Contracts",
+    description: "Lock-up periods from 1-20 years with customizable rigor tiers"
   }, {
     icon: Users,
-    title: "Group Contracts",
-    description: "Small groups with shared commitment levels"
+    title: "Subclub Structure",
+    description: "1-8 participants per contract with unanimous governance"
   }];
   const benefits = ["Structured investment contracts for steady growth", "Professional DeFi strategies for individuals", "Automated diversification across established protocols", "Built-in risk management and capital protection"];
   return <section className="py-20 bg-gradient-secondary relative overflow-hidden">
