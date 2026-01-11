@@ -306,7 +306,7 @@ const Index = () => {
                 </div>
                 
                 {/* Solution */}
-                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8">
+                <div className="bg-primary/5 backdrop-blur-sm border border-primary/20 rounded-2xl p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                       <CheckCircle className="h-5 w-5 text-primary" />
@@ -346,7 +346,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* MISSION SECTION */}
         {/* ============================================ */}
-        <section ref={missionSectionRef} className="py-24 bg-muted/30 relative">
+        <section ref={missionSectionRef} className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-16">
@@ -368,7 +368,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* FRAMEWORK SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-background relative">
+        <section className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
