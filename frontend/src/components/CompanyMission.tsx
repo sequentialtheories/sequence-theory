@@ -59,21 +59,21 @@ const CompanyMission = () => {
             
             <div className="space-y-6 text-muted-foreground">
               <p className="text-lg leading-relaxed animate-slide-left">
-                Sophisticated investment strategies shouldn't be gatekept by traditional finance. 
-                Using smart contracts and DeFi protocols, we've created a system with hedge fund precision 
-                while remaining transparent and accessible.
+                The goal is not to encourage financial obsession but to replace it with structure. 
+                Through automated smart contracts, we've created a system that enforces disciplined participation 
+                while remaining 100% non-custodial — your keys, your control.
               </p>
               
               <p className="text-lg leading-relaxed animate-slide-right [animation-delay:0.7s]">
-                Our platform focuses on steady growth and risk management over speculation. 
-                Through automated diversification across AAVE and Quickswap, 
-                The Vault Club provides institutional-quality management for individuals.
+                Our two-phase strategy starts with the Mega Vault for growth and compounding, 
+                then transitions to wBTC accumulation for wealth preservation. 
+                Capital is deployed across three strands: Spark, Aave, and QuickSwap protocols.
               </p>
               
               <p className="text-lg leading-relaxed animate-slide-left [animation-delay:0.9s]">
-                We're exploring integration of traditional assets with blockchain technology, 
-                bridging established markets and emerging DeFi. 
-                Our goal: equitable, transparent financial tools for everyone.
+                Built-in safeguards protect all participants: missed deposit redistribution, 
+                emergency withdrawal options, and multisig security. 
+                Simple, transparent pricing at $1.50/user/week — no hidden fees.
               </p>
             </div>
           </div>
