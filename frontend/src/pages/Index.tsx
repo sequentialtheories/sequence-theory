@@ -147,25 +147,15 @@ const Index = () => {
                 </Link>
               </div>
               
-              {/* Live metrics ticker */}
-              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto pt-8 border-t border-border/50">
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
-                    <AnimatedCounter end={1247} suffix="+" />
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">Members</div>
+              {/* Trust indicators - simplified */}
+              <div className="flex items-center justify-center gap-6 pt-8 border-t border-border/50">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <span className="text-sm">Non-custodial wallet</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
-                    <AnimatedCounter end={42} prefix="$" suffix="M+" />
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">Assets Managed</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
-                    <AnimatedCounter end={98} suffix="%" />
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">Satisfaction</div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <span className="text-sm">You control your keys</span>
                 </div>
               </div>
             </div>
