@@ -29,7 +29,7 @@ const Hero = () => {
             />
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-6xl mobile-text-2xl font-bold mb-4 sm:mb-6 text-white animate-slide-up shadow-glow">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl mobile-text-2xl font-bold mb-4 sm:mb-6 text-white animate-slide-up">
             <span className="bg-gradient-to-r from-white via-primary-glow to-white bg-clip-text text-transparent">
               Ease Into Investing
             </span>
