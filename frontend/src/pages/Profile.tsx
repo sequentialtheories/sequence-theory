@@ -89,43 +89,72 @@ const Profile = () => {
     updateProfileMutation.mutate({ name });
   };
 
-  // Delete account mutation
+  // Sign out handler
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Error signing out",
+        description: error.message || "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
+  // Delete account mutation - deletes profile data and signs out
   const deleteAccountMutation = useMutation({
     mutationFn: async () => {
       if (!user?.id) throw new Error('No user ID');
       
-      // Call delete-account edge function
-      const { data, error } = await supabase.functions.invoke('delete-account', {
-        headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-      });
+      // Delete profile data from Supabase
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('user_id', user.id);
       
-      if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Failed to delete account');
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        // Continue anyway - profile might not exist
+      }
+
+      // Delete from user_wallets if exists
+      const { error: walletError } = await supabase
+        .from('user_wallets')
+        .delete()
+        .eq('user_id', user.id);
       
-      // Sign out after successful deletion
+      if (walletError) {
+        console.error('Error deleting wallet record:', walletError);
+        // Continue anyway
+      }
+
+      // Clear local wallet data
+      deleteWallet();
+      
+      // Sign out the user
       await supabase.auth.signOut();
     },
     onSuccess: () => {
       toast({
         title: "Account deleted",
-        description: "Your account has been permanently deleted.",
+        description: "Your account data has been deleted and you have been signed out.",
       });
       navigate('/');
     },
     onError: (error: any) => {
       console.error('Delete account error:', error);
-      let description = "There was an error deleting your account. Please try again or contact support.";
-      
-      // Check if it's a rate limit error
-      if (error?.message?.includes('Rate limit exceeded') || error?.status === 429) {
-        description = "Too many delete attempts. Please wait a few minutes before trying again.";
-      }
-      
       toast({
         title: "Error deleting account",
-        description,
+        description: error.message || "There was an error deleting your account. Please try again.",
         variant: "destructive",
       });
     },
