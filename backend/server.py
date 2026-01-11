@@ -253,22 +253,22 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
     # ==========================================================================
     # VIBE20 - Top 20 by trading volume, VOLUME-WEIGHTED
     # ==========================================================================
-    # Methodology: Sum of (price * sqrt(volume_rank_weight))
-    # This captures high-activity tokens with moderate volatility
+    # Methodology: Volume-weighted average price scaled appropriately
+    # Target: Should be between Anchor5 and Wave100 in value
     vibe_coins = sorted(coins, key=lambda x: x.get('total_volume', 0) or 0, reverse=True)[:20]
     
-    # Volume-weighted score: Price * volume weight factor
-    # Higher volume = higher weight contribution
+    # Volume-weighted score calculation
     total_volume = sum(c.get('total_volume', 0) or 0 for c in vibe_coins)
     if total_volume > 0:
-        vibe_value = sum(
-            c.get('current_price', 0) * (c.get('total_volume', 0) / total_volume) * 100
+        # Volume-weighted average price
+        vibe_weighted_price = sum(
+            c.get('current_price', 0) * (c.get('total_volume', 0) / total_volume)
             for c in vibe_coins
         )
-        # Scale to get a number in the 50k-150k range
-        vibe_value = vibe_value * 1000
+        # Scale to get a number in the 150k-500k range (between Anchor5 and Wave100)
+        vibe_value = vibe_weighted_price * 20 * 10  # 20 constituents * scaling factor
     else:
-        vibe_value = sum(c.get('current_price', 0) for c in vibe_coins) * 50
+        vibe_value = sum(c.get('current_price', 0) for c in vibe_coins)
     
     # 24h change: Volume-weighted average
     if total_volume > 0:
