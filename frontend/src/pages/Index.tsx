@@ -181,7 +181,7 @@ const Index = () => {
               <div className="flex items-center justify-center gap-6 pt-8 border-t border-border/50">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Lock className="h-5 w-5 text-primary" />
-                  <span className="text-sm">100% non-custodial</span>
+                  <span className="text-sm">Set & Forget</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <TrendingUp className="h-5 w-5 text-primary" />
@@ -463,7 +463,7 @@ const Index = () => {
                     <div className="pt-4 border-t border-border">
                       <p className="text-muted-foreground leading-relaxed">
                         The goal is not to encourage financial obsession but to replace it with structure. 
-                        100% non-custodial — your keys, your control.
+                        Set & Forget — automated investing that works for you.
                       </p>
                     </div>
                   </div>
