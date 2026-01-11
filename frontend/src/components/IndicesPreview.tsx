@@ -123,7 +123,7 @@ export const IndicesPreview: React.FC = () => {
           return (
             <div 
               key={index.symbol}
-              className={`bg-card/60 backdrop-blur-sm border ${colors.border} rounded-2xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
+              className={`bg-card/60 backdrop-blur-sm rounded-2xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center`}>

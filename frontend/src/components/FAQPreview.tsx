@@ -39,7 +39,7 @@ export const FAQPreview: React.FC = () => {
         {faqs.map((faq, index) => (
           <div 
             key={index}
-            className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden transition-all duration-300 hover:border-primary/30"
+            className="bg-card/60 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg"
           >
             <button
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
