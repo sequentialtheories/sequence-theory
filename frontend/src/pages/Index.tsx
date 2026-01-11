@@ -386,7 +386,7 @@ const Index = () => {
               </div>
               
               {/* Solution card */}
-              <div className="bg-gradient-to-br from-card to-muted/50 border border-border rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="bg-card/60 backdrop-blur-sm border border-border rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div className="flex flex-col md:flex-row items-start gap-8">
                   <div className="flex-shrink-0">
                     <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
@@ -425,12 +425,12 @@ const Index = () => {
         {/* ============================================ */}
         {/* BROADER MISSION SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-muted/30 relative">
+        <section className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
+                <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
                   <Globe className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Broader Mission</span>
                 </div>
@@ -445,7 +445,7 @@ const Index = () => {
               
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Philosophy Card */}
-                <div className="bg-card border border-border/50 rounded-2xl p-8">
+                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
                   <div className="flex items-center gap-2 mb-6">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                     <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
