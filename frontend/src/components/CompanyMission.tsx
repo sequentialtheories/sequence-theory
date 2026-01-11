@@ -35,7 +35,7 @@ const CompanyMission = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up [animation-delay:0.2s]">
-            Bridging institutional investment strategies and individual investors through DeFi technology.
+            The Vault Club acts as an automated coordinator — not a custodian or bank. You retain full control.
           </p>
         </div>
 
