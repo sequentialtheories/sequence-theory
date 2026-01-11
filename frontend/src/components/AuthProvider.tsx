@@ -1,7 +1,15 @@
+/**
+ * AUTH PROVIDER
+ * 
+ * Handles authentication state. 
+ * 
+ * NOTE: Wallet functionality has been separated into WalletContext.
+ * The wallet is now 100% NON-CUSTODIAL - Sequence Theory has NO access to private keys.
+ */
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useInvisibleWallet } from '@/hooks/useInvisibleWallet';
 
 interface AuthContextType {
   user: User | null;
@@ -77,8 +85,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  // Invisible wallet provisioning - runs silently in background
-  useInvisibleWallet(session);
+  // NOTE: Wallet provisioning has been REMOVED from AuthProvider
+  // Wallets are now 100% non-custodial and managed via WalletContext
+  // Sequence Theory has NO access to user private keys
 
   return (
     <AuthContext.Provider value={{ user, session, loading }}>
