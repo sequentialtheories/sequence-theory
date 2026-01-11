@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useValidation } from "@/hooks/useValidation";
 import { useAuth } from "@/components/AuthProvider";
-import { Mail, ArrowRight, Shield, Sparkles } from "lucide-react";
+import { Mail, ArrowRight, Shield, Lock } from "lucide-react";
 
 const PreSignup = () => {
   const [email, setEmail] = useState("");
@@ -100,24 +100,24 @@ const PreSignup = () => {
             earn and learn before token madness.
           </p>
           
-          {/* Form */}
+          {/* Form - Fixed color contrast */}
           <form onSubmit={handleSubmit} className="max-w-md mx-auto">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="pl-12 h-12 bg-white text-foreground placeholder:text-muted-foreground border-0 rounded-full shadow-lg focus:ring-2 focus:ring-white/50"
+                  className="pl-12 h-12 bg-white text-gray-900 placeholder:text-gray-500 border-0 rounded-full shadow-lg focus:ring-2 focus:ring-white/50"
                 />
               </div>
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="h-12 px-6 bg-foreground text-background hover:bg-foreground/90 rounded-full font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
+                className="h-12 px-6 bg-gray-900 text-white hover:bg-gray-800 rounded-full font-semibold shadow-lg transition-all duration-200 hover:shadow-xl"
               >
                 {isLoading ? "Registering..." : "Get Early Access"}
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -126,13 +126,13 @@ const PreSignup = () => {
           </form>
           
           {/* Trust indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-primary-foreground/80 text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-primary-foreground/90 text-sm">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
+              <Shield className="h-4 w-4" />
               <span>No spam, ever</span>
             </div>
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
+              <Lock className="h-4 w-4" />
               <span>Non-custodial wallet</span>
             </div>
           </div>
