@@ -74,6 +74,12 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
             <Route path="/auth" element={<Auth />} />
+            {/* Wallet setup - redirected here immediately after registration */}
+            <Route path="/wallet-setup" element={
+              <ProtectedRoute>
+                <WalletSetupPage />
+              </ProtectedRoute>
+            } />
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
