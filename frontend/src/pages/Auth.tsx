@@ -130,12 +130,12 @@ export default function Auth() {
           return;
         }
 
-        // Success - session exists, wallet will be provisioned invisibly by AuthProvider
+        // Success - session exists, redirect to wallet setup
         toast({
           title: "Account created!",
-          description: "Welcome to Sequence Theory! You can now access all features."
+          description: "Now let's set up your secure wallet."
         });
-        navigate('/');
+        navigate('/wallet-setup');
       }
     } catch (error: any) {
       toast({
