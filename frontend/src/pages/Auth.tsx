@@ -121,12 +121,12 @@ export default function Auth() {
             return;
           }
           
-          // Sign in successful
+          // Sign in successful - redirect to wallet setup for new users
           toast({
             title: "Account created!",
-            description: "Welcome to Sequence Theory!"
+            description: "Now let's set up your secure wallet."
           });
-          navigate('/');
+          navigate('/wallet-setup');
           return;
         }
 
