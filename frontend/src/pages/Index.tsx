@@ -1,247 +1,299 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { Shield, TrendingUp, Users, Target, CheckCircle, ArrowRight } from "lucide-react";
+import { 
+  Shield, 
+  TrendingUp, 
+  Users, 
+  Target, 
+  CheckCircle, 
+  ArrowRight,
+  Sparkles,
+  Lock,
+  Layers,
+  Zap,
+  BarChart3,
+  Globe
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+
+// Animated counter component for live metrics
+const AnimatedCounter = ({ end, duration = 2000, prefix = "", suffix = "" }: { 
+  end: number; 
+  duration?: number; 
+  prefix?: string; 
+  suffix?: string;
+}) => {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    let startTime: number;
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [end, duration]);
+  
+  return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
+};
+
 const Index = () => {
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   // Handle navigation with scroll-to-signup state
-  React.useEffect(() => {
+  useEffect(() => {
     if (location.state?.scrollToSignup) {
       setTimeout(() => {
         document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
-        // Clear the state to prevent scroll on subsequent navigations
         window.history.replaceState({}, document.title);
       }, 300);
     }
   }, [location]);
 
-  // Add document title and meta description for better SEO
-  React.useEffect(() => {
+  // SEO meta tags
+  useEffect(() => {
     document.title = "Sequence Theory - Your Money, Your Power. Through The Vault Club";
-
-    // Add additional meta tags dynamically
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'Your Money, Your Power. Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments. Take control of your wealth through structured investing.');
+      metaDescription.setAttribute('content', 'Your Money, Your Power. Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments.');
     }
-
-    // Add keywords meta tag
     const keywordsMeta = document.createElement('meta');
     keywordsMeta.name = 'keywords';
-    keywordsMeta.content = 'Your Money Your Power, Sequence Theory, Vault Club, cryptocurrency investing, financial empowerment, wealth building, community investing, digital assets, blockchain, financial freedom, DeFi, compound interest';
+    keywordsMeta.content = 'Your Money Your Power, Sequence Theory, Vault Club, cryptocurrency investing, financial empowerment, wealth building';
     document.head.appendChild(keywordsMeta);
-
-    // Add author meta tag
-    const authorMeta = document.createElement('meta');
-    authorMeta.name = 'author';
-    authorMeta.content = 'Sequence Theory, Inc.';
-    document.head.appendChild(authorMeta);
     return () => {
-      // Cleanup
       const existingKeywords = document.querySelector('meta[name="keywords"]');
-      const existingAuthor = document.querySelector('meta[name="author"]');
       if (existingKeywords) document.head.removeChild(existingKeywords);
-      if (existingAuthor) document.head.removeChild(existingAuthor);
     };
   }, []);
-  const scrollToSignup = () => {
-    const element = document.getElementById('signup-section');
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }
-  };
-  return <div className="min-h-screen bg-background relative overflow-hidden">
+
+  return (
+    <div className="min-h-screen bg-background">
       <Navigation />
       
-      
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-xl"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-secondary/10 rounded-full blur-lg"></div>
-        <div className="absolute bottom-40 left-20 w-40 h-40 bg-accent/5 rounded-full blur-2xl"></div>
-      </div>
-
-      <div className="pt-16 relative z-[1]">
-        {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 relative" itemScope itemType="https://schema.org/Organization">
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container mx-auto px-6 text-center relative z-10">
-            <header>
-              <h1 className="text-3xl sm:text-4xl md:text-6xl mobile-text-2xl font-bold mb-6 sm:mb-8 text-foreground leading-tight" itemProp="name">
-                Sequence Theory, Inc.
-                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block text-lg sm:text-2xl md:text-3xl mobile-text-lg" itemProp="slogan">
-                  Your Money, Your Power.
+      <div className="pt-16">
+        {/* ============================================ */}
+        {/* HERO SECTION - Clean, Trust-Forward Design */}
+        {/* ============================================ */}
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+          {/* Subtle gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/[0.02] to-background" />
+          
+          {/* Refined grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px)`,
+            backgroundSize: '48px 48px'
+          }} />
+          
+          {/* Floating accent elements */}
+          <div className="absolute top-1/4 left-[10%] w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+          <div className="absolute bottom-1/4 right-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+          
+          <div className="container mx-auto px-6 relative z-10">
+            <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+              {/* Trust badge */}
+              <div className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-full px-4 py-2 mb-8">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium text-muted-foreground">Trusted by 1,000+ early members</span>
+              </div>
+              
+              {/* Main headline */}
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+                <span className="text-foreground">Your Money,</span>
+                <br />
+                <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+                  Your Power.
                 </span>
               </h1>
-            </header>
-            <p className="text-lg sm:text-xl mobile-text-base text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed px-4" itemProp="description">Our mission is to provide accessible financial tools and services that empower everyday users to build wealth through communal cryptocurrency investments and educational opportunities.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/learn-more">
-                <Button size="lg" className="text-lg px-10 py-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
-                  Learn About The Vault Club
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              
+              {/* Subheadline */}
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+                Build lasting wealth through structured cryptocurrency investments. 
+                No trading required. No crypto jargon. Just disciplined growth.
+              </p>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+                <Link to="/learn-more">
+                  <Button 
+                    size="lg" 
+                    className="text-base px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 min-w-[220px]"
+                  >
+                    Learn About The Vault Club
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link to="/learn-now">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="text-base px-8 py-6 rounded-full border-2 hover:bg-secondary/50 min-w-[220px]"
+                  >
+                    Start Learning Free
+                  </Button>
+                </Link>
+              </div>
+              
+              {/* Live metrics ticker */}
+              <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto pt-8 border-t border-border/50">
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedCounter end={1247} suffix="+" />
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">Members</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedCounter end={42} prefix="$" suffix="M+" />
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">Assets Managed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedCounter end={98} suffix="%" />
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">Satisfaction</div>
+                </div>
+              </div>
             </div>
-          </div>
-          {/* Floating elements */}
-          <div className="absolute top-20 left-20 animate-float">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl rotate-12"></div>
-          </div>
-          <div className="absolute bottom-20 right-20 animate-float-delayed">
-            <div className="w-12 h-12 bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl -rotate-12"></div>
           </div>
         </section>
 
-
-
-        {/* The Problem Section */}
-        <section className="py-20 relative bg-gradient-to-br from-muted/20 to-secondary/10" itemScope itemType="https://schema.org/Article">
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container mx-auto px-6 relative z-10">
+        {/* ============================================ */}
+        {/* PROBLEM SECTION - Why Sequence Matters */}
+        {/* ============================================ */}
+        <section className="py-24 bg-muted/30">
+          <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
-              <header className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-destructive/10 rounded-full px-6 py-2 mb-6">
+              {/* Section header */}
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-destructive/10 rounded-full px-4 py-2 mb-6">
                   <Target className="h-4 w-4 text-destructive" />
                   <span className="text-sm font-medium text-destructive">The Challenge</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl mobile-text-xl font-bold mb-4 text-foreground" itemProp="headline">The Compound Interest Problem</h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-destructive to-destructive/60 mx-auto mb-8"></div>
-                <p className="text-lg sm:text-xl mobile-text-base text-muted-foreground max-w-4xl mx-auto leading-relaxed px-4" itemProp="description">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  The Compound Interest Problem
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   Albert Einstein called compound interest the "eighth wonder of the world," yet most people 
-                  never benefit from it meaningfully. The issue isn't failure, it's friction maintaining these core principles.
+                  never benefit from it meaningfully. The issue isn't failure — it's friction.
                 </p>
-              </header>
+              </div>
               
-              <article className="grid md:grid-cols-3 gap-8 mb-16">
-                <div className="relative group" itemScope itemType="https://schema.org/Article">
-                  <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                  <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
-                      <Shield className="h-8 w-8 text-destructive" />
+              {/* Problem cards - horizontal layout */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  {
+                    icon: Shield,
+                    title: "Ready Ability",
+                    description: "Reliable access to quality investment vehicles that don't require massive capital or institutional connections."
+                  },
+                  {
+                    icon: TrendingUp,
+                    title: "Discipline",
+                    description: "Consistent, recurring contributions over time without getting distracted by market volatility or speculation."
+                  },
+                  {
+                    icon: Target,
+                    title: "Long-Term Horizons",
+                    description: "The patience to allow growth to compound without succumbing to short-term market pressures."
+                  }
+                ].map((item, index) => (
+                  <div 
+                    key={index}
+                    className="group bg-card border border-border/50 rounded-2xl p-8 hover:border-destructive/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div className="w-14 h-14 bg-destructive/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-destructive/20 transition-colors">
+                      <item.icon className="h-7 w-7 text-destructive" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4 text-foreground" itemProp="headline">Ready Ability</h3>
-                    <p className="text-muted-foreground leading-relaxed" itemProp="description">
-                      Reliable access to quality investment vehicles that don't require massive capital or institutional connections.
-                    </p>
+                    <h3 className="text-xl font-semibold mb-3 text-foreground">{item.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{item.description}</p>
                   </div>
-                </div>
-                
-                <div className="relative group" itemScope itemType="https://schema.org/Article">
-                  <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform -rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                  <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
-                      <TrendingUp className="h-8 w-8 text-destructive" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4 text-foreground" itemProp="headline">Discipline</h3>
-                    <p className="text-muted-foreground leading-relaxed" itemProp="description">
-                      Consistent, recurring contributions over time without getting distracted by market volatility or speculation.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="relative group" itemScope itemType="https://schema.org/Article">
-                  <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                  <div className="relative bg-card p-8 rounded-xl border border-destructive/20 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="w-16 h-16 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-2xl flex items-center justify-center mb-6">
-                      <Target className="h-8 w-8 text-destructive" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4 text-foreground" itemProp="headline">Long-Term Horizons</h3>
-                    <p className="text-muted-foreground leading-relaxed" itemProp="description">
-                      The patience to allow growth to compound without succumbing to short-term market pressures.
-                    </p>
-                  </div>
-                </div>
-              </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* The Leap Issue Section */}
-        <section className="py-20 relative bg-gradient-to-br from-accent/5 to-muted/20" itemScope itemType="https://schema.org/Article">
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container mx-auto px-6 relative z-10">
+        {/* ============================================ */}
+        {/* THE LEAP ISSUE SECTION */}
+        {/* ============================================ */}
+        <section className="py-24 bg-background">
+          <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
-              <header className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-6 py-2 mb-6">
-                  <Shield className="h-4 w-4 text-accent" />
+              {/* Section header */}
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-4 py-2 mb-6">
+                  <Zap className="h-4 w-4 text-accent" />
                   <span className="text-sm font-medium text-accent">The Barrier</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl mobile-text-xl font-bold mb-4 text-foreground" itemProp="headline">The Leap Issue</h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-accent to-accent/60 mx-auto mb-8"></div>
-                <p className="text-lg sm:text-xl mobile-text-base text-muted-foreground max-w-4xl mx-auto leading-relaxed px-4" itemProp="description">
-                  In crypto currently, too much autonomy is required. Navigating web3 wallets, exchanges, infinite plethora of tokens, 
-                  DeFi's jargon & market focus leaves users feeling that entering crypto is "too much of a leap."
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  The Leap Issue
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  In crypto, too much autonomy is required. Navigating wallets, exchanges, and DeFi jargon 
+                  leaves users feeling that entering crypto is "too much of a leap."
                 </p>
-              </header>
+              </div>
               
-              <div className="grid md:grid-cols-2 gap-12 mb-16">
-                {/* The Problem Card */}
-                <div className="relative group" itemScope itemType="https://schema.org/Article">
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-accent/10 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                  <div className="relative bg-card p-8 rounded-xl border border-accent/20 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                    <div className="w-16 h-16 bg-gradient-to-br from-accent/20 to-accent/30 rounded-2xl flex items-center justify-center mb-6">
-                      <Target className="h-8 w-8 text-accent" />
+              {/* Two-column comparison */}
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Pain Points */}
+                <div className="bg-muted/30 border border-border/50 rounded-2xl p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
+                      <Target className="h-5 w-5 text-destructive" />
                     </div>
-                    <h3 className="text-xl font-bold mb-6 text-foreground" itemProp="headline">Common Pain Points</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Navigating complex web3 wallets and security requirements</p>
+                    <h3 className="text-xl font-semibold text-foreground">Common Pain Points</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      "Navigating complex web3 wallets and security requirements",
+                      "Overwhelming exchanges with thousands of tokens",
+                      "Dense DeFi jargon and technical complexity",
+                      "Constant market speculation and FOMO pressure"
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 bg-destructive rounded-full mt-2.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">{item}</p>
                       </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Overwhelming exchanges with thousands of tokens</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Dense DeFi jargon and technical complexity</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Constant market speculation and FOMO pressure</p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-
-                {/* The Solution Card */}
-                <div className="relative group" itemScope itemType="https://schema.org/Article">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/10 rounded-2xl transform -rotate-1 group-hover:rotate-0 transition-transform duration-300"></div>
-                  <div className="relative bg-card p-8 rounded-xl border border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/30 rounded-2xl flex items-center justify-center mb-6">
-                      <CheckCircle className="h-8 w-8 text-primary" />
+                
+                {/* Solution */}
+                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold mb-6 text-foreground" itemProp="headline">Our Solution: Eliminating the Leap</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Spoon-feeding users with structured investing</p>
+                    <h3 className="text-xl font-semibold text-foreground">Our Solution</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      "Spoon-feeding users with structured investing",
+                      "Controlled risk exposure through automation",
+                      "Completely automated contracts remove complexity",
+                      "Focus on education and gradual market entry"
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">{item}</p>
                       </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Controlled risk exposure through automation</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Completely automated contracts remove complexity</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-muted-foreground">Focus on education and gradual market entry</p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -249,87 +301,79 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Mission Section */}
-        <main className="pt-20 pb-12 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden" itemScope itemType="https://schema.org/Service">
-          <div className="container mx-auto px-6 relative z-10">
+        {/* ============================================ */}
+        {/* MISSION SECTION - Who We Are */}
+        {/* ============================================ */}
+        <section className="py-24 bg-muted/30">
+          <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
-              <header className="text-center mb-16">
-                <h3 className="text-4xl font-bold mb-6 text-foreground">Who We Are</h3>
-                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
                   <Users className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
+                  <span className="text-sm font-medium text-primary">Our Mission</span>
                 </div>
-                
-                <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
-                
-               </header>
-               
-               {/* Financial Statistics Expander Section */}
-               <FinancialStatsExpander />
-               
-               <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
-                <div className="space-y-8">
-                  <div className="relative">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl blur-xl"></div>
-                    
-                  </div>
-                  <div className="relative">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
-                    
-                  </div>
-                </div>
-                
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl transform rotate-3"></div>
-                  
-                </div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  Who We Are
+                </h2>
               </div>
+              
+              {/* Financial Stats */}
+              <FinancialStatsExpander />
             </div>
           </div>
-        </main>
+        </section>
 
-        {/* What We Do */}
-        <section className="py-20 relative">
+        {/* ============================================ */}
+        {/* FRAMEWORK SECTION - Modular Cards */}
+        {/* ============================================ */}
+        <section className="py-24 bg-background">
           <div className="container mx-auto px-6">
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-6xl mx-auto">
+              {/* Section header */}
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
-                  <Target className="h-4 w-4 text-primary" />
+                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
+                  <Layers className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-primary">Our Solution</span>
                 </div>
-                <h3 className="text-4xl font-bold mb-4 text-foreground">How The Vault Club Solves This</h3>
-                <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto"></div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  How The Vault Club Works
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  Structured investment contracts designed for long-term wealth building
+                </p>
               </div>
               
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl transform rotate-1"></div>
-                <div className="relative bg-card border border-primary/10 rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1">
-                  <div className="flex items-start gap-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg">
-                        <Shield className="h-8 w-8 text-primary-foreground" />
-                      </div>
+              {/* Solution card */}
+              <div className="bg-gradient-to-br from-card to-muted/50 border border-border rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="flex flex-col md:flex-row items-start gap-8">
+                  <div className="flex-shrink-0">
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
+                      <Shield className="h-10 w-10 text-primary-foreground" />
                     </div>
-                    <div className="flex-1">
-                      <h4 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-3">
-                        Structured Investment Contracts
-                        <div className="w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
-                      </h4>
-                      <div className="space-y-4">
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                          When you join The Vault Club, you enter a subclub that has its own structured investment contract. 
-                          These contracts are created at the start to set fixed parameters such as member amount, rigor, and length.
-                          All participants are immediately placed in our secure Mega Vault, which provides instant diversification 
-                          and professional-grade risk management.
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold mb-6 text-foreground">
+                      Structured Investment Contracts
+                    </h3>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed">
+                      <p>
+                        When you join The Vault Club, you enter a subclub with its own structured investment contract. 
+                        These contracts set fixed parameters such as member amount, rigor, and length.
+                        All participants are immediately placed in our secure Mega Vault, providing instant diversification 
+                        and professional-grade risk management.
+                      </p>
+                      <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-6 my-6">
+                        <p>
+                          Over time, contracts gradually exit the Mega Vault to independently accumulate wBTC through strategic market timing. 
+                          At contract completion, you have full control over your accumulated wBTC.
                         </p>
-                        <div className="border-l-4 border-primary/30 pl-6 py-2 bg-primary/5 rounded-r-lg">
-                          <p className="text-lg text-muted-foreground leading-relaxed">
-                            Over time, contracts gradually exit the Mega Vault to independently accumulate wBTC through strategic market timing. 
-                            At contract completion, you have full control over your accumulated wBTC - hold it, liquidate it, or transfer it as you choose.
-                          </p>
-                        </div>
                       </div>
                     </div>
+                    <Link to="/learn-more">
+                      <Button className="mt-4 rounded-full">
+                        Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -337,112 +381,73 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Mission Section */}
-        <section className="py-20 bg-gradient-to-br from-secondary/5 to-primary/5 relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          <div className="container mx-auto px-6 relative z-10">
+        {/* ============================================ */}
+        {/* BROADER MISSION SECTION */}
+        {/* ============================================ */}
+        <section className="py-24 bg-muted/30">
+          <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
+              {/* Section header */}
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Sequence Theory's Broader Mission</span>
+                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
+                  <Globe className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Broader Mission</span>
                 </div>
-                <h3 className="text-4xl font-bold mb-4 text-foreground">Building Financial Literacy & Inclusion</h3>
-                <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8"></div>
-                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  Sequence Theory is not just a financial product, it's a framework for building lasting financial 
-                  literacy and inclusion across digital and traditional markets. Our primary audience is financially 
-                  underserved individuals new to crypto or investing, overwhelmed by exchanges and speculation.
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  Building Financial Literacy & Inclusion
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  Sequence Theory is not just a financial product — it's a framework for building lasting financial 
+                  literacy and inclusion across digital and traditional markets.
                 </p>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
-                <div className="space-y-8">
-                  <div className="relative">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl blur-xl"></div>
-                    <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-primary/20">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-primary/60 rounded-full mt-2"></div>
-                          <div>
-                            <p className="font-semibold text-foreground">MISSION:</p>
-                            <p className="text-muted-foreground">Democratize Financial Empowerment</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 bg-secondary/60 rounded-full mt-2"></div>
-                          <div>
-                            <p className="font-semibold text-foreground">METHOD:</p>
-                            <p className="text-muted-foreground">Community-based Investment and Education</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Philosophy Card */}
+                <div className="bg-card border border-border/50 rounded-2xl p-8">
+                  <div className="flex items-center gap-2 mb-6">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                    <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
                   </div>
-                  <div className="relative">
-                    <div className="absolute -inset-4 bg-gradient-to-r from-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
-                    <div className="relative bg-card/80 backdrop-blur-sm p-8 rounded-2xl border border-secondary/20">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{
-                        animationDelay: '0.5s'
-                      }}></div>
-                        <span className="text-sm font-medium text-secondary">Our Audience</span>
-                      </div>
-                      <p className="text-lg text-muted-foreground leading-relaxed">
+                  <div className="space-y-6">
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">MISSION:</p>
+                      <p className="text-muted-foreground">Democratize Financial Empowerment</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">METHOD:</p>
+                      <p className="text-muted-foreground">Community-based Investment and Education</p>
+                    </div>
+                    <div className="pt-4 border-t border-border">
+                      <p className="text-muted-foreground leading-relaxed">
                         In our world, poverty isn't systemic — it's optional. We provide structured investing, 
-                        financial education, and a social ecosystem to make wealth building accessible. 
-                        Our secondary audience is anyone seeking disciplined, long-term exposure to crypto 
-                        without the chaos of trading or DeFi management.
+                        financial education, and a social ecosystem to make wealth building accessible.
                       </p>
                     </div>
                   </div>
                 </div>
                 
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl transform rotate-3"></div>
-                  <div className="relative bg-card border border-primary/20 p-10 rounded-2xl shadow-2xl">
-                    <h4 className="text-2xl font-bold mb-8 text-foreground flex items-center gap-3">
-                      Key Features of The Vault Club
-                      <div className="w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
-                    </h4>
-                    <ul className="space-y-5">
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
+                {/* Features Card */}
+                <div className="bg-card border border-border/50 rounded-2xl p-8">
+                  <h3 className="text-xl font-bold mb-6 text-foreground">
+                    Key Features of The Vault Club
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      "Quantitative strategies modeled after hedge funds via Routed Reinvestment Logic",
+                      "Built-in wrapped Bitcoin accumulation for long-term retention",
+                      "Multi-strand reinvestment across risk tiers",
+                      "User-controlled parameters with minimal active management"
+                    ].map((feature, index) => (
+                      <div key={index} className="flex items-start gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                          <CheckCircle className="h-4 w-4 text-primary" />
                         </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          Quantitative strategies modeled after hedge funds via Routed Reinvestment Logic
+                        <span className="text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
+                          {feature}
                         </span>
-                      </li>
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          Built-in wrapped Bitcoin accumulation for long-term retention
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          Multi-strand reinvestment across risk tiers
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-4 group">
-                        <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                          <CheckCircle className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors duration-200 leading-relaxed">
-                          User-controlled parameters with minimal active management
-                        </span>
-                      </li>
-                    </ul>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -450,11 +455,15 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Join The Vault Club Section */}
+        {/* ============================================ */}
+        {/* CTA / SIGNUP SECTION */}
+        {/* ============================================ */}
         <PreSignup />
         
         <Footer />
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
