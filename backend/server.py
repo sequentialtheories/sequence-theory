@@ -284,7 +284,7 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
     # ==========================================================================
     # Methodology: Sum of all constituent prices (equal weight = 1% each)
     # This creates the highest value index with broad market exposure
-    # Each token contributes its full price, aggregating to MILLIONS
+    # Target: Should be in the MILLIONS to reflect broad market
     wave_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:100]
     num_wave_coins = len(wave_coins)
     
@@ -292,14 +292,12 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
         # Equal weight: Each token contributes 1% to the index
         equal_weight = 100.0 / num_wave_coins
         
-        # Index value: Sum of all prices creates a large number
-        # With 100 tokens including BTC, ETH, etc., this will be in MILLIONS
-        wave_value = sum(c.get('current_price', 0) for c in wave_coins)
+        # Index value: Sum of all prices
+        # BTC (~90k) + ETH (~3k) + 98 other tokens = substantial sum
+        raw_sum = sum(c.get('current_price', 0) for c in wave_coins)
         
-        # If the sum is still too low (unlikely), apply a multiplier
-        # Target: Wave100 should be in millions
-        if wave_value < 100000:
-            wave_value = wave_value * 100
+        # Scale to ensure it's in millions (multiply by 10 to get proper magnitude)
+        wave_value = raw_sum * 10
         
         # 24h change: Simple average (equal-weighted means equal influence on change)
         wave_change = sum(c.get('price_change_percentage_24h') or 0 for c in wave_coins) / num_wave_coins
