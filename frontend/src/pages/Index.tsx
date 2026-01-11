@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
+import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground } from "@/components/FuturisticBackground";
@@ -15,10 +16,7 @@ import {
   Lock,
   Layers,
   Zap,
-  Globe,
-  Clock,
-  Wallet,
-  Bitcoin
+  Globe
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -46,11 +44,11 @@ const Index = () => {
     document.title = "Sequence Theory - Your Money, Your Power. Through The Vault Club";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute('content', 'The Vault Club - A private, choreographed financial schematic for long-term capital growth through disciplined, automated investing.');
+      metaDescription.setAttribute('content', 'Your Money, Your Power. Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments.');
     }
     const keywordsMeta = document.createElement('meta');
     keywordsMeta.name = 'keywords';
-    keywordsMeta.content = 'Your Money Your Power, Sequence Theory, Vault Club, long-term investing, financial empowerment, wealth building, automated investing';
+    keywordsMeta.content = 'Your Money Your Power, Sequence Theory, Vault Club, cryptocurrency investing, financial empowerment, wealth building';
     document.head.appendChild(keywordsMeta);
     return () => {
       const existingKeywords = document.querySelector('meta[name="keywords"]');
@@ -67,11 +65,21 @@ const Index = () => {
       
       <div className="pt-16 relative z-10">
         {/* ============================================ */}
-        {/* HERO SECTION */}
+        {/* HERO SECTION - Clean, Trust-Forward Design */}
         {/* ============================================ */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-          {/* Subtle gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+          {/* Subtle gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/[0.02] to-background" />
+          
+          {/* Refined grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px)`,
+            backgroundSize: '48px 48px'
+          }} />
+          
+          {/* Floating accent elements */}
+          <div className="absolute top-1/4 left-[10%] w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+          <div className="absolute bottom-1/4 right-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
           
           <div className="container mx-auto px-6 relative z-10">
             <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -84,10 +92,10 @@ const Index = () => {
                 </span>
               </h1>
               
-              {/* Subheadline - from whitepaper abstract */}
+              {/* Subheadline */}
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                A private, choreographed financial schematic designed for long-term capital growth. 
-                Institutional-style investing made accessible through disciplined, automated contracts.
+                Build lasting wealth through automated investment contracts. 
+                No trading required. No complex decisions. Just disciplined growth while you sleep.
               </p>
               
               {/* CTA Buttons */}
@@ -112,15 +120,15 @@ const Index = () => {
                 </Link>
               </div>
               
-              {/* Trust indicators */}
+              {/* Trust indicators - focused on financial empowerment */}
               <div className="flex items-center justify-center gap-6 pt-8 border-t border-border/50">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Lock className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Non-custodial smart contracts</span>
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <span className="text-sm">Grow your wealth automatically</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Disciplined, automated growth</span>
+                  <Target className="h-5 w-5 text-primary" />
+                  <span className="text-sm">Become an investor, not a trader</span>
                 </div>
               </div>
             </div>
@@ -128,51 +136,51 @@ const Index = () => {
         </section>
 
         {/* ============================================ */}
-        {/* SYSTEM OBJECTIVES SECTION */}
+        {/* PROBLEM SECTION - Why Sequence Matters */}
         {/* ============================================ */}
         <section className="py-24 bg-muted/30">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
               <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
-                  <Target className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">System Objectives</span>
+                <div className="inline-flex items-center gap-2 bg-destructive/10 rounded-full px-4 py-2 mb-6">
+                  <Target className="h-4 w-4 text-destructive" />
+                  <span className="text-sm font-medium text-destructive">The Challenge</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
-                  What We're Building
+                  The Compound Interest Problem
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  The Vault Club addresses growing financial illiteracy and inequality by providing 
-                  an accessible wealth-building system that enforces disciplined participation.
+                  Albert Einstein called compound interest the "eighth wonder of the world," yet most people 
+                  never benefit from it meaningfully. The issue isn't failure — it's friction.
                 </p>
               </div>
               
-              {/* Objectives cards */}
+              {/* Problem cards - horizontal layout */}
               <div className="grid md:grid-cols-3 gap-6">
                 {[
                   {
-                    icon: Zap,
-                    title: "Automate Long-Term Growth",
-                    description: "Automate long-term DeFi compounding and wBTC accumulation through smart contracts that work while you sleep."
-                  },
-                  {
                     icon: Shield,
-                    title: "Enforce Discipline",
-                    description: "Enforce disciplined participation while discouraging inconsistent behavior through structured contract parameters."
+                    title: "Ready Ability",
+                    description: "Reliable access to quality investment vehicles that don't require massive capital or institutional connections."
                   },
                   {
-                    icon: Users,
-                    title: "Accessible Wealth-Building",
-                    description: "Provide an accessible wealth-building system amid growing financial illiteracy and inequality."
+                    icon: TrendingUp,
+                    title: "Discipline",
+                    description: "Consistent, recurring contributions over time without getting distracted by market volatility or speculation."
+                  },
+                  {
+                    icon: Target,
+                    title: "Long-Term Horizons",
+                    description: "The patience to allow growth to compound without succumbing to short-term market pressures."
                   }
                 ].map((item, index) => (
                   <div 
                     key={index}
-                    className="group bg-card border border-border/50 rounded-2xl p-8 hover:border-primary/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-card border border-border/50 rounded-2xl p-8 hover:border-destructive/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                   >
-                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                      <item.icon className="h-7 w-7 text-primary" />
+                    <div className="w-14 h-14 bg-destructive/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-destructive/20 transition-colors">
+                      <item.icon className="h-7 w-7 text-destructive" />
                     </div>
                     <h3 className="text-xl font-semibold mb-3 text-foreground">{item.title}</h3>
                     <p className="text-muted-foreground leading-relaxed">{item.description}</p>
@@ -184,7 +192,102 @@ const Index = () => {
         </section>
 
         {/* ============================================ */}
-        {/* TWO-PHASE STRATEGY SECTION */}
+        {/* THE LEAP ISSUE SECTION */}
+        {/* ============================================ */}
+        <section className="py-24 bg-background">
+          <div className="container mx-auto px-6">
+            <div className="max-w-6xl mx-auto">
+              {/* Section header */}
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-accent/10 rounded-full px-4 py-2 mb-6">
+                  <Zap className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-medium text-accent">The Barrier</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  The Leap Issue
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  In crypto, too much autonomy is required. Navigating wallets, exchanges, and DeFi jargon 
+                  leaves users feeling that entering crypto is "too much of a leap."
+                </p>
+              </div>
+              
+              {/* Two-column comparison */}
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Pain Points */}
+                <div className="bg-muted/30 border border-border/50 rounded-2xl p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-destructive/10 rounded-lg flex items-center justify-center">
+                      <Target className="h-5 w-5 text-destructive" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground">Common Pain Points</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      "Navigating complex web3 wallets and security requirements",
+                      "Overwhelming exchanges with thousands of tokens",
+                      "Dense DeFi jargon and technical complexity",
+                      "Constant market speculation and FOMO pressure"
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 bg-destructive rounded-full mt-2.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Solution */}
+                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground">Our Solution</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {[
+                      "Spoon-feeding users with structured investing",
+                      "Controlled risk exposure through automation",
+                      "Completely automated contracts remove complexity",
+                      "Focus on education and gradual market entry"
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================ */}
+        {/* MISSION SECTION - Who We Are */}
+        {/* ============================================ */}
+        <section className="py-24 bg-muted/30">
+          <div className="container mx-auto px-6">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Our Mission</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
+                  Who We Are
+                </h2>
+              </div>
+              
+              {/* Financial Stats */}
+              <FinancialStatsExpander />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================ */}
+        {/* FRAMEWORK SECTION - Modular Cards */}
         {/* ============================================ */}
         <section className="py-24 bg-background">
           <div className="container mx-auto px-6">
@@ -193,74 +296,47 @@ const Index = () => {
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
                   <Layers className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Two-Phase Strategy</span>
+                  <span className="text-sm font-medium text-primary">Our Solution</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
                   How The Vault Club Works
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  A disciplined, two-phase strategy that brings institutional-style capital allocation 
-                  and compound-interest mechanics to everyday investors.
+                  Structured investment contracts designed for long-term wealth building
                 </p>
               </div>
               
-              {/* Two Phase Cards */}
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Phase 1 */}
-                <div className="bg-gradient-to-br from-card to-muted/50 border border-border rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary-foreground">1</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground">The Mega Vault</h3>
-                      <p className="text-sm text-muted-foreground">Growth Phase</p>
+              {/* Solution card */}
+              <div className="bg-gradient-to-br from-card to-muted/50 border border-border rounded-3xl p-10 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="flex flex-col md:flex-row items-start gap-8">
+                  <div className="flex-shrink-0">
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
+                      <Shield className="h-10 w-10 text-primary-foreground" />
                     </div>
                   </div>
-                  <p className="text-muted-foreground mb-4 leading-relaxed">
-                    All user funds are pooled into the Mega Vault for scale-based efficiency and coordinated reinvestment. 
-                    Capital is deployed across three independent investment strands using conservative stable assets.
-                  </p>
-                  <div className="space-y-3 mt-6">
-                    {[
-                      "Routed Reinvestment Logic (RRL) creates compounding 'compression'",
-                      "Subscription-Backed Borrowing enhances capital efficiency",
-                      "Profits harvested and reinvested weekly"
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{item}</span>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold mb-6 text-foreground">
+                      Structured Investment Contracts
+                    </h3>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed">
+                      <p>
+                        When you join The Vault Club, you enter a subclub with its own structured investment contract. 
+                        These contracts set fixed parameters such as member amount, rigor, and length.
+                        All participants are immediately placed in our secure Mega Vault, providing instant diversification 
+                        and professional-grade risk management.
+                      </p>
+                      <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-6 my-6">
+                        <p>
+                          Over time, contracts gradually exit the Mega Vault to independently accumulate wBTC through strategic market timing. 
+                          At contract completion, you have full control over your accumulated wBTC.
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Phase 2 */}
-                <div className="bg-gradient-to-br from-card to-muted/50 border border-border rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center">
-                      <span className="text-xl font-bold text-accent-foreground">2</span>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground">wBTC Accumulation</h3>
-                      <p className="text-sm text-muted-foreground">Wealth Preservation</p>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground mb-4 leading-relaxed">
-                    Once growth thresholds are met (50% contract completion OR ~$2M vault value), 
-                    the system transitions to wealth preservation, converting accumulated value into wBTC.
-                  </p>
-                  <div className="space-y-3 mt-6">
-                    {[
-                      "Weekly Dollar-Cost Averaging into Wrapped Bitcoin",
-                      "Target full wBTC allocation by contract completion",
-                      "Participants hold wBTC externally with full control"
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{item}</span>
-                      </div>
-                    ))}
+                    <Link to="/learn-more">
+                      <Button className="mt-4 rounded-full">
+                        Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -269,7 +345,7 @@ const Index = () => {
         </section>
 
         {/* ============================================ */}
-        {/* SUBCLUB STRUCTURE SECTION */}
+        {/* BROADER MISSION SECTION */}
         {/* ============================================ */}
         <section className="py-24 bg-muted/30">
           <div className="container mx-auto px-6">
@@ -277,102 +353,64 @@ const Index = () => {
               {/* Section header */}
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Contract Structure</span>
+                  <Globe className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Broader Mission</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
-                  Subclub Contracts
+                  Building Financial Literacy & Inclusion
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  The system is built for 1-8 committed participants who form exclusive contracts 
-                  governed by automated, non-custodial smart contracts.
+                  Sequence Theory is not just a financial product — it's a framework for building lasting financial 
+                  literacy and inclusion across digital and traditional markets.
                 </p>
               </div>
               
               <div className="grid md:grid-cols-2 gap-8">
-                {/* Contract Parameters */}
+                {/* Philosophy Card */}
                 <div className="bg-card border border-border/50 rounded-2xl p-8">
-                  <h3 className="text-xl font-bold mb-6 text-foreground flex items-center gap-3">
-                    <Clock className="h-6 w-6 text-primary" />
-                    Contract Parameters
-                  </h3>
-                  <div className="space-y-4">
-                    {[
-                      { label: "Participants", value: "1-8 members per subclub" },
-                      { label: "Lock-up Period", value: "1-20 years" },
-                      { label: "Rigor Tiers", value: "Low, Medium, High, & Custom" },
-                      { label: "Contract Type", value: "Public or Private" },
-                      { label: "Deposits", value: "Custom sizes & frequencies (unanimous agreement)" }
-                    ].map((item, index) => (
-                      <div key={index} className="flex justify-between items-center py-3 border-b border-border/50 last:border-0">
-                        <span className="text-muted-foreground">{item.label}</span>
-                        <span className="font-medium text-foreground">{item.value}</span>
-                      </div>
-                    ))}
+                  <div className="flex items-center gap-2 mb-6">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                    <span className="text-sm font-medium text-primary">Our Core Philosophy</span>
+                  </div>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">MISSION:</p>
+                      <p className="text-muted-foreground">Democratize Financial Empowerment</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">METHOD:</p>
+                      <p className="text-muted-foreground">Community-based Investment and Education</p>
+                    </div>
+                    <div className="pt-4 border-t border-border">
+                      <p className="text-muted-foreground leading-relaxed">
+                        In our world, poverty isn't systemic — it's optional. We provide structured investing, 
+                        financial education, and a social ecosystem to make wealth building accessible.
+                      </p>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Safeguards */}
+                {/* Features Card */}
                 <div className="bg-card border border-border/50 rounded-2xl p-8">
-                  <h3 className="text-xl font-bold mb-6 text-foreground flex items-center gap-3">
-                    <Shield className="h-6 w-6 text-primary" />
-                    Built-in Safeguards
+                  <h3 className="text-xl font-bold mb-6 text-foreground">
+                    Key Features of The Vault Club
                   </h3>
                   <div className="space-y-4">
                     {[
-                      "3 missed deposits = 3% ownership redistribution to active members",
-                      "Emergency termination requires unanimous multisig approval",
-                      "Contract details editable anytime with unanimous consent",
-                      "Emergency withdrawal prioritizes principal protection",
-                      "Users can pause or exit group contracts independently"
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-start gap-3 group">
-                        <div className="flex-shrink-0 w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors mt-0.5">
+                      "Quantitative strategies modeled after hedge funds via Routed Reinvestment Logic",
+                      "Built-in wrapped Bitcoin accumulation for long-term retention",
+                      "Multi-strand reinvestment across risk tiers",
+                      "User-controlled parameters with minimal active management"
+                    ].map((feature, index) => (
+                      <div key={index} className="flex items-start gap-4 group">
+                        <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                           <CheckCircle className="h-4 w-4 text-primary" />
                         </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed text-sm">
-                          {item}
+                        <span className="text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
+                          {feature}
                         </span>
                       </div>
                     ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================ */}
-        {/* NON-CUSTODIAL DESIGN SECTION */}
-        {/* ============================================ */}
-        <section className="py-24 bg-background">
-          <div className="container mx-auto px-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-3xl p-10">
-                <div className="flex flex-col md:flex-row items-start gap-8">
-                  <div className="flex-shrink-0">
-                    <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
-                      <Wallet className="h-10 w-10 text-primary-foreground" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold mb-4 text-foreground">
-                      100% Non-Custodial Design
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed mb-6">
-                      Wallets are generated client-side. Private keys are never held by Sequence Theory. 
-                      Users retain full control at all times. The Vault Club acts as an automated coordinator — not a custodian or bank.
-                    </p>
-                    <div className="bg-background/50 border-l-4 border-primary rounded-r-xl p-6">
-                      <p className="text-foreground font-medium italic">
-                        "The goal is not to encourage financial obsession but to replace it with structure."
-                      </p>
-                    </div>
-                    <Link to="/learn-more">
-                      <Button className="mt-6 rounded-full">
-                        Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
                   </div>
                 </div>
               </div>
