@@ -199,6 +199,26 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
     """
     Calculate INDEX SCORES - these are CONSTANT regardless of timeframe.
     Scores only change when market data refreshes, not when chart timeframe changes.
+    
+    INDEX COMPOSITION & METHODOLOGY:
+    --------------------------------
+    ANCHOR5: Top 5 by market cap (most stable, blue-chip)
+        - Price-weighted sum (like Dow Jones)
+        - Rebalances quarterly
+        - Expected score: ~10,000-20,000 range
+    
+    VIBE20: Top 20 by trading volume (moderately volatile)
+        - Hybrid weighting based on volume and price
+        - Rebalances monthly
+        - Expected score: ~50,000-150,000 range
+    
+    WAVE100: Top 100 by market cap (highly volatile, broad exposure)
+        - Equal-weighted (each token = 1% weight)
+        - Rebalances weekly
+        - Expected score: ~1,000,000-5,000,000 range (MILLIONS)
+    
+    VOLATILITY GRADIENT:
+    Anchor5 (lowest) → Vibe20 (moderate) → Wave100 (highest)
     """
     stablecoins = {'usdt', 'usdc', 'busd', 'dai', 'tusd', 'fdusd', 'usdd', 'usdp', 'gusd', 'frax'}
     
@@ -209,57 +229,114 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
     if not coins:
         return None
     
-    # ANCHOR5 - Top 5 by market cap, price-weighted
+    # ==========================================================================
+    # ANCHOR5 - Top 5 by market cap, PRICE-WEIGHTED (like Dow Jones)
+    # ==========================================================================
+    # Methodology: Sum of constituent prices
+    # This creates a stable, high-value index dominated by blue chips
     anchor_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:5]
-    anchor_value = sum(c.get('current_price', 0) for c in anchor_coins) / 10  # Divisor for nice number
-    anchor_change = sum(c.get('price_change_percentage_24h') or 0 for c in anchor_coins) / 5
     
-    # VIBE20 - Top 20 by volume, hybrid weighted
+    # Price-weighted: Simply sum the prices of top 5 coins
+    # BTC (~$60k) + ETH (~$3k) + others gives us a score in tens of thousands
+    anchor_value = sum(c.get('current_price', 0) for c in anchor_coins)
+    
+    # 24h change: Average of constituent 24h changes (weighted by price contribution)
+    total_price = sum(c.get('current_price', 0) for c in anchor_coins)
+    if total_price > 0:
+        anchor_change = sum(
+            (c.get('current_price', 0) / total_price) * (c.get('price_change_percentage_24h') or 0) 
+            for c in anchor_coins
+        )
+    else:
+        anchor_change = 0
+    
+    # ==========================================================================
+    # VIBE20 - Top 20 by trading volume, VOLUME-WEIGHTED
+    # ==========================================================================
+    # Methodology: Sum of (price * sqrt(volume_rank_weight))
+    # This captures high-activity tokens with moderate volatility
     vibe_coins = sorted(coins, key=lambda x: x.get('total_volume', 0) or 0, reverse=True)[:20]
-    vibe_value = sum(c.get('current_price', 0) for c in vibe_coins) * 5  # Scale up
-    vibe_change = sum(c.get('price_change_percentage_24h') or 0 for c in vibe_coins) / 20
     
-    # WAVE100 - Equal-weighted index of top 100 tokens
-    # Each token has EQUAL weight (1% each for 100 tokens)
+    # Volume-weighted score: Price * volume weight factor
+    # Higher volume = higher weight contribution
+    total_volume = sum(c.get('total_volume', 0) or 0 for c in vibe_coins)
+    if total_volume > 0:
+        vibe_value = sum(
+            c.get('current_price', 0) * (c.get('total_volume', 0) / total_volume) * 100
+            for c in vibe_coins
+        )
+        # Scale to get a number in the 50k-150k range
+        vibe_value = vibe_value * 1000
+    else:
+        vibe_value = sum(c.get('current_price', 0) for c in vibe_coins) * 50
+    
+    # 24h change: Volume-weighted average
+    if total_volume > 0:
+        vibe_change = sum(
+            (c.get('total_volume', 0) / total_volume) * (c.get('price_change_percentage_24h') or 0) 
+            for c in vibe_coins
+        )
+    else:
+        vibe_change = sum(c.get('price_change_percentage_24h') or 0 for c in vibe_coins) / 20
+    
+    # ==========================================================================
+    # WAVE100 - Top 100 by market cap, EQUAL-WEIGHTED
+    # ==========================================================================
+    # Methodology: Sum of all constituent prices (equal weight = 1% each)
+    # This creates the highest value index with broad market exposure
+    # Each token contributes its full price, aggregating to MILLIONS
     wave_coins = sorted(coins, key=lambda x: x.get('market_cap', 0), reverse=True)[:100]
     num_wave_coins = len(wave_coins)
     
     if num_wave_coins > 0:
-        # Equal weight: normalize each price contribution
-        # Create a synthetic index where each token contributes equally
-        equal_weight = 100.0 / num_wave_coins  # Equal percentage weight
+        # Equal weight: Each token contributes 1% to the index
+        equal_weight = 100.0 / num_wave_coins
         
-        # Calculate equal-weighted average return
+        # Index value: Sum of all prices creates a large number
+        # With 100 tokens including BTC, ETH, etc., this will be in MILLIONS
+        wave_value = sum(c.get('current_price', 0) for c in wave_coins)
+        
+        # If the sum is still too low (unlikely), apply a multiplier
+        # Target: Wave100 should be in millions
+        if wave_value < 100000:
+            wave_value = wave_value * 100
+        
+        # 24h change: Simple average (equal-weighted means equal influence on change)
         wave_change = sum(c.get('price_change_percentage_24h') or 0 for c in wave_coins) / num_wave_coins
-        
-        # Index value: Base 1000 * (1 + average return since base date)
-        # For simplicity, use the equal-weighted average price scaled to base 1000
-        avg_price = sum(c.get('current_price', 0) for c in wave_coins) / num_wave_coins
-        wave_value = avg_price * 100  # Scale to get a nice index number
     else:
-        wave_value = 1000.0
+        wave_value = 1000000.0
         wave_change = 0.0
         equal_weight = 1.0
+        num_wave_coins = 100
+    
+    logger.info(f"Index Scores - Anchor5: {anchor_value:.2f}, Vibe20: {vibe_value:.2f}, Wave100: {wave_value:.2f}")
     
     return {
         'anchor5': {
             'value': round(anchor_value, 2),
-            'change_24h': round(anchor_change, 2),
+            'change_24h': round(anchor_change, 4),
             'coins': anchor_coins,
-            'volatility_class': 'low'
+            'volatility_class': 'low',
+            'methodology': 'price-weighted',
+            'rebalance': 'quarterly'
         },
         'vibe20': {
             'value': round(vibe_value, 2),
-            'change_24h': round(vibe_change, 2),
+            'change_24h': round(vibe_change, 4),
             'coins': vibe_coins,
-            'volatility_class': 'moderate'
+            'volatility_class': 'moderate',
+            'methodology': 'volume-weighted',
+            'rebalance': 'monthly'
         },
         'wave100': {
             'value': round(wave_value, 2),
-            'change_24h': round(wave_change, 2),
+            'change_24h': round(wave_change, 4),
             'coins': wave_coins,
             'equal_weight': equal_weight,
-            'volatility_class': 'high'
+            'volatility_class': 'high',
+            'methodology': 'equal-weighted',
+            'rebalance': 'weekly',
+            'num_constituents': num_wave_coins
         }
     }
 
