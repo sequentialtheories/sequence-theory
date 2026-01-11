@@ -123,12 +123,12 @@ const Index = () => {
               {/* Trust indicators - focused on financial empowerment */}
               <div className="flex items-center justify-center gap-6 pt-8 border-t border-border/50">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Grow your wealth automatically</span>
+                  <Lock className="h-5 w-5 text-primary" />
+                  <span className="text-sm">100% non-custodial</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Target className="h-5 w-5 text-primary" />
-                  <span className="text-sm">Become an investor, not a trader</span>
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <span className="text-sm">Automated compounding</span>
                 </div>
               </div>
             </div>
