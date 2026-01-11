@@ -129,8 +129,8 @@ const Index = () => {
         {/* HERO SECTION */}
         {/* ============================================ */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-          {/* Subtle gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
+          {/* Very subtle gradient - mostly transparent to show background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/30" />
           
           {/* Refined grid pattern */}
           <div className="absolute inset-0 opacity-[0.02]" style={{
