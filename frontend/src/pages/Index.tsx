@@ -302,7 +302,7 @@ const Index = () => {
                   How The Vault Club Works
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  Structured investment contracts designed for long-term wealth building
+                  A two-phase strategy: Mega Vault growth followed by wBTC accumulation for wealth preservation
                 </p>
               </div>
               
