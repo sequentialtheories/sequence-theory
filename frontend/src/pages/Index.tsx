@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import PreSignup from "@/components/PreSignup";
 import { FinancialStatsExpander } from "@/components/FinancialStatsExpander";
+import { IndicesPreview } from "@/components/IndicesPreview";
+import { FAQPreview } from "@/components/FAQPreview";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground } from "@/components/FuturisticBackground";
@@ -16,14 +18,73 @@ import {
   Lock,
   Layers,
   Zap,
-  Globe
+  Globe,
+  BarChart3,
+  HelpCircle,
+  BookOpen
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+
+// Scroll-triggered CTA component
+const ScrollCTA: React.FC<{
+  sectionRef: React.RefObject<HTMLElement>;
+  label: string;
+  to: string;
+  icon: React.ReactNode;
+  delay?: number;
+}> = ({ sectionRef, label, to, icon, delay = 0 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => setIsVisible(true), delay);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [sectionRef, delay]);
+
+  return (
+    <div 
+      className={`transition-all duration-700 ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-4'
+      }`}
+    >
+      <Link to={to}>
+        <Button 
+          variant="outline" 
+          className="rounded-full group hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+        >
+          {icon}
+          <span className="ml-2">{label}</span>
+          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        </Button>
+      </Link>
+    </div>
+  );
+};
 
 const Index = () => {
   const { user } = useAuth();
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
+
+  // Section refs for scroll-based CTAs
+  const problemSectionRef = useRef<HTMLElement>(null);
+  const solutionSectionRef = useRef<HTMLElement>(null);
+  const missionSectionRef = useRef<HTMLElement>(null);
+  const indicesSectionRef = useRef<HTMLElement>(null);
+  const faqSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -57,7 +118,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Futuristic animated background */}
       <FuturisticBackground />
       
@@ -65,21 +126,17 @@ const Index = () => {
       
       <div className="pt-16 relative z-10">
         {/* ============================================ */}
-        {/* HERO SECTION - Clean, Trust-Forward Design */}
+        {/* HERO SECTION */}
         {/* ============================================ */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
           {/* Subtle gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/[0.02] to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
           
           {/* Refined grid pattern */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
+          <div className="absolute inset-0 opacity-[0.02]" style={{
             backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px)`,
             backgroundSize: '48px 48px'
           }} />
-          
-          {/* Floating accent elements */}
-          <div className="absolute top-1/4 left-[10%] w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-          <div className="absolute bottom-1/4 right-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
           
           <div className="container mx-auto px-6 relative z-10">
             <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -98,7 +155,7 @@ const Index = () => {
                 Disciplined, automated contracts that work while you focus on life.
               </p>
               
-              {/* CTA Buttons */}
+              {/* CTA Buttons - UNCHANGED */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
                 <Link to="/learn-more">
                   <Button 
@@ -120,7 +177,7 @@ const Index = () => {
                 </Link>
               </div>
               
-              {/* Trust indicators - focused on financial empowerment */}
+              {/* Trust indicators */}
               <div className="flex items-center justify-center gap-6 pt-8 border-t border-border/50">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Lock className="h-5 w-5 text-primary" />
@@ -136,9 +193,9 @@ const Index = () => {
         </section>
 
         {/* ============================================ */}
-        {/* PROBLEM SECTION - Why Sequence Matters */}
+        {/* PROBLEM SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-muted/30">
+        <section ref={problemSectionRef} className="py-24 bg-muted/30 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
@@ -156,8 +213,8 @@ const Index = () => {
                 </p>
               </div>
               
-              {/* Problem cards - horizontal layout */}
-              <div className="grid md:grid-cols-3 gap-6">
+              {/* Problem cards */}
+              <div className="grid md:grid-cols-3 gap-6 mb-12">
                 {[
                   {
                     icon: Shield,
@@ -187,6 +244,17 @@ const Index = () => {
                   </div>
                 ))}
               </div>
+              
+              {/* Scroll CTA - Learn More */}
+              <div className="text-center">
+                <ScrollCTA 
+                  sectionRef={problemSectionRef}
+                  label="Deep Dive: Learn More"
+                  to="/learn-more"
+                  icon={<BookOpen className="h-4 w-4" />}
+                  delay={500}
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -194,7 +262,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* THE LEAP ISSUE SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-background">
+        <section ref={solutionSectionRef} className="py-24 bg-background relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
@@ -213,7 +281,7 @@ const Index = () => {
               </div>
               
               {/* Two-column comparison */}
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-2 gap-8 mb-12">
                 {/* Pain Points */}
                 <div className="bg-muted/30 border border-border/50 rounded-2xl p-8">
                   <div className="flex items-center gap-3 mb-6">
@@ -260,14 +328,25 @@ const Index = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Scroll CTA - Learn Now */}
+              <div className="text-center">
+                <ScrollCTA 
+                  sectionRef={solutionSectionRef}
+                  label="Start Your Education"
+                  to="/learn-now"
+                  icon={<BookOpen className="h-4 w-4" />}
+                  delay={500}
+                />
+              </div>
             </div>
           </div>
         </section>
 
         {/* ============================================ */}
-        {/* MISSION SECTION - Who We Are */}
+        {/* MISSION SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-muted/30">
+        <section ref={missionSectionRef} className="py-24 bg-muted/30 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-16">
@@ -287,9 +366,9 @@ const Index = () => {
         </section>
 
         {/* ============================================ */}
-        {/* FRAMEWORK SECTION - Modular Cards */}
+        {/* FRAMEWORK SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-background">
+        <section className="py-24 bg-background relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
@@ -347,7 +426,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* BROADER MISSION SECTION */}
         {/* ============================================ */}
-        <section className="py-24 bg-muted/30">
+        <section className="py-24 bg-muted/30 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
@@ -414,6 +493,58 @@ const Index = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================ */}
+        {/* INDICES PREVIEW SECTION */}
+        {/* ============================================ */}
+        <section ref={indicesSectionRef} className="py-24 bg-background relative">
+          <div className="container mx-auto px-6">
+            <div className="max-w-6xl mx-auto">
+              {/* Section header */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 bg-blue-500/10 rounded-full px-4 py-2 mb-6">
+                  <BarChart3 className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm font-medium text-blue-500">Market Indices</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-foreground">
+                  Digital Asset Indices
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Track the performance of key market segments with our proprietary indices
+                </p>
+              </div>
+              
+              {/* Indices Preview */}
+              <IndicesPreview />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================ */}
+        {/* FAQ PREVIEW SECTION */}
+        {/* ============================================ */}
+        <section ref={faqSectionRef} className="py-24 bg-muted/30 relative">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl mx-auto">
+              {/* Section header */}
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 bg-amber-500/10 rounded-full px-4 py-2 mb-6">
+                  <HelpCircle className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm font-medium text-amber-500">Common Questions</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
+                  Frequently Asked Questions
+                </h2>
+                <p className="text-muted-foreground">
+                  Quick answers to help you understand The Vault Club
+                </p>
+              </div>
+              
+              {/* FAQ Preview */}
+              <FAQPreview />
             </div>
           </div>
         </section>
