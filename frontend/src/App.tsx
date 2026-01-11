@@ -1,5 +1,6 @@
 
 import { AuthProvider } from "@/components/AuthProvider";
+import { WalletProvider } from "@/contexts/WalletContext";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -50,6 +51,16 @@ import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
+/**
+ * SECURITY NOTE: Wallet Provider
+ * 
+ * The WalletProvider manages a 100% NON-CUSTODIAL wallet system.
+ * - All wallet operations happen CLIENT-SIDE
+ * - Private keys NEVER leave the user's browser
+ * - Sequence Theory has NO access to user funds
+ * - Only PUBLIC wallet addresses are stored in Supabase
+ */
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -57,6 +68,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <WalletProvider>
             <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn-more" element={<LearnMore />} />
