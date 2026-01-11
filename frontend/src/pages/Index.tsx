@@ -378,10 +378,10 @@ const Index = () => {
                   <span className="text-sm font-medium text-primary">Our Solution</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-foreground">
-                  How The Vault Club Works
+                  The Vault Club
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  A two-phase strategy: Mega Vault growth followed by wBTC accumulation for wealth preservation
+                  A structured, automated investment system designed for long-term wealth building
                 </p>
               </div>
               
@@ -395,19 +395,18 @@ const Index = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold mb-6 text-foreground">
-                      Two-Phase Investment Strategy
+                      Set It & Forget It
                     </h3>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        When you join The Vault Club, you enter a contract with 1-8 participants and your own structured agreement. 
-                        Contracts set parameters like lock-up period (1-20 years), rigor tier, and deposit schedule.
-                        All funds are pooled into the Mega Vault for scale-based efficiency across three investment strands.
+                        Join a small group of like-minded investors with shared goals. Choose your 
+                        commitment level — from 1 to 20 years — and let the system handle the rest.
+                        No daily decisions. No market timing. Just consistent, disciplined growth.
                       </p>
                       <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-6 my-6">
                         <p>
-                          <strong>Phase 1:</strong> Growth via Routed Reinvestment Logic across Spark, Aave, and QuickSwap protocols.
-                          <br /><br />
-                          <strong>Phase 2:</strong> At 50% completion or ~$2M vault value, transition to weekly wBTC Dollar-Cost Averaging for wealth preservation.
+                          <strong>Your journey:</strong> Make regular contributions, watch your wealth grow through 
+                          automated compounding, and transition to wealth preservation as you approach your goals.
                         </p>
                       </div>
                     </div>
