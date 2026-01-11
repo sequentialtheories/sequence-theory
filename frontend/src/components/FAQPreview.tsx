@@ -73,7 +73,7 @@ export const FAQPreview: React.FC = () => {
       {/* CTA Button */}
       <div className="text-center">
         <Link to="/faq">
-          <Button className="rounded-full px-8" variant="outline">
+          <Button className="rounded-full px-8 hover:bg-primary hover:text-primary-foreground transition-all duration-300" variant="outline">
             <HelpCircle className="mr-2 h-4 w-4" />
             View All FAQs
             <ArrowRight className="ml-2 h-4 w-4" />

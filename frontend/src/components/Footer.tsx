@@ -132,11 +132,6 @@ const Footer = () => {
         <div className="mt-16 pt-8 border-t border-background/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <img 
-                src="/lovable-uploads/a0e89a17-55c8-45b2-8c5d-b5e7ae0a756c.png" 
-                alt="Sequence Theory" 
-                className="h-6 w-auto brightness-0 invert opacity-80"
-              />
               <span className="text-background/80 font-medium">Sequence Theory, Inc.</span>
             </div>
             
