@@ -195,7 +195,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* PROBLEM SECTION */}
         {/* ============================================ */}
-        <section ref={problemSectionRef} className="py-24 bg-muted/30 relative">
+        <section ref={problemSectionRef} className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
@@ -234,7 +234,7 @@ const Index = () => {
                 ].map((item, index) => (
                   <div 
                     key={index}
-                    className="group bg-card border border-border/50 rounded-2xl p-8 hover:border-destructive/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:border-destructive/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                   >
                     <div className="w-14 h-14 bg-destructive/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-destructive/20 transition-colors">
                       <item.icon className="h-7 w-7 text-destructive" />
@@ -262,7 +262,7 @@ const Index = () => {
         {/* ============================================ */}
         {/* THE LEAP ISSUE SECTION */}
         {/* ============================================ */}
-        <section ref={solutionSectionRef} className="py-24 bg-background relative">
+        <section ref={solutionSectionRef} className="py-24 relative">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto">
               {/* Section header */}
