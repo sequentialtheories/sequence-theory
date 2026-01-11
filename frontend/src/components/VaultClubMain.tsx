@@ -48,7 +48,7 @@ const VaultClubMain = () => {
         {/* How It Works */}
         <div className="max-w-4xl mx-auto mb-16 animate-slide-up [animation-delay:0.3s]">
           <h3 className="text-2xl font-bold text-center mb-8 text-foreground">How It Works</h3>
-          <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-medium border border-primary/10 transition-spring hover:shadow-strong">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 shadow-medium transition-spring hover:shadow-strong">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="animate-slide-left">
                 <h4 className="text-lg font-semibold mb-4 text-primary">Phase 1: The Mega Vault</h4>
@@ -107,7 +107,7 @@ const VaultClubMain = () => {
         {/* Benefits List */}
         <div className="max-w-3xl mx-auto mb-12 animate-slide-up [animation-delay:0.5s]">
           <h3 className="text-2xl font-bold text-center mb-8 text-foreground">What You Get</h3>
-          <div className="bg-gradient-card backdrop-blur-sm border border-primary/10 rounded-xl p-8 shadow-medium transition-spring hover:shadow-strong">
+          <div className="bg-gradient-card backdrop-blur-sm rounded-xl p-8 shadow-medium transition-spring hover:shadow-strong">
             <ul className="space-y-4">
               {benefits.map((benefit, index) => <li key={index} className="flex items-start gap-3 group animate-slide-left" style={{
               animationDelay: `${0.6 + index * 0.1}s`
