@@ -34,7 +34,7 @@ const LearnMore = () => {
         <section className="py-8 relative overflow-hidden">
           <div className="container mx-auto px-6 text-center relative z-10">
           <div className="flex justify-center items-center animate-slide-up">
-              <a href="https://claude.ai/public/artifacts/97b71d10-3256-49a0-82d1-d1b62e6c4543?fullscreen=true" target="_blank" rel="noopener noreferrer">
+              <a href="https://tvc.sequencetheoryinc.com" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="inline-flex items-center gap-2 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium">
                   View Preview
                   <ExternalLink className="h-4 w-4" />
