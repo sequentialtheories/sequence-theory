@@ -17,7 +17,7 @@ const VaultClubMain = () => {
   }, {
     icon: TrendingUp,
     title: "Automated Compounding",
-    description: "Routed Reinvestment Logic (RRL) systematically reallocates profits"
+    description: "Routed Reinvestment Logic (RRL) strategically allocates and preserves capital for optimal risk-adjusted growth."
   }, {
     icon: Target,
     title: "Disciplined Contracts",
