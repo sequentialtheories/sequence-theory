@@ -94,7 +94,7 @@ const Footer = () => {
               ))}
             </div>
             <p className="mt-6 text-background/60 text-sm leading-relaxed">
-              Stay connected for updates on financial education, investment opportunities, and community events.
+              Stay connected for updates, opportunities, and events.
             </p>
           </div>
 
