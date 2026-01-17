@@ -316,7 +316,7 @@ def calculate_index_scores(market_data: List[Dict]) -> Dict:
     
     # Index value: Sum of all prices scaled to millions
     raw_sum = sum(c.get('current_price', 0) for c in wave_coins)
-    wave_value = raw_sum * 10  # Scale to millions
+    wave_value = raw_sum * 100  # Scale to millions (multiply by 100)
     
     # 24h change: Simple average of the 100 top movers
     wave_change = sum(c.get('price_change_percentage_24h') or 0 for c in wave_coins) / num_wave_coins
