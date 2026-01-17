@@ -16,8 +16,9 @@ const SupplementalOfferings = () => {
       icon: Users,
       title: "Investment Community",
       description: "Connect with investors who prioritize strategy over speculation.",
-      link: "/learn-more",
-      linkText: "Join Community"
+      link: "https://t.me/+2NSJ3ZwdXJQwOWRh",
+      linkText: "Join Community",
+      external: true
     }
   ];
 
