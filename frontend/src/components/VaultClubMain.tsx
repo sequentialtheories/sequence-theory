@@ -71,7 +71,7 @@ const VaultClubMain = () => {
                 <ul className="list-none space-y-3">
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft"></div>
-                    <span className="text-gray-600">Triggered at 50% contract completion OR ~$2M vault value</span>
+                    <span className="text-gray-600">Triggered at 50% contract completion OR ~$1M value</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse-soft [animation-delay:0.5s]"></div>
