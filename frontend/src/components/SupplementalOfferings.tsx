@@ -10,7 +10,8 @@ const SupplementalOfferings = () => {
       title: "Educational Resources",
       description: "Learning modules covering financial basics, digital assets, and DeFi protocols.",
       link: "/learn-now",
-      linkText: "Start Learning"
+      linkText: "Start Learning",
+      external: false
     },
     {
       icon: Users,
@@ -57,14 +58,25 @@ const SupplementalOfferings = () => {
                 {offering.description}
               </p>
               
-              <Link to={offering.link}>
-                <Button 
-                  variant="outline" 
-                  className="border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
-                >
-                  {offering.linkText}
-                </Button>
-              </Link>
+              {offering.external ? (
+                <a href={offering.link} target="_blank" rel="noopener noreferrer">
+                  <Button 
+                    variant="outline" 
+                    className="border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
+                  >
+                    {offering.linkText}
+                  </Button>
+                </a>
+              ) : (
+                <Link to={offering.link}>
+                  <Button 
+                    variant="outline" 
+                    className="border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-bounce hover:scale-105 shadow-soft hover:shadow-medium"
+                  >
+                    {offering.linkText}
+                  </Button>
+                </Link>
+              )}
             </div>
           ))}
         </div>
