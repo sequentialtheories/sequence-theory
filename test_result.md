@@ -119,11 +119,14 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Implemented index score caching. Scores are now calculated once from market data and cached separately from chart generation. Verified with curl that all timeframes return identical scores."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Index scores are constant across all timeframes. Tested daily/month/year/all - all return identical scores (Anchor5: 93236.94, Vibe20: 389536.54, Wave100: 81926074.59). Score caching implementation working correctly."
 
   - task: "Crypto Indices API - Equal Weight Wave100"
     implemented: true
