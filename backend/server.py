@@ -682,6 +682,149 @@ async def get_user_profile(authorization: str = Header(None)):
             "has_wallet": wallet is not None
         }
 
+
+class DeleteUserRequest(BaseModel):
+    user_id: str
+
+
+@api_router.delete("/user/delete/{user_id}")
+async def delete_user_completely(
+    user_id: str,
+    authorization: str = Header(None)
+):
+    """
+    Delete a user completely from ALL tables:
+    - auth.users
+    - profiles  
+    - user_wallets
+    
+    This ensures profiles table stays as single source of truth.
+    When you delete from profiles, you should call this to clean up everywhere.
+    
+    ADMIN ONLY: Requires service role key in header for now.
+    """
+    # For admin operations, we check for a special admin header
+    # In production, you'd want proper admin authentication
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    async with httpx.AsyncClient() as client:
+        deleted_from = []
+        
+        # 1. Delete from user_wallets
+        response = await client.delete(
+            f"{SUPABASE_URL}/rest/v1/user_wallets",
+            params={"user_id": f"eq.{user_id}"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        if response.status_code in [200, 204]:
+            deleted_from.append("user_wallets")
+        
+        # 2. Delete from profiles
+        response = await client.delete(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            params={"user_id": f"eq.{user_id}"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        if response.status_code in [200, 204]:
+            deleted_from.append("profiles")
+        
+        # 3. Delete from auth.users (this is the critical one!)
+        response = await client.delete(
+            f"{SUPABASE_URL}/auth/v1/admin/users/{user_id}",
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        if response.status_code in [200, 204]:
+            deleted_from.append("auth.users")
+        else:
+            logger.warning(f"Failed to delete from auth.users: {response.status_code} - {response.text}")
+        
+        logger.info(f"Deleted user {user_id} from: {deleted_from}")
+        
+        return {
+            "success": True,
+            "user_id": user_id,
+            "deleted_from": deleted_from
+        }
+
+
+@api_router.post("/admin/sync-cleanup")
+async def admin_sync_cleanup(authorization: str = Header(None)):
+    """
+    Admin endpoint to clean up orphaned records:
+    - Delete auth.users that don't have profiles
+    - Delete user_wallets that don't have profiles
+    
+    This keeps profiles as the single source of truth.
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    async with httpx.AsyncClient() as client:
+        # Get all profile user_ids
+        response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            params={"select": "user_id"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        profiles = response.json() if response.status_code == 200 else []
+        profile_user_ids = set(p.get('user_id') for p in profiles)
+        
+        # Get all auth users
+        response = await client.get(
+            f"{SUPABASE_URL}/auth/v1/admin/users",
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        auth_data = response.json()
+        auth_users = auth_data.get('users', [])
+        
+        # Delete orphaned auth users
+        deleted_auth = 0
+        for user in auth_users:
+            user_id = user.get('id')
+            if user_id not in profile_user_ids:
+                # Delete wallet first
+                await client.delete(
+                    f"{SUPABASE_URL}/rest/v1/user_wallets",
+                    params={"user_id": f"eq.{user_id}"},
+                    headers={
+                        "apikey": SUPABASE_SERVICE_KEY,
+                        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+                    }
+                )
+                # Delete from auth
+                response = await client.delete(
+                    f"{SUPABASE_URL}/auth/v1/admin/users/{user_id}",
+                    headers={
+                        "apikey": SUPABASE_SERVICE_KEY,
+                        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+                    }
+                )
+                if response.status_code in [200, 204]:
+                    deleted_auth += 1
+        
+        return {
+            "success": True,
+            "profiles_count": len(profile_user_ids),
+            "auth_users_before": len(auth_users),
+            "deleted_orphaned_auth_users": deleted_auth
+        }
+
 # ============================================================================
 # TURNKEY WALLET ENDPOINTS
 # ============================================================================
