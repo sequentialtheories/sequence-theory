@@ -30,6 +30,7 @@ from turnkey_sdk_types.generated.types import (
     v1WalletParams,
     v1WalletAccountParams,
     EmailAuthBody,
+    v1EmailAuthCustomizationParams,
     GetActivityBody,
     SignRawPayloadBody,
     SignTransactionBody,
@@ -42,6 +43,7 @@ TURNKEY_API_BASE_URL = "https://api.turnkey.com"
 TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
 TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
 TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
+
 
 def get_timestamp_ms() -> str:
     """Get current timestamp in milliseconds as string"""
@@ -139,7 +141,7 @@ async def create_sub_organization_with_wallet(
         # Extract results from activity
         activity_result = result.activity.result
         
-        # Try different result versions
+        # Try different result versions (SDK uses camelCase)
         sub_org_result = None
         if hasattr(activity_result, 'createSubOrganizationResultV7') and activity_result.createSubOrganizationResultV7:
             sub_org_result = activity_result.createSubOrganizationResultV7
@@ -185,32 +187,35 @@ async def init_email_auth(
         Activity result with email auth details
     """
     try:
-        client = get_turnkey_client()
-        
         org_id = target_sub_org_id or TURNKEY_ORGANIZATION_ID
+        client = get_turnkey_client(org_id)
         
-        result = client.email_auth(
-            organization_id=org_id,
-            parameters={
-                "email": email,
-                "targetPublicKey": target_public_key,
-                "apiKeyName": f"Email Auth Key - {get_timestamp_ms()}",
-                "expirationSeconds": "900",  # 15 minutes
-                "emailCustomization": {
-                    "appName": "Sequence Theory",
-                    "logoUrl": "",
-                    "magicLinkTemplate": "",
-                    "templateVariables": ""
-                }
-            }
+        # Create email customization
+        email_customization = v1EmailAuthCustomizationParams(
+            appName="Sequence Theory",
+            logoUrl="",
+            magicLinkTemplate="",
+            templateVariables=""
         )
         
+        # Create request body
+        body = EmailAuthBody(
+            timestampMs=get_timestamp_ms(),
+            organizationId=org_id,
+            email=email,
+            targetPublicKey=target_public_key,
+            apiKeyName=f"Email Auth Key - {get_timestamp_ms()}",
+            expirationSeconds="900",  # 15 minutes
+            emailCustomization=email_customization
+        )
+        
+        result = client.email_auth(body)
         activity = result.activity
         
         return {
             "activity_id": activity.id,
             "status": activity.status,
-            "organization_id": activity.organization_id
+            "organization_id": activity.organizationId
         }
         
     except Exception as e:
@@ -226,34 +231,38 @@ async def complete_email_auth(
     """
     Complete email OTP authentication by verifying the code.
     
+    Note: Turnkey's email auth flow works differently - the OTP verification
+    happens when the user clicks the magic link or enters the code in the
+    Turnkey-hosted page. This function checks the activity status.
+    
     Args:
         activity_id: The activity ID from init_email_auth
-        otp_code: The OTP code entered by the user
+        otp_code: The OTP code entered by the user (for status check)
         target_sub_org_id: The sub-organization ID
     
     Returns:
         Authentication result with session info
     """
     try:
-        client = get_turnkey_client()
-        
         org_id = target_sub_org_id or TURNKEY_ORGANIZATION_ID
+        client = get_turnkey_client(org_id)
         
-        # Get the activity status
-        activity_result = client.get_activity(
-            organization_id=org_id,
-            parameters={
-                "activityId": activity_id
-            }
+        # Create request body
+        body = GetActivityBody(
+            timestampMs=get_timestamp_ms(),
+            organizationId=org_id,
+            activityId=activity_id
         )
         
-        # The OTP verification happens via the email link or code
-        # Turnkey's email auth creates an API key that the user can use
+        # Get the activity status
+        activity_result = client.get_activity(body)
+        
+        status = activity_result.activity.status if activity_result else "unknown"
         
         return {
             "activity_id": activity_id,
-            "status": activity_result.activity.status if activity_result else "unknown",
-            "verified": True
+            "status": status,
+            "verified": status == "ACTIVITY_STATUS_COMPLETED"
         }
         
     except Exception as e:
@@ -283,30 +292,22 @@ async def sign_raw_payload(
     """
     try:
         # Create client for the sub-organization
-        config = ApiKeyStamperConfig(
-            api_public_key=TURNKEY_API_PUBLIC_KEY,
-            api_private_key=TURNKEY_API_PRIVATE_KEY
-        )
-        stamper = ApiKeyStamper(config)
+        client = get_turnkey_client(sub_org_id)
         
-        client = TurnkeyClient(
-            base_url=TURNKEY_API_BASE_URL,
-            stamper=stamper,
-            organization_id=sub_org_id  # Use sub-org ID for signing
+        # Create request body
+        body = SignRawPayloadBody(
+            timestampMs=get_timestamp_ms(),
+            organizationId=sub_org_id,
+            signWith=wallet_address,
+            payload=payload,
+            encoding=encoding,
+            hashFunction=hash_function
         )
         
-        result = client.sign_raw_payload(
-            organization_id=sub_org_id,
-            parameters={
-                "signWith": wallet_address,
-                "payload": payload,
-                "encoding": encoding,
-                "hashFunction": hash_function
-            }
-        )
+        result = client.sign_raw_payload(body)
         
         activity_result = result.activity.result
-        sign_result = activity_result.sign_raw_payload_result
+        sign_result = activity_result.signRawPayloadResult
         
         if not sign_result:
             raise Exception("No signature result")
@@ -346,123 +347,29 @@ async def sign_transaction(
         Signed transaction data
     """
     try:
-        config = ApiKeyStamperConfig(
-            api_public_key=TURNKEY_API_PUBLIC_KEY,
-            api_private_key=TURNKEY_API_PRIVATE_KEY
-        )
-        stamper = ApiKeyStamper(config)
+        client = get_turnkey_client(sub_org_id)
         
-        client = TurnkeyClient(
-            base_url=TURNKEY_API_BASE_URL,
-            stamper=stamper,
-            organization_id=sub_org_id
+        # Create request body
+        body = SignTransactionBody(
+            timestampMs=get_timestamp_ms(),
+            organizationId=sub_org_id,
+            signWith=wallet_address,
+            unsignedTransaction=unsigned_transaction,
+            type=transaction_type
         )
         
-        result = client.sign_transaction(
-            organization_id=sub_org_id,
-            parameters={
-                "signWith": wallet_address,
-                "type": transaction_type,
-                "unsignedTransaction": unsigned_transaction
-            }
-        )
+        result = client.sign_transaction(body)
         
         activity_result = result.activity.result
-        sign_result = activity_result.sign_transaction_result
+        sign_result = activity_result.signTransactionResult
         
         if not sign_result:
             raise Exception("No transaction signature result")
         
         return {
-            "signedTransaction": sign_result.signed_transaction or ""
+            "signedTransaction": sign_result.signedTransaction or ""
         }
         
     except Exception as e:
         logger.error(f"Error signing transaction: {e}")
-        raise
-
-
-async def get_wallet_accounts(sub_org_id: str, wallet_id: str) -> Dict[str, Any]:
-    """
-    Get wallet account information.
-    """
-    try:
-        config = ApiKeyStamperConfig(
-            api_public_key=TURNKEY_API_PUBLIC_KEY,
-            api_private_key=TURNKEY_API_PRIVATE_KEY
-        )
-        stamper = ApiKeyStamper(config)
-        
-        client = TurnkeyClient(
-            base_url=TURNKEY_API_BASE_URL,
-            stamper=stamper,
-            organization_id=sub_org_id
-        )
-        
-        result = client.get_wallet_accounts(
-            organization_id=sub_org_id,
-            parameters={
-                "walletId": wallet_id
-            }
-        )
-        
-        return {
-            "accounts": result.accounts if result else []
-        }
-        
-    except Exception as e:
-        logger.error(f"Error getting wallet accounts: {e}")
-        raise
-
-
-async def create_passkey_session(
-    sub_org_id: str,
-    user_id: str,
-    target_public_key: str,
-    expiration_seconds: str = "3600"
-) -> Dict[str, Any]:
-    """
-    Create a session for passkey authentication.
-    
-    This allows the user to authenticate with their passkey and
-    receive a session token for subsequent requests.
-    """
-    try:
-        config = ApiKeyStamperConfig(
-            api_public_key=TURNKEY_API_PUBLIC_KEY,
-            api_private_key=TURNKEY_API_PRIVATE_KEY
-        )
-        stamper = ApiKeyStamper(config)
-        
-        client = TurnkeyClient(
-            base_url=TURNKEY_API_BASE_URL,
-            stamper=stamper,
-            organization_id=sub_org_id
-        )
-        
-        result = client.create_api_keys(
-            organization_id=sub_org_id,
-            parameters={
-                "userId": user_id,
-                "apiKeys": [{
-                    "apiKeyName": f"Session - {get_timestamp_ms()}",
-                    "publicKey": target_public_key,
-                    "expirationSeconds": expiration_seconds
-                }]
-            }
-        )
-        
-        activity_result = result.activity.result
-        api_key_result = activity_result.create_api_keys_result
-        
-        if not api_key_result or not api_key_result.api_key_ids:
-            raise Exception("No API key created")
-        
-        return {
-            "api_key_id": api_key_result.api_key_ids[0],
-            "user_id": user_id
-        }
-        
-    except Exception as e:
-        logger.error(f"Error creating passkey session: {e}")
         raise
