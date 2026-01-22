@@ -1041,6 +1041,38 @@ async def create_turnkey_wallet(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.get("/turnkey/wallet-info")
+async def get_turnkey_wallet_info(authorization: str = Header(None)):
+    """
+    Get wallet info for the authenticated user.
+    """
+    try:
+        user_data, wallet = await get_user_and_wallet(authorization)
+        
+        if not wallet:
+            return {
+                "hasWallet": False,
+                "wallet": None
+            }
+        
+        return {
+            "hasWallet": True,
+            "wallet": {
+                "address": wallet.get("wallet_address"),
+                "network": wallet.get("network", "polygon"),
+                "provider": wallet.get("provider", "turnkey"),
+                "turnkey_sub_org_id": wallet.get("turnkey_sub_org_id"),
+                "turnkey_wallet_id": wallet.get("turnkey_wallet_id")
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting wallet info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/turnkey/init-email-auth")
 async def init_turnkey_email_auth(request: EmailAuthInitRequest):
     """
