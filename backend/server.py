@@ -681,7 +681,7 @@ async def create_turnkey_wallet(
                 "provider": "turnkey",
                 "network": "polygon",
                 "created_via": "passkey" if request.passkey_attestation else "email",
-                "provenance": "turnkey_embedded"
+                "provenance": "turnkey_invisible"
             }
             
             create_response = await client.post(
