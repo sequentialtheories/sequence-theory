@@ -1,84 +1,99 @@
-<analysis>**original_problem_statement**: The user's initial goal was to unify two applications with a shared Supabase backend, featuring an automated, invisible wallet creation process using Turnkey. This was coupled with a request to fix and optimize a Digital Asset Indices feature that had unrealistic data visualization and was prone to crashing.
-
-However, the project underwent a significant architectural pivot based on a new, non-negotiable principle: to create a **100% non-custodial wallet experience**. The user must have full and exclusive control over their private keys and seed phrase, generated entirely on the client side. The backend must have no signing authority or ability to move user funds.
-
-Following this, the user requested a series of UI/UX enhancements to the homepage and other pages to achieve a cleaner, more professional aesthetic inspired by modern fintech sites, and to update the website's text content to align with a provided whitepaper.
+<analysis>**original_problem_statement**: The user's primary goal is to replace the existing client-side, seed-phrase-based wallet system with Turnkey Embedded Wallets. This migration is a top priority and involves significant changes to both the frontend and backend.
 
 **PRODUCT REQUIREMENTS:**
-1.  **100% Non-Custodial Wallets:** Users must generate and control their own wallets client-side. The application provider (Sequence Theory) must have zero access to private keys, seed phrases, or the ability to sign transactions on the user's behalf.
-2.  **Web2-Style UX:** The user onboarding and wallet creation process should feel like a standard web application (email/password signup), without exposing crypto jargon. New users are immediately redirected to a wallet setup flow post-registration.
-3.  **Optimized & Realistic Indices:** The Digital Asset Indices feature must display realistic, non-crashing candlestick charts with correctly ordered volatility (Anchor5: low, Vibe20: moderate, Wave100: high) and a constant index score regardless of the selected time frame. The Wave100 index must be equal-weighted.
-4.  **Modernized UI/UX:** The homepage and core layout should be enhanced for a clean, professional, and intuitive user experience, including a structured scroll-flow, visual enhancements like background animations, and preview sections for other parts of the site (Indices, FAQ).
-5.  **Content Alignment:** All marketing and informational text on the Home and Learn More pages must align exactly with the content provided in the user's whitepaper.
+1.  **Authentication & Wallet Creation:**
+    *   Implement a new user onboarding flow using Turnkey.
+    *   The primary authentication method must be **Passkeys (WebAuthn)**, compatible with web and mobile browsers.
+    *   A fallback authentication method using **Email OTP** must be provided.
+    *   The backend must handle the creation of Turnkey sub-organizations and embedded wallets for new users upon successful authentication.
+2.  **Backend Integration (FastAPI):**
+    *   Create new API endpoints under  for wallet creation, email auth (init/verify), and signing.
+    *   The backend must use the official Turnkey Python SDK for all interactions, ensuring correct API request stamping.
+    *   Store , , and  in the Supabase  table.
+    *   **CRITICAL:** Never store private keys or seed phrases. The backend must enforce ownership, ensuring a user can only sign transactions for the wallet associated with their Supabase .
+3.  **Frontend Integration (React):**
+    *   Replace the existing  hook and related components (, ) with a new Turnkey-based implementation (, , ).
+    *   The  UI must be completely redesigned to remove all mentions of seed phrases and passwords, now offering Continue with Passkey and Continue with Email options.
+    *   The  UI must be updated to remove View Seed Phrase and View Private Key options.
+4.  **Signing Functionality:**
+    *   Implement backend endpoints to handle signing generic EVM transactions (for Polygon) and arbitrary messages.
+    *   The frontend should provide a simple interface to test these signing functions.
+5.  **User Migration:**
+    *   This is a fresh start. No automatic migration for existing users with old seed-phrase wallets is required.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project is a full-stack application with a React frontend and a FastAPI backend using Supabase for auth/DB.
+The project is a full-stack application (React frontend, FastAPI backend, Supabase DB). A major migration to Turnkey Embedded Wallets is in progress.
 
--   **Backend ():** The backend has been stripped of all wallet-provisioning logic. Its sole responsibilities are now serving the sophisticated financial data for the Indices charts (via ) and a health check. The Turnkey integration has been completely removed.
--   **Frontend ():** The frontend has been massively refactored to support a 100% non-custodial wallet system using .
-    -   A new client-side wallet generation and management flow exists under  and .
-    -   New users are redirected to a  page immediately after registration to create their wallet and securely back up their seed phrase.
-    -   The UI for the Home page () and related components (, ) has been significantly enhanced with a modern design, new sections (Indices/FAQ previews), and a fixed background animation.
-    -   Content on the  and  pages has been updated to match the user's whitepaper.
-    -   The Profile page now has working Sign Out and Delete Account buttons.
+-   **Backend ():**
+    -   The official Turnkey Python SDK has been installed from GitHub.
+    -   A new service file, , has been created to encapsulate all logic using the Turnkey SDK.
+    -   The main  file has been updated with a new set of endpoints under  for initiating/verifying email auth, creating wallets, and signing. These endpoints include security checks to verify user ownership against their Supabase session before performing any action.
+    -   Turnkey API credentials have been correctly placed in the  file.
+
+-   **Frontend ():**
+    -   The agent has fixed a blank screen issue caused by incorrect component imports/exports. The application's home page is now rendering correctly.
+    -   New components (, ) and a hook () have been created to replace the old client-side wallet system.
+    -   The  page has been updated to use the new  component.
+    -   The Turnkey web SDKs (, , etc.) have been added to .
+
+The core wallet functionality is currently broken as it is in the middle of this significant migration.
 
 **Last working item**:
--   Last item agent was working: The user requested two final text changes:
-    1.  Replace all instances of the word Subclubs with Contract.
-    2.  On the Learn More page, revert a header title from Long Term Capital Growth back to Ease Into Investing.
--   Status: **NOT STARTED**
+-   Last item agent was working: The agent was executing a strict, multi-phase plan provided by the user to complete the Turnkey migration.
+    -   **Phase 1 (Completed):** Fixed a critical blank screen bug on the frontend by correcting component naming () and fixing named/default export mismatches in .
+    -   **Phase 2 (In Progress):** Started implementing the Turnkey frontend flows by overwriting  with a new version containing UI placeholders for Passkey and Email OTP authentication. The next planned step was to add test signing buttons to the  component.
+-   Status: **IN PROGRESS**
 -   Agent Testing Done: N
--   Which testing method agent to use? manual testing by screenshot tool
+-   Which testing method agent to use? The user provided a strict End-to-End testing plan (Phase 5). The agent must follow this, using manual verification, screenshots, and log checks.
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Implement final text changes requested by the user. (Priority: P0)
-
-Issues Detail:
--   Issue 1:
-    -   **Description:** The user wants to replace Subclubs with Contract across the site and revert a title on the Learn More page to Ease Into Investing.
-    -   **Attempted fixes:** None.
-    -   **Next debug checklist:**
-        1.  Perform a global search for Subclubs within the  directory and replace all occurrences with Contract.
-        2.  Open  (or its child components).
-        3.  Find the text Long Term Capital Growth and change it back to Ease Into Investing.
-        4.  Run the frontend build process to ensure no errors were introduced.
-        5.  Restart the frontend service.
-    -   **Why fix this issue and what will be achieved with the fix?** To align the website's terminology and content with the user's exact specifications.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend.
-    -   **Blocked on other issue:** None.
+-   **Issue 1: Complete the Turnkey Integration (P0)**
+    -   **Description:** The primary task is to finish the Turnkey migration by following the remaining phases of the user's detailed plan.
+    -   **Status:** IN PROGRESS
+    -   **Next debug checklist:** The agent must proceed with the user's plan in strict order.
+        1.  **Phase 2:** Complete the frontend UI and logic for **Email OTP** and **Passkey** authentication in . This includes handling user input, calling the backend APIs, and managing loading/error states.
+        2.  **Phase 3:** Verify that the backend correctly stores only , , and  in Supabase upon wallet creation, with no sensitive data.
+        3.  **Phase 4:** Add Test Sign Message and Test Sign Transaction buttons to  and implement the logic to call the corresponding backend signing endpoints.
+        4.  **Phase 5:** Execute the full End-to-End test suite as specified by the user, covering new user onboarding (with both auth methods), data persistence, and signing functionality.
+        5.  **Phase 6:** Provide the final deliverables (logs, DB verification) as proof that the integration is complete and working correctly.
+    -   **Why fix this issue and what will be achieved with the fix?** This will complete the core architectural migration from a seed-phrase-based wallet to a modern, secure embedded wallet system, which is the user's main objective.
 
 **In progress Task List**:
--   There are no other tasks in progress.
+-   **Task 1: Complete Turnkey Frontend UI/UX Flow (P0)**
+    -   **Where to resume:** . The current file has a basic structure for Passkey and Email OTP. The agent needs to build out the full interactive flow: email input, OTP input, API calls to  and , and the passkey registration/login flow.
+    -   **What will be achieved with this?** A fully functional user onboarding experience for creating a wallet via Passkey or Email OTP.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both. Frontend for UI interaction, and Backend to ensure the API calls are successful.
+    -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
--   None. All user requests from the session have been addressed or are captured in the pending issue above.
+-   **Upcoming Tasks (Part of current work):**
+    -   P1: **Phase 3: Supabase Storage Verification:** After implementing wallet creation, query the database to ensure no secret key material is stored.
+    -   P1: **Phase 4: Implement Test Signing UI:** Add buttons and logic to  to test message and transaction signing.
+    -   P0: **Phase 5: End-to-End Testing:** Perform the complete test plan dictated by the user.
+-   **Future Tasks (Post-MVP):**
+    -   Add OAuth/social login options (e.g., Google, Apple).
+    -   Build a migration path for users with old seed-phrase wallets.
+    -   Integrate into a React Native application.
 
 **Completed work in this session**
--   **Architectural Refactor: 100% Non-Custodial Wallet (DONE)**
-    -   Removed all backend wallet provisioning logic (, Turnkey integration) from .
-    -   Implemented a full client-side wallet creation (), encryption (Web Crypto API), and management system in the frontend.
-    -   Created a mandatory  flow for new users.
--   **Feature Fix: Digital Asset Indices (DONE)**
-    -   Fixed candlestick generation in  to produce realistic OHLC patterns.
-    -   Ensured Index Scores are constant across all timeframes.
-    -   Correctly implemented equal-weighting for the Wave100 index.
-    -   Fixed volatility ordering (Anchor5 < Vibe20 < Wave100).
--   **UX/UI Enhancement (DONE)**
-    -   Redesigned the Home page () with a modern, clean aesthetic, new component sections, and a structured scroll-flow.
-    -   Added  and  components to the home page.
-    -   Created and fixed a  animation for the home page.
-    -   Updated social media links and copy in .
-    -   Fixed color contrast issues on various components (, ).
--   **Content & Auth Flow (DONE)**
-    -   Updated text content on  and  to match a user-provided whitepaper.
-    -   Updated hero section messaging to be less crypto-focused.
-    -   Fixed Sign Out and Delete Account functionality on .
-    -   Implemented an immediate redirect from registration to wallet setup.
+-   **Architectural Migration: Turnkey Integration (Started)**
+    -   Installed and configured the Turnkey Python SDK on the backend.
+    -   Created a new  and secure API endpoints in  for wallet management.
+    -   Created new React components (, ) and hook () for the frontend.
+    -   **Fixed a critical blank screen bug** by resolving component export/import mismatches, making the app renderable again.
+-   **Feature Fix: Digital Asset Indices**
+    -   Corrected the score calculation for the Wave100 index to ensure it falls within the millions.
+    -   Fixed constituent counts for all indices (Anchor5: 5, Vibe20: 20, Wave100: 100).
+    -   Modified the Wave100 selection criteria to be based on 24-hour price appreciation.
+-   **Numerous UI/UX and Content Updates**
+    -   Replaced text like Subclub and non-custodial across the site.
+    -   Fixed background animations by making section backgrounds semi-transparent.
+    -   Removed unwanted borders and outlines from cards and text elements.
+    -   Updated various links and marketing copy as per user requests.
 
 **Earlier issues found/mentioned but not fixed**
 -   None.
@@ -90,73 +105,79 @@ Issues Detail:
 
 
 **Key Technical Concepts**
--   **Backend:** FastAPI (Python)
--   **Frontend:** React, Vite, TailwindCSS, **ethers.js** (for client-side wallet generation)
--   **Database & Auth:** Supabase
--   **Client-Side Cryptography:** Using  to create wallets and the browser's  API (PBKDF2) to derive an encryption key from the user's password to securely store the encrypted seed phrase in .
+-   **Frontend:** React, Vite, TailwindCSS, **@turnkey/webauthn-stamper, @turnkey/http**
+-   **Backend:** FastAPI (Python), **turnkey-python-sdk**
+-   **Database & Auth:** Supabase (JWT Auth for API requests)
+-   **Wallet System:** **Turnkey Embedded Wallets** (TEE-based infrastructure)
+-   **Authentication:** **Passkeys (WebAuthn)** and **Email OTP**
 
 **key DB schema**
--   **profiles:**  (Schema unchanged, but  is now populated from the client).
+-   **profiles:**  (The  fields need to be populated by the new flow).
 
 **changes in tech stack**
--   **Turnkey API:** Completely removed.
--   **ethers.js:** Added to the frontend to handle all cryptographic wallet operations.
--   **Backend Logic:** Significantly simplified, removing all responsibilities related to wallet management and private keys.
+-   **DEPRECATED:**  for client-side wallet generation and management.
+-   **ADDED:** **Turnkey** for a full-stack, embedded wallet solution. This includes the  on the backend and  packages on the frontend.
 
 **All files of reference**
--   : Contains the fixed logic for the  endpoint.
--   : The completely overhauled home page.
--   : Page with content updated from whitepaper.
--   : The core of the new client-side wallet logic.
--   : The React context managing the wallet state.
--   : The dedicated page for the new user wallet creation flow.
+-   : Contains the new Turnkey API router and security logic.
+-   : The core service for communicating with the Turnkey API using the official SDK.
+-   : The primary UI for the new user onboarding flow. **(NEEDS IMPLEMENTATION)**
+-   : The component for managing an existing wallet. **(NEEDS TEST BUTTONS)**
+-   : The state management hook for the wallet.
+-   : The page hosting the setup component.
 
 **Areas that need refactoring**:
--   The old Supabase Edge functions might still exist in the filesystem () and should be deleted to prevent confusion, as all their logic has been removed or migrated.
+-   The old client-side wallet files (e.g., , the old  and  components) should be deleted to prevent confusion and code rot.
 
 **key api endpoints**
--   : Expects  query param. Returns sophisticated candlestick data.
--   : **DELETED**.
+-   : Starts the email OTP login flow.
+-   : Verifies an OTP code.
+-   : Creates a new Turnkey wallet for an authenticated user.
+-   : Signs an arbitrary message.
+-   : Signs an EVM transaction.
+-   : Retrieves a user's wallet details.
+-   : Returns data for the digital asset indices.
 
 **Critical Info for New Agent**
--   **NON-CUSTODIAL IS LAW:** The project's architecture has fundamentally changed. The backend has **zero** authority or capability to create, manage, or sign with user wallets. All wallet logic is, and must remain, on the client-side. Do not re-introduce any backend wallet functionality.
--   **Client-Side Wallet Security:** The wallet's encrypted seed phrase is stored in the browser's . The encryption key is derived from the user's password and a salt. This means the user's password is required to unlock the wallet on each new device/browser.
--   **UI/UX Focus:** The user has a strong preference for a clean, modern, and intuitive UI. Pay close attention to visual hierarchy, spacing, and user flow.
+-   **Follow the User's Plan:** Your top priority is to execute the remaining phases of the user's detailed plan for the Turnkey migration **in strict order**. Do not deviate.
+-   **Phase 1 is Complete:** The blank screen is fixed. You are starting on **Phase 2: Complete Frontend Flows**.
+-   **Phase 2 Focus:** Implement the full UI logic for both Passkey and Email OTP authentication in . This is not just a UI placeholder; it needs to be a fully interactive and functional component.
+-   **Test Rigorously:** The user has mandated a specific end-to-end testing procedure (Phase 5). You must perform these tests and provide proof of success before considering the task complete.
+-   **Security is Key:** The backend contains the Turnkey API keys. All signing operations *must* be gated by Supabase authentication and verify that the logged-in user owns the wallet they are trying to use. The initial code for this exists but must be confirmed via testing.
 
 **documents and test reports created in this job**
--   
--   
+-   None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Enhance the home page UX with a scroll-based flow, add Indices and FAQ preview sections, and fix the invisible background animations. (Status: **COMPLETED**)
-2.  **User:** Revert the structural redesign of the content update. Only update the words to match the whitepaper, not the layout. (Status: **COMPLETED**)
-3.  **User:** I apologize, please revert. (User acknowledging agent's mistake) (Status: **COMPLETED**)
-4.  **User:** Please update the Home & Learn More pages with the content from this whitepaper. (Status: Re-done and **COMPLETED**)
-5.  **User:** Add subtle, futuristic background animations to the home page. (Status: **COMPLETED**)
-6.  **User:** Change the hero section messaging to be less focused on crypto and more on financial empowerment. (Status: **COMPLETED**)
-7.  **User:** Fix multiple UI issues: remove fake stats, fix social links, change newsletter text, and fix color contrast problems. (Status: **COMPLETED**)
-8.  **User:** Enhance the UI of the home page to look more professional like sky.money/spark.fi, but keep all content. (Status: **COMPLETED**)
-9.  **User:** Fix the Delete Account button and add a Sign Out button above it. (Status: **COMPLETED**)
-10. **User:** Redirect users to wallet creation immediately after registration. (Status: **COMPLETED**)
-11. **User (LATEST/PENDING):** Replace Subclubs with Contract and revert a title on the Learn More page to Ease Into Investing. (Status: **PENDING**)
+1.  **User:** **(MAJOR REQUEST)** Provided a detailed feature request to migrate the entire wallet system from client-side  to Turnkey Embedded Wallets, specifying requirements for auth, backend, frontend, and Supabase.
+2.  **Agent:** Asked clarifying questions about credentials, email services, and mobile support for the Turnkey migration.
+3.  **User:** Provided Turnkey credentials and detailed answers, confirming the use of Turnkey's built-in email auth, a web-first approach, and no initial requirement for migrating old users.
+4.  **Agent:** Fetched the Turnkey integration playbook.
+5.  **Agent:** Started implementation, creating backend services, frontend components, and installing SDKs.
+6.  **User:** **(CRITICAL FEEDBACK)** The frontend is blank. Provided a very strict, multi-phase plan (Phase 0-6) to fix the blank screen, complete the Turnkey frontend flows (Passkey + Email OTP), verify Supabase storage, implement signing, and run end-to-end tests.
+7.  **Agent:** Acknowledged the plan and started with Phase 0, identifying the exact error logs related to component imports/exports.
+8.  **Agent:** Proceeded with Phase 1, fixing the component naming and export issues in the React wallet components.
+9.  **Agent:** Successfully fixed the blank screen and confirmed the homepage is rendering.
+10. **Agent:** Started Phase 2 by overwriting  with a new structure for the Passkey/Email OTP UI.
 
 **Project Health Check:**
--   **Broken:** None.
+-   **Broken:** The entire wallet system is non-functional during the migration. Users cannot create or manage wallets.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
 -   **Supabase:** Authentication and Database.
--   **CoinGecko:** Fetching cryptocurrency market data for the Indices feature.
--   **Turnkey:** **REMOVED**.
+-   **CoinGecko:** Used for the Digital Asset Indices feature.
+-   **Turnkey Embedded Wallets:** (In Progress) For passkey/email-based wallet creation and management.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO (Agent failed, manual testing was performed).
--   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None. Testing was done via ad-hoc  scripts.
--   **Known regressions:** None.
+-   **Testing agent used after significant changes:** No
+-   **Troubleshoot agent used after agent stuck in loop:** No
+-   **Test files created:** None.
+-   **Known regressions:** The entire wallet creation and management functionality is intentionally broken and being replaced.
 
 **Credentials to test flow:**
--   Credentials for Supabase and CoinGecko are located in .
+-   Credentials for Supabase and Turnkey are located in .
 
 **What agent forgot to execute**
--   The agent did not start implementing the user's very last request to replace Subclubs with Contract and revert a header title. This is the immediate next step.</analysis>
+-   The agent has not yet deleted the old, now-obsolete  based wallet files (e.g., ). This should be done after the Turnkey migration is complete to avoid confusion.
+-   The agent is in the middle of a detailed, user-provided plan. It has not forgotten steps, but has significant work remaining in Phases 2 through 6.</analysis>
