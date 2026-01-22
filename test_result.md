@@ -180,10 +180,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Crypto Indices API - Constant Scores"
-    - "Crypto Indices API - Equal Weight Wave100"
-    - "Crypto Indices API - Realistic Candlestick Generation"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
