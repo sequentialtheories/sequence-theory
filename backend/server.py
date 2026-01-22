@@ -863,14 +863,16 @@ class SignTransactionRequest(BaseModel):
     nonce: Optional[int] = None
     transaction_type: Optional[str] = "TRANSACTION_TYPE_ETHEREUM"
 
-class EmailAuthInitRequest(BaseModel):
+class EmailOtpInitRequest(BaseModel):
     email: str
-    target_public_key: str  # Client-generated public key
 
-class EmailAuthVerifyRequest(BaseModel):
-    activity_id: str
+class EmailOtpVerifyRequest(BaseModel):
+    email: str
     otp_code: str
-    target_sub_org_id: Optional[str] = None
+
+class PasskeyVerifyRequest(BaseModel):
+    credential_id: str
+    attestation: Optional[Dict[str, Any]] = None
 
 
 async def get_user_and_wallet(authorization: str) -> Tuple[Dict, Dict]:
