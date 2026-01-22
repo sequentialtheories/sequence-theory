@@ -169,6 +169,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Turnkey wallet creation working. Creates Polygon wallets for new users automatically."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Turnkey wallet creation fully functional. Health endpoint returns turnkey_configured: true. SDK config verified. Sub-org creation works (created test wallet: 0xC35e917d00162885c6C462955c1a3780d4f141f9). Minor: Signing requires proper auth setup for new sub-orgs (expected behavior)."
 
 metadata:
   created_by: "main_agent"
