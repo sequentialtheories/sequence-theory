@@ -173,6 +173,19 @@ backend:
         agent: "testing"
         comment: "✅ VERIFIED: Turnkey wallet creation fully functional. Health endpoint returns turnkey_configured: true. SDK config verified. Sub-org creation works (created test wallet: 0xC35e917d00162885c6C462955c1a3780d4f141f9). Minor: Signing requires proper auth setup for new sub-orgs (expected behavior)."
 
+frontend:
+  - task: "Turnkey Wallet Setup UI Flow"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/WalletSetup.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "New task added for testing Turnkey Wallet Setup flow. Need to verify homepage, auth page, and wallet setup UI components render correctly."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
