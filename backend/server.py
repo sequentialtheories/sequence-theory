@@ -8,6 +8,7 @@ import json
 import time
 import random
 import math
+import secrets
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any, Tuple
@@ -27,6 +28,16 @@ logger = logging.getLogger(__name__)
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://qldjhlnsphlixmzzrdwi.supabase.co')
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
+
+# ============================================================================
+# OTP VERIFICATION STORAGE (In-memory for simplicity)
+# ============================================================================
+# Format: { "user_id": { "otp": "123456", "expires": timestamp, "email": "..." } }
+otp_storage: Dict[str, Dict[str, Any]] = {}
+
+# Verified users storage (in-memory - persists until server restart)
+# In production, this should be stored in database
+verified_users: Dict[str, bool] = {}
 
 # ============================================================================
 # SECURITY NOTE: WALLET PROVISIONING HAS BEEN REMOVED
