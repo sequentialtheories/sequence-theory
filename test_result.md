@@ -198,6 +198,18 @@ frontend:
         agent: "testing"
         comment: "🎉 FINAL E2E TEST SUCCESS: Complete Turnkey Wallet Flow Working Perfectly! COMPREHENSIVE TEST RESULTS: ✅ AUTHENTICATION: Login successful with sequencetheoryinc@gmail.com / TestPassword123! (password reset worked) ✅ WALLET SETUP UI: 'Create Your Wallet' page loads correctly with user email display ✅ WALLET CREATION: 'Create My Wallet' button functional, shows proper loading state ✅ SUCCESS STATE: Transitions to 'Wallet Ready!' with ETH address 0x4E8f7E86a9A1220a6aF1EB517B8FAf60fa5f4CF0 ✅ UI ELEMENTS: All expected elements present - 'Secured by Turnkey' badge, 'Polygon Network' info, 'No Seed Phrase Required' security notice, PolygonScan link ✅ BACKEND INTEGRATION: Turnkey API working perfectly, wallet creation completes in seconds ✅ FRONTEND STATE MANAGEMENT: UI properly updates from creation to success state. TESTING CONFIDENCE: 100% - Complete E2E flow working as expected. The previous authentication issues have been resolved with the password reset."
 
+  - task: "NEW Turnkey Wallet Setup with Email OTP Verification Gate"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/wallet/TurnkeyWalletSetup.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "NEW TESTING TASK: Testing the NEW Turnkey Wallet Setup with Email OTP Verification Gate. This is a security-focused flow where users CANNOT create wallets without completing verification first. Key test areas: 1) Login with sequencetheoryinc@gmail.com / TestPassword123! 2) Navigate to /wallet-setup and verify 'Verify Your Identity' page 3) Test Email OTP flow - send code, receive dev mode code, verify 4) Ensure security gate works (no wallet without verification) 5) After verification, test wallet creation 6) Verify final 'Wallet Ready!' state with address. Backend has been restarted so verification status is reset. User's wallet has been cleared."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
