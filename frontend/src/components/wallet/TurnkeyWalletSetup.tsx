@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
@@ -18,41 +18,27 @@ import {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
 
-type WalletStep = 'loading' | 'create' | 'creating' | 'complete' | 'error';
-
 export function TurnkeyWalletSetup() {
   const { user, session } = useAuth();
-  const { state, createWallet, refreshWalletInfo } = useTurnkeyWallet();
+  const { state, refreshWalletInfo } = useTurnkeyWallet();
   
-  const [walletStep, setWalletStep] = useState<WalletStep>('loading');
-  const [error, setError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState('');
+  const [createdAddress, setCreatedAddress] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const hasInitialized = useRef(false);
 
-  // Check wallet status on mount
+  // Initial load check
   useEffect(() => {
-    const checkWalletStatus = async () => {
-      console.log('[TurnkeyWalletSetup] Checking wallet status...');
-      console.log('[TurnkeyWalletSetup] User:', user?.email);
-      console.log('[TurnkeyWalletSetup] Session:', !!session);
-      console.log('[TurnkeyWalletSetup] Wallet state:', state);
-      
-      if (state.isLoading) {
-        setWalletStep('loading');
-        return;
-      }
-      
-      if (state.hasWallet && state.address) {
-        console.log('[TurnkeyWalletSetup] User has wallet:', state.address);
-        setWalletStep('complete');
-      } else {
-        console.log('[TurnkeyWalletSetup] User needs to create wallet');
-        setWalletStep('create');
-      }
-    };
-    
-    checkWalletStatus();
-  }, [state, user, session]);
+    if (!hasInitialized.current && !state.isLoading) {
+      hasInitialized.current = true;
+      console.log('[TurnkeyWalletSetup] Initial state:', {
+        hasWallet: state.hasWallet,
+        address: state.address,
+        isLoading: state.isLoading
+      });
+    }
+  }, [state]);
 
   // Handle Wallet Creation
   const handleCreateWallet = async () => {
@@ -61,24 +47,14 @@ export function TurnkeyWalletSetup() {
       return;
     }
 
-    console.log('[TurnkeyWalletSetup] Creating wallet for user:', user.email);
-    console.log('[TurnkeyWalletSetup] User ID:', user.id);
+    console.log('[TurnkeyWalletSetup] Creating wallet for:', user.email);
     
     setIsCreating(true);
-    setWalletStep('creating');
     setError('');
 
     try {
-      // Call the backend to create wallet
       const url = `${BACKEND_URL}/api/turnkey/create-wallet`;
-      console.log('[TurnkeyWalletSetup] Calling:', url);
-      
-      const requestBody = {
-        email: user.email,
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-        user_id: user.id
-      };
-      console.log('[TurnkeyWalletSetup] Request body:', JSON.stringify(requestBody));
+      console.log('[TurnkeyWalletSetup] POST', url);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -86,54 +62,51 @@ export function TurnkeyWalletSetup() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({
+          email: user.email,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          user_id: user.id
+        })
       });
 
       console.log('[TurnkeyWalletSetup] Response status:', response.status);
       
       const data = await response.json();
-      console.log('[TurnkeyWalletSetup] Response data:', JSON.stringify(data));
+      console.log('[TurnkeyWalletSetup] Response:', JSON.stringify(data));
 
       if (!response.ok) {
         throw new Error(data.detail || data.error || 'Failed to create wallet');
       }
 
       if (data.success && data.wallet_address) {
-        console.log('[TurnkeyWalletSetup] SUCCESS! Wallet created:', data.wallet_address);
-        
-        // Refresh wallet info to update the hook state
-        await refreshWalletInfo();
-        
-        setWalletStep('complete');
+        console.log('[TurnkeyWalletSetup] SUCCESS! Address:', data.wallet_address);
+        setCreatedAddress(data.wallet_address);
+        // Also refresh hook state in background
+        refreshWalletInfo();
       } else {
         throw new Error(data.message || 'Wallet creation failed');
       }
     } catch (err) {
       console.error('[TurnkeyWalletSetup] Error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create wallet');
-      setWalletStep('error');
     } finally {
       setIsCreating(false);
     }
   };
 
-  // Retry after error
-  const handleRetry = () => {
-    setError('');
-    setWalletStep('create');
-  };
-
   // Copy address to clipboard
-  const handleCopyAddress = () => {
-    if (state.address) {
-      navigator.clipboard.writeText(state.address);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+  const handleCopyAddress = (address: string) => {
+    navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  // Loading state
-  if (walletStep === 'loading') {
+  // Get the display address (from creation or from hook state)
+  const displayAddress = createdAddress || state.address;
+  const showWallet = displayAddress && (createdAddress || state.hasWallet);
+
+  // Loading initial state
+  if (state.isLoading && !createdAddress && !isCreating) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <Card>
@@ -147,7 +120,7 @@ export function TurnkeyWalletSetup() {
   }
 
   // Creating state
-  if (walletStep === 'creating') {
+  if (isCreating) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <Card className="border-primary/20">
@@ -171,37 +144,8 @@ export function TurnkeyWalletSetup() {
     );
   }
 
-  // Error state
-  if (walletStep === 'error') {
-    return (
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        <Card className="border-destructive/20">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="h-8 w-8 text-destructive" />
-            </div>
-            <CardTitle className="text-xl">Wallet Creation Failed</CardTitle>
-            <CardDescription>
-              There was an error creating your wallet
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-            
-            <Button onClick={handleRetry} className="w-full">
-              Try Again
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Complete state - wallet exists
-  if (walletStep === 'complete' && state.address) {
+  // Wallet exists - show complete state
+  if (showWallet) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <Card className="border-primary/20">
@@ -219,12 +163,12 @@ export function TurnkeyWalletSetup() {
               <p className="text-sm text-muted-foreground mb-2">Your Wallet Address</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 text-sm font-mono bg-background p-2 rounded border break-all">
-                  {state.address}
+                  {displayAddress}
                 </code>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleCopyAddress}
+                  onClick={() => handleCopyAddress(displayAddress!)}
                 >
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
@@ -249,7 +193,7 @@ export function TurnkeyWalletSetup() {
             </div>
 
             <a
-              href={`https://polygonscan.com/address/${state.address}`}
+              href={`https://polygonscan.com/address/${displayAddress}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-sm text-primary hover:underline"
@@ -260,7 +204,6 @@ export function TurnkeyWalletSetup() {
           </CardContent>
         </Card>
 
-        {/* Security Notice */}
         <Alert className="mt-6 border-primary/20 bg-primary/5">
           <Shield className="h-4 w-4 text-primary" />
           <AlertTitle className="text-primary">No Seed Phrase Required</AlertTitle>
@@ -273,7 +216,7 @@ export function TurnkeyWalletSetup() {
     );
   }
 
-  // Create wallet state
+  // Create wallet state (default)
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <Card className="border-primary/20">
@@ -336,19 +279,10 @@ export function TurnkeyWalletSetup() {
             onClick={handleCreateWallet}
             className="w-full h-14"
             size="lg"
-            disabled={isCreating || !user || !session}
+            disabled={!user || !session}
           >
-            {isCreating ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Creating Wallet...
-              </>
-            ) : (
-              <>
-                <Wallet className="mr-2 h-5 w-5" />
-                Create My Wallet
-              </>
-            )}
+            <Wallet className="mr-2 h-5 w-5" />
+            Create My Wallet
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
