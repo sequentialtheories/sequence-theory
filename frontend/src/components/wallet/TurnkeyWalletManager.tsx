@@ -30,7 +30,7 @@ import {
   Loader2
 } from 'lucide-react';
 
-export const WalletManager: React.FC = () => {
+export const TurnkeyWalletManager: React.FC = () => {
   const { state, refreshWalletInfo } = useTurnkeyWallet();
   const [copied, setCopied] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -185,4 +185,4 @@ export const WalletManager: React.FC = () => {
   );
 };
 
-export default WalletManager;
+export default TurnkeyWalletManager;
