@@ -217,7 +217,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "NEW Turnkey Wallet Setup with Email OTP Verification Gate"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
