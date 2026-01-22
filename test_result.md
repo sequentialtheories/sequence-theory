@@ -134,11 +134,14 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Wave100 now uses equal weighting (100/num_tokens)%. Each constituent has ~1% weight. Verified meta.constituents shows equal weight values."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Wave100 uses perfect equal weighting with exactly 100 constituents at 1.0% each. Methodology shows 'momentum-ranked, equal-weighted' and meta.weighting='equal'. All constituents have identical 1% weight as required."
 
   - task: "Crypto Indices API - Realistic Candlestick Generation"
     implemented: true
