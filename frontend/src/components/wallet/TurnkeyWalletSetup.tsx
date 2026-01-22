@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

@@ -9,7 +9,7 @@
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/components/AuthProvider';
 import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
 import { TurnkeyWalletSetup } from '@/components/wallet/TurnkeyWalletSetup';
 import { Button } from '@/components/ui/button';
