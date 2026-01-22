@@ -847,6 +847,10 @@ async def sign_turnkey_transaction(
     """
     Sign an EVM transaction with the user's Turnkey wallet.
     
+    Accepts either:
+    1. Pre-encoded unsigned_transaction (RLP hex)
+    2. Transaction fields (to, value, data, etc.) - will be RLP-encoded
+    
     SECURITY:
     - Requires valid Supabase auth token
     - Only signs with wallet owned by authenticated user
@@ -864,12 +868,54 @@ async def sign_turnkey_transaction(
         if not sub_org_id or not wallet_address:
             raise HTTPException(status_code=400, detail="Wallet not properly configured")
         
+        # Build or use provided unsigned transaction
+        unsigned_tx = request.unsigned_transaction
+        
+        if not unsigned_tx and request.to:
+            # Build RLP-encoded unsigned transaction from fields
+            import rlp
+            
+            # Parse values
+            to_addr = bytes.fromhex(request.to[2:] if request.to.startswith('0x') else request.to) if request.to else b''
+            value = int(request.value or '0', 16) if request.value.startswith('0x') else int(request.value or '0')
+            data = bytes.fromhex(request.data[2:] if request.data.startswith('0x') else request.data) if request.data else b''
+            chain_id = request.chainId or 137
+            gas_limit = int(request.gasLimit or '21000', 16) if str(request.gasLimit).startswith('0x') else int(request.gasLimit or '21000')
+            nonce = request.nonce or 0
+            
+            # For EIP-1559 transactions (type 2) on Polygon
+            max_fee_per_gas = int(request.maxFeePerGas or '50000000000', 16) if request.maxFeePerGas and str(request.maxFeePerGas).startswith('0x') else int(request.maxFeePerGas or '50000000000')  # 50 gwei default
+            max_priority_fee_per_gas = int(request.maxPriorityFeePerGas or '30000000000', 16) if request.maxPriorityFeePerGas and str(request.maxPriorityFeePerGas).startswith('0x') else int(request.maxPriorityFeePerGas or '30000000000')  # 30 gwei default
+            
+            # EIP-1559 transaction structure (type 2)
+            # [chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data, accessList]
+            tx_fields = [
+                chain_id,
+                nonce,
+                max_priority_fee_per_gas,
+                max_fee_per_gas,
+                gas_limit,
+                to_addr,
+                value,
+                data,
+                []  # access list (empty for simple transactions)
+            ]
+            
+            # Encode as type 2 transaction: 0x02 || RLP([...])
+            rlp_encoded = rlp.encode(tx_fields)
+            unsigned_tx = '0x02' + rlp_encoded.hex()
+            
+            logger.info(f"Built unsigned tx: {unsigned_tx[:50]}...")
+        
+        if not unsigned_tx:
+            raise HTTPException(status_code=400, detail="Either unsigned_transaction or 'to' field required")
+        
         from turnkey_service import sign_transaction
         
         signed_data = await sign_transaction(
             sub_org_id=sub_org_id,
             wallet_address=wallet_address,
-            unsigned_transaction=request.unsigned_transaction,
+            unsigned_transaction=unsigned_tx,
             transaction_type=request.transaction_type
         )
         
