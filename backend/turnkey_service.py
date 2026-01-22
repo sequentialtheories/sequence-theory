@@ -24,6 +24,16 @@ from datetime import datetime
 
 from turnkey_http import TurnkeyClient
 from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+from turnkey_sdk_types.generated.types import (
+    CreateSubOrganizationBody,
+    v1RootUserParamsV4,
+    v1WalletParams,
+    v1WalletAccountParams,
+    EmailAuthBody,
+    GetActivityBody,
+    SignRawPayloadBody,
+    SignTransactionBody,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +48,7 @@ def get_timestamp_ms() -> str:
     return str(int(datetime.utcnow().timestamp() * 1000))
 
 
-def get_turnkey_client() -> TurnkeyClient:
+def get_turnkey_client(org_id: Optional[str] = None) -> TurnkeyClient:
     """
     Create and return a properly configured Turnkey client.
     Uses the official SDK with API key stamping.
@@ -52,7 +62,7 @@ def get_turnkey_client() -> TurnkeyClient:
     client = TurnkeyClient(
         base_url=TURNKEY_API_BASE_URL,
         stamper=stamper,
-        organization_id=TURNKEY_ORGANIZATION_ID
+        organization_id=org_id or TURNKEY_ORGANIZATION_ID
     )
     
     return client
@@ -65,7 +75,7 @@ async def verify_turnkey_config() -> bool:
     try:
         client = get_turnkey_client()
         response = client.get_whoami()
-        logger.info(f"Turnkey config verified. Org: {response}")
+        logger.info(f"Turnkey config verified. Org: {response.organizationName}")
         return True
     except Exception as e:
         logger.error(f"Turnkey config verification failed: {e}")
@@ -91,56 +101,62 @@ async def create_sub_organization_with_wallet(
     try:
         client = get_turnkey_client()
         
-        # Build root user config
-        root_user = {
-            "userName": user_name or user_email.split('@')[0],
-            "userEmail": user_email,
-            "apiKeys": [],
-            "authenticators": [],
-            "oauthProviders": []
-        }
+        # Build root user - using typed SDK objects
+        root_user = v1RootUserParamsV4(
+            userName=user_name or user_email.split('@')[0],
+            userEmail=user_email,
+            apiKeys=[],
+            authenticators=[],
+            oauthProviders=[]
+        )
         
-        # If passkey attestation provided, add it
-        if passkey_attestation:
-            root_user["authenticators"] = [{
-                "authenticatorName": f"Passkey - {user_email}",
-                "challenge": passkey_attestation.get("challenge", ""),
-                "attestation": passkey_attestation
-            }]
+        # Build wallet params
+        wallet_params = v1WalletParams(
+            walletName=f"Wallet for {user_email}",
+            accounts=[
+                v1WalletAccountParams(
+                    curve="CURVE_SECP256K1",
+                    pathFormat="PATH_FORMAT_BIP32",
+                    path="m/44'/60'/0'/0/0",
+                    addressFormat="ADDRESS_FORMAT_ETHEREUM"
+                )
+            ]
+        )
+        
+        # Create the request body
+        body = CreateSubOrganizationBody(
+            timestampMs=get_timestamp_ms(),
+            organizationId=TURNKEY_ORGANIZATION_ID,
+            subOrganizationName=f"User: {user_email}",
+            rootUsers=[root_user],
+            rootQuorumThreshold=1,
+            wallet=wallet_params
+        )
         
         # Create sub-organization with wallet
-        result = client.create_sub_organization(
-            organization_id=TURNKEY_ORGANIZATION_ID,
-            parameters={
-                "subOrganizationName": f"User: {user_email}",
-                "rootUsers": [root_user],
-                "wallet": {
-                    "walletName": f"Wallet for {user_email}",
-                    "accounts": [{
-                        "curve": "CURVE_SECP256K1",
-                        "pathFormat": "PATH_FORMAT_BIP32",
-                        "path": "m/44'/60'/0'/0/0",
-                        "addressFormat": "ADDRESS_FORMAT_ETHEREUM"
-                    }]
-                }
-            }
-        )
+        result = client.create_sub_organization(body)
         
         # Extract results from activity
         activity_result = result.activity.result
-        sub_org_result = activity_result.create_sub_organization_result_v7 or activity_result.create_sub_organization_result
+        
+        # Try different result versions
+        sub_org_result = None
+        if hasattr(activity_result, 'createSubOrganizationResultV7') and activity_result.createSubOrganizationResultV7:
+            sub_org_result = activity_result.createSubOrganizationResultV7
+        elif hasattr(activity_result, 'createSubOrganizationResult') and activity_result.createSubOrganizationResult:
+            sub_org_result = activity_result.createSubOrganizationResult
         
         if not sub_org_result:
-            raise Exception("No sub-organization result in response")
+            raise Exception(f"No sub-organization result in response. Activity result: {activity_result}")
         
-        sub_org_id = sub_org_result.sub_organization_id
+        sub_org_id = sub_org_result.subOrganizationId
         wallet_data = sub_org_result.wallet
-        wallet_id = wallet_data.wallet_id if wallet_data else ""
+        wallet_id = wallet_data.walletId if wallet_data else ""
         addresses = wallet_data.addresses if wallet_data else []
         eth_address = addresses[0] if addresses else ""
         
         # Get root user ID
-        root_users = sub_org_result.root_user_ids or []
+        root_users = sub_org_result.rootUserIds or []
         root_user_id = root_users[0] if root_users else ""
         
         logger.info(f"Created sub-org {sub_org_id} with wallet {wallet_id} for {user_email}")
