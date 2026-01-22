@@ -519,56 +519,121 @@ class CreateWalletRequest(BaseModel):
     email: str
     name: Optional[str] = None
     user_id: str  # Supabase auth user ID
+    passkey_attestation: Optional[Dict[str, Any]] = None
 
 class SignMessageRequest(BaseModel):
     message: str
-    encoding: Optional[str] = "PAYLOAD_ENCODING_TEXT_UTF8"
 
 class SignTransactionRequest(BaseModel):
-    to: str
-    value: str  # in wei
-    data: Optional[str] = "0x"
-    chainId: int = 137  # Polygon mainnet
-    gasLimit: Optional[str] = None
-    maxFeePerGas: Optional[str] = None
-    maxPriorityFeePerGas: Optional[str] = None
-    nonce: Optional[int] = None
+    unsigned_transaction: str  # RLP-encoded hex
+    transaction_type: Optional[str] = "TRANSACTION_TYPE_ETHEREUM"
 
-class EmailAuthRequest(BaseModel):
+class EmailAuthInitRequest(BaseModel):
     email: str
+    target_public_key: str  # Client-generated public key
+
+class EmailAuthVerifyRequest(BaseModel):
+    activity_id: str
+    otp_code: str
     target_sub_org_id: Optional[str] = None
 
-class WalletInfoRequest(BaseModel):
-    sub_org_id: str
-    wallet_id: str
+
+async def get_user_and_wallet(authorization: str) -> Tuple[Dict, Dict]:
+    """
+    SECURITY: Verify auth token and get user's wallet.
+    Ensures the user can only access their own wallet.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    token = authorization.replace("Bearer ", "")
+    
+    async with httpx.AsyncClient() as client:
+        # Verify Supabase token
+        user_response = await client.get(
+            f"{SUPABASE_URL}/auth/v1/user",
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {token}"
+            }
+        )
+        
+        if user_response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        user_data = user_response.json()
+        user_id = user_data.get("id")
+        
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid user")
+        
+        # Get user's wallet - CRITICAL: Only fetch wallet belonging to this user
+        wallet_response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/user_wallets",
+            params={"user_id": f"eq.{user_id}", "select": "*"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        
+        wallets = wallet_response.json() if wallet_response.status_code == 200 else []
+        
+        if not wallets:
+            return user_data, None
+        
+        wallet = wallets[0]
+        
+        # SECURITY: Verify wallet belongs to authenticated user
+        if wallet.get("user_id") != user_id:
+            logger.error(f"SECURITY: User {user_id} tried to access wallet belonging to {wallet.get('user_id')}")
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        return user_data, wallet
+
 
 @api_router.post("/turnkey/create-wallet")
-async def create_turnkey_wallet(request: CreateWalletRequest):
+async def create_turnkey_wallet(
+    request: CreateWalletRequest,
+    authorization: str = Header(None)
+):
     """
     Create a new Turnkey sub-organization and embedded wallet for a user.
     
-    This endpoint:
-    1. Creates a Turnkey sub-organization for the user
-    2. Creates an embedded wallet within that sub-org
-    3. Stores ONLY the sub_org_id, wallet_id, and eth_address in Supabase
-    
-    NEVER stores private keys or seed phrases.
+    SECURITY:
+    - Requires valid Supabase auth token
+    - User ID must match authenticated user
+    - Only stores sub_org_id, wallet_id, eth_address in Supabase
+    - NEVER stores private keys or seed phrases
     """
     try:
-        from turnkey_service import create_sub_organization_with_wallet
+        # Verify authentication
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing authorization")
         
-        # Create sub-org and wallet via Turnkey
-        sub_org_id, wallet_id, eth_address = await create_sub_organization_with_wallet(
-            user_email=request.email,
-            user_name=request.name or request.email.split('@')[0]
-        )
+        token = authorization.replace("Bearer ", "")
         
-        if not sub_org_id or not wallet_id or not eth_address:
-            raise HTTPException(status_code=500, detail="Failed to create wallet via Turnkey")
-        
-        # Store in Supabase user_wallets table
         async with httpx.AsyncClient() as client:
-            # First check if user already has a wallet
+            user_response = await client.get(
+                f"{SUPABASE_URL}/auth/v1/user",
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {token}"
+                }
+            )
+            
+            if user_response.status_code != 200:
+                raise HTTPException(status_code=401, detail="Invalid token")
+            
+            user_data = user_response.json()
+            auth_user_id = user_data.get("id")
+            
+            # SECURITY: Verify request user_id matches authenticated user
+            if request.user_id != auth_user_id:
+                logger.error(f"SECURITY: User {auth_user_id} tried to create wallet for {request.user_id}")
+                raise HTTPException(status_code=403, detail="Cannot create wallet for another user")
+            
+            # Check if user already has a wallet
             check_response = await client.get(
                 f"{SUPABASE_URL}/rest/v1/user_wallets",
                 params={"user_id": f"eq.{request.user_id}"},
@@ -582,16 +647,30 @@ async def create_turnkey_wallet(request: CreateWalletRequest):
             
             if existing_wallets:
                 raise HTTPException(status_code=400, detail="User already has a wallet")
-            
-            # Create wallet record
+        
+        from turnkey_service import create_sub_organization_with_wallet
+        
+        # Create sub-org and wallet via Turnkey
+        sub_org_id, wallet_id, eth_address, root_user_id = await create_sub_organization_with_wallet(
+            user_email=request.email,
+            user_name=request.name or request.email.split('@')[0],
+            passkey_attestation=request.passkey_attestation
+        )
+        
+        if not sub_org_id or not wallet_id or not eth_address:
+            raise HTTPException(status_code=500, detail="Failed to create wallet via Turnkey")
+        
+        # Store in Supabase
+        async with httpx.AsyncClient() as client:
             wallet_data = {
                 "user_id": request.user_id,
                 "wallet_address": eth_address,
                 "turnkey_sub_org_id": sub_org_id,
                 "turnkey_wallet_id": wallet_id,
+                "turnkey_user_id": root_user_id,
                 "provider": "turnkey",
                 "network": "polygon",
-                "created_via": "passkey_or_email",
+                "created_via": "passkey" if request.passkey_attestation else "email",
                 "provenance": "turnkey_embedded"
             }
             
@@ -608,10 +687,8 @@ async def create_turnkey_wallet(request: CreateWalletRequest):
             
             if create_response.status_code not in [200, 201]:
                 logger.error(f"Failed to store wallet in Supabase: {create_response.text}")
-                # Wallet was created in Turnkey but failed to store - return it anyway
-        
-        # Also update profiles table with eth_address
-        async with httpx.AsyncClient() as client:
+            
+            # Update profiles table
             await client.patch(
                 f"{SUPABASE_URL}/rest/v1/profiles",
                 params={"user_id": f"eq.{request.user_id}"},
@@ -622,6 +699,8 @@ async def create_turnkey_wallet(request: CreateWalletRequest):
                     "Content-Type": "application/json"
                 }
             )
+        
+        logger.info(f"Created Turnkey wallet for user {request.user_id}: {eth_address}")
         
         return {
             "success": True,
@@ -639,10 +718,9 @@ async def create_turnkey_wallet(request: CreateWalletRequest):
 
 
 @api_router.post("/turnkey/init-email-auth")
-async def init_turnkey_email_auth(request: EmailAuthRequest):
+async def init_turnkey_email_auth(request: EmailAuthInitRequest):
     """
     Initialize email OTP authentication via Turnkey's built-in email auth.
-    
     Sends an authentication email to the user.
     """
     try:
@@ -650,17 +728,42 @@ async def init_turnkey_email_auth(request: EmailAuthRequest):
         
         result = await init_email_auth(
             email=request.email,
-            target_sub_org_id=request.target_sub_org_id
+            target_public_key=request.target_public_key
         )
         
         return {
             "success": True,
             "message": "Authentication email sent",
-            "activity_id": result.get("activity", {}).get("id", "")
+            "activity_id": result.get("activity_id", "")
         }
         
     except Exception as e:
         logger.error(f"Error initiating email auth: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/turnkey/verify-email-otp")
+async def verify_turnkey_email_otp(request: EmailAuthVerifyRequest):
+    """
+    Verify email OTP code.
+    """
+    try:
+        from turnkey_service import complete_email_auth
+        
+        result = await complete_email_auth(
+            activity_id=request.activity_id,
+            otp_code=request.otp_code,
+            target_sub_org_id=request.target_sub_org_id
+        )
+        
+        return {
+            "success": True,
+            "verified": result.get("verified", False),
+            "activity_id": request.activity_id
+        }
+        
+    except Exception as e:
+        logger.error(f"Error verifying email OTP: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -672,68 +775,49 @@ async def sign_turnkey_message(
     """
     Sign a message with the user's Turnkey wallet.
     
-    Requires valid authentication. The user must own the wallet.
+    SECURITY:
+    - Requires valid Supabase auth token
+    - Only signs with wallet owned by authenticated user
+    - Never exposes private keys
     """
     try:
-        # Extract user ID from auth header (Supabase JWT)
-        if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing authorization")
+        user_data, wallet = await get_user_and_wallet(authorization)
         
-        token = authorization.replace("Bearer ", "")
+        if not wallet:
+            raise HTTPException(status_code=404, detail="No wallet found for user")
         
-        # Verify token and get user via Supabase
-        async with httpx.AsyncClient() as client:
-            user_response = await client.get(
-                f"{SUPABASE_URL}/auth/v1/user",
-                headers={
-                    "apikey": SUPABASE_SERVICE_KEY,
-                    "Authorization": f"Bearer {token}"
-                }
-            )
-            
-            if user_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid token")
-            
-            user_data = user_response.json()
-            user_id = user_data.get("id")
-            
-            # Get user's wallet from Supabase
-            wallet_response = await client.get(
-                f"{SUPABASE_URL}/rest/v1/user_wallets",
-                params={"user_id": f"eq.{user_id}", "select": "*"},
-                headers={
-                    "apikey": SUPABASE_SERVICE_KEY,
-                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
-                }
-            )
-            
-            wallets = wallet_response.json() if wallet_response.status_code == 200 else []
-            
-            if not wallets:
-                raise HTTPException(status_code=404, detail="No wallet found for user")
-            
-            wallet = wallets[0]
-            sub_org_id = wallet.get("turnkey_sub_org_id")
-            wallet_address = wallet.get("wallet_address")
-            
-            if not sub_org_id or not wallet_address:
-                raise HTTPException(status_code=400, detail="Wallet not properly configured")
+        sub_org_id = wallet.get("turnkey_sub_org_id")
+        wallet_address = wallet.get("wallet_address")
         
-        from turnkey_service import sign_message
+        if not sub_org_id or not wallet_address:
+            raise HTTPException(status_code=400, detail="Wallet not properly configured")
         
-        signature_data = await sign_message(
+        from turnkey_service import sign_raw_payload
+        import hashlib
+        
+        # Prepare message for signing (Ethereum personal_sign format)
+        message = request.message
+        prefix = f"\x19Ethereum Signed Message:\n{len(message)}"
+        prefixed_message = prefix + message
+        message_hash = hashlib.keccak_256(prefixed_message.encode()).hexdigest()
+        
+        signature_data = await sign_raw_payload(
             sub_org_id=sub_org_id,
             wallet_address=wallet_address,
-            message=request.message,
-            encoding=request.encoding
+            payload=message_hash,
+            encoding="PAYLOAD_ENCODING_HEXADECIMAL",
+            hash_function="HASH_FUNCTION_NO_OP"  # Already hashed
         )
+        
+        logger.info(f"Signed message for user {user_data.get('id')}")
         
         return {
             "success": True,
             "signature": signature_data.get("signature"),
             "r": signature_data.get("r"),
             "s": signature_data.get("s"),
-            "v": signature_data.get("v")
+            "v": signature_data.get("v"),
+            "signer": wallet_address
         }
         
     except HTTPException:
@@ -751,53 +835,79 @@ async def sign_turnkey_transaction(
     """
     Sign an EVM transaction with the user's Turnkey wallet.
     
-    Supports:
-    - ERC-20 transfers and approvals
-    - Smart contract interactions
-    - Native token transfers
-    
-    Returns the signed transaction ready for broadcast.
+    SECURITY:
+    - Requires valid Supabase auth token
+    - Only signs with wallet owned by authenticated user
+    - Supports ERC-20 transfers, approvals, and contract interactions
     """
     try:
-        # Extract user ID from auth header
-        if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing authorization")
+        user_data, wallet = await get_user_and_wallet(authorization)
         
-        token = authorization.replace("Bearer ", "")
+        if not wallet:
+            raise HTTPException(status_code=404, detail="No wallet found for user")
         
-        # Verify token and get user's wallet
-        async with httpx.AsyncClient() as client:
-            user_response = await client.get(
-                f"{SUPABASE_URL}/auth/v1/user",
-                headers={
-                    "apikey": SUPABASE_SERVICE_KEY,
-                    "Authorization": f"Bearer {token}"
-                }
-            )
-            
-            if user_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid token")
-            
-            user_data = user_response.json()
-            user_id = user_data.get("id")
-            
-            wallet_response = await client.get(
-                f"{SUPABASE_URL}/rest/v1/user_wallets",
-                params={"user_id": f"eq.{user_id}", "select": "*"},
-                headers={
-                    "apikey": SUPABASE_SERVICE_KEY,
-                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
-                }
-            )
-            
-            wallets = wallet_response.json() if wallet_response.status_code == 200 else []
-            
-            if not wallets:
-                raise HTTPException(status_code=404, detail="No wallet found for user")
-            
-            wallet = wallets[0]
-            sub_org_id = wallet.get("turnkey_sub_org_id")
-            wallet_address = wallet.get("wallet_address")
+        sub_org_id = wallet.get("turnkey_sub_org_id")
+        wallet_address = wallet.get("wallet_address")
+        
+        if not sub_org_id or not wallet_address:
+            raise HTTPException(status_code=400, detail="Wallet not properly configured")
+        
+        from turnkey_service import sign_transaction
+        
+        signed_data = await sign_transaction(
+            sub_org_id=sub_org_id,
+            wallet_address=wallet_address,
+            unsigned_transaction=request.unsigned_transaction,
+            transaction_type=request.transaction_type
+        )
+        
+        logger.info(f"Signed transaction for user {user_data.get('id')}")
+        
+        return {
+            "success": True,
+            "signedTransaction": signed_data.get("signedTransaction"),
+            "from": wallet_address
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error signing transaction: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/turnkey/wallet-info")
+async def get_turnkey_wallet_info(authorization: str = Header(None)):
+    """
+    Get the authenticated user's Turnkey wallet information.
+    
+    SECURITY: Only returns wallet info for the authenticated user.
+    """
+    try:
+        user_data, wallet = await get_user_and_wallet(authorization)
+        
+        if not wallet:
+            return {
+                "hasWallet": False,
+                "wallet": None
+            }
+        
+        return {
+            "hasWallet": True,
+            "wallet": {
+                "address": wallet.get("wallet_address"),
+                "network": wallet.get("network", "polygon"),
+                "provider": wallet.get("provider", "turnkey"),
+                "createdAt": wallet.get("created_at"),
+                "createdVia": wallet.get("created_via", "unknown")
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting wallet info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
         
         # Build unsigned transaction (RLP encoded)
         # This is a simplified version - in production, use proper RLP encoding
