@@ -229,3 +229,18 @@ agent_communication:
       • Signing: Minor issue - new sub-orgs need auth setup (expected behavior)
       
       ALL CRITICAL FUNCTIONALITY WORKING. Ready for production use.
+  - agent: "testing"
+    message: |
+      🎯 NEW TESTING TASK: Turnkey Wallet Setup UI Flow
+      
+      Testing the complete user journey for wallet setup:
+      1. Homepage verification (https://passkey-auth.preview.emergentagent.com)
+      2. Auth page UI (/auth) - signup form verification
+      3. Wallet setup page (/wallet-setup) - TurnkeyWalletSetup component
+      
+      Key UI elements to verify:
+      • "Create Your Wallet" title
+      • "Continue with Passkey" button
+      • "Continue with Email OTP" button  
+      • "No Seed Phrase Required" security notice
+      • Proper loading states and error handling
