@@ -1,15 +1,15 @@
 /**
- * Non-Custodial Wallet Components
+ * Wallet Components
  * 
  * SECURITY NOTICE:
- * All wallet functionality is 100% client-side.
+ * Wallet keys are managed by Turnkey's secure TEE infrastructure.
  * Sequence Theory has NO access to user private keys.
  */
 
-// Turnkey Wallet Components (new - recommended)
-export { default as TurnkeyWalletSetup } from './TurnkeyWalletSetup';
-export { default as TurnkeyWalletManager } from './TurnkeyWalletManager';
+// Turnkey Wallet Components
+export { TurnkeyWalletSetup } from './TurnkeyWalletSetup';
+export { TurnkeyWalletManager } from './TurnkeyWalletManager';
 
-// Legacy components (deprecated - will be removed)
+// Legacy components (deprecated)
 export { WalletSetup } from './WalletSetup';
 export { WalletManager } from './WalletManager';
