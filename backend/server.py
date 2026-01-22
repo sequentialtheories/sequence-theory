@@ -793,13 +793,15 @@ async def sign_turnkey_message(
             raise HTTPException(status_code=400, detail="Wallet not properly configured")
         
         from turnkey_service import sign_raw_payload
-        import hashlib
+        from Crypto.Hash import keccak
         
         # Prepare message for signing (Ethereum personal_sign format)
         message = request.message
         prefix = f"\x19Ethereum Signed Message:\n{len(message)}"
         prefixed_message = prefix + message
-        message_hash = hashlib.keccak_256(prefixed_message.encode()).hexdigest()
+        k = keccak.new(digest_bits=256)
+        k.update(prefixed_message.encode())
+        message_hash = k.hexdigest()
         
         signature_data = await sign_raw_payload(
             sub_org_id=sub_org_id,
