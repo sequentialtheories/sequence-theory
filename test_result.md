@@ -193,7 +193,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Turnkey Wallet Setup UI Flow"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
