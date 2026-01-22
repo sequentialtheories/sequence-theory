@@ -512,6 +512,177 @@ async def health():
     }
 
 # ============================================================================
+# USER PROFILE MANAGEMENT - Single Source of Truth
+# ============================================================================
+
+class EnsureProfileRequest(BaseModel):
+    """Request to ensure a profile exists for the authenticated user"""
+    name: Optional[str] = None
+
+
+async def ensure_profile_exists(user_id: str, email: str, name: Optional[str] = None) -> Dict:
+    """
+    Ensure a profile exists in the profiles table for the given user.
+    This keeps profiles as the single source of truth for user data.
+    
+    Returns the profile data.
+    """
+    async with httpx.AsyncClient() as client:
+        # Check if profile exists
+        response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            params={"user_id": f"eq.{user_id}", "select": "*"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        
+        profiles = response.json() if response.status_code == 200 else []
+        
+        if profiles:
+            # Profile exists, return it
+            return profiles[0]
+        
+        # Profile doesn't exist - create it
+        profile_data = {
+            "user_id": user_id,
+            "email": email,
+            "name": name or email.split('@')[0]
+        }
+        
+        response = await client.post(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            json=profile_data,
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                "Content-Type": "application/json",
+                "Prefer": "return=representation"
+            }
+        )
+        
+        if response.status_code in [200, 201]:
+            result = response.json()
+            logger.info(f"Created profile for user {user_id}: {email}")
+            return result[0] if isinstance(result, list) else result
+        else:
+            logger.error(f"Failed to create profile: {response.status_code} - {response.text}")
+            return None
+
+
+@api_router.post("/user/ensure-profile")
+async def ensure_user_profile(
+    request: EnsureProfileRequest,
+    authorization: str = Header(None)
+):
+    """
+    Ensure the authenticated user has a profile in the profiles table.
+    Called after login/signup to keep profiles table as single source of truth.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    token = authorization.replace("Bearer ", "")
+    
+    async with httpx.AsyncClient() as client:
+        # Verify token and get user
+        user_response = await client.get(
+            f"{SUPABASE_URL}/auth/v1/user",
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {token}"
+            }
+        )
+        
+        if user_response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user_data = user_response.json()
+        user_id = user_data.get("id")
+        email = user_data.get("email")
+        
+        if not user_id or not email:
+            raise HTTPException(status_code=400, detail="Invalid user data")
+        
+        # Use name from request, or from user metadata, or from email
+        name = request.name or user_data.get("user_metadata", {}).get("name") or email.split('@')[0]
+        
+        profile = await ensure_profile_exists(user_id, email, name)
+        
+        if not profile:
+            raise HTTPException(status_code=500, detail="Failed to ensure profile")
+        
+        return {
+            "success": True,
+            "profile": profile
+        }
+
+
+@api_router.get("/user/profile")
+async def get_user_profile(authorization: str = Header(None)):
+    """
+    Get the authenticated user's profile (single source of truth).
+    Also includes wallet info if available.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+    
+    token = authorization.replace("Bearer ", "")
+    
+    async with httpx.AsyncClient() as client:
+        # Verify token and get user
+        user_response = await client.get(
+            f"{SUPABASE_URL}/auth/v1/user",
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {token}"
+            }
+        )
+        
+        if user_response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user_data = user_response.json()
+        user_id = user_data.get("id")
+        email = user_data.get("email")
+        
+        # Get profile
+        profile_response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            params={"user_id": f"eq.{user_id}", "select": "*"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        
+        profiles = profile_response.json() if profile_response.status_code == 200 else []
+        profile = profiles[0] if profiles else None
+        
+        # Get wallet info
+        wallet_response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/user_wallets",
+            params={"user_id": f"eq.{user_id}", "select": "*"},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        
+        wallets = wallet_response.json() if wallet_response.status_code == 200 else []
+        wallet = wallets[0] if wallets else None
+        
+        return {
+            "user_id": user_id,
+            "email": email,
+            "profile": profile,
+            "wallet": wallet,
+            "has_profile": profile is not None,
+            "has_wallet": wallet is not None
+        }
+
+# ============================================================================
 # TURNKEY WALLET ENDPOINTS
 # ============================================================================
 
