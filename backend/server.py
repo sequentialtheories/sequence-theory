@@ -908,20 +908,6 @@ async def get_turnkey_wallet_info(authorization: str = Header(None)):
     except Exception as e:
         logger.error(f"Error getting wallet info: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-                "hasWallet": True,
-                "wallet": {
-                    "address": wallet.get("wallet_address"),
-                    "network": wallet.get("network", "polygon"),
-                    "provider": wallet.get("provider", "turnkey"),
-                    "createdAt": wallet.get("created_at")
-                }
-            }
-            
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting wallet info: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/crypto-indices")
 async def get_crypto_indices(request: IndicesRequest):
