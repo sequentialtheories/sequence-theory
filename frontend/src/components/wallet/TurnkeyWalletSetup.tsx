@@ -270,4 +270,4 @@ export const TurnkeyWalletSetup: React.FC = () => {
   );
 };
 
-export default WalletSetup;
+export default TurnkeyWalletSetup;
