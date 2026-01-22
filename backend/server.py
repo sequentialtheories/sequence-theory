@@ -1073,56 +1073,6 @@ async def get_turnkey_wallet_info(authorization: str = Header(None)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.post("/turnkey/init-email-auth")
-async def init_turnkey_email_auth(request: EmailAuthInitRequest):
-    """
-    Initialize email OTP authentication via Turnkey's built-in email auth.
-    Sends an authentication email to the user.
-    """
-    try:
-        from turnkey_service import init_email_auth
-        
-        result = await init_email_auth(
-            email=request.email,
-            target_public_key=request.target_public_key
-        )
-        
-        return {
-            "success": True,
-            "message": "Authentication email sent",
-            "activity_id": result.get("activity_id", "")
-        }
-        
-    except Exception as e:
-        logger.error(f"Error initiating email auth: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@api_router.post("/turnkey/verify-email-otp")
-async def verify_turnkey_email_otp(request: EmailAuthVerifyRequest):
-    """
-    Verify email OTP code.
-    """
-    try:
-        from turnkey_service import complete_email_auth
-        
-        result = await complete_email_auth(
-            activity_id=request.activity_id,
-            otp_code=request.otp_code,
-            target_sub_org_id=request.target_sub_org_id
-        )
-        
-        return {
-            "success": True,
-            "verified": result.get("verified", False),
-            "activity_id": request.activity_id
-        }
-        
-    except Exception as e:
-        logger.error(f"Error verifying email OTP: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @api_router.post("/turnkey/sign-message")
 async def sign_turnkey_message(
     request: SignMessageRequest,
