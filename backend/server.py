@@ -525,7 +525,17 @@ class SignMessageRequest(BaseModel):
     message: str
 
 class SignTransactionRequest(BaseModel):
-    unsigned_transaction: str  # RLP-encoded hex
+    # Option 1: Pre-encoded RLP transaction
+    unsigned_transaction: Optional[str] = None  # RLP-encoded hex
+    # Option 2: Transaction fields (will be RLP-encoded by backend)
+    to: Optional[str] = None
+    value: Optional[str] = "0"
+    data: Optional[str] = "0x"
+    chainId: Optional[int] = 137  # Polygon by default
+    gasLimit: Optional[str] = "21000"
+    maxFeePerGas: Optional[str] = None
+    maxPriorityFeePerGas: Optional[str] = None
+    nonce: Optional[int] = None
     transaction_type: Optional[str] = "TRANSACTION_TYPE_ETHEREUM"
 
 class EmailAuthInitRequest(BaseModel):
