@@ -7,8 +7,8 @@
  */
 
 // Turnkey Wallet Components (new - recommended)
-export { WalletSetup as TurnkeyWalletSetup } from './TurnkeyWalletSetup';
-export { WalletManager as TurnkeyWalletManager } from './TurnkeyWalletManager';
+export { default as TurnkeyWalletSetup } from './TurnkeyWalletSetup';
+export { default as TurnkeyWalletManager } from './TurnkeyWalletManager';
 
 // Legacy components (deprecated - will be removed)
 export { WalletSetup } from './WalletSetup';
