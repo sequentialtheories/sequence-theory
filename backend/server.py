@@ -991,7 +991,6 @@ async def create_turnkey_wallet(
                 "wallet_address": eth_address,
                 "turnkey_sub_org_id": sub_org_id,
                 "turnkey_wallet_id": wallet_id,
-                "turnkey_user_id": root_user_id,
                 "provider": "turnkey",
                 "network": "polygon",
                 "created_via": "passkey" if request.passkey_attestation else "email",
