@@ -11,7 +11,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
-import { TurnkeyWalletSetup } from '@/components/wallet/TurnkeyWalletSetup';
+import { TurnkeyWalletSetup } from '@/components/wallet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
