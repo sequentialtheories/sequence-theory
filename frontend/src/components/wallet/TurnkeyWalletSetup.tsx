@@ -24,7 +24,7 @@ import { Shield, Fingerprint, Mail, CheckCircle2, Loader2, Wallet, ExternalLink 
 
 type SetupStep = 'intro' | 'creating' | 'complete';
 
-export const WalletSetup: React.FC = () => {
+export const TurnkeyWalletSetup: React.FC = () => {
   const { user } = useAuth();
   const { state, createWallet } = useTurnkeyWallet();
   
