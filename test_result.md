@@ -149,11 +149,14 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Replaced simple candle generator with Geometric Brownian Motion (GBM) model. Volatility classes: low (0.15 annual), moderate (0.45 annual), high (0.85 annual). Verified all candles have unique OHLC values and correct volatility ordering."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Candlestick generation shows proper volatility differentiation. Anchor5 (low: 0.23%), Vibe20 (moderate: 0.98%), Wave100 (high: 1.70%) - correct ascending volatility order. All OHLC relationships valid, unique values per candle, no crashes."
 
   - task: "Wallet Provisioning API"
     implemented: true
