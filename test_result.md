@@ -176,9 +176,9 @@ backend:
 frontend:
   - task: "Turnkey Wallet Setup UI Flow"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/pages/WalletSetup.tsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
