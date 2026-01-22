@@ -1,17 +1,17 @@
 /**
- * WALLET SETUP PAGE
+ * WALLET SETUP PAGE (Turnkey Version)
  * 
  * Dedicated page for wallet creation after registration.
  * Users are redirected here immediately after signup.
  * 
- * SECURITY: 100% non-custodial - all operations happen client-side.
+ * SECURITY: Turnkey Embedded Wallets - keys managed in secure TEE
  */
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/components/AuthProvider';
-import { useWallet } from '@/contexts/WalletContext';
-import { WalletSetup } from '@/components/wallet/WalletSetup';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
+import { TurnkeyWalletSetup } from '@/components/wallet/TurnkeyWalletSetup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -19,7 +19,7 @@ import { Loader2, CheckCircle2, ArrowRight } from 'lucide-react';
 const WalletSetupPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { state } = useWallet();
+  const { state } = useTurnkeyWallet();
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -29,7 +29,7 @@ const WalletSetupPage: React.FC = () => {
   }, [user, authLoading, navigate]);
 
   // If wallet already exists, show completion and redirect option
-  if (state.hasWallet) {
+  if (state.hasWallet && state.address) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
         <Card className="w-full max-w-lg">
@@ -44,7 +44,7 @@ const WalletSetupPage: React.FC = () => {
               <div>
                 <h1 className="text-2xl font-bold mb-2">Wallet Ready!</h1>
                 <p className="text-muted-foreground">
-                  Your secure, non-custodial wallet has been set up.
+                  Your secure Turnkey wallet has been set up.
                 </p>
               </div>
 
@@ -70,7 +70,7 @@ const WalletSetupPage: React.FC = () => {
   }
 
   // Loading state
-  if (authLoading || !state.isInitialized) {
+  if (authLoading || state.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary">
         <div className="flex flex-col items-center gap-4">
@@ -88,10 +88,10 @@ const WalletSetupPage: React.FC = () => {
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold mb-2">One More Step!</h1>
           <p className="text-muted-foreground">
-            Set up your secure wallet to access all features.
+            Create your secure wallet to access all features.
           </p>
         </div>
-        <WalletSetup />
+        <TurnkeyWalletSetup />
       </div>
     </div>
   );
