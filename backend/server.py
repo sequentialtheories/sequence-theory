@@ -940,6 +940,7 @@ async def create_turnkey_wallet(
     SECURITY:
     - Requires valid Supabase auth token
     - User ID must match authenticated user
+    - REQUIRES EMAIL OTP OR PASSKEY VERIFICATION FIRST
     - Only stores sub_org_id, wallet_id, eth_address in Supabase
     - NEVER stores private keys or seed phrases
     """
@@ -969,6 +970,14 @@ async def create_turnkey_wallet(
             if request.user_id != auth_user_id:
                 logger.error(f"SECURITY: User {auth_user_id} tried to create wallet for {request.user_id}")
                 raise HTTPException(status_code=403, detail="Cannot create wallet for another user")
+            
+            # SECURITY: Check if user has completed verification
+            if auth_user_id not in verified_users or not verified_users[auth_user_id]:
+                logger.warning(f"User {auth_user_id} tried to create wallet without verification")
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Email OTP or Passkey verification required before creating wallet"
+                )
             
             # Check if user already has a wallet
             check_response = await client.get(
