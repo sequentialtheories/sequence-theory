@@ -266,7 +266,7 @@ agent_communication:
       🎯 NEW TESTING TASK: Turnkey Wallet Setup UI Flow
       
       Testing the complete user journey for wallet setup:
-      1. Homepage verification (https://passkey-auth.preview.emergentagent.com)
+      1. Homepage verification (https://pip-fix.preview.emergentagent.com)
       2. Auth page UI (/auth) - signup form verification
       3. Wallet setup page (/wallet-setup) - TurnkeyWalletSetup component
       
