@@ -1142,7 +1142,7 @@ async def init_email_otp(
         existing = otp_storage.get(user_id, {})
         
         # Check if locked
-        locked_until = existing.get("locked_until", 0)
+        locked_until = existing.get("locked_until") or 0
         if current_time < locked_until:
             wait_time = int(locked_until - current_time)
             raise HTTPException(
