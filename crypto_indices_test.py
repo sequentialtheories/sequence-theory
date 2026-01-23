@@ -17,7 +17,7 @@ import json
 from datetime import datetime
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://pip-fix.preview.emergentagent.com"
+BACKEND_URL = "https://turnkey-wallet-api.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class CryptoIndicesAPITester:
