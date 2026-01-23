@@ -1698,39 +1698,6 @@ async def sign_turnkey_transaction(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@api_router.get("/turnkey/wallet-info")
-async def get_turnkey_wallet_info(authorization: str = Header(None)):
-    """
-    Get the authenticated user's Turnkey wallet information.
-    
-    SECURITY: Only returns wallet info for the authenticated user.
-    """
-    try:
-        user_data, wallet = await get_user_and_wallet(authorization)
-        
-        if not wallet:
-            return {
-                "hasWallet": False,
-                "wallet": None
-            }
-        
-        return {
-            "hasWallet": True,
-            "wallet": {
-                "address": wallet.get("wallet_address"),
-                "network": wallet.get("network", "polygon"),
-                "provider": wallet.get("provider", "turnkey"),
-                "createdAt": wallet.get("created_at"),
-                "createdVia": wallet.get("created_via", "unknown")
-            }
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting wallet info: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @api_router.post("/crypto-indices")
 async def get_crypto_indices(request: IndicesRequest):
     """Get crypto indices with sophisticated market data"""
