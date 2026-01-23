@@ -1,1 +1,0 @@
-# Vendored Turnkey SDK packages
