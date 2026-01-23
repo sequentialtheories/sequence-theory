@@ -285,16 +285,18 @@ async def sign_transaction(
     try:
         client = get_turnkey_client(sub_org_id)
         
-        # Create request body
-        body = SignTransactionBody(
-            timestampMs=get_timestamp_ms(),
-            organizationId=sub_org_id,
+        # Create request using official SDK intent types
+        intent = SignTransactionIntentV2(
             signWith=wallet_address,
             unsignedTransaction=unsigned_transaction,
             type=transaction_type
         )
         
-        result = client.sign_transaction(body)
+        result = client.sign_transaction(
+            organization_id=sub_org_id,
+            timestamp_ms=get_timestamp_ms(),
+            parameters=intent
+        )
         
         activity_result = result.activity.result
         sign_result = activity_result.signTransactionResult
