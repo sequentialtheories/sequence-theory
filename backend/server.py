@@ -1317,9 +1317,7 @@ async def verify_email_otp(
         # Verify OTP via Turnkey
         logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}")
         
-        from turnkey_http import TurnkeyClient
-        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
-        from turnkey_sdk_types import OtpAuthIntent
+        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
@@ -1337,25 +1335,24 @@ async def verify_email_otp(
             organization_id=TURNKEY_ORGANIZATION_ID
         )
         
-        # Create verify request using official SDK intent types
-        verify_intent = OtpAuthIntent(
-            otpId=otp_id,
-            otpCode=request.otp_code
-        )
+        # Create verify request body using local client (dict format)
+        verify_body = {
+            "type": "ACTIVITY_TYPE_OTP_AUTH",
+            "timestampMs": str(int(time.time() * 1000)),
+            "organizationId": TURNKEY_ORGANIZATION_ID,
+            "parameters": {
+                "otpId": otp_id,
+                "otpCode": request.otp_code
+            }
+        }
         
         try:
-            result = client.otp_auth(
-                organization_id=TURNKEY_ORGANIZATION_ID,
-                timestamp_ms=str(int(time.time() * 1000)),
-                parameters=verify_intent
-            )
+            result = client.otp_auth(verify_body)
             
-            # Check if verification succeeded
-            activity_result = result.activity.result
-            verify_result = None
-            
-            if hasattr(activity_result, 'otpAuthResult') and activity_result.otpAuthResult:
-                verify_result = activity_result.otpAuthResult
+            # Check if verification succeeded (dict format)
+            activity = result.get("activity", {})
+            activity_result = activity.get("result", {})
+            verify_result = activity_result.get("otpAuthResult")
             
             if verify_result:
                 logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id}")
