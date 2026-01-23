@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTurnkeyWallet } from '@/hooks/useTurnkeyWallet';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
@@ -21,256 +22,64 @@ import {
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
 
-type VerificationMethod = 'select' | 'email' | 'passkey';
-type EmailStep = 'enter_email' | 'enter_otp' | 'verified';
+// Deterministic states for reliability
+type AppState = 
+  | 'LOADING'
+  | 'NOT_VERIFIED'
+  | 'VERIFYING_EMAIL_INIT'
+  | 'VERIFYING_EMAIL_OTP'
+  | 'VERIFYING_PASSKEY'
+  | 'VERIFIED_CREATING_WALLET'
+  | 'WALLET_READY'
+  | 'ERROR';
+
+// Parse error codes from backend
+function parseError(detail: string): { code: string; message: string } {
+  if (detail.includes(':')) {
+    const [code, ...rest] = detail.split(':');
+    return { code, message: rest.join(':') };
+  }
+  return { code: detail, message: getErrorMessage(detail) };
+}
+
+function getErrorMessage(code: string): string {
+  const messages: Record<string, string> = {
+    'NOT_VERIFIED': 'Please verify your identity first',
+    'INVALID_OTP': 'Incorrect verification code',
+    'OTP_EXPIRED': 'Code expired. Please request a new one.',
+    'OTP_NOT_FOUND': 'No code found. Please request a new one.',
+    'RATE_LIMITED': 'Too many requests. Please wait and try again.',
+    'INVALID_TOKEN': 'Session expired. Please log in again.',
+    'PASSKEY_FAILED': 'Passkey verification failed',
+    'INTERNAL_ERROR': 'Something went wrong. Please try again.',
+    'USER_MISMATCH': 'Authentication error. Please log in again.'
+  };
+  return messages[code] || code;
+}
 
 export function TurnkeyWalletSetup() {
+  const navigate = useNavigate();
   const { user, session } = useAuth();
-  const { state, refreshWalletInfo } = useTurnkeyWallet();
+  const { state: walletState, refreshWalletInfo } = useTurnkeyWallet();
   
-  // Verification state
-  const [isVerified, setIsVerified] = useState(false);
-  const [isCheckingVerification, setIsCheckingVerification] = useState(true);
-  const [verificationMethod, setVerificationMethod] = useState<VerificationMethod>('select');
-  const [emailStep, setEmailStep] = useState<EmailStep>('enter_email');
+  // Main state
+  const [appState, setAppState] = useState<AppState>('LOADING');
+  const [error, setError] = useState<{ code: string; message: string } | null>(null);
+  
+  // Email OTP state
   const [email, setEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
-  const [devOtp, setDevOtp] = useState<string | null>(null);
   
-  // Wallet creation state
-  const [isCreating, setIsCreating] = useState(false);
-  const [createdAddress, setCreatedAddress] = useState<string | null>(null);
-  
-  // UI state
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  // Wallet state
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  // Check verification status on mount
-  useEffect(() => {
-    const checkVerificationStatus = async () => {
-      if (!session?.access_token) {
-        setIsCheckingVerification(false);
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/turnkey/verification-status`, {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setIsVerified(data.verified);
-          console.log('[Verification] Status:', data.verified);
-        }
-      } catch (err) {
-        console.error('[Verification] Error checking status:', err);
-      } finally {
-        setIsCheckingVerification(false);
-      }
-    };
+  // Create wallet function
+  const createWallet = useCallback(async () => {
+    if (!user || !session?.access_token) return;
     
-    checkVerificationStatus();
-    
-    // Also set default email from user
-    if (user?.email) {
-      setEmail(user.email);
-    }
-  }, [session, user]);
-
-  // Send OTP
-  const handleSendOtp = async () => {
-    if (!email || !session?.access_token) {
-      setError('Please enter your email address');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      console.log('[OTP] Initiating email verification for:', email);
-      
-      const response = await fetch(`${BACKEND_URL}/api/turnkey/init-email-auth`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ email })
-      });
-
-      const data = await response.json();
-      console.log('[OTP] Response:', data);
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to send verification code');
-      }
-
-      // Store dev OTP if provided (for testing)
-      if (data.dev_otp) {
-        setDevOtp(data.dev_otp);
-        console.log('[OTP] Dev OTP:', data.dev_otp);
-      }
-      
-      setEmailStep('enter_otp');
-    } catch (err) {
-      console.error('[OTP] Error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to send verification code');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Verify OTP
-  const handleVerifyOtp = async () => {
-    if (!otpCode || otpCode.length !== 6 || !session?.access_token) {
-      setError('Please enter a valid 6-digit code');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      console.log('[OTP] Verifying code:', otpCode);
-      
-      const response = await fetch(`${BACKEND_URL}/api/turnkey/verify-email-otp`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ email, otp_code: otpCode })
-      });
-
-      const data = await response.json();
-      console.log('[OTP] Verify response:', data);
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Invalid verification code');
-      }
-
-      if (data.verified) {
-        setIsVerified(true);
-        setEmailStep('verified');
-        setDevOtp(null);
-      } else {
-        throw new Error('Verification failed');
-      }
-    } catch (err) {
-      console.error('[OTP] Verify error:', err);
-      setError(err instanceof Error ? err.message : 'Invalid verification code');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Passkey verification
-  const handlePasskeyVerify = async () => {
-    if (!session?.access_token) {
-      setError('Please log in first');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      // Check WebAuthn support
-      if (!window.PublicKeyCredential) {
-        throw new Error('Passkeys are not supported on this device/browser');
-      }
-
-      console.log('[Passkey] Starting WebAuthn ceremony...');
-
-      // Create credential options
-      const challenge = new Uint8Array(32);
-      crypto.getRandomValues(challenge);
-      
-      const createOptions: CredentialCreationOptions = {
-        publicKey: {
-          challenge,
-          rp: {
-            name: "Sequence Theory",
-            id: window.location.hostname
-          },
-          user: {
-            id: new TextEncoder().encode(user?.id || 'user'),
-            name: user?.email || 'user@example.com',
-            displayName: user?.email?.split('@')[0] || 'User'
-          },
-          pubKeyCredParams: [
-            { alg: -7, type: "public-key" },  // ES256
-            { alg: -257, type: "public-key" } // RS256
-          ],
-          authenticatorSelection: {
-            authenticatorAttachment: "platform",
-            userVerification: "required",
-            residentKey: "preferred"
-          },
-          timeout: 60000
-        }
-      };
-
-      // Create credential (this triggers biometric prompt)
-      const credential = await navigator.credentials.create(createOptions) as PublicKeyCredential;
-      
-      if (!credential) {
-        throw new Error('Failed to create passkey');
-      }
-
-      console.log('[Passkey] Credential created:', credential.id);
-
-      // Send to backend for verification
-      const response = await fetch(`${BACKEND_URL}/api/turnkey/verify-passkey`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ 
-          credential_id: credential.id 
-        })
-      });
-
-      const data = await response.json();
-      console.log('[Passkey] Verify response:', data);
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Passkey verification failed');
-      }
-
-      if (data.verified) {
-        setIsVerified(true);
-      }
-    } catch (err) {
-      console.error('[Passkey] Error:', err);
-      // Handle user cancellation gracefully
-      if (err instanceof Error && err.name === 'NotAllowedError') {
-        setError('Passkey creation was cancelled. Please try again or use Email verification.');
-      } else {
-        setError(err instanceof Error ? err.message : 'Passkey verification failed');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Create wallet (only after verification)
-  const handleCreateWallet = async () => {
-    if (!user || !session || !isVerified) {
-      setError('Please complete verification first');
-      return;
-    }
-
-    console.log('[Wallet] Creating wallet for:', user.email);
-    
-    setIsCreating(true);
-    setError('');
+    setAppState('VERIFIED_CREATING_WALLET');
+    setError(null);
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/turnkey/create-wallet`, {
@@ -287,49 +96,257 @@ export function TurnkeyWalletSetup() {
       });
 
       const data = await response.json();
-      console.log('[Wallet] Response:', data);
 
       if (!response.ok) {
-        throw new Error(data.detail || 'Failed to create wallet');
+        throw new Error(data.detail || 'INTERNAL_ERROR');
       }
 
       if (data.success && data.wallet_address) {
-        console.log('[Wallet] SUCCESS:', data.wallet_address);
-        setCreatedAddress(data.wallet_address);
+        setWalletAddress(data.wallet_address);
+        setAppState('WALLET_READY');
         refreshWalletInfo();
+        
+        // Auto-redirect to home after 3 seconds
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       } else {
-        throw new Error('Wallet creation failed');
+        throw new Error('INTERNAL_ERROR');
       }
     } catch (err) {
-      console.error('[Wallet] Error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create wallet');
-    } finally {
-      setIsCreating(false);
+      const msg = err instanceof Error ? err.message : 'INTERNAL_ERROR';
+      setError(parseError(msg));
+      setAppState('ERROR');
+    }
+  }, [user, session, navigate, refreshWalletInfo]);
+
+  // Check verification and wallet status on mount
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (!session?.access_token) {
+        setAppState('NOT_VERIFIED');
+        return;
+      }
+
+      try {
+        // Check wallet first
+        const walletRes = await fetch(`${BACKEND_URL}/api/turnkey/wallet-info`, {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
+        
+        if (walletRes.ok) {
+          const walletData = await walletRes.json();
+          if (walletData.hasWallet && walletData.wallet?.address) {
+            setWalletAddress(walletData.wallet.address);
+            setAppState('WALLET_READY');
+            return;
+          }
+        }
+
+        // Check verification status
+        const verifyRes = await fetch(`${BACKEND_URL}/api/turnkey/verification-status`, {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
+        
+        if (verifyRes.ok) {
+          const verifyData = await verifyRes.json();
+          if (verifyData.verified) {
+            // Auto-create wallet after verification
+            await createWallet();
+            return;
+          }
+        }
+
+        // Not verified
+        setAppState('NOT_VERIFIED');
+      } catch (err) {
+        console.error('[TurnkeyWalletSetup] Error checking status:', err);
+        setAppState('NOT_VERIFIED');
+      }
+    };
+
+    if (user?.email) {
+      setEmail(user.email);
+    }
+    
+    checkStatus();
+  }, [session, user, createWallet]);
+
+  // Send OTP
+  const handleSendOtp = async () => {
+    if (!email || !session?.access_token) return;
+
+    setAppState('VERIFYING_EMAIL_INIT');
+    setError(null);
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/turnkey/init-email-auth`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'INTERNAL_ERROR');
+      }
+
+      setAppState('VERIFYING_EMAIL_OTP');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'INTERNAL_ERROR';
+      setError(parseError(msg));
+      setAppState('ERROR');
+    }
+  };
+
+  // Verify OTP
+  const handleVerifyOtp = async () => {
+    if (!otpCode || otpCode.length !== 6 || !session?.access_token) return;
+
+    setError(null);
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/turnkey/verify-email-otp`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ email, otp_code: otpCode })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'INVALID_OTP');
+      }
+
+      if (data.verified) {
+        // Auto-create wallet
+        await createWallet();
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'INVALID_OTP';
+      const parsed = parseError(msg);
+      setError(parsed);
+      // Stay on OTP screen for retry unless rate limited
+      if (parsed.code !== 'RATE_LIMITED') {
+        setAppState('VERIFYING_EMAIL_OTP');
+      } else {
+        setAppState('ERROR');
+      }
+    }
+  };
+
+  // Passkey verification
+  const handlePasskeyVerify = async () => {
+    if (!session?.access_token) return;
+
+    setAppState('VERIFYING_PASSKEY');
+    setError(null);
+
+    try {
+      if (!window.PublicKeyCredential) {
+        throw new Error('PASSKEY_FAILED:Passkeys not supported on this device');
+      }
+
+      const challenge = new Uint8Array(32);
+      crypto.getRandomValues(challenge);
+      
+      const createOptions: CredentialCreationOptions = {
+        publicKey: {
+          challenge,
+          rp: {
+            name: "Sequence Theory",
+            id: window.location.hostname
+          },
+          user: {
+            id: new TextEncoder().encode(user?.id || 'user'),
+            name: user?.email || 'user@example.com',
+            displayName: user?.email?.split('@')[0] || 'User'
+          },
+          pubKeyCredParams: [
+            { alg: -7, type: "public-key" },
+            { alg: -257, type: "public-key" }
+          ],
+          authenticatorSelection: {
+            authenticatorAttachment: "platform",
+            userVerification: "required",
+            residentKey: "preferred"
+          },
+          timeout: 60000
+        }
+      };
+
+      const credential = await navigator.credentials.create(createOptions) as PublicKeyCredential;
+      
+      if (!credential) {
+        throw new Error('PASSKEY_FAILED:Failed to create passkey');
+      }
+
+      const response = await fetch(`${BACKEND_URL}/api/turnkey/verify-passkey`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ credential_id: credential.id })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'PASSKEY_FAILED');
+      }
+
+      if (data.verified) {
+        // Auto-create wallet
+        await createWallet();
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'PASSKEY_FAILED';
+      
+      // Handle user cancellation gracefully
+      if (err instanceof Error && err.name === 'NotAllowedError') {
+        setError({ code: 'PASSKEY_CANCELLED', message: 'Passkey cancelled. Use Email verification instead.' });
+      } else {
+        setError(parseError(msg));
+      }
+      setAppState('NOT_VERIFIED');
     }
   };
 
   // Copy address
-  const handleCopyAddress = (address: string) => {
-    navigator.clipboard.writeText(address);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyAddress = () => {
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   // Reset to method selection
   const handleBack = () => {
-    setVerificationMethod('select');
-    setEmailStep('enter_email');
+    setAppState('NOT_VERIFIED');
     setOtpCode('');
-    setError('');
-    setDevOtp(null);
+    setError(null);
   };
 
-  // Determine display address
-  const displayAddress = createdAddress || state.address;
-  const showWallet = displayAddress && (createdAddress || state.hasWallet);
+  // Retry from error
+  const handleRetry = () => {
+    setError(null);
+    setAppState('NOT_VERIFIED');
+    setOtpCode('');
+  };
 
-  // Loading initial state
-  if (isCheckingVerification || (state.isLoading && !createdAddress && !isCreating)) {
+  // RENDER STATES
+
+  // Loading
+  if (appState === 'LOADING') {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <Card>
@@ -342,8 +359,8 @@ export function TurnkeyWalletSetup() {
     );
   }
 
-  // Wallet exists - show complete state
-  if (showWallet) {
+  // Wallet Ready - Auto-redirecting
+  if (appState === 'WALLET_READY' && walletAddress) {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <Card className="border-primary/20">
@@ -353,7 +370,7 @@ export function TurnkeyWalletSetup() {
             </div>
             <CardTitle className="text-2xl">Wallet Ready!</CardTitle>
             <CardDescription>
-              Your Turnkey wallet is set up and ready to use
+              Redirecting to home in a moment...
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -361,9 +378,9 @@ export function TurnkeyWalletSetup() {
               <p className="text-sm text-muted-foreground mb-2">Your Wallet Address</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 text-sm font-mono bg-background p-2 rounded border break-all">
-                  {displayAddress}
+                  {walletAddress}
                 </code>
-                <Button variant="outline" size="sm" onClick={() => handleCopyAddress(displayAddress!)}>
+                <Button variant="outline" size="sm" onClick={handleCopyAddress}>
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
               </div>
@@ -387,7 +404,7 @@ export function TurnkeyWalletSetup() {
             </div>
 
             <a
-              href={`https://polygonscan.com/address/${displayAddress}`}
+              href={`https://polygonscan.com/address/${walletAddress}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-sm text-primary hover:underline"
@@ -395,23 +412,18 @@ export function TurnkeyWalletSetup() {
               View on PolygonScan
               <ExternalLink className="h-4 w-4" />
             </a>
+
+            <Button onClick={() => navigate('/')} className="w-full">
+              Go to Home
+            </Button>
           </CardContent>
         </Card>
-
-        <Alert className="mt-6 border-primary/20 bg-primary/5">
-          <Shield className="h-4 w-4 text-primary" />
-          <AlertTitle className="text-primary">No Seed Phrase Required</AlertTitle>
-          <AlertDescription className="text-muted-foreground">
-            Your private keys are secured in Turnkey's secure enclaves.
-            No seed phrases to manage or protect.
-          </AlertDescription>
-        </Alert>
       </div>
     );
   }
 
-  // Creating wallet state
-  if (isCreating) {
+  // Creating Wallet
+  if (appState === 'VERIFIED_CREATING_WALLET') {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <Card className="border-primary/20">
@@ -423,7 +435,7 @@ export function TurnkeyWalletSetup() {
             <div className="text-center space-y-2">
               <p className="font-semibold text-lg">Creating Your Secure Wallet</p>
               <p className="text-sm text-muted-foreground">
-                Setting up your Turnkey embedded wallet...
+                This will only take a moment...
               </p>
             </div>
           </CardContent>
@@ -432,57 +444,26 @@ export function TurnkeyWalletSetup() {
     );
   }
 
-  // User is verified - show wallet creation
-  if (isVerified) {
+  // Error State
+  if (appState === 'ERROR') {
     return (
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
-        <Card className="border-primary/20">
+      <div className="max-w-2xl mx-auto p-6">
+        <Card className="border-destructive/20">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle2 className="h-8 w-8 text-primary" />
+            <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+              <AlertCircle className="h-8 w-8 text-destructive" />
             </div>
-            <CardTitle className="text-2xl">Verification Complete</CardTitle>
-            <CardDescription>
-              You're ready to create your secure wallet
-            </CardDescription>
+            <CardTitle className="text-xl">Something Went Wrong</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{error.message}</AlertDescription>
               </Alert>
             )}
-
-            <div className="bg-muted/30 rounded-lg p-4">
-              <p className="text-sm text-muted-foreground mb-1">Creating wallet for</p>
-              <p className="font-medium">{user?.email}</p>
-            </div>
-
-            <div className="grid gap-3">
-              <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                <Shield className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm">Secure Enclaves</p>
-                  <p className="text-xs text-muted-foreground">
-                    Keys protected by Turnkey's secure infrastructure
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                <Wallet className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm">Polygon Network</p>
-                  <p className="text-xs text-muted-foreground">
-                    Fast, low-cost transactions
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <Button onClick={handleCreateWallet} className="w-full h-14" size="lg">
-              <Wallet className="mr-2 h-5 w-5" />
-              Create My Wallet
+            <Button onClick={handleRetry} className="w-full">
+              Try Again
             </Button>
           </CardContent>
         </Card>
@@ -490,72 +471,29 @@ export function TurnkeyWalletSetup() {
     );
   }
 
-  // VERIFICATION REQUIRED - Show Email/Passkey options
-  return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
-      {/* Method Selection */}
-      {verificationMethod === 'select' && (
+  // Verifying Passkey
+  if (appState === 'VERIFYING_PASSKEY') {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
         <Card className="border-primary/20">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mb-4">
-              <Shield className="h-8 w-8 text-primary-foreground" />
+          <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
+            <Fingerprint className="h-16 w-16 text-primary animate-pulse" />
+            <div className="text-center space-y-2">
+              <p className="font-semibold text-lg">Waiting for Passkey</p>
+              <p className="text-sm text-muted-foreground">
+                Complete the biometric verification on your device...
+              </p>
             </div>
-            <CardTitle className="text-2xl">Verify Your Identity</CardTitle>
-            <CardDescription>
-              Complete verification to create your secure wallet
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button 
-              onClick={() => { setVerificationMethod('passkey'); handlePasskeyVerify(); }}
-              className="w-full h-14"
-              size="lg"
-              disabled={isLoading}
-            >
-              {isLoading && verificationMethod === 'passkey' ? (
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              ) : (
-                <Fingerprint className="mr-2 h-5 w-5" />
-              )}
-              Continue with Passkey
-              <span className="ml-2 text-xs opacity-70">(Recommended)</span>
-            </Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">or</span>
-              </div>
-            </div>
-
-            <Button 
-              onClick={() => setVerificationMethod('email')}
-              variant="outline"
-              className="w-full h-14"
-              size="lg"
-            >
-              <Mail className="mr-2 h-5 w-5" />
-              Continue with Email OTP
-            </Button>
-
-            <p className="text-xs text-center text-muted-foreground pt-4">
-              Verification ensures only you can create and access your wallet.
-            </p>
           </CardContent>
         </Card>
-      )}
+      </div>
+    );
+  }
 
-      {/* Email OTP Flow */}
-      {verificationMethod === 'email' && (
+  // Email OTP Flow - Enter Code
+  if (appState === 'VERIFYING_EMAIL_OTP') {
+    return (
+      <div className="max-w-2xl mx-auto p-6 space-y-6">
         <Card className="border-primary/20">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -563,11 +501,9 @@ export function TurnkeyWalletSetup() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <CardTitle className="text-xl">Email Verification</CardTitle>
+                <CardTitle className="text-xl">Enter Verification Code</CardTitle>
                 <CardDescription>
-                  {emailStep === 'enter_email' && 'Enter your email to receive a verification code'}
-                  {emailStep === 'enter_otp' && 'Enter the 6-digit code sent to your email'}
-                  {emailStep === 'verified' && 'Email verified successfully!'}
+                  Check your email at {email}
                 </CardDescription>
               </div>
             </div>
@@ -576,97 +512,126 @@ export function TurnkeyWalletSetup() {
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{error.message}</AlertDescription>
               </Alert>
             )}
 
-            {emailStep === 'enter_email' && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email Address</label>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={isLoading}
-                  />
-                </div>
-                <Button 
-                  onClick={handleSendOtp}
-                  className="w-full"
-                  disabled={isLoading || !email}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    'Send Verification Code'
-                  )}
-                </Button>
-              </>
-            )}
+            <div className="space-y-2">
+              <Input
+                type="text"
+                placeholder="000000"
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                maxLength={6}
+                className="text-center text-2xl tracking-widest h-14"
+                autoFocus
+              />
+            </div>
 
-            {emailStep === 'enter_otp' && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Verification Code</label>
-                  <Input
-                    type="text"
-                    placeholder="000000"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    maxLength={6}
-                    className="text-center text-2xl tracking-widest"
-                    disabled={isLoading}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Check your email at {email}
-                  </p>
-                  {devOtp && (
-                    <Alert className="mt-2">
-                      <AlertDescription className="text-xs">
-                        <strong>Dev Mode:</strong> Your code is <code className="font-bold">{devOtp}</code>
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-                <Button 
-                  onClick={handleVerifyOtp}
-                  className="w-full"
-                  disabled={isLoading || otpCode.length !== 6}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Verifying...
-                    </>
-                  ) : (
-                    'Verify Code'
-                  )}
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full"
-                  onClick={() => { setEmailStep('enter_email'); setOtpCode(''); setDevOtp(null); }}
-                >
-                  Resend Code
-                </Button>
-              </>
-            )}
+            <Button 
+              onClick={handleVerifyOtp}
+              className="w-full"
+              disabled={otpCode.length !== 6}
+            >
+              Verify & Create Wallet
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              className="w-full"
+              onClick={() => { setOtpCode(''); setError(null); handleSendOtp(); }}
+            >
+              Resend Code
+            </Button>
           </CardContent>
         </Card>
-      )}
 
-      {/* Security Notice */}
+        <Alert className="border-primary/20 bg-primary/5">
+          <Shield className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-muted-foreground">
+            Your wallet will be created automatically after verification.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Email OTP Flow - Sending
+  if (appState === 'VERIFYING_EMAIL_INIT') {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <Card className="border-primary/20">
+          <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Sending verification code...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // NOT_VERIFIED - Method Selection (Default)
+  return (
+    <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <Card className="border-primary/20">
+        <CardHeader className="text-center">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center mb-4">
+            <Shield className="h-8 w-8 text-primary-foreground" />
+          </div>
+          <CardTitle className="text-2xl">Verify Your Identity</CardTitle>
+          <CardDescription>
+            Complete verification to create your secure wallet
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && (
+            <Alert variant={error.code === 'PASSKEY_CANCELLED' ? 'default' : 'destructive'}>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
+
+          <Button 
+            onClick={handlePasskeyVerify}
+            className="w-full h-14"
+            size="lg"
+          >
+            <Fingerprint className="mr-2 h-5 w-5" />
+            Continue with Passkey
+            <span className="ml-2 text-xs opacity-70">(Recommended)</span>
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          <Button 
+            onClick={handleSendOtp}
+            variant="outline"
+            className="w-full h-14"
+            size="lg"
+          >
+            <Mail className="mr-2 h-5 w-5" />
+            Continue with Email
+          </Button>
+
+          <p className="text-xs text-center text-muted-foreground pt-4">
+            Verification ensures only you can create and access your wallet.
+          </p>
+        </CardContent>
+      </Card>
+
       <Alert className="border-primary/20 bg-primary/5">
         <Shield className="h-4 w-4 text-primary" />
         <AlertTitle className="text-primary">No Seed Phrase Required</AlertTitle>
         <AlertDescription className="text-muted-foreground">
           Your wallet is secured by Turnkey's infrastructure using secure enclaves.
-          No seed phrases to write down or protect.
+          No seed phrases to manage.
         </AlertDescription>
       </Alert>
     </div>
