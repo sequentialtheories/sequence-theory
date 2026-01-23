@@ -19,7 +19,15 @@ import asyncio
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-app = FastAPI()
+# FastAPI app with docs accessible at /api/docs
+app = FastAPI(
+    title="Sequence Theory API",
+    description="Backend API for Sequence Theory - Turnkey Embedded Wallets",
+    version="1.0.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
+)
 api_router = APIRouter(prefix="/api")
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
