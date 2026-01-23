@@ -1299,7 +1299,7 @@ async def verify_passkey(
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing authorization")
+            raise HTTPException(status_code=401, detail="INVALID_TOKEN")
         
         token = authorization.replace("Bearer ", "")
         
@@ -1314,14 +1314,14 @@ async def verify_passkey(
             )
             
             if user_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid token")
+                raise HTTPException(status_code=401, detail="INVALID_TOKEN")
             
             user_data = user_response.json()
             user_id = user_data.get("id")
         
         # Verify passkey credential exists
         if not request.credential_id:
-            raise HTTPException(status_code=400, detail="Missing credential ID")
+            raise HTTPException(status_code=400, detail="PASSKEY_FAILED:Missing credential ID")
         
         # In a full implementation, we'd verify the attestation with WebAuthn
         # For now, having a credential_id from the browser is sufficient proof
@@ -1335,14 +1335,14 @@ async def verify_passkey(
         return {
             "success": True,
             "verified": True,
-            "message": "Passkey verified successfully. You can now create your wallet."
+            "message": "Passkey verified successfully."
         }
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error verifying passkey: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="INTERNAL_ERROR")
 
 
 @api_router.get("/turnkey/verification-status")
