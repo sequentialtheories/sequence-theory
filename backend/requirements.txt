@@ -28,6 +28,3 @@ cryptography>=42.0.0
 pycryptodome>=3.20.0
 rlp
 eth-account
-turnkey-sdk-types @ git+https://github.com/tkhq/python-sdk.git#subdirectory=packages/sdk-types
-turnkey-api-key-stamper @ git+https://github.com/tkhq/python-sdk.git#subdirectory=packages/api-key-stamper
-turnkey-http @ git+https://github.com/tkhq/python-sdk.git#subdirectory=packages/http
