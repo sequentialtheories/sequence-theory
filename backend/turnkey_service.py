@@ -2,7 +2,8 @@
 TURNKEY EMBEDDED WALLET SERVICE
 ================================
 
-Uses the official Turnkey Python SDK for proper API authentication.
+Uses a custom local Turnkey client implementation that requires
+only standard PyPI packages (cryptography, requests).
 
 Handles:
 - Sub-organization creation with embedded wallet
@@ -24,16 +25,11 @@ import logging
 from typing import Optional, Dict, Any, Tuple
 from datetime import datetime
 
-# Use official Turnkey Python SDK
-from turnkey_http import TurnkeyClient
-from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
-from turnkey_sdk_types import (
-    CreateSubOrganizationIntentV7,
-    RootUserParamsV4,
-    WalletParams,
-    WalletAccountParams,
-    SignRawPayloadIntentV2,
-    SignTransactionIntentV2,
+# Use local Turnkey client implementation (no external SDK required)
+from turnkey_client import (
+    TurnkeyClient,
+    ApiKeyStamper,
+    ApiKeyStamperConfig,
 )
 
 logger = logging.getLogger(__name__)
@@ -53,7 +49,7 @@ def get_timestamp_ms() -> str:
 def get_turnkey_client(org_id: Optional[str] = None) -> TurnkeyClient:
     """
     Create and return a properly configured Turnkey client.
-    Uses the official SDK with API key stamping.
+    Uses the local client with API key stamping.
     """
     config = ApiKeyStamperConfig(
         api_public_key=TURNKEY_API_PUBLIC_KEY,
@@ -77,7 +73,7 @@ async def verify_turnkey_config() -> bool:
     try:
         client = get_turnkey_client()
         response = client.get_whoami()
-        logger.info(f"Turnkey config verified. Org: {response.organizationName}")
+        logger.info(f"Turnkey config verified. Org: {response.get('organizationName', 'unknown')}")
         return True
     except Exception as e:
         logger.error(f"Turnkey config verification failed: {e}")
@@ -108,69 +104,63 @@ async def create_sub_organization_with_wallet(
     try:
         client = get_turnkey_client()
         
-        # Build root user - using typed SDK objects
-        root_user = RootUserParamsV4(
-            userName=user_name or user_email.split('@')[0],
-            userEmail=user_email,
-            apiKeys=[],
-            authenticators=[],
-            oauthProviders=[]
-        )
-        
-        # Build wallet params
-        wallet_params = WalletParams(
-            walletName=f"Wallet for {user_email}",
-            accounts=[
-                WalletAccountParams(
-                    curve="CURVE_SECP256K1",
-                    pathFormat="PATH_FORMAT_BIP32",
-                    path="m/44'/60'/0'/0/0",
-                    addressFormat="ADDRESS_FORMAT_ETHEREUM"
-                )
-            ]
-        )
-        
-        # Create the request body using official SDK types
-        intent = CreateSubOrganizationIntentV7(
-            subOrganizationName=f"User: {user_email}",
-            rootUsers=[root_user],
-            rootQuorumThreshold=1,
-            wallet=wallet_params
-        )
+        # Build the request body directly as a dict
+        body = {
+            "type": "ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": TURNKEY_ORGANIZATION_ID,
+            "parameters": {
+                "subOrganizationName": f"User: {user_email}",
+                "rootUsers": [{
+                    "userName": user_name or user_email.split('@')[0],
+                    "userEmail": user_email,
+                    "apiKeys": [],
+                    "authenticators": [],
+                    "oauthProviders": []
+                }],
+                "rootQuorumThreshold": 1,
+                "wallet": {
+                    "walletName": f"Wallet for {user_email}",
+                    "accounts": [{
+                        "curve": "CURVE_SECP256K1",
+                        "pathFormat": "PATH_FORMAT_BIP32",
+                        "path": "m/44'/60'/0'/0/0",
+                        "addressFormat": "ADDRESS_FORMAT_ETHEREUM"
+                    }]
+                }
+            }
+        }
         
         logger.info(f"[TURNKEY] Calling create_sub_organization...")
         
-        # Create sub-organization with wallet using official SDK
-        result = client.create_sub_organization(
-            organization_id=TURNKEY_ORGANIZATION_ID,
-            timestamp_ms=get_timestamp_ms(),
-            parameters=intent
-        )
-        
-        # Extract results from activity
-        activity_result = result.activity.result
+        # Create sub-organization with wallet
+        result = client.create_sub_organization(body)
         
         logger.info(f"[TURNKEY] Activity result received")
         
-        # Try different result versions (SDK uses camelCase)
-        sub_org_result = None
-        if hasattr(activity_result, 'createSubOrganizationResultV7') and activity_result.createSubOrganizationResultV7:
-            sub_org_result = activity_result.createSubOrganizationResultV7
-        elif hasattr(activity_result, 'createSubOrganizationResult') and activity_result.createSubOrganizationResult:
-            sub_org_result = activity_result.createSubOrganizationResult
+        # Extract results from activity response
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        
+        # Try different result versions
+        sub_org_result = (
+            activity_result.get("createSubOrganizationResultV7") or
+            activity_result.get("createSubOrganizationResult") or
+            {}
+        )
         
         if not sub_org_result:
-            logger.error(f"[TURNKEY] No sub-organization result in response. Activity: {activity_result}")
+            logger.error(f"[TURNKEY] No sub-organization result in response. Result: {result}")
             raise Exception(f"No sub-organization result in response")
         
-        sub_org_id = sub_org_result.subOrganizationId
-        wallet_data = sub_org_result.wallet
-        wallet_id = wallet_data.walletId if wallet_data else ""
-        addresses = wallet_data.addresses if wallet_data else []
+        sub_org_id = sub_org_result.get("subOrganizationId", "")
+        wallet_data = sub_org_result.get("wallet", {})
+        wallet_id = wallet_data.get("walletId", "")
+        addresses = wallet_data.get("addresses", [])
         eth_address = addresses[0] if addresses else ""
         
         # Get root user ID
-        root_users = sub_org_result.rootUserIds or []
+        root_users = sub_org_result.get("rootUserIds", [])
         root_user_id = root_users[0] if root_users else ""
         
         logger.info(f"[TURNKEY] SUCCESS - Created sub-org {sub_org_id}")
@@ -217,32 +207,34 @@ async def sign_raw_payload(
         # Create client for the sub-organization
         client = get_turnkey_client(sub_org_id)
         
-        # Create request using official SDK intent types
-        intent = SignRawPayloadIntentV2(
-            signWith=wallet_address,
-            payload=payload,
-            encoding=encoding,
-            hashFunction=hash_function
-        )
+        # Create request body
+        body = {
+            "type": "ACTIVITY_TYPE_SIGN_RAW_PAYLOAD_V2",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": sub_org_id,
+            "parameters": {
+                "signWith": wallet_address,
+                "payload": payload,
+                "encoding": encoding,
+                "hashFunction": hash_function
+            }
+        }
         
         logger.info(f"[TURNKEY] Calling sign_raw_payload...")
         
-        result = client.sign_raw_payload(
-            organization_id=sub_org_id,
-            timestamp_ms=get_timestamp_ms(),
-            parameters=intent
-        )
+        result = client.sign_raw_payload(body)
         
-        activity_result = result.activity.result
-        sign_result = activity_result.signRawPayloadResult
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        sign_result = activity_result.get("signRawPayloadResult", {})
         
         if not sign_result:
             logger.error(f"[TURNKEY] No signature result")
             raise Exception("No signature result")
         
-        r = sign_result.r or ""
-        s = sign_result.s or ""
-        v = sign_result.v or ""
+        r = sign_result.get("r", "")
+        s = sign_result.get("s", "")
+        v = sign_result.get("v", "")
         
         signature = f"0x{r}{s}{v}"
         
@@ -285,27 +277,29 @@ async def sign_transaction(
     try:
         client = get_turnkey_client(sub_org_id)
         
-        # Create request using official SDK intent types
-        intent = SignTransactionIntentV2(
-            signWith=wallet_address,
-            unsignedTransaction=unsigned_transaction,
-            type=transaction_type
-        )
+        # Create request body
+        body = {
+            "type": "ACTIVITY_TYPE_SIGN_TRANSACTION_V2",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": sub_org_id,
+            "parameters": {
+                "signWith": wallet_address,
+                "unsignedTransaction": unsigned_transaction,
+                "type": transaction_type
+            }
+        }
         
-        result = client.sign_transaction(
-            organization_id=sub_org_id,
-            timestamp_ms=get_timestamp_ms(),
-            parameters=intent
-        )
+        result = client.sign_transaction(body)
         
-        activity_result = result.activity.result
-        sign_result = activity_result.signTransactionResult
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        sign_result = activity_result.get("signTransactionResult", {})
         
         if not sign_result:
             raise Exception("No transaction signature result")
         
         return {
-            "signedTransaction": sign_result.signedTransaction or ""
+            "signedTransaction": sign_result.get("signedTransaction", "")
         }
         
     except Exception as e:
