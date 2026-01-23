@@ -24,17 +24,16 @@ import logging
 from typing import Optional, Dict, Any, Tuple
 from datetime import datetime
 
-# Use local Turnkey client implementation (no external SDK required)
-from turnkey_client import (
-    TurnkeyClient,
-    ApiKeyStamper,
-    ApiKeyStamperConfig,
-    CreateSubOrganizationBody,
-    v1RootUserParamsV4,
-    v1WalletParams,
-    v1WalletAccountParams,
-    SignRawPayloadBody,
-    SignTransactionBody,
+# Use official Turnkey Python SDK
+from turnkey_http import TurnkeyClient
+from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+from turnkey_sdk_types import (
+    CreateSubOrganizationIntentV7,
+    RootUserParamsV4,
+    WalletParams,
+    WalletAccountParams,
+    SignRawPayloadIntentV2,
+    SignTransactionIntentV2,
 )
 
 logger = logging.getLogger(__name__)
