@@ -1355,8 +1355,8 @@ async def verify_email_otp(
             activity_result = result.activity.result
             verify_result = None
             
-            if hasattr(activity_result, 'verifyOtpResult') and activity_result.verifyOtpResult:
-                verify_result = activity_result.verifyOtpResult
+            if hasattr(activity_result, 'otpAuthResult') and activity_result.otpAuthResult:
+                verify_result = activity_result.otpAuthResult
             
             if verify_result:
                 logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id}")
