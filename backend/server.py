@@ -1175,9 +1175,7 @@ async def init_email_otp(
         # Use Turnkey's native email OTP
         logger.info(f"[TURNKEY-OTP] Initiating email OTP for: {user_email}")
         
-        from turnkey_http import TurnkeyClient
-        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
-        from turnkey_sdk_types.generated.types import InitOtpAuthBody
+        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig, InitOtpAuthBody, VerifyOtpBody
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
@@ -1315,9 +1313,7 @@ async def verify_email_otp(
         # Verify OTP via Turnkey
         logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}")
         
-        from turnkey_http import TurnkeyClient
-        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
-        from turnkey_sdk_types.generated.types import VerifyOtpBody
+        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig, InitOtpAuthBody, VerifyOtpBody
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
