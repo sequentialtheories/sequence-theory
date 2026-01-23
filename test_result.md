@@ -448,3 +448,31 @@ agent_communication:
       • Frontend State Management: ✅ UI updates correctly after wallet creation
       
       TESTING CONFIDENCE: 100% - The complete Turnkey Wallet Setup flow is production-ready and working flawlessly. All previous issues have been resolved.
+  - agent: "testing"
+    message: |
+      🎯 NEW TESTING TASK: Email OTP Verification Gate Testing
+      
+      Testing the NEW Turnkey Wallet Setup with Email OTP Verification Gate flow:
+      
+      SECURITY FOCUS: Users CANNOT create wallets without completing verification first.
+      
+      TEST PLAN:
+      1. Login with sequencetheoryinc@gmail.com / TestPassword123!
+      2. Navigate to /wallet-setup - should show "Verify Your Identity" page
+      3. Test Email OTP flow:
+         - Click "Continue with Email OTP"
+         - Send verification code
+         - Look for "Dev Mode: Your code is XXXXXX" message
+         - Enter 6-digit code and verify
+      4. Verify security gate works (no wallet creation without verification)
+      5. After verification, test wallet creation
+      6. Verify final "Wallet Ready!" state with address
+      
+      KEY VERIFICATIONS:
+      • Security gate prevents wallet creation without verification
+      • Email OTP sends code (shown in dev mode)
+      • Verification flow works end-to-end
+      • UI transitions correctly after each step
+      • Final wallet creation works after verification
+      
+      NOTE: Backend has been restarted so verification status is reset. User's wallet has been cleared.
