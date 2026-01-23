@@ -1089,7 +1089,7 @@ async def create_turnkey_wallet(
 
 
 # ============================================================================
-# EMAIL OTP VERIFICATION ENDPOINTS
+# EMAIL OTP VERIFICATION ENDPOINTS (Production-Hardened)
 # ============================================================================
 
 @api_router.post("/turnkey/init-email-auth")
@@ -1098,12 +1098,12 @@ async def init_email_otp(
     authorization: str = Header(None)
 ):
     """
-    Initialize email OTP verification.
-    Sends a 6-digit code to the user's email via Supabase.
+    Initialize email OTP verification with rate limiting.
+    OTP is NEVER returned in response (even in dev mode for security).
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing authorization")
+            raise HTTPException(status_code=401, detail="INVALID_TOKEN")
         
         token = authorization.replace("Bearer ", "")
         
@@ -1118,7 +1118,7 @@ async def init_email_otp(
             )
             
             if user_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid token")
+                raise HTTPException(status_code=401, detail="INVALID_TOKEN")
             
             user_data = user_response.json()
             user_id = user_data.get("id")
@@ -1126,38 +1126,72 @@ async def init_email_otp(
             
             # Verify email matches
             if request.email.lower() != user_email.lower():
-                raise HTTPException(status_code=400, detail="Email does not match authenticated user")
+                raise HTTPException(status_code=400, detail="EMAIL_MISMATCH")
+        
+        current_time = time.time()
+        
+        # Check rate limiting
+        existing = otp_storage.get(user_id, {})
+        
+        # Check if locked
+        locked_until = existing.get("locked_until", 0)
+        if current_time < locked_until:
+            wait_time = int(locked_until - current_time)
+            raise HTTPException(
+                status_code=429, 
+                detail=f"RATE_LIMITED:Too many attempts. Try again in {wait_time} seconds."
+            )
+        
+        # Check send rate limit
+        last_sent = existing.get("last_sent_at", 0)
+        send_count = existing.get("send_count", 0)
+        
+        # Reset send count if outside rate window
+        if current_time - last_sent > OTP_RATE_WINDOW_SECONDS:
+            send_count = 0
+        
+        if send_count >= OTP_MAX_SENDS_PER_WINDOW:
+            raise HTTPException(
+                status_code=429, 
+                detail="RATE_LIMITED:Too many code requests. Please wait before requesting another."
+            )
         
         # Generate 6-digit OTP
         otp_code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
-        expires = time.time() + 600  # 10 minutes expiry
+        otp_hash = hash_otp(otp_code)
         
-        # Store OTP
+        # Store OTP (hashed)
         otp_storage[user_id] = {
-            "otp": otp_code,
-            "expires": expires,
-            "email": user_email
+            "otp_hash": otp_hash,
+            "expires": current_time + OTP_EXPIRY_SECONDS,
+            "email": user_email,
+            "attempts": 0,
+            "last_sent_at": current_time,
+            "send_count": send_count + 1,
+            "locked_until": None
         }
         
-        logger.info(f"[OTP] Generated OTP for user {user_id}: {otp_code}")
+        # Log OTP only in development (NEVER in production)
+        if not IS_PRODUCTION:
+            logger.info(f"[OTP-DEV] Code for {user_email}: {otp_code}")
+        else:
+            logger.info(f"[OTP] Verification code sent to {user_email}")
         
-        # In production, send via email service
-        # For now, we'll log it and also return it in dev mode for testing
-        # TODO: Integrate with Supabase email or SendGrid
+        # TODO: Send actual email in production via SendGrid/Supabase
+        # For now, the OTP is logged server-side in dev mode only
         
         return {
             "success": True,
             "message": f"Verification code sent to {user_email}",
-            "expires_in": 600,
-            # DEVELOPMENT ONLY - remove in production
-            "dev_otp": otp_code if os.environ.get("DEV_MODE", "true") == "true" else None
+            "expires_in": OTP_EXPIRY_SECONDS
+            # OTP is NEVER returned to frontend
         }
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error initiating email OTP: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="INTERNAL_ERROR")
 
 
 @api_router.post("/turnkey/verify-email-otp")
@@ -1166,8 +1200,92 @@ async def verify_email_otp(
     authorization: str = Header(None)
 ):
     """
-    Verify email OTP code.
-    On success, marks user as verified for wallet creation.
+    Verify email OTP code with attempt limiting.
+    Locks account after too many failed attempts.
+    """
+    try:
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="INVALID_TOKEN")
+        
+        token = authorization.replace("Bearer ", "")
+        
+        # Verify user
+        async with httpx.AsyncClient() as client:
+            user_response = await client.get(
+                f"{SUPABASE_URL}/auth/v1/user",
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {token}"
+                }
+            )
+            
+            if user_response.status_code != 200:
+                raise HTTPException(status_code=401, detail="INVALID_TOKEN")
+            
+            user_data = user_response.json()
+            user_id = user_data.get("id")
+        
+        current_time = time.time()
+        
+        # Check OTP storage
+        stored = otp_storage.get(user_id)
+        
+        if not stored:
+            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:No verification code found. Please request a new one.")
+        
+        # Check if locked
+        locked_until = stored.get("locked_until", 0)
+        if locked_until and current_time < locked_until:
+            wait_time = int(locked_until - current_time)
+            raise HTTPException(
+                status_code=429, 
+                detail=f"RATE_LIMITED:Account locked due to too many attempts. Try again in {wait_time} seconds."
+            )
+        
+        # Check expiry
+        if current_time > stored["expires"]:
+            del otp_storage[user_id]
+            raise HTTPException(status_code=400, detail="OTP_EXPIRED:Verification code expired. Please request a new one.")
+        
+        # Verify OTP hash
+        if not verify_otp_hash(request.otp_code, stored["otp_hash"]):
+            # Increment attempts
+            stored["attempts"] = stored.get("attempts", 0) + 1
+            
+            # Lock if too many attempts
+            if stored["attempts"] >= OTP_MAX_ATTEMPTS_PER_WINDOW:
+                stored["locked_until"] = current_time + OTP_LOCK_DURATION_SECONDS
+                logger.warning(f"[OTP] User {user_id} locked due to too many failed attempts")
+                raise HTTPException(
+                    status_code=429, 
+                    detail="RATE_LIMITED:Too many failed attempts. Account locked for 10 minutes."
+                )
+            
+            remaining = OTP_MAX_ATTEMPTS_PER_WINDOW - stored["attempts"]
+            raise HTTPException(
+                status_code=400, 
+                detail=f"INVALID_OTP:Incorrect code. {remaining} attempts remaining."
+            )
+        
+        # OTP verified - mark user as verified
+        verified_users[user_id] = True
+        
+        # Clean up OTP
+        del otp_storage[user_id]
+        
+        logger.info(f"[OTP] User {user_id} verified successfully")
+        
+        return {
+            "success": True,
+            "verified": True,
+            "message": "Email verified successfully."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error verifying email OTP: {e}")
+        raise HTTPException(status_code=500, detail="INTERNAL_ERROR")
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
