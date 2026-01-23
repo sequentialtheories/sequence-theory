@@ -967,13 +967,14 @@ async def create_turnkey_wallet(
     - Requires valid Supabase auth token
     - User ID must match authenticated user
     - REQUIRES EMAIL OTP OR PASSKEY VERIFICATION FIRST
+    - Prevents duplicate wallet creation
     - Only stores sub_org_id, wallet_id, eth_address in Supabase
     - NEVER stores private keys or seed phrases
     """
     try:
         # Verify authentication
         if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing authorization")
+            raise HTTPException(status_code=401, detail="INVALID_TOKEN")
         
         token = authorization.replace("Bearer ", "")
         
@@ -987,7 +988,7 @@ async def create_turnkey_wallet(
             )
             
             if user_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid token")
+                raise HTTPException(status_code=401, detail="INVALID_TOKEN")
             
             user_data = user_response.json()
             auth_user_id = user_data.get("id")
@@ -995,20 +996,17 @@ async def create_turnkey_wallet(
             # SECURITY: Verify request user_id matches authenticated user
             if request.user_id != auth_user_id:
                 logger.error(f"SECURITY: User {auth_user_id} tried to create wallet for {request.user_id}")
-                raise HTTPException(status_code=403, detail="Cannot create wallet for another user")
+                raise HTTPException(status_code=403, detail="USER_MISMATCH")
             
-            # SECURITY: Check if user has completed verification
+            # SECURITY: Server-enforced verification gate
             if auth_user_id not in verified_users or not verified_users[auth_user_id]:
                 logger.warning(f"User {auth_user_id} tried to create wallet without verification")
-                raise HTTPException(
-                    status_code=403, 
-                    detail="Email OTP or Passkey verification required before creating wallet"
-                )
+                raise HTTPException(status_code=403, detail="NOT_VERIFIED")
             
-            # Check if user already has a wallet
+            # Check if user already has a wallet (duplicate prevention)
             check_response = await client.get(
                 f"{SUPABASE_URL}/rest/v1/user_wallets",
-                params={"user_id": f"eq.{request.user_id}"},
+                params={"user_id": f"eq.{request.user_id}", "select": "*"},
                 headers={
                     "apikey": SUPABASE_SERVICE_KEY,
                     "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
@@ -1018,7 +1016,17 @@ async def create_turnkey_wallet(
             existing_wallets = check_response.json() if check_response.status_code == 200 else []
             
             if existing_wallets:
-                raise HTTPException(status_code=400, detail="User already has a wallet")
+                # Return existing wallet instead of creating new one
+                existing = existing_wallets[0]
+                logger.info(f"User {auth_user_id} already has wallet, returning existing")
+                return {
+                    "success": True,
+                    "wallet_address": existing.get("wallet_address"),
+                    "turnkey_sub_org_id": existing.get("turnkey_sub_org_id"),
+                    "turnkey_wallet_id": existing.get("turnkey_wallet_id"),
+                    "message": "Wallet already exists",
+                    "existing": True
+                }
         
         from turnkey_service import create_sub_organization_with_wallet
         
