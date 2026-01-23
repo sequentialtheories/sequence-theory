@@ -140,8 +140,12 @@ async def create_sub_organization_with_wallet(
         
         logger.info(f"[TURNKEY] Calling create_sub_organization...")
         
-        # Create sub-organization with wallet
-        result = client.create_sub_organization(body)
+        # Create sub-organization with wallet using official SDK
+        result = client.create_sub_organization(
+            organization_id=TURNKEY_ORGANIZATION_ID,
+            timestamp_ms=get_timestamp_ms(),
+            parameters=intent
+        )
         
         # Extract results from activity
         activity_result = result.activity.result
