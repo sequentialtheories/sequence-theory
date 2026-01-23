@@ -1286,61 +1286,6 @@ async def verify_email_otp(
     except Exception as e:
         logger.error(f"Error verifying email OTP: {e}")
         raise HTTPException(status_code=500, detail="INTERNAL_ERROR")
-    """
-    try:
-        if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing authorization")
-        
-        token = authorization.replace("Bearer ", "")
-        
-        # Verify user
-        async with httpx.AsyncClient() as client:
-            user_response = await client.get(
-                f"{SUPABASE_URL}/auth/v1/user",
-                headers={
-                    "apikey": SUPABASE_SERVICE_KEY,
-                    "Authorization": f"Bearer {token}"
-                }
-            )
-            
-            if user_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid token")
-            
-            user_data = user_response.json()
-            user_id = user_data.get("id")
-        
-        # Check OTP
-        stored = otp_storage.get(user_id)
-        
-        if not stored:
-            raise HTTPException(status_code=400, detail="No verification code found. Please request a new one.")
-        
-        if time.time() > stored["expires"]:
-            del otp_storage[user_id]
-            raise HTTPException(status_code=400, detail="Verification code expired. Please request a new one.")
-        
-        if stored["otp"] != request.otp_code:
-            raise HTTPException(status_code=400, detail="Invalid verification code")
-        
-        # OTP verified - mark user as verified
-        verified_users[user_id] = True
-        
-        # Clean up OTP
-        del otp_storage[user_id]
-        
-        logger.info(f"[OTP] User {user_id} verified successfully")
-        
-        return {
-            "success": True,
-            "verified": True,
-            "message": "Email verified successfully. You can now create your wallet."
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error verifying email OTP: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @api_router.post("/turnkey/verify-passkey")
