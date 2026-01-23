@@ -1097,7 +1097,7 @@ async def create_turnkey_wallet(
 
 
 # ============================================================================
-# EMAIL OTP VERIFICATION ENDPOINTS (Production-Hardened)
+# EMAIL OTP VERIFICATION ENDPOINTS - Using Turnkey's Built-in Email OTP
 # ============================================================================
 
 @api_router.post("/turnkey/init-email-auth")
@@ -1106,8 +1106,8 @@ async def init_email_otp(
     authorization: str = Header(None)
 ):
     """
-    Initialize email OTP verification with rate limiting.
-    OTP is NEVER returned in response (even in dev mode for security).
+    Initialize email OTP verification using Turnkey's native email OTP.
+    Turnkey sends the email directly - no external SMTP needed.
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1115,7 +1115,7 @@ async def init_email_otp(
         
         token = authorization.replace("Bearer ", "")
         
-        # Verify user
+        # Verify user via Supabase
         async with httpx.AsyncClient() as client:
             user_response = await client.get(
                 f"{SUPABASE_URL}/auth/v1/user",
@@ -1164,13 +1164,63 @@ async def init_email_otp(
                 detail="RATE_LIMITED:Too many code requests. Please wait before requesting another."
             )
         
-        # Generate 6-digit OTP
-        otp_code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
-        otp_hash = hash_otp(otp_code)
+        # Use Turnkey's native email OTP
+        logger.info(f"[TURNKEY-OTP] Initiating email OTP for: {user_email}")
         
-        # Store OTP (hashed)
+        from turnkey_http import TurnkeyClient
+        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+        from turnkey_sdk_types.generated.types import InitOtpAuthBody
+        
+        TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
+        TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
+        TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
+        
+        config = ApiKeyStamperConfig(
+            api_public_key=TURNKEY_API_PUBLIC_KEY,
+            api_private_key=TURNKEY_API_PRIVATE_KEY
+        )
+        stamper = ApiKeyStamper(config)
+        
+        client = TurnkeyClient(
+            base_url="https://api.turnkey.com",
+            stamper=stamper,
+            organization_id=TURNKEY_ORGANIZATION_ID
+        )
+        
+        # Create OTP request body - Turnkey sends the email automatically
+        otp_body = InitOtpAuthBody(
+            timestampMs=str(int(time.time() * 1000)),
+            organizationId=TURNKEY_ORGANIZATION_ID,
+            otpType="OTP_TYPE_EMAIL",
+            contact=user_email,
+            appName="Sequence Theory",
+            expirationSeconds="600",  # 10 minutes
+            otpLength=6
+        )
+        
+        logger.info(f"[TURNKEY-OTP] Calling init_otp_auth with otpType=OTP_TYPE_EMAIL, contact={user_email}, appName=Sequence Theory")
+        
+        # Call Turnkey to send the email OTP
+        result = client.init_otp_auth(otp_body)
+        
+        # Extract otpId from response
+        activity_result = result.activity.result
+        otp_auth_result = None
+        
+        if hasattr(activity_result, 'initOtpAuthResult') and activity_result.initOtpAuthResult:
+            otp_auth_result = activity_result.initOtpAuthResult
+        
+        if not otp_auth_result or not otp_auth_result.otpId:
+            logger.error(f"[TURNKEY-OTP] No otpId in response. Activity result: {activity_result}")
+            raise HTTPException(status_code=500, detail="TURNKEY_OTP_FAILED:Failed to initiate email verification")
+        
+        otp_id = otp_auth_result.otpId
+        
+        logger.info(f"[TURNKEY-OTP] SUCCESS - Email OTP sent to {user_email}, otpId: {otp_id}")
+        
+        # Store the otpId for verification (NOT the OTP code - Turnkey handles that)
         otp_storage[user_id] = {
-            "otp_hash": otp_hash,
+            "otp_id": otp_id,  # Turnkey's otpId
             "expires": current_time + OTP_EXPIRY_SECONDS,
             "email": user_email,
             "attempts": 0,
@@ -1179,27 +1229,19 @@ async def init_email_otp(
             "locked_until": None
         }
         
-        # Log OTP only in development (NEVER in production)
-        if not IS_PRODUCTION:
-            logger.info(f"[OTP-DEV] Code for {user_email}: {otp_code}")
-        else:
-            logger.info(f"[OTP] Verification code sent to {user_email}")
-        
-        # TODO: Send actual email in production via SendGrid/Supabase
-        # For now, the OTP is logged server-side in dev mode only
-        
         return {
             "success": True,
-            "message": f"Verification code sent to {user_email}",
+            "message": f"Verification code sent to {user_email}. Check your inbox (and spam/promotions folder).",
             "expires_in": OTP_EXPIRY_SECONDS
-            # OTP is NEVER returned to frontend
         }
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error initiating email OTP: {e}")
-        raise HTTPException(status_code=500, detail="INTERNAL_ERROR")
+        logger.error(f"[TURNKEY-OTP] Error initiating email OTP: {e}")
+        import traceback
+        logger.error(f"[TURNKEY-OTP] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"TURNKEY_OTP_FAILED:{str(e)}")
 
 
 @api_router.post("/turnkey/verify-email-otp")
