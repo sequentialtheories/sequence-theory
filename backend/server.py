@@ -1175,7 +1175,9 @@ async def init_email_otp(
         # Use Turnkey's native email OTP
         logger.info(f"[TURNKEY-OTP] Initiating email OTP for: {user_email}")
         
-        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig, InitOtpAuthBody, VerifyOtpBody
+        from turnkey_http import TurnkeyClient
+        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+        from turnkey_sdk_types import InitOtpAuthIntentV2
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
@@ -1193,21 +1195,24 @@ async def init_email_otp(
             organization_id=TURNKEY_ORGANIZATION_ID
         )
         
-        # Create OTP request body - Turnkey sends the email automatically
-        otp_body = InitOtpAuthBody(
-            timestampMs=str(int(time.time() * 1000)),
-            organizationId=TURNKEY_ORGANIZATION_ID,
+        # Create OTP request using official SDK intent types
+        otp_intent = InitOtpAuthIntentV2(
             otpType="OTP_TYPE_EMAIL",
             contact=user_email,
-            appName="Sequence Theory",
+            emailCustomization={
+                "appName": "Sequence Theory"
+            },
             expirationSeconds="600",  # 10 minutes
-            otpLength=6
         )
         
         logger.info(f"[TURNKEY-OTP] Calling init_otp_auth with otpType=OTP_TYPE_EMAIL, contact={user_email}, appName=Sequence Theory")
         
-        # Call Turnkey to send the email OTP
-        result = client.init_otp_auth(otp_body)
+        # Call Turnkey to send the email OTP using official SDK
+        result = client.init_otp_auth(
+            organization_id=TURNKEY_ORGANIZATION_ID,
+            timestamp_ms=str(int(time.time() * 1000)),
+            parameters=otp_intent
+        )
         
         # Extract otpId from response
         activity_result = result.activity.result
