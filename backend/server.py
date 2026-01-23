@@ -1205,16 +1205,19 @@ async def init_email_otp(
         
         # Extract otpId from response
         activity_result = result.activity.result
-        otp_auth_result = None
+        otp_id = None
         
-        if hasattr(activity_result, 'initOtpAuthResult') and activity_result.initOtpAuthResult:
-            otp_auth_result = activity_result.initOtpAuthResult
+        # Check both result versions
+        if hasattr(activity_result, 'initOtpAuthResultV2') and activity_result.initOtpAuthResultV2:
+            otp_id = activity_result.initOtpAuthResultV2.otpId
+            logger.info(f"[TURNKEY-OTP] Got otpId from initOtpAuthResultV2: {otp_id}")
+        elif hasattr(activity_result, 'initOtpAuthResult') and activity_result.initOtpAuthResult:
+            otp_id = activity_result.initOtpAuthResult.otpId
+            logger.info(f"[TURNKEY-OTP] Got otpId from initOtpAuthResult: {otp_id}")
         
-        if not otp_auth_result or not otp_auth_result.otpId:
+        if not otp_id:
             logger.error(f"[TURNKEY-OTP] No otpId in response. Activity result: {activity_result}")
             raise HTTPException(status_code=500, detail="TURNKEY_OTP_FAILED:Failed to initiate email verification")
-        
-        otp_id = otp_auth_result.otpId
         
         logger.info(f"[TURNKEY-OTP] SUCCESS - Email OTP sent to {user_email}, otpId: {otp_id}")
         
