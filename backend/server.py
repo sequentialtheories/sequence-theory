@@ -1318,7 +1318,9 @@ async def verify_email_otp(
         # Verify OTP via Turnkey
         logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}")
         
-        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig, InitOtpAuthBody, VerifyOtpBody
+        from turnkey_http import TurnkeyClient
+        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+        from turnkey_sdk_types import OtpAuthIntent
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
@@ -1336,16 +1338,18 @@ async def verify_email_otp(
             organization_id=TURNKEY_ORGANIZATION_ID
         )
         
-        # Create verify request
-        verify_body = VerifyOtpBody(
-            timestampMs=str(int(time.time() * 1000)),
-            organizationId=TURNKEY_ORGANIZATION_ID,
+        # Create verify request using official SDK intent types
+        verify_intent = OtpAuthIntent(
             otpId=otp_id,
             otpCode=request.otp_code
         )
         
         try:
-            result = client.verify_otp(verify_body)
+            result = client.otp_auth(
+                organization_id=TURNKEY_ORGANIZATION_ID,
+                timestamp_ms=str(int(time.time() * 1000)),
+                parameters=verify_intent
+            )
             
             # Check if verification succeeded
             activity_result = result.activity.result
