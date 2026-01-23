@@ -1175,9 +1175,9 @@ async def init_email_otp(
         # Use Turnkey's native email OTP
         logger.info(f"[TURNKEY-OTP] Initiating email OTP for: {user_email}")
         
-        from turnkey_http import TurnkeyClient
-        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
-        from turnkey_sdk_types.generated.types import InitOtpAuthBody
+        from vendor.turnkey_http import TurnkeyClient
+        from vendor.turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+        from vendor.turnkey_sdk_types.generated.types import InitOtpAuthBody
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
