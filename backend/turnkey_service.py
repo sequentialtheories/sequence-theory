@@ -24,9 +24,11 @@ import logging
 from typing import Optional, Dict, Any, Tuple
 from datetime import datetime
 
-from turnkey_http import TurnkeyClient
-from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
-from turnkey_sdk_types.generated.types import (
+# Use local Turnkey client implementation (no external SDK required)
+from turnkey_client import (
+    TurnkeyClient,
+    ApiKeyStamper,
+    ApiKeyStamperConfig,
     CreateSubOrganizationBody,
     v1RootUserParamsV4,
     v1WalletParams,
