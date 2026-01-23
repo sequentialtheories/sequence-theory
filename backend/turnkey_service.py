@@ -217,10 +217,8 @@ async def sign_raw_payload(
         # Create client for the sub-organization
         client = get_turnkey_client(sub_org_id)
         
-        # Create request body
-        body = SignRawPayloadBody(
-            timestampMs=get_timestamp_ms(),
-            organizationId=sub_org_id,
+        # Create request using official SDK intent types
+        intent = SignRawPayloadIntentV2(
             signWith=wallet_address,
             payload=payload,
             encoding=encoding,
@@ -229,7 +227,11 @@ async def sign_raw_payload(
         
         logger.info(f"[TURNKEY] Calling sign_raw_payload...")
         
-        result = client.sign_raw_payload(body)
+        result = client.sign_raw_payload(
+            organization_id=sub_org_id,
+            timestamp_ms=get_timestamp_ms(),
+            parameters=intent
+        )
         
         activity_result = result.activity.result
         sign_result = activity_result.signRawPayloadResult
