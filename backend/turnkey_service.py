@@ -109,7 +109,7 @@ async def create_sub_organization_with_wallet(
         client = get_turnkey_client()
         
         # Build root user - using typed SDK objects
-        root_user = v1RootUserParamsV4(
+        root_user = RootUserParamsV4(
             userName=user_name or user_email.split('@')[0],
             userEmail=user_email,
             apiKeys=[],
@@ -118,10 +118,10 @@ async def create_sub_organization_with_wallet(
         )
         
         # Build wallet params
-        wallet_params = v1WalletParams(
+        wallet_params = WalletParams(
             walletName=f"Wallet for {user_email}",
             accounts=[
-                v1WalletAccountParams(
+                WalletAccountParams(
                     curve="CURVE_SECP256K1",
                     pathFormat="PATH_FORMAT_BIP32",
                     path="m/44'/60'/0'/0/0",
@@ -130,10 +130,8 @@ async def create_sub_organization_with_wallet(
             ]
         )
         
-        # Create the request body
-        body = CreateSubOrganizationBody(
-            timestampMs=get_timestamp_ms(),
-            organizationId=TURNKEY_ORGANIZATION_ID,
+        # Create the request body using official SDK types
+        intent = CreateSubOrganizationIntentV7(
             subOrganizationName=f"User: {user_email}",
             rootUsers=[root_user],
             rootQuorumThreshold=1,
