@@ -516,6 +516,13 @@ export function TurnkeyWalletSetup() {
               </Alert>
             )}
 
+            <Alert>
+              <Mail className="h-4 w-4" />
+              <AlertDescription>
+                Don't see the email? Check your <strong>spam</strong> or <strong>promotions</strong> folder.
+              </AlertDescription>
+            </Alert>
+
             <div className="space-y-2">
               <Input
                 type="text"
