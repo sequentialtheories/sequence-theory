@@ -1250,8 +1250,8 @@ async def verify_email_otp(
     authorization: str = Header(None)
 ):
     """
-    Verify email OTP code with attempt limiting.
-    Locks account after too many failed attempts.
+    Verify email OTP code using Turnkey's verify_otp.
+    On success, marks user as verified for wallet creation.
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1259,7 +1259,7 @@ async def verify_email_otp(
         
         token = authorization.replace("Bearer ", "")
         
-        # Verify user
+        # Verify user via Supabase
         async with httpx.AsyncClient() as client:
             user_response = await client.get(
                 f"{SUPABASE_URL}/auth/v1/user",
@@ -1277,14 +1277,14 @@ async def verify_email_otp(
         
         current_time = time.time()
         
-        # Check OTP storage
+        # Check OTP storage for otpId
         stored = otp_storage.get(user_id)
         
         if not stored:
             raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:No verification code found. Please request a new one.")
         
         # Check if locked
-        locked_until = stored.get("locked_until", 0)
+        locked_until = stored.get("locked_until") or 0
         if locked_until and current_time < locked_until:
             wait_time = int(locked_until - current_time)
             raise HTTPException(
@@ -1297,44 +1297,101 @@ async def verify_email_otp(
             del otp_storage[user_id]
             raise HTTPException(status_code=400, detail="OTP_EXPIRED:Verification code expired. Please request a new one.")
         
-        # Verify OTP hash
-        if not verify_otp_hash(request.otp_code, stored["otp_hash"]):
+        otp_id = stored.get("otp_id")
+        if not otp_id:
+            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
+        
+        # Verify OTP via Turnkey
+        logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}")
+        
+        from turnkey_http import TurnkeyClient
+        from turnkey_api_key_stamper import ApiKeyStamper, ApiKeyStamperConfig
+        from turnkey_sdk_types.generated.types import VerifyOtpBody
+        
+        TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
+        TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
+        TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
+        
+        config = ApiKeyStamperConfig(
+            api_public_key=TURNKEY_API_PUBLIC_KEY,
+            api_private_key=TURNKEY_API_PRIVATE_KEY
+        )
+        stamper = ApiKeyStamper(config)
+        
+        client = TurnkeyClient(
+            base_url="https://api.turnkey.com",
+            stamper=stamper,
+            organization_id=TURNKEY_ORGANIZATION_ID
+        )
+        
+        # Create verify request
+        verify_body = VerifyOtpBody(
+            timestampMs=str(int(time.time() * 1000)),
+            organizationId=TURNKEY_ORGANIZATION_ID,
+            otpId=otp_id,
+            otpCode=request.otp_code
+        )
+        
+        try:
+            result = client.verify_otp(verify_body)
+            
+            # Check if verification succeeded
+            activity_result = result.activity.result
+            verify_result = None
+            
+            if hasattr(activity_result, 'verifyOtpResult') and activity_result.verifyOtpResult:
+                verify_result = activity_result.verifyOtpResult
+            
+            if verify_result:
+                logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id}")
+                
+                # OTP verified - mark user as verified
+                verified_users[user_id] = True
+                
+                # Clean up OTP
+                del otp_storage[user_id]
+                
+                return {
+                    "success": True,
+                    "verified": True,
+                    "message": "Email verified successfully."
+                }
+            else:
+                raise Exception("Verification result empty")
+                
+        except Exception as turnkey_error:
+            error_str = str(turnkey_error).lower()
+            logger.warning(f"[TURNKEY-OTP] Verification failed: {turnkey_error}")
+            
             # Increment attempts
             stored["attempts"] = stored.get("attempts", 0) + 1
             
             # Lock if too many attempts
             if stored["attempts"] >= OTP_MAX_ATTEMPTS_PER_WINDOW:
                 stored["locked_until"] = current_time + OTP_LOCK_DURATION_SECONDS
-                logger.warning(f"[OTP] User {user_id} locked due to too many failed attempts")
+                logger.warning(f"[TURNKEY-OTP] User {user_id} locked due to too many failed attempts")
                 raise HTTPException(
                     status_code=429, 
                     detail="RATE_LIMITED:Too many failed attempts. Account locked for 10 minutes."
                 )
             
             remaining = OTP_MAX_ATTEMPTS_PER_WINDOW - stored["attempts"]
-            raise HTTPException(
-                status_code=400, 
-                detail=f"INVALID_OTP:Incorrect code. {remaining} attempts remaining."
-            )
-        
-        # OTP verified - mark user as verified
-        verified_users[user_id] = True
-        
-        # Clean up OTP
-        del otp_storage[user_id]
-        
-        logger.info(f"[OTP] User {user_id} verified successfully")
-        
-        return {
-            "success": True,
-            "verified": True,
-            "message": "Email verified successfully."
-        }
+            
+            if "expired" in error_str:
+                del otp_storage[user_id]
+                raise HTTPException(status_code=400, detail="OTP_EXPIRED:Verification code expired. Please request a new one.")
+            else:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"INVALID_OTP:Incorrect code. {remaining} attempts remaining."
+                )
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error verifying email OTP: {e}")
+        logger.error(f"[TURNKEY-OTP] Error verifying OTP: {e}")
+        import traceback
+        logger.error(f"[TURNKEY-OTP] Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="INTERNAL_ERROR")
 
 
