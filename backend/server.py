@@ -9,6 +9,7 @@ import time
 import random
 import math
 import secrets
+import hashlib
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any, Tuple
@@ -29,29 +30,54 @@ SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://qldjhlnsphlixmzzrdwi.supa
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 COINGECKO_API_KEY = os.environ.get('COINGECKO_API_KEY', '')
 
+# Production mode check - OTP never returned in production
+IS_PRODUCTION = os.environ.get('ENV', '').lower() == 'production' or os.environ.get('DEBUG', 'true').lower() == 'false'
+
 # ============================================================================
-# OTP VERIFICATION STORAGE (In-memory for simplicity)
+# OTP VERIFICATION STORAGE (Production-hardened)
 # ============================================================================
-# Format: { "user_id": { "otp": "123456", "expires": timestamp, "email": "..." } }
+# Format: { 
+#   "user_id": { 
+#     "otp_hash": "<sha256 hash>",
+#     "expires": timestamp,
+#     "email": "...",
+#     "attempts": 0,
+#     "last_sent_at": timestamp,
+#     "send_count": 0,
+#     "locked_until": timestamp or None
+#   } 
+# }
 otp_storage: Dict[str, Dict[str, Any]] = {}
+
+# Rate limiting constants
+OTP_MAX_SENDS_PER_WINDOW = 3
+OTP_MAX_ATTEMPTS_PER_WINDOW = 5
+OTP_RATE_WINDOW_SECONDS = 600  # 10 minutes
+OTP_LOCK_DURATION_SECONDS = 600  # 10 minutes lock after too many attempts
+OTP_EXPIRY_SECONDS = 600  # 10 minutes OTP validity
+
+def hash_otp(otp: str) -> str:
+    """Hash OTP using SHA-256 for secure storage"""
+    return hashlib.sha256(otp.encode()).hexdigest()
+
+def verify_otp_hash(otp: str, stored_hash: str) -> bool:
+    """Verify OTP against stored hash"""
+    return hashlib.sha256(otp.encode()).hexdigest() == stored_hash
 
 # Verified users storage (in-memory - persists until server restart)
 # In production, this should be stored in database
 verified_users: Dict[str, bool] = {}
 
 # ============================================================================
-# SECURITY NOTE: WALLET PROVISIONING HAS BEEN REMOVED
+# SECURITY NOTE: TURNKEY EMBEDDED WALLETS
 # ============================================================================
 # 
-# This backend does NOT create, manage, or sign for user wallets.
-# All wallet functionality is 100% NON-CUSTODIAL and happens CLIENT-SIDE.
-# 
-# Sequence Theory has NO ACCESS to:
-# - User private keys
-# - User seed phrases
-# - Any signing authority
+# This backend manages Turnkey embedded wallets:
+# - Creates sub-organizations and wallets via Turnkey API
+# - NEVER stores private keys or seed phrases
+# - All signing happens in Turnkey's secure enclaves
+# - Only stores: turnkey_sub_org_id, turnkey_wallet_id, eth_address
 #
-# The backend only stores PUBLIC wallet addresses for identification.
 # ============================================================================
 
 # Cache
