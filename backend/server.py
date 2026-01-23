@@ -1765,10 +1765,35 @@ async def get_traditional_markets():
 
 app.include_router(api_router)
 
+# CORS Configuration for cross-origin requests
+# TVC (The Vault Club) calls these endpoints from a different domain
+ALLOWED_ORIGINS = [
+    "https://sequencetheoryinc.com",
+    "https://www.sequencetheoryinc.com",
+    "https://tvc.sequencetheoryinc.com",
+    "https://www.tvc.sequencetheoryinc.com",
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
+
+# Also allow Emergent preview domains
+import re
+def is_allowed_origin(origin: str) -> bool:
+    if not origin:
+        return False
+    # Check explicit list
+    if origin in ALLOWED_ORIGINS:
+        return True
+    # Allow any preview.emergentagent.com subdomain
+    if re.match(r'^https://[\w-]+\.preview\.emergentagent\.com$', origin):
+        return True
+    return False
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["*"],  # Allow all for now, will be restricted in production
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
