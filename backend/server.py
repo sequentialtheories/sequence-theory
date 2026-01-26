@@ -1468,6 +1468,7 @@ async def verify_passkey(
 async def get_verification_status(authorization: str = Header(None)):
     """
     Check if user has completed verification (Email OTP or Passkey).
+    TVC expects: { "isVerified": true/false, "method": "emailOtp" }
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1493,9 +1494,10 @@ async def get_verification_status(authorization: str = Header(None)):
         
         is_verified = verified_users.get(user_id, False)
         
+        # TVC expected response shape
         return {
-            "verified": is_verified,
-            "user_id": user_id
+            "isVerified": is_verified,
+            "method": "emailOtp" if is_verified else None
         }
         
     except HTTPException:
