@@ -1024,16 +1024,13 @@ async def create_turnkey_wallet(
             existing_wallets = check_response.json() if check_response.status_code == 200 else []
             
             if existing_wallets:
-                # Return existing wallet instead of creating new one
+                # Return existing wallet instead of creating new one (idempotent)
                 existing = existing_wallets[0]
                 logger.info(f"User {auth_user_id} already has wallet, returning existing")
+                # TVC expected response shape: { "walletAddress": "0x...", "walletId": "..." }
                 return {
-                    "success": True,
-                    "wallet_address": existing.get("wallet_address"),
-                    "turnkey_sub_org_id": existing.get("turnkey_sub_org_id"),
-                    "turnkey_wallet_id": existing.get("turnkey_wallet_id"),
-                    "message": "Wallet already exists",
-                    "existing": True
+                    "walletAddress": existing.get("wallet_address"),
+                    "walletId": existing.get("turnkey_wallet_id")
                 }
         
         from turnkey_service import create_sub_organization_with_wallet
@@ -1089,12 +1086,10 @@ async def create_turnkey_wallet(
         
         logger.info(f"Created Turnkey wallet for user {request.user_id}: {eth_address}")
         
+        # TVC expected response shape: { "walletAddress": "0x...", "walletId": "..." }
         return {
-            "success": True,
-            "wallet_address": eth_address,
-            "turnkey_sub_org_id": sub_org_id,
-            "turnkey_wallet_id": wallet_id,
-            "message": "Wallet created successfully via Turnkey"
+            "walletAddress": eth_address,
+            "walletId": wallet_id
         }
         
     except HTTPException:
