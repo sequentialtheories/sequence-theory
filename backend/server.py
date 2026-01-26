@@ -1511,25 +1511,21 @@ async def get_verification_status(authorization: str = Header(None)):
 async def get_turnkey_wallet_info(authorization: str = Header(None)):
     """
     Get wallet info for the authenticated user.
+    TVC expects: { "hasWallet": true, "walletAddress": "0x...", "walletId": "..." }
     """
     try:
         user_data, wallet = await get_user_and_wallet(authorization)
         
         if not wallet:
             return {
-                "hasWallet": False,
-                "wallet": None
+                "hasWallet": False
             }
         
+        # TVC expected response shape
         return {
             "hasWallet": True,
-            "wallet": {
-                "address": wallet.get("wallet_address"),
-                "network": wallet.get("network", "polygon"),
-                "provider": wallet.get("provider", "turnkey"),
-                "turnkey_sub_org_id": wallet.get("turnkey_sub_org_id"),
-                "turnkey_wallet_id": wallet.get("turnkey_wallet_id")
-            }
+            "walletAddress": wallet.get("wallet_address"),
+            "walletId": wallet.get("turnkey_wallet_id")
         }
         
     except HTTPException:
