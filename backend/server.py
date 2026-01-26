@@ -1557,20 +1557,74 @@ async def get_turnkey_wallet_info(authorization: str = Header(None)):
     """
     Get wallet info for the authenticated user.
     TVC expects: { "hasWallet": true, "walletAddress": "0x...", "walletId": "..." }
+    
+    Checks both user_wallets table AND profiles table for wallet data.
     """
     try:
-        user_data, wallet = await get_user_and_wallet(authorization)
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing authorization")
         
-        if not wallet:
-            return {
-                "hasWallet": False
-            }
+        token = authorization.replace("Bearer ", "")
         
-        # TVC expected response shape
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # Verify user
+            user_response = await client.get(
+                f"{SUPABASE_URL}/auth/v1/user",
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {token}"
+                }
+            )
+            
+            if user_response.status_code != 200:
+                raise HTTPException(status_code=401, detail="Invalid token")
+            
+            user_data = user_response.json()
+            user_id = user_data.get("id")
+            
+            # Check user_wallets table first
+            wallet_response = await client.get(
+                f"{SUPABASE_URL}/rest/v1/user_wallets",
+                params={"user_id": f"eq.{user_id}", "select": "*"},
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+                }
+            )
+            
+            if wallet_response.status_code == 200:
+                wallets = wallet_response.json()
+                if wallets and len(wallets) > 0:
+                    wallet = wallets[0]
+                    return {
+                        "hasWallet": True,
+                        "walletAddress": wallet.get("wallet_address"),
+                        "walletId": wallet.get("turnkey_wallet_id")
+                    }
+            
+            # Fallback: Check profiles table
+            profile_response = await client.get(
+                f"{SUPABASE_URL}/rest/v1/profiles",
+                params={"user_id": f"eq.{user_id}", "select": "eth_address,turnkey_wallet_id"},
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+                }
+            )
+            
+            if profile_response.status_code == 200:
+                profiles = profile_response.json()
+                if profiles and len(profiles) > 0:
+                    profile = profiles[0]
+                    if profile.get("eth_address") and profile.get("turnkey_wallet_id"):
+                        return {
+                            "hasWallet": True,
+                            "walletAddress": profile.get("eth_address"),
+                            "walletId": profile.get("turnkey_wallet_id")
+                        }
+        
         return {
-            "hasWallet": True,
-            "walletAddress": wallet.get("wallet_address"),
-            "walletId": wallet.get("turnkey_wallet_id")
+            "hasWallet": False
         }
         
     except HTTPException:
