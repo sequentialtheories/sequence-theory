@@ -1362,10 +1362,9 @@ async def verify_email_otp(
                 # Clean up OTP
                 del otp_storage[user_id]
                 
+                # TVC expected response shape: { "isVerified": true }
                 return {
-                    "success": True,
-                    "verified": True,
-                    "message": "Email verified successfully."
+                    "isVerified": True
                 }
             else:
                 raise Exception("Verification result empty")
