@@ -1242,10 +1242,9 @@ async def init_email_otp(
             "locked_until": None
         }
         
+        # TVC expected response shape: { "ok": true }
         return {
-            "success": True,
-            "message": f"Verification code sent to {user_email}. Check your inbox (and spam/promotions folder).",
-            "expires_in": OTP_EXPIRY_SECONDS
+            "ok": True
         }
         
     except HTTPException:
