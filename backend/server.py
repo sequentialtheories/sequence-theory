@@ -1009,7 +1009,11 @@ async def create_turnkey_wallet(
             # SECURITY: Server-enforced verification gate
             if auth_user_id not in verified_users or not verified_users[auth_user_id]:
                 logger.warning(f"User {auth_user_id} tried to create wallet without verification")
-                raise HTTPException(status_code=403, detail="NOT_VERIFIED")
+                # Return 403 with TVC-expected format
+                return JSONResponse(
+                    status_code=403,
+                    content={"error": "NOT_VERIFIED"}
+                )
             
             # Check if user already has a wallet (duplicate prevention)
             check_response = await client.get(
