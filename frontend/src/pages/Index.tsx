@@ -470,7 +470,7 @@ const Index: React.FC = () => {
                   variant: "primary",
                 }}
                 title="Building Financial Literacy & Inclusion"
-                description="Sequence Theory is not just a financial product — it's a framework for building lasting financial literacy and inclusion across digital and traditional markets."
+                description="Sequence Theory is not just a financial product - it is a framework for building lasting financial literacy and inclusion across digital and traditional markets."
               />
 
               <div className="grid md:grid-cols-2 gap-8">
