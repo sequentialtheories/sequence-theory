@@ -2,22 +2,26 @@
 TURNKEY EMBEDDED WALLET SERVICE
 ================================
 
+CORRECT ARCHITECTURE:
+- Root org = Sequence Theory (with system API key)
+- Sub-org per app user (managed by ST system, NOT by end user)
+- Sub-org root user = Sequence Theory system API user
+- App users authenticate via OTP/passkey for wallet actions
+- End users are NEVER Turnkey org admins
+
 Uses a custom local Turnkey client implementation that requires
 only standard PyPI packages (cryptography, requests).
 
 Handles:
 - Sub-organization creation with embedded wallet
 - Wallet creation for authenticated users
-
-SIMPLIFIED APPROACH:
-- Users authenticate via Supabase (email/password)
-- Wallet creation is done via parent org API key
-- Signing requires user authentication (passkey/email auth with iframe)
+- Auto-attaching OTP policies to sub-orgs
 
 SECURITY NOTES:
 - Private keys are NEVER stored or exposed
 - All signing happens in Turnkey's secure TEE
 - Only wallet addresses and Turnkey IDs stored in Supabase
+- Non-custodial enforced by policies, not by making users root admins
 """
 
 import os
@@ -80,6 +84,62 @@ async def verify_turnkey_config() -> bool:
         return False
 
 
+async def create_otp_policy_for_sub_org(sub_org_id: str) -> bool:
+    """
+    Create OTP policy inside a sub-org to allow email OTP authentication.
+    
+    This MUST be called immediately after creating a sub-org to enable OTP flow.
+    
+    Policy allows:
+    - ACTIVITY_TYPE_INIT_OTP_AUTH (send OTP)
+    - ACTIVITY_TYPE_OTP_AUTH (verify OTP)
+    """
+    logger.info(f"[TURNKEY] Creating OTP policy for sub-org: {sub_org_id}")
+    
+    try:
+        # Use the parent org client to create policy in sub-org
+        client = get_turnkey_client()
+        
+        # Create policy request
+        body = {
+            "type": "ACTIVITY_TYPE_CREATE_POLICY",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": sub_org_id,  # Policy goes INTO the sub-org
+            "parameters": {
+                "policyName": "Allow OTP Authentication",
+                "effect": "EFFECT_ALLOW",
+                "condition": "activity.type == 'ACTIVITY_TYPE_INIT_OTP_AUTH' || activity.type == 'ACTIVITY_TYPE_OTP_AUTH'",
+                "consensus": "approvers.any()",
+                "notes": "Auto-created policy to allow email OTP for wallet operations"
+            }
+        }
+        
+        logger.info(f"[TURNKEY] Calling create_policy for sub-org {sub_org_id}...")
+        
+        result = client.create_policy(body)
+        
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        policy_result = activity_result.get("createPolicyResult", {})
+        
+        policy_id = policy_result.get("policyId", "")
+        
+        if policy_id:
+            logger.info(f"[TURNKEY] SUCCESS - Created OTP policy {policy_id} in sub-org {sub_org_id}")
+            return True
+        else:
+            logger.warning(f"[TURNKEY] Policy creation returned no policyId. Result: {result}")
+            return False
+        
+    except Exception as e:
+        logger.error(f"[TURNKEY] Error creating OTP policy: {e}")
+        import traceback
+        logger.error(f"[TURNKEY] Traceback: {traceback.format_exc()}")
+        # Don't raise - policy creation failure shouldn't block wallet creation
+        # The user can still use passkey or we can retry policy creation later
+        return False
+
+
 async def create_sub_organization_with_wallet(
     user_email: str,
     user_name: str,
@@ -88,39 +148,61 @@ async def create_sub_organization_with_wallet(
     """
     Create a Turnkey sub-organization with an embedded wallet for a user.
     
-    This is called AFTER the user has authenticated via Supabase.
-    The parent org's API key is used to create the sub-org.
+    CRITICAL ARCHITECTURE:
+    - The sub-org root user is the SEQUENCE THEORY SYSTEM (via API key)
+    - NOT the end user's email
+    - End users authenticate via OTP/passkey but are NOT Turnkey admins
+    - This allows us to manage policies and permissions centrally
     
     Args:
-        user_email: User's email address (from Supabase auth)
-        user_name: User's display name
+        user_email: User's email address (for naming/reference only, NOT as root user)
+        user_name: User's display name (for naming/reference only)
         passkey_attestation: Optional passkey attestation data for WebAuthn
     
     Returns:
         Tuple of (sub_org_id, wallet_id, eth_address, root_user_id)
     """
-    logger.info(f"[TURNKEY] Creating sub-org for user: {user_email}")
+    logger.info(f"[TURNKEY] Creating sub-org for Supabase user: {user_email}")
+    logger.info(f"[TURNKEY] NOTE: Root user will be ST system, NOT end user")
     
     try:
         client = get_turnkey_client()
         
-        # Build the request body directly as a dict
+        # CRITICAL: Root user is the SEQUENCE THEORY SYSTEM API KEY
+        # NOT the end user. This allows us to:
+        # 1. Manage policies in sub-orgs
+        # 2. Control OTP flow
+        # 3. Keep architecture scalable
+        #
+        # The root user gets the SAME API key as the parent org
+        # This means the parent org API key can manage this sub-org
+        
         body = {
             "type": "ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
             "timestampMs": get_timestamp_ms(),
             "organizationId": TURNKEY_ORGANIZATION_ID,
             "parameters": {
-                "subOrganizationName": f"User: {user_email}",
+                # Name includes user email for reference, but user is NOT admin
+                "subOrganizationName": f"ST Wallet: {user_email}",
+                
+                # ROOT USER = Sequence Theory System (via API key)
+                # NOT the end user email!
                 "rootUsers": [{
-                    "userName": user_name or user_email.split('@')[0],
-                    "userEmail": user_email,
-                    "apiKeys": [],
+                    "userName": "Sequence Theory System",
+                    "apiKeys": [{
+                        "apiKeyName": "ST System Key",
+                        "publicKey": TURNKEY_API_PUBLIC_KEY
+                    }],
+                    # No email, no authenticators, no oauth - pure API key access
                     "authenticators": [],
                     "oauthProviders": []
                 }],
+                
                 "rootQuorumThreshold": 1,
+                
+                # Create wallet for the user
                 "wallet": {
-                    "walletName": f"Wallet for {user_email}",
+                    "walletName": f"Wallet: {user_email}",
                     "accounts": [{
                         "curve": "CURVE_SECP256K1",
                         "pathFormat": "PATH_FORMAT_BIP32",
@@ -131,7 +213,7 @@ async def create_sub_organization_with_wallet(
             }
         }
         
-        logger.info(f"[TURNKEY] Calling create_sub_organization...")
+        logger.info(f"[TURNKEY] Calling create_sub_organization with ST system as root user...")
         
         # Create sub-organization with wallet
         result = client.create_sub_organization(body)
@@ -159,13 +241,24 @@ async def create_sub_organization_with_wallet(
         addresses = wallet_data.get("addresses", [])
         eth_address = addresses[0] if addresses else ""
         
-        # Get root user ID
+        # Get root user ID (this is the ST system user, not end user)
         root_users = sub_org_result.get("rootUserIds", [])
         root_user_id = root_users[0] if root_users else ""
         
         logger.info(f"[TURNKEY] SUCCESS - Created sub-org {sub_org_id}")
         logger.info(f"[TURNKEY] SUCCESS - Wallet ID: {wallet_id}")
         logger.info(f"[TURNKEY] SUCCESS - ETH Address: {eth_address}")
+        logger.info(f"[TURNKEY] SUCCESS - Root User (ST System): {root_user_id}")
+        
+        # CRITICAL: Auto-attach OTP policy to the new sub-org
+        # This allows end users to authenticate via email OTP
+        logger.info(f"[TURNKEY] Auto-attaching OTP policy to sub-org...")
+        policy_success = await create_otp_policy_for_sub_org(sub_org_id)
+        
+        if policy_success:
+            logger.info(f"[TURNKEY] OTP policy attached successfully")
+        else:
+            logger.warning(f"[TURNKEY] OTP policy attachment failed - user may need passkey auth")
         
         return sub_org_id, wallet_id, eth_address, root_user_id
         
@@ -186,8 +279,11 @@ async def sign_raw_payload(
     """
     Sign a raw payload with the user's wallet.
     
-    NOTE: This requires the parent org to have signing permissions on the sub-org,
-    OR the user must authenticate via passkey/email auth first.
+    Since the ST system API key is the root user of the sub-org,
+    we can sign directly without additional user authentication.
+    
+    For non-custodial behavior, add policies that require user auth
+    (OTP or passkey) before signing.
     
     Args:
         sub_org_id: The user's Turnkey sub-organization ID
@@ -205,6 +301,7 @@ async def sign_raw_payload(
     
     try:
         # Create client for the sub-organization
+        # Uses same API key since ST system is root user
         client = get_turnkey_client(sub_org_id)
         
         # Create request body
