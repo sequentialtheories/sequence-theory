@@ -433,7 +433,7 @@ const Index: React.FC = () => {
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
                         Join a small group of like-minded investors with shared goals. Choose your
-                        commitment level — from 1 to 20 years — and let the system handle the rest.
+                        commitment level - from 1 to 20 years - and let the system handle the rest.
                         No daily decisions. No market timing. Just consistent, disciplined growth.
                       </p>
                       <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-6 my-6">
