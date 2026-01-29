@@ -497,7 +497,7 @@ const Index: React.FC = () => {
                     <div className="pt-4 border-t border-border">
                       <p className="text-muted-foreground leading-relaxed">
                         The goal is not to encourage financial obsession but to replace it with
-                        structure. Set & Forget — automated investing that works for you.
+                        structure. Set & Forget - automated investing that works for you.
                       </p>
                     </div>
                   </div>
