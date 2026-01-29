@@ -76,7 +76,7 @@ const PROBLEM_CARDS = [
     icon: Shield,
     title: "Ready Ability",
     description:
-      "Reliable access to quality investment vehicles that don't require massive capital or institutional connections.",
+      "Reliable access to quality investment vehicles that do not require massive capital or institutional connections.",
   },
   {
     icon: TrendingUp,
