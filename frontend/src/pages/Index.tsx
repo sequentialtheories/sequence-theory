@@ -275,7 +275,7 @@ const Index: React.FC = () => {
                   variant: "destructive",
                 }}
                 title="The Compound Interest Problem"
-                description='Albert Einstein called compound interest the "eighth wonder of the world," yet most people never benefit from it meaningfully. The issue isn't failure — it's friction.'
+                description="Albert Einstein called compound interest the 'eighth wonder of the world,' yet most people never benefit from it meaningfully. The issue is not failure - it is friction."
               />
 
               {/* Problem cards */}
