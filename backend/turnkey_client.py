@@ -176,6 +176,10 @@ class TurnkeyClient:
         """Sign a transaction."""
         return self._make_request("POST", "/public/v1/submit/sign_transaction", body)
 
+    def create_policy(self, body: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a policy in an organization/sub-organization."""
+        return self._make_request("POST", "/public/v1/submit/create_policy", body)
+
 
 # ============================================================================
 # Type definitions (replaces turnkey-sdk-types)
