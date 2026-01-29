@@ -322,7 +322,7 @@ const Index: React.FC = () => {
                   variant: "accent",
                 }}
                 title="The Leap Issue"
-                description='In crypto, too much autonomy is required. Navigating wallets, exchanges, and DeFi jargon leaves users feeling that entering crypto is "too much of a leap."'
+                description="In crypto, too much autonomy is required. Navigating wallets, exchanges, and DeFi jargon leaves users feeling that entering crypto is 'too much of a leap.'"
               />
 
               {/* Two-column comparison */}
