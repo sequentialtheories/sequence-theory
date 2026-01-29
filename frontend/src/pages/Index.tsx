@@ -107,10 +107,10 @@ const SOLUTIONS = [
 ];
 
 const DIFFERENTIATORS = [
-  "Automated compounding — your money grows without constant attention",
-  "Structured discipline — built-in commitment keeps you on track",
-  "Wealth preservation — automatic transition to safer assets over time",
-  "Community support — invest alongside others with shared goals",
+  "Automated compounding - your money grows without constant attention",
+  "Structured discipline - built-in commitment keeps you on track",
+  "Wealth preservation - automatic transition to safer assets over time",
+  "Community support - invest alongside others with shared goals",
 ];
 
 const Index: React.FC = () => {
