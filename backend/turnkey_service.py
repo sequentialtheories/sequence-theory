@@ -400,16 +400,20 @@ async def create_sub_organization_with_wallet(
     """
     Create a Turnkey sub-organization with an embedded wallet for a user.
     
-    CORRECT ARCHITECTURE (per Turnkey delegated access docs):
-    1. Sub-org has TWO root users:
-       - ST System (delegated account) with API key - can manage sub-org
-       - End user with email - for OTP authentication
-    2. OTP-allow policy is created in the sub-org
-    3. End user is NOT an admin, but exists in sub-org for OTP flows
+    CORRECT ARCHITECTURE (per Turnkey docs):
+    - API keys are ONLY for signing requests, NOT org membership
+    - rootUsers contains ONLY the end user (email identity) for OTP auth
+    - Parent org's API key can manage child sub-orgs automatically
+    - OTP-allow policy is created in the sub-org after creation
+    
+    Docs:
+    - https://docs.turnkey.com/concepts/organizations
+    - https://docs.turnkey.com/concepts/policies/delegated-access-backend
+    - https://docs.turnkey.com/authentication/email
     
     Args:
         supabase_user_id: The Supabase user ID (for logging/tracking)
-        user_email: User's email address (creates end-user in sub-org)
+        user_email: User's email address (creates email identity in sub-org)
         user_name: User's display name
         passkey_attestation: Optional passkey attestation data
     
