@@ -3,20 +3,19 @@ TURNKEY EMBEDDED WALLET SERVICE
 ================================
 
 CORRECT ARCHITECTURE (per Turnkey docs):
-- Root org = Sequence Theory (with system API key)
+- Root org = Sequence Theory (signs requests with API key)
 - Sub-org per app user with:
-  - A system-controlled "Delegated Account" user (ST System) that has API key access
-  - An end-user entry for the app user (email-based) for OTP flows
-- OTP activities MUST be executed against the user's sub-org, NOT parent org
-- OTP policy must exist in the sub-org where OTP activities execute
+  - End user (email identity) as root user - for OTP authentication
+  - Wallet created during sub-org creation
+  - OTP-allow policy auto-attached
+- API keys are ONLY for signing requests, NEVER added to org/user payloads
+- Parent org's API key can manage child sub-orgs automatically
 
-KEY INSIGHT:
-Turnkey email OTP requires the target user to exist in the org where the activity runs.
-Parent org has READ access to sub-orgs but NO write access by default.
-Therefore:
-1. Create sub-org with both ST System user AND end-user entry
-2. OTP activities target the sub-org, not parent org
-3. Sub-org has OTP-allow policy
+Docs:
+- Organizations: https://docs.turnkey.com/concepts/organizations
+- Delegated access: https://docs.turnkey.com/concepts/policies/delegated-access-backend
+- Email auth: https://docs.turnkey.com/authentication/email
+- Policy language: https://docs.turnkey.com/concepts/policies/language
 
 Uses a custom local Turnkey client implementation that requires
 only standard PyPI packages (cryptography, requests).
