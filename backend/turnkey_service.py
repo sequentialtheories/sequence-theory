@@ -2,29 +2,28 @@
 TURNKEY EMBEDDED WALLET SERVICE
 ================================
 
-CORRECT ARCHITECTURE:
+CORRECT ARCHITECTURE (per Turnkey docs):
 - Root org = Sequence Theory (with system API key)
-- Sub-org per app user (managed by ST system, NOT by end user)
-- Sub-org root user = Sequence Theory system API user
-- App users authenticate via OTP/passkey for wallet actions
-- End users are NEVER Turnkey org admins
+- Sub-org per app user with:
+  - A system-controlled "Delegated Account" user (ST System) that has API key access
+  - An end-user entry for the app user (email-based) for OTP flows
+- OTP activities MUST be executed against the user's sub-org, NOT parent org
+- OTP policy must exist in the sub-org where OTP activities execute
+
+KEY INSIGHT:
+Turnkey email OTP requires the target user to exist in the org where the activity runs.
+Parent org has READ access to sub-orgs but NO write access by default.
+Therefore:
+1. Create sub-org with both ST System user AND end-user entry
+2. OTP activities target the sub-org, not parent org
+3. Sub-org has OTP-allow policy
 
 Uses a custom local Turnkey client implementation that requires
 only standard PyPI packages (cryptography, requests).
-
-Handles:
-- Sub-organization creation with embedded wallet
-- Wallet creation for authenticated users
-- Auto-attaching OTP policies to sub-orgs
-
-SECURITY NOTES:
-- Private keys are NEVER stored or exposed
-- All signing happens in Turnkey's secure TEE
-- Only wallet addresses and Turnkey IDs stored in Supabase
-- Non-custodial enforced by policies, not by making users root admins
 """
 
 import os
+import json
 import logging
 from typing import Optional, Dict, Any, Tuple
 from datetime import datetime
@@ -50,6 +49,21 @@ def get_timestamp_ms() -> str:
     return str(int(datetime.utcnow().timestamp() * 1000))
 
 
+def structured_log(event: str, **kwargs) -> None:
+    """
+    Emit a structured JSON log line for debugging Turnkey flows.
+    All Turnkey operations MUST use this for traceability.
+    """
+    log_entry = {
+        "event": event,
+        "timestamp": datetime.utcnow().isoformat(),
+        "turnkey_parent_org_id": TURNKEY_ORGANIZATION_ID,
+        "api_key_public": TURNKEY_API_PUBLIC_KEY[:20] + "..." if TURNKEY_API_PUBLIC_KEY else "NOT_SET",
+        **kwargs
+    }
+    logger.info(f"[TURNKEY_STRUCTURED] {json.dumps(log_entry)}")
+
+
 def get_turnkey_client(org_id: Optional[str] = None) -> TurnkeyClient:
     """
     Create and return a properly configured Turnkey client.
@@ -61,10 +75,18 @@ def get_turnkey_client(org_id: Optional[str] = None) -> TurnkeyClient:
     )
     stamper = ApiKeyStamper(config)
     
+    target_org = org_id or TURNKEY_ORGANIZATION_ID
+    
     client = TurnkeyClient(
         base_url=TURNKEY_API_BASE_URL,
         stamper=stamper,
-        organization_id=org_id or TURNKEY_ORGANIZATION_ID
+        organization_id=target_org
+    )
+    
+    structured_log(
+        "turnkey_client_created",
+        target_organization_id=target_org,
+        is_parent_org=(target_org == TURNKEY_ORGANIZATION_ID)
     )
     
     return client
@@ -77,30 +99,39 @@ async def verify_turnkey_config() -> bool:
     try:
         client = get_turnkey_client()
         response = client.get_whoami()
-        logger.info(f"Turnkey config verified. Org: {response.get('organizationName', 'unknown')}")
+        structured_log(
+            "turnkey_config_verified",
+            org_name=response.get('organizationName', 'unknown'),
+            org_id=response.get('organizationId', 'unknown'),
+            user_id=response.get('userId', 'unknown')
+        )
         return True
     except Exception as e:
-        logger.error(f"Turnkey config verification failed: {e}")
+        structured_log("turnkey_config_verification_failed", error=str(e))
         return False
 
 
-async def create_otp_policy_for_sub_org(sub_org_id: str) -> bool:
+async def create_otp_policy_for_sub_org(sub_org_id: str, supabase_user_id: str) -> Tuple[bool, Optional[str]]:
     """
     Create OTP policy inside a sub-org to allow email OTP authentication.
     
-    This MUST be called immediately after creating a sub-org to enable OTP flow.
+    CRITICAL: This policy MUST exist in the sub-org where OTP activities will execute.
+    The ST System user (delegated account) creates this policy.
     
-    Policy allows:
-    - ACTIVITY_TYPE_INIT_OTP_AUTH (send OTP)
-    - ACTIVITY_TYPE_OTP_AUTH (verify OTP)
+    Returns: (success, policy_id or None)
     """
-    logger.info(f"[TURNKEY] Creating OTP policy for sub-org: {sub_org_id}")
+    structured_log(
+        "create_otp_policy_start",
+        supabase_user_id=supabase_user_id,
+        target_sub_org_id=sub_org_id,
+        activity_type="ACTIVITY_TYPE_CREATE_POLICY"
+    )
     
     try:
-        # Use the parent org client to create policy in sub-org
+        # Use the parent org client - ST System API key can create policies in sub-org
+        # because ST System user exists in the sub-org as root user
         client = get_turnkey_client()
         
-        # Create policy request
         body = {
             "type": "ACTIVITY_TYPE_CREATE_POLICY",
             "timestampMs": get_timestamp_ms(),
@@ -110,37 +141,258 @@ async def create_otp_policy_for_sub_org(sub_org_id: str) -> bool:
                 "effect": "EFFECT_ALLOW",
                 "condition": "activity.type == 'ACTIVITY_TYPE_INIT_OTP_AUTH' || activity.type == 'ACTIVITY_TYPE_OTP_AUTH'",
                 "consensus": "approvers.any()",
-                "notes": "Auto-created policy to allow email OTP for wallet operations"
+                "notes": f"Auto-created OTP policy for supabase user {supabase_user_id}"
             }
         }
         
-        logger.info(f"[TURNKEY] Calling create_policy for sub-org {sub_org_id}...")
+        structured_log(
+            "create_otp_policy_request",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            turnkey_request_organization_id=sub_org_id,
+            policy_condition="activity.type == 'ACTIVITY_TYPE_INIT_OTP_AUTH' || activity.type == 'ACTIVITY_TYPE_OTP_AUTH'"
+        )
         
         result = client.create_policy(body)
         
         activity = result.get("activity", {})
+        activity_id = activity.get("id", "")
+        activity_status = activity.get("status", "")
         activity_result = activity.get("result", {})
         policy_result = activity_result.get("createPolicyResult", {})
-        
         policy_id = policy_result.get("policyId", "")
         
-        if policy_id:
-            logger.info(f"[TURNKEY] SUCCESS - Created OTP policy {policy_id} in sub-org {sub_org_id}")
-            return True
-        else:
-            logger.warning(f"[TURNKEY] Policy creation returned no policyId. Result: {result}")
-            return False
+        structured_log(
+            "create_otp_policy_response",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            activity_id=activity_id,
+            activity_status=activity_status,
+            policy_id=policy_id,
+            success=bool(policy_id)
+        )
+        
+        return bool(policy_id), policy_id
         
     except Exception as e:
-        logger.error(f"[TURNKEY] Error creating OTP policy: {e}")
+        structured_log(
+            "create_otp_policy_error",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            error=str(e),
+            error_type=type(e).__name__
+        )
         import traceback
         logger.error(f"[TURNKEY] Traceback: {traceback.format_exc()}")
-        # Don't raise - policy creation failure shouldn't block wallet creation
-        # The user can still use passkey or we can retry policy creation later
-        return False
+        return False, None
+
+
+async def init_otp_for_user(
+    supabase_user_id: str,
+    user_email: str,
+    sub_org_id: str
+) -> Tuple[bool, Optional[str], Optional[str]]:
+    """
+    Initialize email OTP for a user.
+    
+    CRITICAL: OTP MUST be initiated against the user's SUB-ORG, not parent org.
+    The user must exist as an end-user in that sub-org.
+    
+    Args:
+        supabase_user_id: The Supabase user ID
+        user_email: The user's email address
+        sub_org_id: The user's Turnkey sub-organization ID (REQUIRED)
+    
+    Returns:
+        (success, otp_id, error_message)
+    """
+    # HARD ASSERTION: sub_org_id must exist
+    if not sub_org_id:
+        structured_log(
+            "init_otp_assertion_failed",
+            supabase_user_id=supabase_user_id,
+            assertion="sub_org_id must exist before OTP calls",
+            sub_org_id=sub_org_id
+        )
+        return False, None, "ASSERTION_FAILED: User must have sub-org before OTP"
+    
+    structured_log(
+        "init_otp_start",
+        supabase_user_id=supabase_user_id,
+        user_email=user_email,
+        target_sub_org_id=sub_org_id,
+        activity_type="ACTIVITY_TYPE_INIT_OTP_AUTH"
+    )
+    
+    try:
+        # Create client targeting the SUB-ORG, not parent org
+        client = get_turnkey_client(sub_org_id)
+        
+        body = {
+            "type": "ACTIVITY_TYPE_INIT_OTP_AUTH",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": sub_org_id,  # Target SUB-ORG, not parent
+            "parameters": {
+                "otpType": "OTP_TYPE_EMAIL",
+                "contact": user_email,
+                "emailCustomization": {
+                    "appName": "Sequence Theory"
+                },
+                "expirationSeconds": "600"
+            }
+        }
+        
+        structured_log(
+            "init_otp_request",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            turnkey_request_organization_id=sub_org_id,
+            turnkey_signing_api_key=TURNKEY_API_PUBLIC_KEY[:20] + "...",
+            activity_type="ACTIVITY_TYPE_INIT_OTP_AUTH",
+            contact_email=user_email
+        )
+        
+        result = client.init_otp_auth(body)
+        
+        activity = result.get("activity", {})
+        activity_id = activity.get("id", "")
+        activity_status = activity.get("status", "")
+        activity_result = activity.get("result", {})
+        
+        # Extract otpId
+        init_result = (
+            activity_result.get("initOtpAuthResultV2") or
+            activity_result.get("initOtpAuthResult") or
+            {}
+        )
+        otp_id = init_result.get("otpId")
+        
+        structured_log(
+            "init_otp_response",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            activity_id=activity_id,
+            activity_status=activity_status,
+            otp_id=otp_id,
+            success=bool(otp_id)
+        )
+        
+        if otp_id:
+            return True, otp_id, None
+        else:
+            return False, None, f"No otpId in response. Activity: {activity_id}, Status: {activity_status}"
+        
+    except Exception as e:
+        error_str = str(e)
+        structured_log(
+            "init_otp_error",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            error=error_str,
+            error_type=type(e).__name__
+        )
+        return False, None, error_str
+
+
+async def verify_otp_for_user(
+    supabase_user_id: str,
+    otp_id: str,
+    otp_code: str,
+    sub_org_id: str
+) -> Tuple[bool, Optional[str]]:
+    """
+    Verify email OTP for a user.
+    
+    CRITICAL: OTP verification MUST use the SAME sub-org as init-otp.
+    
+    Args:
+        supabase_user_id: The Supabase user ID
+        otp_id: The OTP ID from init_otp
+        otp_code: The code entered by user
+        sub_org_id: The user's Turnkey sub-organization ID (REQUIRED - must match init)
+    
+    Returns:
+        (success, error_message)
+    """
+    # HARD ASSERTION: sub_org_id must exist and match
+    if not sub_org_id:
+        structured_log(
+            "verify_otp_assertion_failed",
+            supabase_user_id=supabase_user_id,
+            assertion="sub_org_id must exist and match init-otp org",
+            sub_org_id=sub_org_id
+        )
+        return False, "ASSERTION_FAILED: sub_org_id required for verify"
+    
+    structured_log(
+        "verify_otp_start",
+        supabase_user_id=supabase_user_id,
+        target_sub_org_id=sub_org_id,
+        otp_id=otp_id,
+        activity_type="ACTIVITY_TYPE_OTP_AUTH"
+    )
+    
+    try:
+        # Create client targeting the SUB-ORG (same as init)
+        client = get_turnkey_client(sub_org_id)
+        
+        body = {
+            "type": "ACTIVITY_TYPE_OTP_AUTH",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": sub_org_id,  # Target SUB-ORG (same as init)
+            "parameters": {
+                "otpId": otp_id,
+                "otpCode": otp_code
+            }
+        }
+        
+        structured_log(
+            "verify_otp_request",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            turnkey_request_organization_id=sub_org_id,
+            turnkey_signing_api_key=TURNKEY_API_PUBLIC_KEY[:20] + "...",
+            activity_type="ACTIVITY_TYPE_OTP_AUTH",
+            otp_id=otp_id
+        )
+        
+        result = client.otp_auth(body)
+        
+        activity = result.get("activity", {})
+        activity_id = activity.get("id", "")
+        activity_status = activity.get("status", "")
+        activity_result = activity.get("result", {})
+        verify_result = activity_result.get("otpAuthResult")
+        
+        structured_log(
+            "verify_otp_response",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            activity_id=activity_id,
+            activity_status=activity_status,
+            verified=bool(verify_result),
+            success=bool(verify_result)
+        )
+        
+        if verify_result:
+            return True, None
+        else:
+            return False, f"Verification failed. Activity: {activity_id}, Status: {activity_status}"
+        
+    except Exception as e:
+        error_str = str(e)
+        structured_log(
+            "verify_otp_error",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id,
+            error=error_str,
+            error_type=type(e).__name__
+        )
+        return False, error_str
 
 
 async def create_sub_organization_with_wallet(
+    supabase_user_id: str,
     user_email: str,
     user_name: str,
     passkey_attestation: Optional[Dict[str, Any]] = None
@@ -148,59 +400,71 @@ async def create_sub_organization_with_wallet(
     """
     Create a Turnkey sub-organization with an embedded wallet for a user.
     
-    CRITICAL ARCHITECTURE:
-    - The sub-org root user is the SEQUENCE THEORY SYSTEM (via API key)
-    - NOT the end user's email
-    - End users authenticate via OTP/passkey but are NOT Turnkey admins
-    - This allows us to manage policies and permissions centrally
+    CORRECT ARCHITECTURE (per Turnkey delegated access docs):
+    1. Sub-org has TWO root users:
+       - ST System (delegated account) with API key - can manage sub-org
+       - End user with email - for OTP authentication
+    2. OTP-allow policy is created in the sub-org
+    3. End user is NOT an admin, but exists in sub-org for OTP flows
     
     Args:
-        user_email: User's email address (for naming/reference only, NOT as root user)
-        user_name: User's display name (for naming/reference only)
-        passkey_attestation: Optional passkey attestation data for WebAuthn
+        supabase_user_id: The Supabase user ID (for logging/tracking)
+        user_email: User's email address (creates end-user in sub-org)
+        user_name: User's display name
+        passkey_attestation: Optional passkey attestation data
     
     Returns:
         Tuple of (sub_org_id, wallet_id, eth_address, root_user_id)
     """
-    logger.info(f"[TURNKEY] Creating sub-org for Supabase user: {user_email}")
-    logger.info(f"[TURNKEY] NOTE: Root user will be ST system, NOT end user")
+    structured_log(
+        "create_sub_org_start",
+        supabase_user_id=supabase_user_id,
+        user_email=user_email,
+        activity_type="ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7"
+    )
     
     try:
         client = get_turnkey_client()
         
-        # CRITICAL: Root user is the SEQUENCE THEORY SYSTEM API KEY
-        # NOT the end user. This allows us to:
-        # 1. Manage policies in sub-orgs
-        # 2. Control OTP flow
-        # 3. Keep architecture scalable
+        # CRITICAL: Create sub-org with BOTH:
+        # 1. ST System user (delegated account) - API key access for management
+        # 2. End user entry - email-based, for OTP authentication
         #
-        # The root user gets the SAME API key as the parent org
-        # This means the parent org API key can manage this sub-org
+        # This follows Turnkey's delegated access pattern:
+        # https://docs.turnkey.com/features/sub-organizations#delegated-access-backend
         
         body = {
             "type": "ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
             "timestampMs": get_timestamp_ms(),
             "organizationId": TURNKEY_ORGANIZATION_ID,
             "parameters": {
-                # Name includes user email for reference, but user is NOT admin
                 "subOrganizationName": f"ST Wallet: {user_email}",
                 
-                # ROOT USER = Sequence Theory System (via API key)
-                # NOT the end user email!
-                "rootUsers": [{
-                    "userName": "Sequence Theory System",
-                    "apiKeys": [{
-                        "apiKeyName": "ST System Key",
-                        "publicKey": TURNKEY_API_PUBLIC_KEY
-                    }],
-                    # No email, no authenticators, no oauth - pure API key access
-                    "authenticators": [],
-                    "oauthProviders": []
-                }],
+                # TWO ROOT USERS:
+                "rootUsers": [
+                    # 1. ST System (delegated account) - API key access
+                    {
+                        "userName": "Sequence Theory System",
+                        "apiKeys": [{
+                            "apiKeyName": "ST System Key",
+                            "publicKey": TURNKEY_API_PUBLIC_KEY
+                        }],
+                        "authenticators": [],
+                        "oauthProviders": []
+                    },
+                    # 2. End user - email-based for OTP (NOT admin, just for OTP)
+                    {
+                        "userName": user_name or user_email.split('@')[0],
+                        "userEmail": user_email,
+                        "apiKeys": [],
+                        "authenticators": [],
+                        "oauthProviders": []
+                    }
+                ],
                 
                 "rootQuorumThreshold": 1,
                 
-                # Create wallet for the user
+                # Create wallet
                 "wallet": {
                     "walletName": f"Wallet: {user_email}",
                     "accounts": [{
@@ -213,18 +477,23 @@ async def create_sub_organization_with_wallet(
             }
         }
         
-        logger.info(f"[TURNKEY] Calling create_sub_organization with ST system as root user...")
+        structured_log(
+            "create_sub_org_request",
+            supabase_user_id=supabase_user_id,
+            turnkey_request_organization_id=TURNKEY_ORGANIZATION_ID,
+            turnkey_signing_api_key=TURNKEY_API_PUBLIC_KEY[:20] + "...",
+            activity_type="ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
+            root_users_count=2,
+            root_user_types=["ST_SYSTEM_API_KEY", "END_USER_EMAIL"]
+        )
         
-        # Create sub-organization with wallet
         result = client.create_sub_organization(body)
         
-        logger.info(f"[TURNKEY] Activity result received")
-        
-        # Extract results from activity response
         activity = result.get("activity", {})
+        activity_id = activity.get("id", "")
+        activity_status = activity.get("status", "")
         activity_result = activity.get("result", {})
         
-        # Try different result versions
         sub_org_result = (
             activity_result.get("createSubOrganizationResultV7") or
             activity_result.get("createSubOrganizationResult") or
@@ -232,41 +501,212 @@ async def create_sub_organization_with_wallet(
         )
         
         if not sub_org_result:
-            logger.error(f"[TURNKEY] No sub-organization result in response. Result: {result}")
-            raise Exception(f"No sub-organization result in response")
+            structured_log(
+                "create_sub_org_error",
+                supabase_user_id=supabase_user_id,
+                activity_id=activity_id,
+                error="No sub-organization result in response"
+            )
+            raise Exception("No sub-organization result in response")
         
         sub_org_id = sub_org_result.get("subOrganizationId", "")
         wallet_data = sub_org_result.get("wallet", {})
         wallet_id = wallet_data.get("walletId", "")
         addresses = wallet_data.get("addresses", [])
         eth_address = addresses[0] if addresses else ""
+        root_user_ids = sub_org_result.get("rootUserIds", [])
         
-        # Get root user ID (this is the ST system user, not end user)
-        root_users = sub_org_result.get("rootUserIds", [])
-        root_user_id = root_users[0] if root_users else ""
+        structured_log(
+            "create_sub_org_response",
+            supabase_user_id=supabase_user_id,
+            activity_id=activity_id,
+            activity_status=activity_status,
+            sub_org_id=sub_org_id,
+            wallet_id=wallet_id,
+            eth_address=eth_address,
+            root_user_ids=root_user_ids,
+            root_user_count=len(root_user_ids),
+            success=bool(sub_org_id and wallet_id and eth_address)
+        )
         
-        logger.info(f"[TURNKEY] SUCCESS - Created sub-org {sub_org_id}")
-        logger.info(f"[TURNKEY] SUCCESS - Wallet ID: {wallet_id}")
-        logger.info(f"[TURNKEY] SUCCESS - ETH Address: {eth_address}")
-        logger.info(f"[TURNKEY] SUCCESS - Root User (ST System): {root_user_id}")
+        if not sub_org_id or not wallet_id or not eth_address:
+            raise Exception(f"Incomplete sub-org creation: sub_org={sub_org_id}, wallet={wallet_id}, address={eth_address}")
         
         # CRITICAL: Auto-attach OTP policy to the new sub-org
-        # This allows end users to authenticate via email OTP
-        logger.info(f"[TURNKEY] Auto-attaching OTP policy to sub-org...")
-        policy_success = await create_otp_policy_for_sub_org(sub_org_id)
+        structured_log(
+            "create_otp_policy_starting",
+            supabase_user_id=supabase_user_id,
+            target_sub_org_id=sub_org_id
+        )
         
-        if policy_success:
-            logger.info(f"[TURNKEY] OTP policy attached successfully")
-        else:
-            logger.warning(f"[TURNKEY] OTP policy attachment failed - user may need passkey auth")
+        policy_success, policy_id = await create_otp_policy_for_sub_org(sub_org_id, supabase_user_id)
         
-        return sub_org_id, wallet_id, eth_address, root_user_id
+        structured_log(
+            "create_sub_org_complete",
+            supabase_user_id=supabase_user_id,
+            sub_org_id=sub_org_id,
+            wallet_id=wallet_id,
+            eth_address=eth_address,
+            otp_policy_created=policy_success,
+            otp_policy_id=policy_id
+        )
+        
+        return sub_org_id, wallet_id, eth_address, root_user_ids[0] if root_user_ids else ""
         
     except Exception as e:
-        logger.error(f"[TURNKEY] Error creating sub-organization: {e}")
+        structured_log(
+            "create_sub_org_error",
+            supabase_user_id=supabase_user_id,
+            error=str(e),
+            error_type=type(e).__name__
+        )
         import traceback
         logger.error(f"[TURNKEY] Traceback: {traceback.format_exc()}")
         raise
+
+
+async def ensure_user_has_sub_org(
+    supabase_user_id: str,
+    user_email: str,
+    user_name: str,
+    supabase_client  # httpx.AsyncClient
+) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    """
+    Ensure a user has a sub-org. Create one if not exists.
+    
+    This is the IDEMPOTENT entry point for sub-org management.
+    
+    Returns:
+        (sub_org_id, wallet_id, eth_address) or (None, None, None) if failed
+    """
+    structured_log(
+        "ensure_sub_org_start",
+        supabase_user_id=supabase_user_id,
+        user_email=user_email
+    )
+    
+    # Check profiles table first
+    from server import SUPABASE_URL, SUPABASE_SERVICE_KEY
+    
+    profile_response = await supabase_client.get(
+        f"{SUPABASE_URL}/rest/v1/profiles",
+        params={
+            "user_id": f"eq.{supabase_user_id}",
+            "select": "turnkey_sub_org_id,turnkey_wallet_id,eth_address"
+        },
+        headers={
+            "apikey": SUPABASE_SERVICE_KEY,
+            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+        }
+    )
+    
+    if profile_response.status_code == 200:
+        profiles = profile_response.json()
+        if profiles and len(profiles) > 0:
+            profile = profiles[0]
+            existing_sub_org = profile.get("turnkey_sub_org_id")
+            existing_wallet = profile.get("turnkey_wallet_id")
+            existing_address = profile.get("eth_address")
+            
+            if existing_sub_org and existing_wallet and existing_address:
+                structured_log(
+                    "ensure_sub_org_found_existing",
+                    supabase_user_id=supabase_user_id,
+                    sub_org_id=existing_sub_org,
+                    wallet_id=existing_wallet,
+                    eth_address=existing_address
+                )
+                return existing_sub_org, existing_wallet, existing_address
+    
+    # Also check user_wallets table
+    wallet_response = await supabase_client.get(
+        f"{SUPABASE_URL}/rest/v1/user_wallets",
+        params={
+            "user_id": f"eq.{supabase_user_id}",
+            "select": "turnkey_sub_org_id,turnkey_wallet_id,wallet_address"
+        },
+        headers={
+            "apikey": SUPABASE_SERVICE_KEY,
+            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+        }
+    )
+    
+    if wallet_response.status_code == 200:
+        wallets = wallet_response.json()
+        if wallets and len(wallets) > 0:
+            wallet = wallets[0]
+            existing_sub_org = wallet.get("turnkey_sub_org_id")
+            existing_wallet = wallet.get("turnkey_wallet_id")
+            existing_address = wallet.get("wallet_address")
+            
+            if existing_sub_org and existing_wallet and existing_address:
+                structured_log(
+                    "ensure_sub_org_found_in_wallets",
+                    supabase_user_id=supabase_user_id,
+                    sub_org_id=existing_sub_org,
+                    wallet_id=existing_wallet,
+                    eth_address=existing_address
+                )
+                return existing_sub_org, existing_wallet, existing_address
+    
+    # No existing sub-org - create one
+    structured_log(
+        "ensure_sub_org_creating_new",
+        supabase_user_id=supabase_user_id,
+        user_email=user_email
+    )
+    
+    sub_org_id, wallet_id, eth_address, _ = await create_sub_organization_with_wallet(
+        supabase_user_id=supabase_user_id,
+        user_email=user_email,
+        user_name=user_name
+    )
+    
+    # Store in both tables for redundancy
+    # Store in profiles
+    await supabase_client.patch(
+        f"{SUPABASE_URL}/rest/v1/profiles",
+        params={"user_id": f"eq.{supabase_user_id}"},
+        json={
+            "turnkey_sub_org_id": sub_org_id,
+            "turnkey_wallet_id": wallet_id,
+            "eth_address": eth_address
+        },
+        headers={
+            "apikey": SUPABASE_SERVICE_KEY,
+            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+            "Content-Type": "application/json"
+        }
+    )
+    
+    # Store in user_wallets
+    await supabase_client.post(
+        f"{SUPABASE_URL}/rest/v1/user_wallets",
+        json={
+            "user_id": supabase_user_id,
+            "wallet_address": eth_address,
+            "turnkey_sub_org_id": sub_org_id,
+            "turnkey_wallet_id": wallet_id,
+            "provider": "turnkey",
+            "network": "polygon"
+        },
+        headers={
+            "apikey": SUPABASE_SERVICE_KEY,
+            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        }
+    )
+    
+    structured_log(
+        "ensure_sub_org_created",
+        supabase_user_id=supabase_user_id,
+        sub_org_id=sub_org_id,
+        wallet_id=wallet_id,
+        eth_address=eth_address
+    )
+    
+    return sub_org_id, wallet_id, eth_address
 
 
 async def sign_raw_payload(
@@ -276,35 +716,17 @@ async def sign_raw_payload(
     encoding: str = "PAYLOAD_ENCODING_HEXADECIMAL",
     hash_function: str = "HASH_FUNCTION_KECCAK256"
 ) -> Dict[str, Any]:
-    """
-    Sign a raw payload with the user's wallet.
-    
-    Since the ST system API key is the root user of the sub-org,
-    we can sign directly without additional user authentication.
-    
-    For non-custodial behavior, add policies that require user auth
-    (OTP or passkey) before signing.
-    
-    Args:
-        sub_org_id: The user's Turnkey sub-organization ID
-        wallet_address: The Ethereum address to sign with
-        payload: The payload to sign (hex encoded)
-        encoding: Payload encoding
-        hash_function: Hash function to use
-    
-    Returns:
-        Signature data (r, s, v, signature)
-    """
-    logger.info(f"[TURNKEY] Signing payload for wallet: {wallet_address}")
-    logger.info(f"[TURNKEY] Sub-org ID: {sub_org_id}")
-    logger.info(f"[TURNKEY] Payload: {payload[:50]}...")
+    """Sign a raw payload with the user's wallet."""
+    structured_log(
+        "sign_raw_payload_start",
+        sub_org_id=sub_org_id,
+        wallet_address=wallet_address,
+        activity_type="ACTIVITY_TYPE_SIGN_RAW_PAYLOAD_V2"
+    )
     
     try:
-        # Create client for the sub-organization
-        # Uses same API key since ST system is root user
         client = get_turnkey_client(sub_org_id)
         
-        # Create request body
         body = {
             "type": "ACTIVITY_TYPE_SIGN_RAW_PAYLOAD_V2",
             "timestampMs": get_timestamp_ms(),
@@ -317,8 +739,6 @@ async def sign_raw_payload(
             }
         }
         
-        logger.info(f"[TURNKEY] Calling sign_raw_payload...")
-        
         result = client.sign_raw_payload(body)
         
         activity = result.get("activity", {})
@@ -326,28 +746,26 @@ async def sign_raw_payload(
         sign_result = activity_result.get("signRawPayloadResult", {})
         
         if not sign_result:
-            logger.error(f"[TURNKEY] No signature result")
             raise Exception("No signature result")
         
         r = sign_result.get("r", "")
         s = sign_result.get("s", "")
         v = sign_result.get("v", "")
         
-        signature = f"0x{r}{s}{v}"
+        structured_log(
+            "sign_raw_payload_success",
+            sub_org_id=sub_org_id,
+            activity_id=activity.get("id", "")
+        )
         
-        logger.info(f"[TURNKEY] SUCCESS - Signature: {signature[:30]}...")
-        
-        return {
-            "r": r,
-            "s": s,
-            "v": v,
-            "signature": signature
-        }
+        return {"r": r, "s": s, "v": v, "signature": f"0x{r}{s}{v}"}
         
     except Exception as e:
-        logger.error(f"[TURNKEY] Error signing payload: {e}")
-        import traceback
-        logger.error(f"[TURNKEY] Traceback: {traceback.format_exc()}")
+        structured_log(
+            "sign_raw_payload_error",
+            sub_org_id=sub_org_id,
+            error=str(e)
+        )
         raise
 
 
@@ -357,24 +775,17 @@ async def sign_transaction(
     unsigned_transaction: str,
     transaction_type: str = "TRANSACTION_TYPE_ETHEREUM"
 ) -> Dict[str, Any]:
-    """
-    Sign an EVM transaction.
-    
-    Args:
-        sub_org_id: The user's Turnkey sub-organization ID
-        wallet_address: The Ethereum address to sign with
-        unsigned_transaction: RLP-encoded unsigned transaction (hex)
-        transaction_type: Transaction type
-    
-    Returns:
-        Signed transaction data
-    """
-    logger.info(f"[TURNKEY] Signing transaction for wallet: {wallet_address}")
+    """Sign an EVM transaction."""
+    structured_log(
+        "sign_transaction_start",
+        sub_org_id=sub_org_id,
+        wallet_address=wallet_address,
+        activity_type="ACTIVITY_TYPE_SIGN_TRANSACTION_V2"
+    )
     
     try:
         client = get_turnkey_client(sub_org_id)
         
-        # Create request body
         body = {
             "type": "ACTIVITY_TYPE_SIGN_TRANSACTION_V2",
             "timestampMs": get_timestamp_ms(),
@@ -395,10 +806,18 @@ async def sign_transaction(
         if not sign_result:
             raise Exception("No transaction signature result")
         
-        return {
-            "signedTransaction": sign_result.get("signedTransaction", "")
-        }
+        structured_log(
+            "sign_transaction_success",
+            sub_org_id=sub_org_id,
+            activity_id=activity.get("id", "")
+        )
+        
+        return {"signedTransaction": sign_result.get("signedTransaction", "")}
         
     except Exception as e:
-        logger.error(f"[TURNKEY] Error signing transaction: {e}")
+        structured_log(
+            "sign_transaction_error",
+            sub_org_id=sub_org_id,
+            error=str(e)
+        )
         raise
