@@ -569,7 +569,9 @@ async def ensure_user_has_sub_org(
     supabase_user_id: str,
     user_email: str,
     user_name: str,
-    supabase_client  # httpx.AsyncClient
+    supabase_client,  # httpx.AsyncClient
+    supabase_url: str,
+    supabase_service_key: str
 ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
     Ensure a user has a sub-org. Create one if not exists.
@@ -586,17 +588,15 @@ async def ensure_user_has_sub_org(
     )
     
     # Check profiles table first
-    from server import SUPABASE_URL, SUPABASE_SERVICE_KEY
-    
     profile_response = await supabase_client.get(
-        f"{SUPABASE_URL}/rest/v1/profiles",
+        f"{supabase_url}/rest/v1/profiles",
         params={
             "user_id": f"eq.{supabase_user_id}",
             "select": "turnkey_sub_org_id,turnkey_wallet_id,eth_address"
         },
         headers={
-            "apikey": SUPABASE_SERVICE_KEY,
-            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            "apikey": supabase_service_key,
+            "Authorization": f"Bearer {supabase_service_key}"
         }
     )
     
@@ -620,14 +620,14 @@ async def ensure_user_has_sub_org(
     
     # Also check user_wallets table
     wallet_response = await supabase_client.get(
-        f"{SUPABASE_URL}/rest/v1/user_wallets",
+        f"{supabase_url}/rest/v1/user_wallets",
         params={
             "user_id": f"eq.{supabase_user_id}",
             "select": "turnkey_sub_org_id,turnkey_wallet_id,wallet_address"
         },
         headers={
-            "apikey": SUPABASE_SERVICE_KEY,
-            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            "apikey": supabase_service_key,
+            "Authorization": f"Bearer {supabase_service_key}"
         }
     )
     
@@ -665,7 +665,7 @@ async def ensure_user_has_sub_org(
     # Store in both tables for redundancy
     # Store in profiles
     await supabase_client.patch(
-        f"{SUPABASE_URL}/rest/v1/profiles",
+        f"{supabase_url}/rest/v1/profiles",
         params={"user_id": f"eq.{supabase_user_id}"},
         json={
             "turnkey_sub_org_id": sub_org_id,
@@ -673,15 +673,15 @@ async def ensure_user_has_sub_org(
             "eth_address": eth_address
         },
         headers={
-            "apikey": SUPABASE_SERVICE_KEY,
-            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+            "apikey": supabase_service_key,
+            "Authorization": f"Bearer {supabase_service_key}",
             "Content-Type": "application/json"
         }
     )
     
     # Store in user_wallets
     await supabase_client.post(
-        f"{SUPABASE_URL}/rest/v1/user_wallets",
+        f"{supabase_url}/rest/v1/user_wallets",
         json={
             "user_id": supabase_user_id,
             "wallet_address": eth_address,
@@ -691,8 +691,8 @@ async def ensure_user_has_sub_org(
             "network": "polygon"
         },
         headers={
-            "apikey": SUPABASE_SERVICE_KEY,
-            "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+            "apikey": supabase_service_key,
+            "Authorization": f"Bearer {supabase_service_key}",
             "Content-Type": "application/json",
             "Prefer": "return=representation"
         }
