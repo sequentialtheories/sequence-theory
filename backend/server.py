@@ -1229,7 +1229,9 @@ async def init_email_otp(
                 supabase_user_id=user_id,
                 user_email=user_email,
                 user_name=user_email.split('@')[0],
-                supabase_client=client
+                supabase_client=client,
+                supabase_url=SUPABASE_URL,
+                supabase_service_key=SUPABASE_SERVICE_KEY
             )
             
             if not sub_org_id:
