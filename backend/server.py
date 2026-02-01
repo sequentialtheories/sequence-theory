@@ -1279,8 +1279,9 @@ async def verify_email_otp(
     authorization: str = Header(None)
 ):
     """
-    Verify email OTP code using Turnkey's verify_otp.
-    On success, marks user as verified for wallet creation.
+    Verify email OTP code using Turnkey.
+    
+    CRITICAL: Must use the SAME sub-org as init-email-auth
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1289,7 +1290,7 @@ async def verify_email_otp(
         token = authorization.replace("Bearer ", "")
         
         # Verify user via Supabase
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             user_response = await client.get(
                 f"{SUPABASE_URL}/auth/v1/user",
                 headers={
@@ -1306,85 +1307,60 @@ async def verify_email_otp(
         
         current_time = time.time()
         
-        # Check OTP storage for otpId
+        # Check OTP storage
         stored = otp_storage.get(user_id)
         
         if not stored:
             raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:No verification code found. Please request a new one.")
         
-        # Check if locked
         locked_until = stored.get("locked_until") or 0
         if locked_until and current_time < locked_until:
             wait_time = int(locked_until - current_time)
             raise HTTPException(
                 status_code=429, 
-                detail=f"RATE_LIMITED:Account locked due to too many attempts. Try again in {wait_time} seconds."
+                detail=f"RATE_LIMITED:Account locked. Try again in {wait_time} seconds."
             )
         
-        # Check expiry
         if current_time > stored["expires"]:
             del otp_storage[user_id]
             raise HTTPException(status_code=400, detail="OTP_EXPIRED:Verification code expired. Please request a new one.")
         
         otp_id = stored.get("otp_id")
+        sub_org_id = stored.get("sub_org_id")  # CRITICAL: Use same sub-org as init
+        
         if not otp_id:
             raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
         
-        # Verify OTP via Turnkey
-        logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}")
+        if not sub_org_id:
+            # Assertion failure - this should never happen
+            logger.error(f"[TURNKEY-OTP] ASSERTION FAILED: No sub_org_id stored for user {user_id}")
+            raise HTTPException(status_code=500, detail="TURNKEY_OTP_FAILED:Invalid state - missing sub_org_id")
         
-        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig
+        # Verify OTP via Turnkey - USING THE SAME SUB-ORG
+        logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}, sub_org: {sub_org_id}")
         
-        TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
-        TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
-        TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
-        
-        config = ApiKeyStamperConfig(
-            api_public_key=TURNKEY_API_PUBLIC_KEY,
-            api_private_key=TURNKEY_API_PRIVATE_KEY
-        )
-        stamper = ApiKeyStamper(config)
-        
-        client = TurnkeyClient(
-            base_url="https://api.turnkey.com",
-            stamper=stamper,
-            organization_id=TURNKEY_ORGANIZATION_ID
-        )
-        
-        # Create verify request body using local client (dict format)
-        verify_body = {
-            "type": "ACTIVITY_TYPE_OTP_AUTH",
-            "timestampMs": str(int(time.time() * 1000)),
-            "organizationId": TURNKEY_ORGANIZATION_ID,
-            "parameters": {
-                "otpId": otp_id,
-                "otpCode": request.otp_code
-            }
-        }
+        from turnkey_service import verify_otp_for_user
         
         try:
-            result = client.otp_auth(verify_body)
+            success, error_msg = await verify_otp_for_user(
+                supabase_user_id=user_id,
+                otp_id=otp_id,
+                otp_code=request.otp_code,
+                sub_org_id=sub_org_id
+            )
             
-            # Check if verification succeeded (dict format)
-            activity = result.get("activity", {})
-            activity_result = activity.get("result", {})
-            verify_result = activity_result.get("otpAuthResult")
-            
-            if verify_result:
+            if success:
                 logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id}")
                 
-                # OTP verified - mark user as verified
+                # Mark user as verified
                 verified_users[user_id] = True
                 
                 # Clean up OTP
                 del otp_storage[user_id]
                 
-                # TVC expected response shape: { "isVerified": true }
-                return {
-                    "isVerified": True
-                }
+                return {"isVerified": True}
             else:
-                raise Exception("Verification result empty")
+                raise Exception(error_msg or "Verification failed")
                 
         except Exception as turnkey_error:
             error_str = str(turnkey_error).lower()
@@ -1393,7 +1369,6 @@ async def verify_email_otp(
             # Increment attempts
             stored["attempts"] = stored.get("attempts", 0) + 1
             
-            # Lock if too many attempts
             if stored["attempts"] >= OTP_MAX_ATTEMPTS_PER_WINDOW:
                 stored["locked_until"] = current_time + OTP_LOCK_DURATION_SECONDS
                 logger.warning(f"[TURNKEY-OTP] User {user_id} locked due to too many failed attempts")
