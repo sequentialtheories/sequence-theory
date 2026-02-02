@@ -456,29 +456,33 @@ class TurnkeyVerificationGateTester:
             return False
     
     async def run_all_tests(self):
-        """Run all Turnkey backend tests"""
+        """Run all Turnkey verification gate tests"""
         print("=" * 80)
-        print("TURNKEY WALLET CREATION BACKEND TESTS")
+        print("TURNKEY VERIFICATION GATE FLOW TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"API Base: {API_BASE}")
+        print(f"Test Email: {TEST_EMAIL}")
         print(f"Test started at: {datetime.utcnow().isoformat()}")
         print()
         
         # Run tests in sequence
         test_results = []
         
-        # Test 1: Health endpoint
-        test_results.append(await self.test_health_endpoint())
+        # Test 1: Login to get auth token
+        test_results.append(await self.test_login_authentication())
         
-        # Test 2: Turnkey config verification
-        test_results.append(await self.test_turnkey_config_verification())
+        # Test 2: Test create-wallet without verification (should fail)
+        test_results.append(await self.test_create_wallet_without_verification())
         
-        # Test 3: Create sub-organization
-        test_results.append(await self.test_create_sub_organization())
+        # Test 3: Test init-email-auth (should create sub-org + send OTP)
+        test_results.append(await self.test_init_email_auth())
         
-        # Test 4: Sign raw payload (optional)
-        test_results.append(await self.test_sign_raw_payload())
+        # Test 4: Check backend logs for sub-org creation
+        test_results.append(await self.test_check_backend_logs())
+        
+        # Test 5: Verify sub-org was stored in DB
+        test_results.append(await self.test_verify_sub_org_in_db())
         
         # Summary
         print("=" * 80)
@@ -504,7 +508,7 @@ class TurnkeyVerificationGateTester:
 
 async def main():
     """Main test runner"""
-    async with TurnkeyBackendTester() as tester:
+    async with TurnkeyVerificationGateTester() as tester:
         success = await tester.run_all_tests()
         return 0 if success else 1
 
