@@ -906,34 +906,9 @@ async def ensure_user_sub_org_for_otp(
             )
             return None
         
-        # Store sub_org_id in user_wallets table (create partial record)
-        # Profile doesn't have turnkey_sub_org_id column, use user_wallets
-        wallet_data = {
-            "user_id": supabase_user_id,
-            "turnkey_sub_org_id": sub_org_id,
-            "wallet_address": None,  # Not created yet
-            "turnkey_wallet_id": None,  # Not created yet
-            "provider": "turnkey",
-            "network": "polygon",
-            "created_via": "email",
-            "provenance": "turnkey_invisible"
-        }
-        
-        create_response = await client.post(
-            f"{SUPABASE_URL}/rest/v1/user_wallets",
-            json=wallet_data,
-            headers={
-                "apikey": SUPABASE_SERVICE_KEY,
-                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
-            }
-        )
-        
-        if create_response.status_code not in [200, 201]:
-            logger.warning(f"Failed to store sub_org_id in user_wallets: {create_response.text}")
-        else:
-            logger.info(f"Stored sub_org_id {sub_org_id} in user_wallets for user {supabase_user_id}")
+        # NOTE: sub_org_id is passed back to server.py which stores it in otp_storage
+        # We can't store in user_wallets yet because wallet_address is NOT NULL
+        # The sub_org_id will be persisted when wallet is created
         
         structured_log(
             "ensure_sub_org_for_otp_created",
