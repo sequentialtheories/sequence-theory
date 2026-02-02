@@ -456,16 +456,21 @@ async def create_sub_organization_with_wallet(
             "parameters": {
                 "subOrganizationName": f"ST Wallet: {user_email}",
                 
-                # SYSTEM placeholder as root - NOT the end user
-                # This user has NO auth methods, so cannot login
-                # Parent org API key manages this sub-org
+                # Delegated Account with API key credential
+                # Using parent org's API key gives us control over this sub-org
                 "rootUsers": [
                     {
-                        "userName": "ST System",
-                        # NO userEmail - cannot receive OTP
-                        # NO apiKeys - cannot use API  
+                        "userName": "Delegated Account",
+                        # NO userEmail - cannot receive OTP  
                         # NO authenticators - cannot use passkey
-                        "apiKeys": [],
+                        # API key = parent org's key for delegated control
+                        "apiKeys": [
+                            {
+                                "apiKeyName": "Delegated API Key",
+                                "publicKey": TURNKEY_API_PUBLIC_KEY,
+                                "curveType": "API_KEY_CURVE_P256"
+                            }
+                        ],
                         "authenticators": [],
                         "oauthProviders": []
                     }
