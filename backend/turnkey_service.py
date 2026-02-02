@@ -456,14 +456,11 @@ async def create_sub_organization_with_wallet(
             "parameters": {
                 "subOrganizationName": f"ST Wallet: {user_email}",
                 
-                # Delegated Account with API key credential
-                # Using parent org's API key gives us control over this sub-org
+                # TWO root users per delegated access pattern
                 "rootUsers": [
+                    # 1. Delegated Account - backend control via API key
                     {
                         "userName": "Delegated Account",
-                        # NO userEmail - cannot receive OTP  
-                        # NO authenticators - cannot use passkey
-                        # API key = parent org's key for delegated control
                         "apiKeys": [
                             {
                                 "apiKeyName": "Delegated API Key",
@@ -471,6 +468,14 @@ async def create_sub_organization_with_wallet(
                                 "curveType": "API_KEY_CURVE_P256"
                             }
                         ],
+                        "authenticators": [],
+                        "oauthProviders": []
+                    },
+                    # 2. End User - OTP authentication via email
+                    {
+                        "userName": user_name or user_email.split('@')[0],
+                        "userEmail": user_email,
+                        "apiKeys": [],
                         "authenticators": [],
                         "oauthProviders": []
                     }
@@ -497,9 +502,8 @@ async def create_sub_organization_with_wallet(
             turnkey_request_organization_id=TURNKEY_ORGANIZATION_ID,
             turnkey_signing_api_key=TURNKEY_API_PUBLIC_KEY[:20] + "...",
             activity_type="ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
-            root_users_count=1,
-            root_user_type="SYSTEM_PLACEHOLDER_NO_AUTH",
-            note="End user is NOT root - verified via OTP before wallet creation"
+            root_users_count=2,
+            note="Delegated Account + End User with email"
         )
         
         result = client.create_sub_organization(body)
