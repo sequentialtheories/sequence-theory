@@ -1380,8 +1380,9 @@ async def verify_email_otp(
                 # Mark user as verified - NOW they can create wallet
                 verified_users[user_id] = True
                 
-                # Store sub_org_id for wallet creation
-                # (it's already in DB via ensure_user_sub_org_for_otp)
+                # Store sub_org_id for wallet creation (in-memory until wallet is created)
+                verified_sub_orgs[user_id] = sub_org_id
+                logger.info(f"[TURNKEY-OTP] Stored sub_org_id {sub_org_id} for user {user_id}")
                 
                 # Clean up OTP
                 del otp_storage[user_id]
