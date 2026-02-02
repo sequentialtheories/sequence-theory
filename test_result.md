@@ -117,13 +117,16 @@ backend:
     implemented: true
     working: false
     file: "backend/server.py"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "🎯 TURNKEY VERIFICATION GATE API TESTING COMPLETED - 87.5% SUCCESS RATE. CORE VERIFICATION FUNCTIONALITY WORKING: ✅ Health check returns turnkey_configured: true ✅ Wallet info endpoints return 401 without auth (correct security) ✅ User authentication with sequencetheoryinc@gmail.com / TestPassword123! successful ✅ CRITICAL: Verification gate correctly blocks wallet creation - POST /api/turnkey/create-wallet returns 403 with {'error': 'NOT_VERIFIED'} ✅ Verification status endpoints working with proper response format ✅ All API endpoints have correct authentication requirements. ❌ TURNKEY OTP INTEGRATION ISSUE: POST /api/turnkey/init-email-auth fails with Turnkey API 403 permission error. ROOT CAUSE: Third-party Turnkey service policy configuration - API key lacks permissions for 'init_otp_auth' activity. ERROR: 'You don't have sufficient permissions to take this action. Please add a policy granting this user permissions.' IMPACT: Email OTP flow cannot complete, but the verification gate itself is working correctly. RECOMMENDATION: This is a Turnkey service configuration issue requiring policy update to allow OTP activities, not a code defect. The core verification gate security is production-ready."
+      - working: false
+        agent: "testing"
+        comment: "🎯 COMPREHENSIVE TURNKEY VERIFICATION GATE TESTING COMPLETED - 85.7% SUCCESS RATE (6/7 tests passed). DETAILED FINDINGS: ✅ CORE SECURITY WORKING: Health check confirms turnkey_configured: true, User authentication successful with sequencetheoryinc@gmail.com / TestPassword123!, Verification status endpoint returns proper format {isVerified: false, method: null}, CRITICAL VERIFICATION GATE WORKING: POST /api/turnkey/create-wallet correctly returns 403 with {error: 'NOT_VERIFIED'} - users CANNOT create wallets without verification, Wallet info endpoint correctly shows {hasWallet: false}. ❌ TURNKEY SUB-ORG CREATION ISSUE: POST /api/turnkey/init-email-auth fails with HTTP 520 'TURNKEY_OTP_FAILED:Failed to prepare organization'. ROOT CAUSE IDENTIFIED: Turnkey API error 400 - 'user missing valid credential: defddb2b-1cb5-4430-b302-b7aeca419fda'. This indicates the API key lacks permissions to create sub-organizations. BACKEND LOGS CONFIRM: create_sub_org_without_wallet_error shows Turnkey API rejecting sub-org creation due to credential permissions. IMPACT: Email OTP flow cannot initialize because sub-org creation fails, but the verification gate security is working perfectly. RECOMMENDATION: This is a Turnkey service configuration issue - the API key needs elevated permissions for sub-organization creation activities. The verification gate architecture is production-ready and correctly enforces security."
 
   - task: "Crypto Indices API - Constant Scores"
     implemented: true
