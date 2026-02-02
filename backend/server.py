@@ -1092,7 +1092,6 @@ async def create_turnkey_wallet(
                 logger.error(f"[WALLET] Failed to update user_wallets: {update_response.status_code} - {update_response.text}")
             else:
                 logger.info(f"[WALLET] Successfully updated user_wallets table")
-                logger.info(f"[WALLET] Successfully updated profiles table")
         
         logger.info(f"[WALLET] SUCCESS: Created wallet for user {auth_user_id}: {eth_address}")
         
