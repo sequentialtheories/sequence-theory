@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """
-Backend Test Suite for Turnkey Wallet Creation Endpoints
-========================================================
+Backend Test Suite for Turnkey Verification Gate Flow
+====================================================
 
-Tests the Turnkey wallet creation backend endpoints as requested:
-1. Health check endpoint
-2. Turnkey config verification
-3. Sub-organization creation test
-4. Sign raw payload test (optional)
+Tests the FIXED Turnkey verification gate flow as requested:
+1. Login to get auth token
+2. Test create-wallet without verification (should fail with 403 NOT_VERIFIED)
+3. Test init-email-auth (should create sub-org + send OTP)
+4. Check backend logs for sub-org creation
+5. Verify sub-org was stored in DB
+
+Test credentials:
+- Email: sequencetheoryinc@gmail.com
+- Password: TestPassword123!
 
 Usage: python3 backend_test.py
 """
@@ -17,6 +22,7 @@ import httpx
 import json
 import os
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -27,6 +33,10 @@ sys.path.insert(0, str(backend_dir))
 # Backend URL from frontend .env
 BACKEND_URL = "https://wallet-auth-service.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
+
+# Test credentials from review request
+TEST_EMAIL = "sequencetheoryinc@gmail.com"
+TEST_PASSWORD = "TestPassword123!"
 
 class TurnkeyBackendTester:
     def __init__(self):
