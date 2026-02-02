@@ -77,6 +77,10 @@ def verify_otp_hash(otp: str, stored_hash: str) -> bool:
 # In production, this should be stored in database
 verified_users: Dict[str, bool] = {}
 
+# Verified sub-orgs storage - maps user_id to sub_org_id after OTP verification
+# This persists the sub_org_id for wallet creation since we can't store in DB yet
+verified_sub_orgs: Dict[str, str] = {}
+
 # ============================================================================
 # SECURITY NOTE: TURNKEY EMBEDDED WALLETS
 # ============================================================================
