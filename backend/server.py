@@ -1055,6 +1055,12 @@ async def create_turnkey_wallet(
                             "walletId": existing.get("turnkey_wallet_id")
                         }
             
+            # If not in DB, check verified_sub_orgs (from OTP verification)
+            if not sub_org_id:
+                sub_org_id = verified_sub_orgs.get(auth_user_id)
+                if sub_org_id:
+                    logger.info(f"[WALLET] Found sub_org_id {sub_org_id} in verified_sub_orgs for user {auth_user_id}")
+            
             if not sub_org_id:
                 logger.error(f"[WALLET] No sub-org found for verified user {auth_user_id}")
                 raise HTTPException(status_code=400, detail="NO_SUB_ORG:Please complete email verification first")
