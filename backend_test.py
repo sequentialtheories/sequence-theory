@@ -288,11 +288,11 @@ class TurnkeyVerificationGateTester:
     async def test_check_backend_logs(self):
         """Test 4: Check backend logs for sub-org creation"""
         try:
-            # Check supervisor backend logs for sub-org creation
+            # Check supervisor backend error logs for detailed sub-org creation
             import subprocess
             
-            # Check recent backend logs
-            cmd = ["tail", "-n", "100", "/var/log/supervisor/backend.out.log"]
+            # Check recent backend error logs (more detailed)
+            cmd = ["tail", "-n", "50", "/var/log/supervisor/backend.err.log"]
             
             result = subprocess.run(
                 cmd, 
@@ -312,31 +312,37 @@ class TurnkeyVerificationGateTester:
             
             logs = result.stdout
             
-            # Look for key log messages
-            key_messages = [
+            # Look for specific sub-org creation success messages
+            sub_org_created = "create_sub_org_without_wallet_created" in logs
+            sub_org_id_found = "57b6c9d6-cd39-40e8-8b41-20d8ccf64660" in logs or "sub_org_id" in logs
+            
+            # Look for the specific success pattern
+            success_patterns = [
                 "create_sub_org_without_wallet_start",
-                "create_sub_org_without_wallet_request", 
-                "SUCCESS",
-                "sub-org"
+                "create_sub_org_without_wallet_request",
+                "create_sub_org_without_wallet_created",
+                "ensure_sub_org_for_otp_created"
             ]
             
-            found_messages = []
-            for message in key_messages:
-                if message.lower() in logs.lower():
-                    found_messages.append(message)
+            found_patterns = []
+            for pattern in success_patterns:
+                if pattern in logs:
+                    found_patterns.append(pattern)
             
-            # Look for OTP sent message
-            otp_sent = "OTP sent" in logs or "otpId:" in logs or "[TURNKEY-OTP]" in logs
+            # Check for OTP attempt (even if it failed)
+            otp_attempt = "[TURNKEY-OTP]" in logs or "init_otp_auth" in logs
             
-            if found_messages or otp_sent:
+            if sub_org_created and len(found_patterns) >= 3:
                 self.log_result(
                     "Check Backend Logs", 
                     True, 
-                    f"Found relevant log messages: {found_messages}, OTP activity: {otp_sent}",
+                    f"Sub-org creation SUCCESS found in logs. Patterns: {found_patterns}",
                     {
-                        "found_messages": found_messages,
-                        "otp_activity": otp_sent,
-                        "log_sample": logs[-500:] if len(logs) > 500 else logs  # Last 500 chars
+                        "sub_org_created": sub_org_created,
+                        "sub_org_id_found": sub_org_id_found,
+                        "found_patterns": found_patterns,
+                        "otp_attempt": otp_attempt,
+                        "log_sample": logs[-800:] if len(logs) > 800 else logs
                     }
                 )
                 return True
@@ -344,10 +350,12 @@ class TurnkeyVerificationGateTester:
                 self.log_result(
                     "Check Backend Logs", 
                     False, 
-                    "No relevant sub-org creation or OTP messages found in logs",
+                    f"Sub-org creation incomplete. Found patterns: {found_patterns}",
                     {
-                        "searched_for": key_messages,
-                        "log_sample": logs[-500:] if len(logs) > 500 else logs
+                        "sub_org_created": sub_org_created,
+                        "found_patterns": found_patterns,
+                        "searched_for": success_patterns,
+                        "log_sample": logs[-800:] if len(logs) > 800 else logs
                     }
                 )
                 return False
