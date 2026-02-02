@@ -113,6 +113,18 @@ user_problem_statement: |
   4. Charts should not crash the page
 
 backend:
+  - task: "Turnkey Verification Gate API Testing"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🎯 TURNKEY VERIFICATION GATE API TESTING COMPLETED - 87.5% SUCCESS RATE. CORE VERIFICATION FUNCTIONALITY WORKING: ✅ Health check returns turnkey_configured: true ✅ Wallet info endpoints return 401 without auth (correct security) ✅ User authentication with sequencetheoryinc@gmail.com / TestPassword123! successful ✅ CRITICAL: Verification gate correctly blocks wallet creation - POST /api/turnkey/create-wallet returns 403 with {'error': 'NOT_VERIFIED'} ✅ Verification status endpoints working with proper response format ✅ All API endpoints have correct authentication requirements. ❌ TURNKEY OTP INTEGRATION ISSUE: POST /api/turnkey/init-email-auth fails with Turnkey API 403 permission error. ROOT CAUSE: Third-party Turnkey service policy configuration - API key lacks permissions for 'init_otp_auth' activity. ERROR: 'You don't have sufficient permissions to take this action. Please add a policy granting this user permissions.' IMPACT: Email OTP flow cannot complete, but the verification gate itself is working correctly. RECOMMENDATION: This is a Turnkey service configuration issue requiring policy update to allow OTP activities, not a code defect. The core verification gate security is production-ready."
+
   - task: "Crypto Indices API - Constant Scores"
     implemented: true
     working: true
