@@ -1164,12 +1164,14 @@ async def init_email_otp(
     """
     Initialize email OTP verification using Turnkey's native email OTP.
     
-    CORRECT FLOW:
-    1. OTP is sent against PARENT org (no sub-org needed)
-    2. User verifies OTP
-    3. ONLY THEN can they create wallet
+    CORRECT FLOW (per Turnkey docs):
+    1. Ensure user has a sub-org (create if needed, WITHOUT wallet)
+    2. Sub-org has OTP enabled by default + we attach explicit OTP policy
+    3. OTP is sent against the SUB-ORG (not parent)
+    4. User verifies OTP in sub-org
+    5. ONLY THEN can they create wallet
     
-    NO wallet or sub-org is created here.
+    Docs: https://docs.turnkey.com/authentication/email
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1223,14 +1225,26 @@ async def init_email_otp(
                 detail="RATE_LIMITED:Too many code requests. Please wait before requesting another."
             )
         
-        # Send OTP via Turnkey against PARENT ORG (no sub-org needed for OTP)
-        logger.info(f"[TURNKEY-OTP] Sending OTP to {user_email} via parent org")
+        # STEP 1: Ensure user has a sub-org (create WITHOUT wallet if needed)
+        from turnkey_service import ensure_user_sub_org_for_otp
         
+        sub_org_id = await ensure_user_sub_org_for_otp(
+            supabase_user_id=user_id,
+            user_email=user_email,
+            user_name=user_email.split('@')[0]
+        )
+        
+        if not sub_org_id:
+            logger.error(f"[TURNKEY-OTP] Failed to ensure sub-org for user {user_id}")
+            raise HTTPException(status_code=500, detail="TURNKEY_OTP_FAILED:Failed to prepare organization")
+        
+        logger.info(f"[TURNKEY-OTP] User {user_id} has sub-org {sub_org_id}")
+        
+        # STEP 2: Send OTP via Turnkey against the SUB-ORG
         from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
-        TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
         
         config = ApiKeyStamperConfig(
             api_public_key=TURNKEY_API_PUBLIC_KEY,
@@ -1238,17 +1252,18 @@ async def init_email_otp(
         )
         stamper = ApiKeyStamper(config)
         
+        # Client targets the SUB-ORG where OTP is enabled by default
         turnkey_client = TurnkeyClient(
             base_url="https://api.turnkey.com",
             stamper=stamper,
-            organization_id=TURNKEY_ORGANIZATION_ID
+            organization_id=sub_org_id  # TARGET SUB-ORG
         )
         
-        # OTP against PARENT org - no sub-org creation here
+        # OTP against SUB-ORG (OTP is enabled by default in sub-orgs)
         otp_body = {
             "type": "ACTIVITY_TYPE_INIT_OTP_AUTH",
             "timestampMs": str(int(time.time() * 1000)),
-            "organizationId": TURNKEY_ORGANIZATION_ID,  # PARENT org
+            "organizationId": sub_org_id,  # SUB-ORG, not parent
             "parameters": {
                 "otpType": "OTP_TYPE_EMAIL",
                 "contact": user_email,
@@ -1259,7 +1274,7 @@ async def init_email_otp(
             }
         }
         
-        logger.info(f"[TURNKEY-OTP] Calling init_otp_auth against PARENT org for {user_email}")
+        logger.info(f"[TURNKEY-OTP] Calling init_otp_auth against SUB-ORG {sub_org_id} for {user_email}")
         
         result = turnkey_client.init_otp_auth(otp_body)
         
@@ -1274,9 +1289,10 @@ async def init_email_otp(
         
         logger.info(f"[TURNKEY-OTP] SUCCESS - OTP sent to {user_email}, otpId: {otp_id}")
         
-        # Store OTP info - NO sub-org created yet
+        # Store OTP info with sub_org_id for verification step
         otp_storage[user_id] = {
             "otp_id": otp_id,
+            "sub_org_id": sub_org_id,  # CRITICAL: Need this for verify step
             "expires": current_time + OTP_EXPIRY_SECONDS,
             "email": user_email,
             "attempts": 0,
