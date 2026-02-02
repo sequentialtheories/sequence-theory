@@ -180,6 +180,10 @@ class TurnkeyClient:
         """Create a policy in an organization/sub-organization."""
         return self._make_request("POST", "/public/v1/submit/create_policy", body)
 
+    def create_wallet(self, body: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a wallet in an organization/sub-organization."""
+        return self._make_request("POST", "/public/v1/submit/create_wallet", body)
+
 
 # ============================================================================
 # Type definitions (replaces turnkey-sdk-types)
