@@ -551,14 +551,8 @@ async def create_sub_organization_with_wallet(
         if not sub_org_id or not wallet_id or not eth_address:
             raise Exception(f"Incomplete sub-org creation: sub_org={sub_org_id}, wallet={wallet_id}, address={eth_address}")
         
-        # CRITICAL: Auto-attach OTP policy to the new sub-org
-        structured_log(
-            "create_otp_policy_starting",
-            supabase_user_id=supabase_user_id,
-            target_sub_org_id=sub_org_id
-        )
-        
-        policy_success, policy_id = await create_otp_policy_for_sub_org(sub_org_id, supabase_user_id)
+        # NOTE: OTP is ENABLED by default in sub-orgs, no explicit policy needed
+        # See: https://docs.turnkey.com/authentication/email#for-sub-organizations
         
         structured_log(
             "create_sub_org_complete",
@@ -566,8 +560,7 @@ async def create_sub_organization_with_wallet(
             sub_org_id=sub_org_id,
             wallet_id=wallet_id,
             eth_address=eth_address,
-            otp_policy_created=policy_success,
-            otp_policy_id=policy_id
+            note="OTP enabled by default in sub-orgs"
         )
         
         return sub_org_id, wallet_id, eth_address, root_user_ids[0] if root_user_ids else ""
