@@ -38,10 +38,12 @@ API_BASE = f"{BACKEND_URL}/api"
 TEST_EMAIL = "sequencetheoryinc@gmail.com"
 TEST_PASSWORD = "TestPassword123!"
 
-class TurnkeyBackendTester:
+class TurnkeyVerificationGateTester:
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=30.0)
         self.test_results = []
+        self.auth_token = None
+        self.user_id = None
         
     async def __aenter__(self):
         return self
@@ -68,454 +70,387 @@ class TurnkeyBackendTester:
                 print(f"  {key}: {value}")
         print()
     
-    async def test_health_endpoint(self):
-        """Test 1: Health Check - should return turnkey_configured: true"""
+    async def test_login_authentication(self):
+        """Test 1: Login to get auth token"""
         try:
-            response = await self.client.get(f"{API_BASE}/health")
+            # First, get Supabase config from backend
+            supabase_url = "https://qldjhlnsphlixmzzrdwi.supabase.co"
+            supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsZGpobG5zcGhsaXhtenpyZHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMTQyNjgsImV4cCI6MjA2ODU5MDI2OH0.mIYpRjdBedu6VQl4wBUIbNM1WwOAN_vHdKNhF5l4g9o"
+            
+            # Login via Supabase auth
+            login_data = {
+                "email": TEST_EMAIL,
+                "password": TEST_PASSWORD
+            }
+            
+            response = await self.client.post(
+                f"{supabase_url}/auth/v1/token?grant_type=password",
+                json=login_data,
+                headers={
+                    "apikey": supabase_key,
+                    "Content-Type": "application/json"
+                }
+            )
             
             if response.status_code != 200:
                 self.log_result(
-                    "Health Endpoint", 
+                    "Login Authentication", 
                     False, 
-                    f"HTTP {response.status_code}: {response.text}",
+                    f"Login failed with HTTP {response.status_code}: {response.text}",
                     {"status_code": response.status_code, "response": response.text}
                 )
                 return False
             
-            data = response.json()
+            auth_data = response.json()
+            self.auth_token = auth_data.get("access_token")
+            user_data = auth_data.get("user", {})
+            self.user_id = user_data.get("id")
             
-            # Check required fields
-            required_fields = ["status", "turnkey_configured"]
-            missing_fields = [field for field in required_fields if field not in data]
-            
-            if missing_fields:
+            if not self.auth_token:
                 self.log_result(
-                    "Health Endpoint", 
+                    "Login Authentication", 
                     False, 
-                    f"Missing fields: {missing_fields}",
-                    {"response": data}
+                    "No access token in login response",
+                    {"response": auth_data}
                 )
                 return False
             
-            # Check status is healthy
-            if data.get("status") != "healthy":
+            if not self.user_id:
                 self.log_result(
-                    "Health Endpoint", 
+                    "Login Authentication", 
                     False, 
-                    f"Status not healthy: {data.get('status')}",
-                    {"response": data}
-                )
-                return False
-            
-            # Check turnkey_configured is true
-            if not data.get("turnkey_configured"):
-                self.log_result(
-                    "Health Endpoint", 
-                    False, 
-                    f"turnkey_configured is {data.get('turnkey_configured')}, expected True",
-                    {"response": data}
+                    "No user ID in login response",
+                    {"response": auth_data}
                 )
                 return False
             
             self.log_result(
-                "Health Endpoint", 
+                "Login Authentication", 
                 True, 
-                "Health check passed with turnkey_configured: true",
+                f"Successfully logged in as {TEST_EMAIL}",
                 {
-                    "status": data.get("status"),
-                    "turnkey_configured": data.get("turnkey_configured"),
-                    "supabase_configured": data.get("supabase_configured"),
-                    "coingecko_configured": data.get("coingecko_configured"),
-                    "wallet_custody": data.get("wallet_custody")
+                    "user_id": self.user_id,
+                    "email": user_data.get("email"),
+                    "token_length": len(self.auth_token)
                 }
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Health Endpoint", 
+                "Login Authentication", 
                 False, 
-                f"Exception: {str(e)}",
+                f"Exception during login: {str(e)}",
                 {"error_type": type(e).__name__}
             )
             return False
     
-    async def test_turnkey_config_verification(self):
-        """Test 2: Turnkey Config Verification (internal test)"""
-        try:
-            # Change to backend directory and run the verification
-            import subprocess
-            import os
-            
-            backend_path = Path(__file__).parent / "backend"
-            
-            # Test command from the review request
-            cmd = [
-                "python3", "-c", 
-                """
-import os
-import asyncio
-from dotenv import load_dotenv
-load_dotenv('.env')
-from turnkey_service import verify_turnkey_config
-result = asyncio.run(verify_turnkey_config())
-print(f'Turnkey config verified: {result}')
-"""
-            ]
-            
-            result = subprocess.run(
-                cmd, 
-                cwd=backend_path, 
-                capture_output=True, 
-                text=True, 
-                timeout=30
-            )
-            
-            if result.returncode != 0:
-                self.log_result(
-                    "Turnkey Config Verification", 
-                    False, 
-                    f"Command failed with return code {result.returncode}",
-                    {
-                        "stdout": result.stdout,
-                        "stderr": result.stderr,
-                        "return_code": result.returncode
-                    }
-                )
-                return False
-            
-            output = result.stdout.strip()
-            
-            # Check if verification was successful
-            if "Turnkey config verified: True" in output:
-                self.log_result(
-                    "Turnkey Config Verification", 
-                    True, 
-                    "Turnkey SDK configuration verified successfully",
-                    {"output": output}
-                )
-                return True
-            else:
-                self.log_result(
-                    "Turnkey Config Verification", 
-                    False, 
-                    "Turnkey config verification returned False",
-                    {
-                        "output": output,
-                        "stderr": result.stderr
-                    }
-                )
-                return False
-                
-        except subprocess.TimeoutExpired:
+    async def test_create_wallet_without_verification(self):
+        """Test 2: Test create-wallet without verification (should fail with 403 NOT_VERIFIED)"""
+        if not self.auth_token or not self.user_id:
             self.log_result(
-                "Turnkey Config Verification", 
+                "Create Wallet Without Verification", 
                 False, 
-                "Command timed out after 30 seconds"
-            )
-            return False
-        except Exception as e:
-            self.log_result(
-                "Turnkey Config Verification", 
-                False, 
-                f"Exception: {str(e)}",
-                {"error_type": type(e).__name__}
-            )
-            return False
-    
-    async def test_create_sub_organization(self):
-        """Test 3: Create Sub-Organization Test (direct service test)"""
-        try:
-            import subprocess
-            import time
-            
-            backend_path = Path(__file__).parent / "backend"
-            
-            # Generate unique email for this test
-            timestamp = int(time.time())
-            test_email = f"backend_test_{timestamp}@test.com"
-            
-            # Test command from the review request
-            cmd = [
-                "python3", "-c", 
-                f"""
-import os
-import asyncio
-from dotenv import load_dotenv
-load_dotenv('.env')
-from turnkey_service import create_sub_organization_with_wallet
-
-async def test():
-    result = await create_sub_organization_with_wallet(
-        user_email='{test_email}',
-        user_name='Backend Test User'
-    )
-    print(f'Created sub-org: {{result[0]}}')
-    print(f'Created wallet: {{result[1]}}')
-    print(f'ETH address: {{result[2]}}')
-    print(f'Root user ID: {{result[3]}}')
-    
-asyncio.run(test())
-"""
-            ]
-            
-            result = subprocess.run(
-                cmd, 
-                cwd=backend_path, 
-                capture_output=True, 
-                text=True, 
-                timeout=60  # Longer timeout for API calls
-            )
-            
-            if result.returncode != 0:
-                self.log_result(
-                    "Create Sub-Organization", 
-                    False, 
-                    f"Command failed with return code {result.returncode}",
-                    {
-                        "stdout": result.stdout,
-                        "stderr": result.stderr,
-                        "return_code": result.returncode,
-                        "test_email": test_email
-                    }
-                )
-                return False
-            
-            output = result.stdout.strip()
-            lines = output.split('\n')
-            
-            # Parse the output
-            sub_org_id = None
-            wallet_id = None
-            eth_address = None
-            root_user_id = None
-            
-            for line in lines:
-                if line.startswith('Created sub-org:'):
-                    sub_org_id = line.split(':', 1)[1].strip()
-                elif line.startswith('Created wallet:'):
-                    wallet_id = line.split(':', 1)[1].strip()
-                elif line.startswith('ETH address:'):
-                    eth_address = line.split(':', 1)[1].strip()
-                elif line.startswith('Root user ID:'):
-                    root_user_id = line.split(':', 1)[1].strip()
-            
-            # Validate results according to success criteria
-            validation_errors = []
-            
-            # Sub-org ID should be a UUID (36 chars with hyphens)
-            if not sub_org_id or len(sub_org_id) != 36 or sub_org_id.count('-') != 4:
-                validation_errors.append(f"Invalid sub-org ID format: {sub_org_id}")
-            
-            # Wallet ID should be a UUID
-            if not wallet_id or len(wallet_id) != 36 or wallet_id.count('-') != 4:
-                validation_errors.append(f"Invalid wallet ID format: {wallet_id}")
-            
-            # ETH address should start with 0x and be 42 characters
-            if not eth_address or not eth_address.startswith('0x') or len(eth_address) != 42:
-                validation_errors.append(f"Invalid ETH address format: {eth_address}")
-            
-            # Root user ID should be a UUID
-            if not root_user_id or len(root_user_id) != 36 or root_user_id.count('-') != 4:
-                validation_errors.append(f"Invalid root user ID format: {root_user_id}")
-            
-            if validation_errors:
-                self.log_result(
-                    "Create Sub-Organization", 
-                    False, 
-                    f"Validation errors: {'; '.join(validation_errors)}",
-                    {
-                        "sub_org_id": sub_org_id,
-                        "wallet_id": wallet_id,
-                        "eth_address": eth_address,
-                        "root_user_id": root_user_id,
-                        "test_email": test_email,
-                        "full_output": output
-                    }
-                )
-                return False
-            
-            self.log_result(
-                "Create Sub-Organization", 
-                True, 
-                "Sub-organization and wallet created successfully with valid IDs",
-                {
-                    "sub_org_id": sub_org_id,
-                    "wallet_id": wallet_id,
-                    "eth_address": eth_address,
-                    "root_user_id": root_user_id,
-                    "test_email": test_email
-                }
-            )
-            
-            # Store for potential use in signing test
-            self.test_sub_org_id = sub_org_id
-            self.test_wallet_address = eth_address
-            
-            return True
-                
-        except subprocess.TimeoutExpired:
-            self.log_result(
-                "Create Sub-Organization", 
-                False, 
-                "Command timed out after 60 seconds"
-            )
-            return False
-        except Exception as e:
-            self.log_result(
-                "Create Sub-Organization", 
-                False, 
-                f"Exception: {str(e)}",
-                {"error_type": type(e).__name__}
-            )
-            return False
-    
-    async def test_sign_raw_payload(self):
-        """Test 4: Sign Raw Payload Test (optional - requires existing wallet)"""
-        # Check if we have wallet info from previous test
-        if not hasattr(self, 'test_sub_org_id') or not hasattr(self, 'test_wallet_address'):
-            self.log_result(
-                "Sign Raw Payload", 
-                False, 
-                "Skipped - no wallet available from sub-organization test"
+                "No auth token available - login test must pass first"
             )
             return False
         
         try:
+            create_wallet_data = {
+                "email": TEST_EMAIL,
+                "user_id": self.user_id
+            }
+            
+            response = await self.client.post(
+                f"{API_BASE}/turnkey/create-wallet",
+                json=create_wallet_data,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            # Should return 403 with NOT_VERIFIED error
+            if response.status_code != 403:
+                self.log_result(
+                    "Create Wallet Without Verification", 
+                    False, 
+                    f"Expected HTTP 403, got {response.status_code}: {response.text}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+                return False
+            
+            try:
+                error_data = response.json()
+            except:
+                error_data = {"text": response.text}
+            
+            # Check for NOT_VERIFIED error
+            expected_error = "NOT_VERIFIED"
+            if expected_error not in str(error_data):
+                self.log_result(
+                    "Create Wallet Without Verification", 
+                    False, 
+                    f"Expected '{expected_error}' in error response, got: {error_data}",
+                    {"response": error_data}
+                )
+                return False
+            
+            self.log_result(
+                "Create Wallet Without Verification", 
+                True, 
+                f"Verification gate working correctly - returned 403 with {expected_error}",
+                {
+                    "status_code": response.status_code,
+                    "error_response": error_data
+                }
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Create Wallet Without Verification", 
+                False, 
+                f"Exception during wallet creation test: {str(e)}",
+                {"error_type": type(e).__name__}
+            )
+            return False
+    
+    async def test_init_email_auth(self):
+        """Test 3: Test init-email-auth (should create sub-org + send OTP)"""
+        if not self.auth_token:
+            self.log_result(
+                "Init Email Auth", 
+                False, 
+                "No auth token available - login test must pass first"
+            )
+            return False
+        
+        try:
+            init_auth_data = {
+                "email": TEST_EMAIL
+            }
+            
+            response = await self.client.post(
+                f"{API_BASE}/turnkey/init-email-auth",
+                json=init_auth_data,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            # Should return 200 with success
+            if response.status_code != 200:
+                self.log_result(
+                    "Init Email Auth", 
+                    False, 
+                    f"Init email auth failed with HTTP {response.status_code}: {response.text}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+                return False
+            
+            try:
+                response_data = response.json()
+            except:
+                response_data = {"text": response.text}
+            
+            # Check for success response
+            if not response_data.get("ok"):
+                self.log_result(
+                    "Init Email Auth", 
+                    False, 
+                    f"Expected 'ok: true' in response, got: {response_data}",
+                    {"response": response_data}
+                )
+                return False
+            
+            self.log_result(
+                "Init Email Auth", 
+                True, 
+                "Email auth initialization successful - sub-org should be created",
+                {
+                    "status_code": response.status_code,
+                    "response": response_data
+                }
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Init Email Auth", 
+                False, 
+                f"Exception during init email auth: {str(e)}",
+                {"error_type": type(e).__name__}
+            )
+            return False
+    
+    async def test_check_backend_logs(self):
+        """Test 4: Check backend logs for sub-org creation"""
+        try:
+            # Check supervisor backend logs for sub-org creation
             import subprocess
             
-            backend_path = Path(__file__).parent / "backend"
-            
-            # Test message to sign
-            test_message = "Hello from Turnkey backend test!"
-            
-            cmd = [
-                "python3", "-c", 
-                f"""
-import os
-import asyncio
-from dotenv import load_dotenv
-load_dotenv('.env')
-from turnkey_service import sign_raw_payload
-
-async def test():
-    # Simple test message hash (32 bytes hex)
-    test_hash = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    
-    result = await sign_raw_payload(
-        sub_org_id='{self.test_sub_org_id}',
-        wallet_address='{self.test_wallet_address}',
-        payload=test_hash,
-        encoding="PAYLOAD_ENCODING_HEXADECIMAL",
-        hash_function="HASH_FUNCTION_NO_OP"
-    )
-    
-    print(f'Signature: {{result.get("signature", "")}}')
-    print(f'R: {{result.get("r", "")}}')
-    print(f'S: {{result.get("s", "")}}')
-    print(f'V: {{result.get("v", "")}}')
-    
-asyncio.run(test())
-"""
-            ]
+            # Check recent backend logs
+            cmd = ["tail", "-n", "100", "/var/log/supervisor/backend.out.log"]
             
             result = subprocess.run(
                 cmd, 
-                cwd=backend_path, 
                 capture_output=True, 
                 text=True, 
-                timeout=30
+                timeout=10
             )
             
             if result.returncode != 0:
                 self.log_result(
-                    "Sign Raw Payload", 
+                    "Check Backend Logs", 
                     False, 
-                    f"Command failed with return code {result.returncode}",
-                    {
-                        "stdout": result.stdout,
-                        "stderr": result.stderr,
-                        "return_code": result.returncode,
-                        "sub_org_id": self.test_sub_org_id,
-                        "wallet_address": self.test_wallet_address
-                    }
+                    f"Failed to read backend logs: {result.stderr}",
+                    {"return_code": result.returncode, "stderr": result.stderr}
                 )
                 return False
             
-            output = result.stdout.strip()
-            lines = output.split('\n')
+            logs = result.stdout
             
-            # Parse signature components
-            signature = None
-            r_value = None
-            s_value = None
-            v_value = None
+            # Look for key log messages
+            key_messages = [
+                "create_sub_org_without_wallet_start",
+                "create_sub_org_without_wallet_request", 
+                "SUCCESS",
+                "sub-org"
+            ]
             
-            for line in lines:
-                if line.startswith('Signature:'):
-                    signature = line.split(':', 1)[1].strip()
-                elif line.startswith('R:'):
-                    r_value = line.split(':', 1)[1].strip()
-                elif line.startswith('S:'):
-                    s_value = line.split(':', 1)[1].strip()
-                elif line.startswith('V:'):
-                    v_value = line.split(':', 1)[1].strip()
+            found_messages = []
+            for message in key_messages:
+                if message.lower() in logs.lower():
+                    found_messages.append(message)
             
-            # Validate signature components
-            validation_errors = []
+            # Look for OTP sent message
+            otp_sent = "OTP sent" in logs or "otpId:" in logs or "[TURNKEY-OTP]" in logs
             
-            if not signature or not signature.startswith('0x'):
-                validation_errors.append(f"Invalid signature format: {signature}")
-            
-            if not r_value or len(r_value) != 64:  # 32 bytes = 64 hex chars
-                validation_errors.append(f"Invalid R value: {r_value}")
-            
-            if not s_value or len(s_value) != 64:  # 32 bytes = 64 hex chars
-                validation_errors.append(f"Invalid S value: {s_value}")
-            
-            if not v_value or v_value not in ['1b', '1c', '00', '01']:  # Valid v values
-                validation_errors.append(f"Invalid V value: {v_value}")
-            
-            if validation_errors:
+            if found_messages or otp_sent:
                 self.log_result(
-                    "Sign Raw Payload", 
-                    False, 
-                    f"Signature validation errors: {'; '.join(validation_errors)}",
+                    "Check Backend Logs", 
+                    True, 
+                    f"Found relevant log messages: {found_messages}, OTP activity: {otp_sent}",
                     {
-                        "signature": signature,
-                        "r": r_value,
-                        "s": s_value,
-                        "v": v_value,
-                        "full_output": output
+                        "found_messages": found_messages,
+                        "otp_activity": otp_sent,
+                        "log_sample": logs[-500:] if len(logs) > 500 else logs  # Last 500 chars
+                    }
+                )
+                return True
+            else:
+                self.log_result(
+                    "Check Backend Logs", 
+                    False, 
+                    "No relevant sub-org creation or OTP messages found in logs",
+                    {
+                        "searched_for": key_messages,
+                        "log_sample": logs[-500:] if len(logs) > 500 else logs
                     }
                 )
                 return False
-            
-            self.log_result(
-                "Sign Raw Payload", 
-                True, 
-                "Raw payload signed successfully with valid signature components",
-                {
-                    "signature": signature,
-                    "r": r_value,
-                    "s": s_value,
-                    "v": v_value
-                }
-            )
-            return True
                 
         except subprocess.TimeoutExpired:
             self.log_result(
-                "Sign Raw Payload", 
+                "Check Backend Logs", 
                 False, 
-                "Command timed out after 30 seconds"
+                "Log check timed out after 10 seconds"
             )
             return False
         except Exception as e:
             self.log_result(
-                "Sign Raw Payload", 
+                "Check Backend Logs", 
                 False, 
-                f"Exception: {str(e)}",
+                f"Exception during log check: {str(e)}",
+                {"error_type": type(e).__name__}
+            )
+            return False
+    
+    async def test_verify_sub_org_in_db(self):
+        """Test 5: Verify sub-org was stored in DB"""
+        if not self.auth_token or not self.user_id:
+            self.log_result(
+                "Verify Sub-org in DB", 
+                False, 
+                "No auth token or user ID available"
+            )
+            return False
+        
+        try:
+            # Check profiles table for turnkey_sub_org_id
+            supabase_url = "https://qldjhlnsphlixmzzrdwi.supabase.co"
+            supabase_service_key = "sb_secret_c-DnSa7oU98uN-oL1MhcZg_t3GeTf7i"
+            
+            response = await self.client.get(
+                f"{supabase_url}/rest/v1/profiles",
+                params={"user_id": f"eq.{self.user_id}", "select": "user_id,email,turnkey_sub_org_id"},
+                headers={
+                    "apikey": supabase_service_key,
+                    "Authorization": f"Bearer {supabase_service_key}"
+                }
+            )
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Verify Sub-org in DB", 
+                    False, 
+                    f"Failed to query profiles table: HTTP {response.status_code}: {response.text}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+                return False
+            
+            profiles = response.json()
+            
+            if not profiles or len(profiles) == 0:
+                self.log_result(
+                    "Verify Sub-org in DB", 
+                    False, 
+                    f"No profile found for user {self.user_id}",
+                    {"user_id": self.user_id, "profiles": profiles}
+                )
+                return False
+            
+            profile = profiles[0]
+            sub_org_id = profile.get("turnkey_sub_org_id")
+            
+            if not sub_org_id:
+                self.log_result(
+                    "Verify Sub-org in DB", 
+                    False, 
+                    "Profile exists but turnkey_sub_org_id is null/empty",
+                    {"profile": profile}
+                )
+                return False
+            
+            # Validate sub-org ID format (should be UUID)
+            if len(sub_org_id) != 36 or sub_org_id.count('-') != 4:
+                self.log_result(
+                    "Verify Sub-org in DB", 
+                    False, 
+                    f"Invalid sub-org ID format: {sub_org_id}",
+                    {"sub_org_id": sub_org_id, "profile": profile}
+                )
+                return False
+            
+            self.log_result(
+                "Verify Sub-org in DB", 
+                True, 
+                f"Sub-org ID successfully stored in profiles table: {sub_org_id}",
+                {
+                    "user_id": self.user_id,
+                    "email": profile.get("email"),
+                    "sub_org_id": sub_org_id
+                }
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Verify Sub-org in DB", 
+                False, 
+                f"Exception during DB verification: {str(e)}",
                 {"error_type": type(e).__name__}
             )
             return False
