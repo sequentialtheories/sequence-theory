@@ -942,10 +942,11 @@ async def create_sub_org_without_wallet(
     Create a Turnkey sub-organization WITHOUT a wallet.
     
     ARCHITECTURE (per Turnkey delegated-access-backend docs):
-    - rootUsers contains Delegated Account with API key credential
-    - This API key is the SAME as parent org's key (gives parent control)
+    - TWO rootUsers:
+      1. Delegated Account with API key - for backend control
+      2. End User with email - for OTP authentication
     - NO wallet created here (wallet comes after OTP verification)
-    - OTP policy is attached immediately after sub-org creation
+    - OTP policy NOT needed because sub-orgs have OTP enabled by default
     
     Returns: sub_org_id or None if failed
     """
@@ -959,8 +960,9 @@ async def create_sub_org_without_wallet(
         turnkey_client = get_turnkey_client()
         
         # Create sub-org WITHOUT wallet
-        # Per Turnkey docs, root users MUST have at least one credential
-        # We use the parent org's API key as the delegated account's credential
+        # Per Turnkey delegated-access-backend docs:
+        # - Delegated Account: API key for backend control
+        # - End User: email for OTP authentication
         body = {
             "type": "ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
             "timestampMs": get_timestamp_ms(),
@@ -968,14 +970,11 @@ async def create_sub_org_without_wallet(
             "parameters": {
                 "subOrganizationName": f"ST Wallet: {user_email}",
                 
-                # Delegated Account with API key credential
-                # Using parent org's API key gives us control over this sub-org
+                # TWO root users per delegated access pattern
                 "rootUsers": [
+                    # 1. Delegated Account - backend control via API key
                     {
                         "userName": "Delegated Account",
-                        # NO userEmail - cannot receive OTP  
-                        # NO authenticators - cannot use passkey
-                        # API key = parent org's key for delegated control
                         "apiKeys": [
                             {
                                 "apiKeyName": "Delegated API Key",
@@ -983,6 +982,14 @@ async def create_sub_org_without_wallet(
                                 "curveType": "API_KEY_CURVE_P256"
                             }
                         ],
+                        "authenticators": [],
+                        "oauthProviders": []
+                    },
+                    # 2. End User - OTP authentication via email
+                    {
+                        "userName": user_name or user_email.split('@')[0],
+                        "userEmail": user_email,  # CRITICAL: Email for OTP
+                        "apiKeys": [],
                         "authenticators": [],
                         "oauthProviders": []
                     }
@@ -997,7 +1004,7 @@ async def create_sub_org_without_wallet(
         structured_log(
             "create_sub_org_without_wallet_request",
             supabase_user_id=supabase_user_id,
-            note="Creating sub-org WITHOUT wallet - wallet comes after OTP"
+            note="Creating sub-org WITHOUT wallet with Delegated Account + End User"
         )
         
         result = turnkey_client.create_sub_organization(body)
