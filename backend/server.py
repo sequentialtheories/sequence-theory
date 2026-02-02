@@ -1070,44 +1070,17 @@ async def create_turnkey_wallet(
             
             logger.info(f"[WALLET] Created wallet {wallet_id} with address {eth_address} in sub-org {sub_org_id}")
             
-            # Step 7: Store wallet in user_wallets table
-            wallet_data = {
-                "user_id": auth_user_id,
+            # Step 6: Update existing user_wallets record with wallet info
+            wallet_update = {
                 "wallet_address": eth_address,
-                "turnkey_sub_org_id": sub_org_id,
                 "turnkey_wallet_id": wallet_id,
-                "provider": "turnkey",
-                "network": "polygon",
-                "created_via": "passkey" if request.passkey_attestation else "email",
-                "provenance": "turnkey_invisible"
-            }
-            
-            create_response = await client.post(
-                f"{SUPABASE_URL}/rest/v1/user_wallets",
-                json=wallet_data,
-                headers={
-                    "apikey": SUPABASE_SERVICE_KEY,
-                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
-                    "Content-Type": "application/json",
-                    "Prefer": "return=representation"
-                }
-            )
-            
-            if create_response.status_code not in [200, 201]:
-                logger.error(f"[WALLET] Failed to store in user_wallets: {create_response.status_code} - {create_response.text}")
-            else:
-                logger.info(f"[WALLET] Successfully stored in user_wallets table")
-            
-            # Step 8: Update profiles table with wallet info
-            profile_update = {
-                "eth_address": eth_address,
-                "turnkey_wallet_id": wallet_id
+                "created_via": "passkey" if request.passkey_attestation else "email"
             }
             
             update_response = await client.patch(
-                f"{SUPABASE_URL}/rest/v1/profiles",
+                f"{SUPABASE_URL}/rest/v1/user_wallets",
                 params={"user_id": f"eq.{auth_user_id}"},
-                json=profile_update,
+                json=wallet_update,
                 headers={
                     "apikey": SUPABASE_SERVICE_KEY,
                     "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
@@ -1116,8 +1089,9 @@ async def create_turnkey_wallet(
             )
             
             if update_response.status_code not in [200, 204]:
-                logger.error(f"[WALLET] Failed to update profiles: {update_response.status_code} - {update_response.text}")
+                logger.error(f"[WALLET] Failed to update user_wallets: {update_response.status_code} - {update_response.text}")
             else:
+                logger.info(f"[WALLET] Successfully updated user_wallets table")
                 logger.info(f"[WALLET] Successfully updated profiles table")
         
         logger.info(f"[WALLET] SUCCESS: Created wallet for user {auth_user_id}: {eth_address}")
