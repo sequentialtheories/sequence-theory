@@ -430,10 +430,10 @@ async def create_sub_organization_with_wallet(
         client = get_turnkey_client()
         
         # CORRECT ARCHITECTURE (per Turnkey docs):
-        # - API keys are ONLY for signing requests, NOT for org membership
-        # - rootUsers should contain ONLY the end user (email identity) for OTP
-        # - The parent org's API key (used to sign this request) can already
-        #   manage child sub-orgs without being added as a user
+        # - rootUsers contains a SYSTEM placeholder (no auth methods = can't login)
+        # - End user is NOT added as root - they authenticate via OTP before this
+        # - Parent org's API key retains full control over sub-org
+        # - This prevents users from having admin access to their sub-org
         #
         # Docs: https://docs.turnkey.com/concepts/policies/delegated-access-backend
         
@@ -444,13 +444,16 @@ async def create_sub_organization_with_wallet(
             "parameters": {
                 "subOrganizationName": f"ST Wallet: {user_email}",
                 
-                # ONLY the end user - for email OTP authentication
-                # API keys are NOT identities and must NOT appear in rootUsers
+                # SYSTEM placeholder as root - NOT the end user
+                # This user has NO auth methods, so cannot login
+                # Parent org API key manages this sub-org
                 "rootUsers": [
                     {
-                        "userName": user_name or user_email.split('@')[0],
-                        "userEmail": user_email,
-                        "apiKeys": [],  # Empty - API keys are not identities
+                        "userName": "ST System",
+                        # NO userEmail - cannot receive OTP
+                        # NO apiKeys - cannot use API  
+                        # NO authenticators - cannot use passkey
+                        "apiKeys": [],
                         "authenticators": [],
                         "oauthProviders": []
                     }
@@ -478,8 +481,8 @@ async def create_sub_organization_with_wallet(
             turnkey_signing_api_key=TURNKEY_API_PUBLIC_KEY[:20] + "...",
             activity_type="ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
             root_users_count=1,
-            root_user_type="END_USER_EMAIL_ONLY",
-            note="API keys sign requests only, not added to rootUsers"
+            root_user_type="SYSTEM_PLACEHOLDER_NO_AUTH",
+            note="End user is NOT root - verified via OTP before wallet creation"
         )
         
         result = client.create_sub_organization(body)
