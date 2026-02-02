@@ -936,11 +936,11 @@ async def create_sub_org_without_wallet(
     """
     Create a Turnkey sub-organization WITHOUT a wallet.
     
-    ARCHITECTURE:
-    - rootUsers contains SYSTEM placeholder (no auth methods = can't login)
+    ARCHITECTURE (per Turnkey delegated-access-backend docs):
+    - rootUsers contains Delegated Account with API key credential
+    - This API key is the SAME as parent org's key (gives parent control)
     - NO wallet created here (wallet comes after OTP verification)
     - OTP policy is attached immediately after sub-org creation
-    - Parent org's API key retains full control
     
     Returns: sub_org_id or None if failed
     """
@@ -954,6 +954,8 @@ async def create_sub_org_without_wallet(
         turnkey_client = get_turnkey_client()
         
         # Create sub-org WITHOUT wallet
+        # Per Turnkey docs, root users MUST have at least one credential
+        # We use the parent org's API key as the delegated account's credential
         body = {
             "type": "ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
             "timestampMs": get_timestamp_ms(),
@@ -961,16 +963,21 @@ async def create_sub_org_without_wallet(
             "parameters": {
                 "subOrganizationName": f"ST Wallet: {user_email}",
                 
-                # SYSTEM placeholder as root - NOT the end user
-                # This user has NO auth methods, so cannot login
-                # Parent org API key manages this sub-org
+                # Delegated Account with API key credential
+                # Using parent org's API key gives us control over this sub-org
                 "rootUsers": [
                     {
-                        "userName": "ST System",
-                        # NO userEmail - cannot receive OTP
-                        # NO apiKeys - cannot use API  
+                        "userName": "Delegated Account",
+                        # NO userEmail - cannot receive OTP  
                         # NO authenticators - cannot use passkey
-                        "apiKeys": [],
+                        # API key = parent org's key for delegated control
+                        "apiKeys": [
+                            {
+                                "apiKeyName": "Delegated API Key",
+                                "publicKey": TURNKEY_API_PUBLIC_KEY,
+                                "curveType": "API_KEY_CURVE_P256"
+                            }
+                        ],
                         "authenticators": [],
                         "oauthProviders": []
                     }
