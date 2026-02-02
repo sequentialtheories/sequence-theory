@@ -1163,10 +1163,12 @@ async def init_email_otp(
     """
     Initialize email OTP verification using Turnkey's native email OTP.
     
-    CRITICAL FLOW:
-    1. Ensure user has a sub-org (create if needed)
-    2. Init OTP against the USER'S SUB-ORG (not parent org)
-    3. Sub-org must have OTP-allow policy
+    CORRECT FLOW:
+    1. OTP is sent against PARENT org (no sub-org needed)
+    2. User verifies OTP
+    3. ONLY THEN can they create wallet
+    
+    NO wallet or sub-org is created here.
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1194,77 +1196,95 @@ async def init_email_otp(
             # Verify email matches
             if request.email.lower() != user_email.lower():
                 raise HTTPException(status_code=400, detail="EMAIL_MISMATCH")
-            
-            current_time = time.time()
-            
-            # Check rate limiting
-            existing = otp_storage.get(user_id, {})
-            
-            locked_until = existing.get("locked_until") or 0
-            if current_time < locked_until:
-                wait_time = int(locked_until - current_time)
-                raise HTTPException(
-                    status_code=429, 
-                    detail=f"RATE_LIMITED:Too many attempts. Try again in {wait_time} seconds."
-                )
-            
-            last_sent = existing.get("last_sent_at", 0)
-            send_count = existing.get("send_count", 0)
-            
-            if current_time - last_sent > OTP_RATE_WINDOW_SECONDS:
-                send_count = 0
-            
-            if send_count >= OTP_MAX_SENDS_PER_WINDOW:
-                raise HTTPException(
-                    status_code=429, 
-                    detail="RATE_LIMITED:Too many code requests. Please wait before requesting another."
-                )
-            
-            # STEP 1: Ensure user has a sub-org (idempotent)
-            from turnkey_service import ensure_user_has_sub_org, init_otp_for_user
-            
-            logger.info(f"[TURNKEY-OTP] Ensuring sub-org exists for user {user_id}")
-            
-            sub_org_id, wallet_id, eth_address = await ensure_user_has_sub_org(
-                supabase_user_id=user_id,
-                user_email=user_email,
-                user_name=user_email.split('@')[0],
-                supabase_client=client,
-                supabase_url=SUPABASE_URL,
-                supabase_service_key=SUPABASE_SERVICE_KEY
+        
+        current_time = time.time()
+        
+        # Check rate limiting
+        existing = otp_storage.get(user_id, {})
+        
+        locked_until = existing.get("locked_until") or 0
+        if current_time < locked_until:
+            wait_time = int(locked_until - current_time)
+            raise HTTPException(
+                status_code=429, 
+                detail=f"RATE_LIMITED:Too many attempts. Try again in {wait_time} seconds."
             )
-            
-            if not sub_org_id:
-                raise HTTPException(status_code=500, detail="TURNKEY_OTP_FAILED:Could not create/find user sub-org")
-            
-            logger.info(f"[TURNKEY-OTP] User {user_id} has sub-org {sub_org_id}")
-            
-            # STEP 2: Init OTP against the USER'S SUB-ORG
-            success, otp_id, error_msg = await init_otp_for_user(
-                supabase_user_id=user_id,
-                user_email=user_email,
-                sub_org_id=sub_org_id
+        
+        last_sent = existing.get("last_sent_at", 0)
+        send_count = existing.get("send_count", 0)
+        
+        if current_time - last_sent > OTP_RATE_WINDOW_SECONDS:
+            send_count = 0
+        
+        if send_count >= OTP_MAX_SENDS_PER_WINDOW:
+            raise HTTPException(
+                status_code=429, 
+                detail="RATE_LIMITED:Too many code requests. Please wait before requesting another."
             )
-            
-            if not success or not otp_id:
-                logger.error(f"[TURNKEY-OTP] Failed to init OTP: {error_msg}")
-                raise HTTPException(status_code=500, detail=f"TURNKEY_OTP_FAILED:{error_msg}")
-            
-            logger.info(f"[TURNKEY-OTP] SUCCESS - Email OTP initiated for {user_email}, otpId: {otp_id}")
-            
-            # Store OTP info
-            otp_storage[user_id] = {
-                "otp_id": otp_id,
-                "sub_org_id": sub_org_id,  # CRITICAL: Store sub-org for verify step
-                "expires": current_time + OTP_EXPIRY_SECONDS,
-                "email": user_email,
-                "attempts": 0,
-                "last_sent_at": current_time,
-                "send_count": send_count + 1,
-                "locked_until": None
+        
+        # Send OTP via Turnkey against PARENT ORG (no sub-org needed for OTP)
+        logger.info(f"[TURNKEY-OTP] Sending OTP to {user_email} via parent org")
+        
+        from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig
+        
+        TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
+        TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
+        TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
+        
+        config = ApiKeyStamperConfig(
+            api_public_key=TURNKEY_API_PUBLIC_KEY,
+            api_private_key=TURNKEY_API_PRIVATE_KEY
+        )
+        stamper = ApiKeyStamper(config)
+        
+        turnkey_client = TurnkeyClient(
+            base_url="https://api.turnkey.com",
+            stamper=stamper,
+            organization_id=TURNKEY_ORGANIZATION_ID
+        )
+        
+        # OTP against PARENT org - no sub-org creation here
+        otp_body = {
+            "type": "ACTIVITY_TYPE_INIT_OTP_AUTH",
+            "timestampMs": str(int(time.time() * 1000)),
+            "organizationId": TURNKEY_ORGANIZATION_ID,  # PARENT org
+            "parameters": {
+                "otpType": "OTP_TYPE_EMAIL",
+                "contact": user_email,
+                "emailCustomization": {
+                    "appName": "Sequence Theory"
+                },
+                "expirationSeconds": "600"
             }
-            
-            return {"ok": True}
+        }
+        
+        logger.info(f"[TURNKEY-OTP] Calling init_otp_auth against PARENT org for {user_email}")
+        
+        result = turnkey_client.init_otp_auth(otp_body)
+        
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        init_result = activity_result.get("initOtpAuthResultV2") or activity_result.get("initOtpAuthResult") or {}
+        otp_id = init_result.get("otpId")
+        
+        if not otp_id:
+            logger.error(f"[TURNKEY-OTP] No otpId in response: {activity_result}")
+            raise HTTPException(status_code=500, detail="TURNKEY_OTP_FAILED:Failed to initiate email verification")
+        
+        logger.info(f"[TURNKEY-OTP] SUCCESS - OTP sent to {user_email}, otpId: {otp_id}")
+        
+        # Store OTP info - NO sub-org created yet
+        otp_storage[user_id] = {
+            "otp_id": otp_id,
+            "expires": current_time + OTP_EXPIRY_SECONDS,
+            "email": user_email,
+            "attempts": 0,
+            "last_sent_at": current_time,
+            "send_count": send_count + 1,
+            "locked_until": None
+        }
+        
+        return {"ok": True}
         
     except HTTPException:
         raise
