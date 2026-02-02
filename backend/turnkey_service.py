@@ -5,11 +5,17 @@ TURNKEY EMBEDDED WALLET SERVICE
 CORRECT ARCHITECTURE (per Turnkey docs):
 - Root org = Sequence Theory (signs requests with API key)
 - Sub-org per app user with:
-  - End user (email identity) as root user - for OTP authentication
+  - SYSTEM placeholder as root user (no auth methods = can't login)
   - Wallet created during sub-org creation
-  - OTP-allow policy auto-attached
-- API keys are ONLY for signing requests, NEVER added to org/user payloads
-- Parent org's API key can manage child sub-orgs automatically
+  - End user is NOT root - they verify via OTP BEFORE wallet creation
+- OTP happens against PARENT org before any sub-org exists
+- Parent org's API key retains full control over all sub-orgs
+
+FLOW:
+1. User calls init-email-auth → OTP sent via PARENT org
+2. User calls verify-email-otp → Verified via PARENT org → marked as verified
+3. User calls create-wallet → ONLY IF verified → sub-org+wallet created
+4. Sub-org root = system placeholder, NOT end user
 
 Docs:
 - Organizations: https://docs.turnkey.com/concepts/organizations
