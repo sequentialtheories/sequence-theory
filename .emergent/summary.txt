@@ -1,0 +1,183 @@
+<analysis>
+ORIGINAL PROBLEM STATEMENT
+
+The user wants to expose their existing Turnkey wallet infrastructure via a public API under the /api/* prefix so a second frontend application (“The Vault Club” / TVC) can consume it.
+
+The project has experienced cascading failures, beginning with deployment issues caused by a cached ghost dependency (turnkey-api-key-stamper==0.1.0). After removing all Turnkey SDK dependencies and replacing them with a custom client, the focus shifted to backend correctness.
+
+Core issues encountered:
+
+Incorrect API response shapes vs TVC expectations
+
+Turnkey OTP policy failures (403) due to incorrect org scope
+
+Critical security regression where wallets were created without OTP/passkey verification
+
+Duplicate Turnkey sub-org creation for the same user
+
+Incorrect architecture where end users were made root users of sub-orgs, bypassing all policy enforcement
+
+The final goal is a production-ready backend that strictly enforces verification before wallet creation using Turnkey’s Delegated Access architecture.
+
+PRODUCT REQUIREMENTS (NON-NEGOTIABLE)
+
+All /api/turnkey/* endpoints must be publicly reachable and correct
+
+/api/turnkey/create-wallet MUST be gated behind successful OTP/passkey verification
+
+Wallet and sub-org creation MUST be idempotent
+
+Delegated Access architecture MUST be used:
+
+A system Turnkey USER is the root/admin of sub-orgs
+
+End users are never root users
+
+No Turnkey SDK dependencies (custom client only)
+
+requirements.txt must remain clean
+
+WHAT CURRENTLY EXISTS
+
+React frontend + FastAPI backend
+
+Custom turnkey_client.py (SDK removed)
+
+Backend files of interest:
+
+/app/backend/server.py
+
+/app/backend/turnkey_service.py
+
+/app/backend/turnkey_client.py
+
+Supabase JWT auth
+
+Turnkey Email OTP for wallet actions
+
+CURRENT ARCHITECTURE INTENT (CORRECT)
+
+The backend is intended to implement Turnkey Delegated Access (Backend pattern):
+
+Parent org = control plane only
+
+Each user has one sub-org
+
+Sub-org contains:
+
+System Turnkey USER (root/admin)
+
+End user identity (email/passkey only)
+
+OTP is executed inside the user’s sub-org, never the parent org
+
+Wallet creation is blocked until verification succeeds
+
+Reference (must be followed):
+https://docs.turnkey.com/concepts/policies/delegated-access-backend
+
+LAST WORKING CONTEXT
+
+The agent was fixing a critical regression where wallets were auto-created without verification.
+
+Recent changes attempted:
+
+Reworked Turnkey service logic
+
+Added idempotency checks
+
+Modified OTP and wallet creation flow
+
+Status: IN PROGRESS
+Critical issue: End-to-end flow has NOT been verified.
+
+CRITICAL P0 ISSUE (DO FIRST)
+Issue 1: Backend Verification Flow Unverified (P0)
+
+The latest architectural changes have NOT been validated. This is the top priority.
+
+REQUIRED TEST SEQUENCE (MANDATORY)
+
+Using curl and a valid Supabase JWT:
+
+POST /api/turnkey/create-wallet
+
+Expected: 403 { error: NOT_VERIFIED }
+
+POST /api/turnkey/init-email-auth
+
+Expected: 200 { ok: true }
+
+POST /api/turnkey/verify-email-otp
+
+Expected: 200 { isVerified: true }
+
+POST /api/turnkey/create-wallet
+
+Expected: 200 { walletAddress, walletId }
+
+Repeat POST /api/turnkey/create-wallet
+
+Expected: same wallet (idempotent)
+
+If any step deviates, stop and fix backend logic.
+
+ARCHITECTURAL CONSTRAINTS (DO NOT VIOLATE)
+
+API keys are NOT identities
+
+API keys must never appear in org/user payloads
+
+A real Turnkey system USER must be:
+
+Created once in the root org
+
+Delegated as the sole root user of every sub-org
+
+End users:
+
+Added as normal users only
+
+Used solely for OTP/passkey
+
+Never root, never admin
+
+OTP must run inside the user’s sub-org, not the parent org
+
+Wallet creation must assert verification state
+
+SECONDARY ISSUE (P1 — AFTER BACKEND FIXED)
+Issue 2: Incomplete Frontend Refactor
+
+/app/frontend/src/pages/Index.tsx refactor was started
+
+Build/lint errors remain
+
+Do NOT touch frontend until P0 backend is fully verified
+
+DEFINITION OF DONE
+
+This fork is complete only if:
+
+OTP/passkey is always required before wallet creation
+
+No wallets are created without verification
+
+No duplicate sub-orgs are created
+
+System retains admin control of all sub-orgs
+
+End-to-end flow passes the curl checklist above
+
+No new dependencies added
+
+FINAL NOTE TO AGENT
+
+This project has failed repeatedly due to small deviations from Turnkey’s Delegated Access model.
+
+Do not improvise.
+Do not refactor unnecessarily.
+Verify behavior with real requests.
+
+Test first. Fix second.
+</analysis>
