@@ -1318,10 +1318,10 @@ async def verify_email_otp(
     authorization: str = Header(None)
 ):
     """
-    Verify email OTP code using Turnkey against PARENT org.
+    Verify email OTP code using Turnkey against the user's SUB-ORG.
     On success, marks user as verified for wallet creation.
     
-    NO wallet is created here - user must call create-wallet separately.
+    CRITICAL: OTP verification MUST use the SAME sub-org as init-otp.
     """
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -1366,18 +1366,21 @@ async def verify_email_otp(
             raise HTTPException(status_code=400, detail="OTP_EXPIRED:Verification code expired. Please request a new one.")
         
         otp_id = stored.get("otp_id")
+        sub_org_id = stored.get("sub_org_id")  # CRITICAL: Get sub-org from storage
         
         if not otp_id:
             raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
         
-        # Verify OTP via Turnkey against PARENT org
-        logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id}, otpId: {otp_id}")
+        if not sub_org_id:
+            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
+        
+        # Verify OTP via Turnkey against SUB-ORG (same as init)
+        logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id} in sub-org {sub_org_id}, otpId: {otp_id}")
         
         from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig
         
         TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
         TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
-        TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
         
         config = ApiKeyStamperConfig(
             api_public_key=TURNKEY_API_PUBLIC_KEY,
@@ -1385,17 +1388,18 @@ async def verify_email_otp(
         )
         stamper = ApiKeyStamper(config)
         
+        # Client targets the SUB-ORG (same as init)
         turnkey_client = TurnkeyClient(
             base_url="https://api.turnkey.com",
             stamper=stamper,
-            organization_id=TURNKEY_ORGANIZATION_ID
+            organization_id=sub_org_id  # TARGET SUB-ORG
         )
         
-        # Verify against PARENT org
+        # Verify against SUB-ORG (same as init)
         verify_body = {
             "type": "ACTIVITY_TYPE_OTP_AUTH",
             "timestampMs": str(int(time.time() * 1000)),
-            "organizationId": TURNKEY_ORGANIZATION_ID,  # PARENT org
+            "organizationId": sub_org_id,  # SUB-ORG (same as init)
             "parameters": {
                 "otpId": otp_id,
                 "otpCode": request.otp_code
@@ -1410,10 +1414,13 @@ async def verify_email_otp(
             verify_result = activity_result.get("otpAuthResult")
             
             if verify_result:
-                logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id}")
+                logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id} in sub-org {sub_org_id}")
                 
                 # Mark user as verified - NOW they can create wallet
                 verified_users[user_id] = True
+                
+                # Store sub_org_id for wallet creation
+                # (it's already in DB via ensure_user_sub_org_for_otp)
                 
                 # Clean up OTP
                 del otp_storage[user_id]
