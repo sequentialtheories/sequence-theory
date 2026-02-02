@@ -858,11 +858,11 @@ async def ensure_user_sub_org_for_otp(
         user_email=user_email
     )
     
-    # Check if user already has a sub-org in DB
+    # Check if user already has a sub-org in DB (check user_wallets table)
     async with httpx.AsyncClient(timeout=30.0) as client:
-        # Check profiles table
-        profile_response = await client.get(
-            f"{SUPABASE_URL}/rest/v1/profiles",
+        # Check user_wallets table for existing sub-org
+        wallet_response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/user_wallets",
             params={
                 "user_id": f"eq.{supabase_user_id}",
                 "select": "turnkey_sub_org_id"
@@ -873,10 +873,10 @@ async def ensure_user_sub_org_for_otp(
             }
         )
         
-        if profile_response.status_code == 200:
-            profiles = profile_response.json()
-            if profiles and len(profiles) > 0:
-                existing_sub_org = profiles[0].get("turnkey_sub_org_id")
+        if wallet_response.status_code == 200:
+            wallets = wallet_response.json()
+            if wallets and len(wallets) > 0:
+                existing_sub_org = wallets[0].get("turnkey_sub_org_id")
                 if existing_sub_org:
                     structured_log(
                         "ensure_sub_org_for_otp_found_existing",
