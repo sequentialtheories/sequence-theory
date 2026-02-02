@@ -906,20 +906,34 @@ async def ensure_user_sub_org_for_otp(
             )
             return None
         
-        # Store sub_org_id in profiles table
-        update_response = await client.patch(
-            f"{SUPABASE_URL}/rest/v1/profiles",
-            params={"user_id": f"eq.{supabase_user_id}"},
-            json={"turnkey_sub_org_id": sub_org_id},
+        # Store sub_org_id in user_wallets table (create partial record)
+        # Profile doesn't have turnkey_sub_org_id column, use user_wallets
+        wallet_data = {
+            "user_id": supabase_user_id,
+            "turnkey_sub_org_id": sub_org_id,
+            "wallet_address": None,  # Not created yet
+            "turnkey_wallet_id": None,  # Not created yet
+            "provider": "turnkey",
+            "network": "polygon",
+            "created_via": "email",
+            "provenance": "turnkey_invisible"
+        }
+        
+        create_response = await client.post(
+            f"{SUPABASE_URL}/rest/v1/user_wallets",
+            json=wallet_data,
             headers={
                 "apikey": SUPABASE_SERVICE_KEY,
                 "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Prefer": "return=representation"
             }
         )
         
-        if update_response.status_code not in [200, 204]:
-            logger.warning(f"Failed to update profiles with sub_org_id: {update_response.text}")
+        if create_response.status_code not in [200, 201]:
+            logger.warning(f"Failed to store sub_org_id in user_wallets: {create_response.text}")
+        else:
+            logger.info(f"Stored sub_org_id {sub_org_id} in user_wallets for user {supabase_user_id}")
         
         structured_log(
             "ensure_sub_org_for_otp_created",
