@@ -831,3 +831,289 @@ async def sign_transaction(
             error=str(e)
         )
         raise
+
+
+
+async def ensure_user_sub_org_for_otp(
+    supabase_user_id: str,
+    user_email: str,
+    user_name: str
+) -> Optional[str]:
+    """
+    Ensure user has a sub-org for OTP. Create WITHOUT wallet if needed.
+    
+    CORRECT ARCHITECTURE:
+    - Sub-org is created WITHOUT wallet at OTP time
+    - OTP policy is attached immediately
+    - Wallet is created ONLY after OTP verification
+    - Parent API key has full control of sub-org
+    
+    Returns: sub_org_id or None if failed
+    """
+    structured_log(
+        "ensure_sub_org_for_otp_start",
+        supabase_user_id=supabase_user_id,
+        user_email=user_email
+    )
+    
+    # Check if user already has a sub-org in DB
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        # Check profiles table
+        profile_response = await client.get(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            params={
+                "user_id": f"eq.{supabase_user_id}",
+                "select": "turnkey_sub_org_id"
+            },
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+            }
+        )
+        
+        if profile_response.status_code == 200:
+            profiles = profile_response.json()
+            if profiles and len(profiles) > 0:
+                existing_sub_org = profiles[0].get("turnkey_sub_org_id")
+                if existing_sub_org:
+                    structured_log(
+                        "ensure_sub_org_for_otp_found_existing",
+                        supabase_user_id=supabase_user_id,
+                        sub_org_id=existing_sub_org
+                    )
+                    return existing_sub_org
+        
+        # No existing sub-org - create one WITHOUT wallet
+        structured_log(
+            "ensure_sub_org_for_otp_creating_new",
+            supabase_user_id=supabase_user_id,
+            user_email=user_email
+        )
+        
+        sub_org_id = await create_sub_org_without_wallet(
+            supabase_user_id=supabase_user_id,
+            user_email=user_email,
+            user_name=user_name
+        )
+        
+        if not sub_org_id:
+            structured_log(
+                "ensure_sub_org_for_otp_failed",
+                supabase_user_id=supabase_user_id,
+                error="create_sub_org_without_wallet returned None"
+            )
+            return None
+        
+        # Store sub_org_id in profiles table
+        update_response = await client.patch(
+            f"{SUPABASE_URL}/rest/v1/profiles",
+            params={"user_id": f"eq.{supabase_user_id}"},
+            json={"turnkey_sub_org_id": sub_org_id},
+            headers={
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                "Content-Type": "application/json"
+            }
+        )
+        
+        if update_response.status_code not in [200, 204]:
+            logger.warning(f"Failed to update profiles with sub_org_id: {update_response.text}")
+        
+        structured_log(
+            "ensure_sub_org_for_otp_created",
+            supabase_user_id=supabase_user_id,
+            sub_org_id=sub_org_id
+        )
+        
+        return sub_org_id
+
+
+async def create_sub_org_without_wallet(
+    supabase_user_id: str,
+    user_email: str,
+    user_name: str
+) -> Optional[str]:
+    """
+    Create a Turnkey sub-organization WITHOUT a wallet.
+    
+    ARCHITECTURE:
+    - rootUsers contains SYSTEM placeholder (no auth methods = can't login)
+    - NO wallet created here (wallet comes after OTP verification)
+    - OTP policy is attached immediately after sub-org creation
+    - Parent org's API key retains full control
+    
+    Returns: sub_org_id or None if failed
+    """
+    structured_log(
+        "create_sub_org_without_wallet_start",
+        supabase_user_id=supabase_user_id,
+        user_email=user_email
+    )
+    
+    try:
+        turnkey_client = get_turnkey_client()
+        
+        # Create sub-org WITHOUT wallet
+        body = {
+            "type": "ACTIVITY_TYPE_CREATE_SUB_ORGANIZATION_V7",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": TURNKEY_ORGANIZATION_ID,
+            "parameters": {
+                "subOrganizationName": f"ST Wallet: {user_email}",
+                
+                # SYSTEM placeholder as root - NOT the end user
+                # This user has NO auth methods, so cannot login
+                # Parent org API key manages this sub-org
+                "rootUsers": [
+                    {
+                        "userName": "ST System",
+                        # NO userEmail - cannot receive OTP
+                        # NO apiKeys - cannot use API  
+                        # NO authenticators - cannot use passkey
+                        "apiKeys": [],
+                        "authenticators": [],
+                        "oauthProviders": []
+                    }
+                ],
+                
+                "rootQuorumThreshold": 1
+                
+                # NOTE: NO "wallet" parameter - wallet created later after OTP
+            }
+        }
+        
+        structured_log(
+            "create_sub_org_without_wallet_request",
+            supabase_user_id=supabase_user_id,
+            note="Creating sub-org WITHOUT wallet - wallet comes after OTP"
+        )
+        
+        result = turnkey_client.create_sub_organization(body)
+        
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        
+        sub_org_result = (
+            activity_result.get("createSubOrganizationResultV7") or
+            activity_result.get("createSubOrganizationResult") or
+            {}
+        )
+        
+        sub_org_id = sub_org_result.get("subOrganizationId", "")
+        
+        if not sub_org_id:
+            structured_log(
+                "create_sub_org_without_wallet_no_result",
+                supabase_user_id=supabase_user_id,
+                activity_result=str(activity_result)
+            )
+            return None
+        
+        structured_log(
+            "create_sub_org_without_wallet_created",
+            supabase_user_id=supabase_user_id,
+            sub_org_id=sub_org_id
+        )
+        
+        # CRITICAL: Attach OTP policy to the new sub-org
+        # OTP is ENABLED by default in sub-orgs, but we add explicit policy for safety
+        policy_success, policy_id = await create_otp_policy_for_sub_org(sub_org_id, supabase_user_id)
+        
+        structured_log(
+            "create_sub_org_without_wallet_complete",
+            supabase_user_id=supabase_user_id,
+            sub_org_id=sub_org_id,
+            otp_policy_created=policy_success,
+            otp_policy_id=policy_id
+        )
+        
+        return sub_org_id
+        
+    except Exception as e:
+        structured_log(
+            "create_sub_org_without_wallet_error",
+            supabase_user_id=supabase_user_id,
+            error=str(e)
+        )
+        import traceback
+        logger.error(f"[TURNKEY] Traceback: {traceback.format_exc()}")
+        return None
+
+
+async def create_wallet_in_sub_org(
+    sub_org_id: str,
+    user_email: str
+) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Create a wallet in an existing sub-organization.
+    
+    Called ONLY after OTP verification is complete.
+    
+    Returns: (wallet_id, eth_address) or (None, None) if failed
+    """
+    structured_log(
+        "create_wallet_in_sub_org_start",
+        sub_org_id=sub_org_id,
+        user_email=user_email
+    )
+    
+    try:
+        # Use parent org client to create wallet in sub-org
+        turnkey_client = get_turnkey_client()
+        
+        body = {
+            "type": "ACTIVITY_TYPE_CREATE_WALLET",
+            "timestampMs": get_timestamp_ms(),
+            "organizationId": sub_org_id,  # Target sub-org
+            "parameters": {
+                "walletName": f"Wallet: {user_email}",
+                "accounts": [{
+                    "curve": "CURVE_SECP256K1",
+                    "pathFormat": "PATH_FORMAT_BIP32",
+                    "path": "m/44'/60'/0'/0/0",
+                    "addressFormat": "ADDRESS_FORMAT_ETHEREUM"
+                }]
+            }
+        }
+        
+        structured_log(
+            "create_wallet_in_sub_org_request",
+            sub_org_id=sub_org_id
+        )
+        
+        result = turnkey_client.create_wallet(body)
+        
+        activity = result.get("activity", {})
+        activity_result = activity.get("result", {})
+        wallet_result = activity_result.get("createWalletResult", {})
+        
+        wallet_id = wallet_result.get("walletId", "")
+        addresses = wallet_result.get("addresses", [])
+        eth_address = addresses[0] if addresses else ""
+        
+        if not wallet_id or not eth_address:
+            structured_log(
+                "create_wallet_in_sub_org_no_result",
+                sub_org_id=sub_org_id,
+                activity_result=str(activity_result)
+            )
+            return None, None
+        
+        structured_log(
+            "create_wallet_in_sub_org_success",
+            sub_org_id=sub_org_id,
+            wallet_id=wallet_id,
+            eth_address=eth_address
+        )
+        
+        return wallet_id, eth_address
+        
+    except Exception as e:
+        structured_log(
+            "create_wallet_in_sub_org_error",
+            sub_org_id=sub_org_id,
+            error=str(e)
+        )
+        import traceback
+        logger.error(f"[TURNKEY] Traceback: {traceback.format_exc()}")
+        return None, None
