@@ -1073,6 +1073,7 @@ async def create_turnkey_wallet(
             from turnkey_service import create_sub_organization_with_wallet
             
             sub_org_id, wallet_id, eth_address, root_user_id = await create_sub_organization_with_wallet(
+                supabase_user_id=auth_user_id,
                 user_email=request.email or user_email,
                 user_name=request.name or (request.email or user_email).split('@')[0],
                 passkey_attestation=request.passkey_attestation
