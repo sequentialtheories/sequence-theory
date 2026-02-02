@@ -970,7 +970,12 @@ async def create_turnkey_wallet(
     authorization: str = Header(None)
 ):
     """
-    Create a new Turnkey sub-organization and embedded wallet for a user.
+    Create an embedded wallet in the user's existing sub-organization.
+    
+    CORRECT FLOW (per Turnkey docs):
+    1. Sub-org was created during init-email-auth (WITHOUT wallet)
+    2. User completed OTP verification
+    3. NOW we create wallet in the existing sub-org
     
     IDEMPOTENT: Will return existing wallet if one already exists.
     
@@ -978,7 +983,7 @@ async def create_turnkey_wallet(
     - Requires valid Supabase auth token
     - User ID must match authenticated user
     - REQUIRES EMAIL OTP OR PASSKEY VERIFICATION FIRST
-    - Prevents duplicate wallet/sub-org creation
+    - Prevents duplicate wallet creation
     - Only stores sub_org_id, wallet_id, eth_address in Supabase
     - NEVER stores private keys or seed phrases
     """
@@ -1011,7 +1016,7 @@ async def create_turnkey_wallet(
                 logger.error(f"SECURITY: User {auth_user_id} tried to create wallet for {request.user_id}")
                 raise HTTPException(status_code=403, detail="USER_MISMATCH")
             
-            # Step 3: Server-enforced verification gate
+            # Step 3: Server-enforced verification gate (HARD RULE)
             if auth_user_id not in verified_users or not verified_users[auth_user_id]:
                 logger.warning(f"User {auth_user_id} tried to create wallet without verification")
                 return JSONResponse(
@@ -1030,36 +1035,35 @@ async def create_turnkey_wallet(
                 }
             )
             
-            logger.info(f"[WALLET] Check response status: {check_response.status_code}")
-            
             if check_response.status_code == 200:
                 existing_wallets = check_response.json()
-                logger.info(f"[WALLET] Found {len(existing_wallets)} existing wallets")
-                
                 if existing_wallets and len(existing_wallets) > 0:
                     existing = existing_wallets[0]
-                    logger.info(f"[WALLET] IDEMPOTENT: Returning existing wallet for user {auth_user_id}")
-                    return {
-                        "walletAddress": existing.get("wallet_address"),
-                        "walletId": existing.get("turnkey_wallet_id")
-                    }
-            else:
-                logger.warning(f"[WALLET] Failed to check existing wallets: {check_response.text}")
+                    if existing.get("wallet_address") and existing.get("turnkey_wallet_id"):
+                        logger.info(f"[WALLET] IDEMPOTENT: Returning existing wallet for user {auth_user_id}")
+                        return {
+                            "walletAddress": existing.get("wallet_address"),
+                            "walletId": existing.get("turnkey_wallet_id")
+                        }
             
-            # Step 5: Also check profiles table for existing eth_address
+            # Step 5: Get user's sub-org (should exist from OTP flow)
             profile_response = await client.get(
                 f"{SUPABASE_URL}/rest/v1/profiles",
-                params={"user_id": f"eq.{auth_user_id}", "select": "eth_address,turnkey_sub_org_id,turnkey_wallet_id"},
+                params={"user_id": f"eq.{auth_user_id}", "select": "turnkey_sub_org_id,eth_address,turnkey_wallet_id"},
                 headers={
                     "apikey": SUPABASE_SERVICE_KEY,
                     "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
                 }
             )
             
+            sub_org_id = None
             if profile_response.status_code == 200:
                 profiles = profile_response.json()
                 if profiles and len(profiles) > 0:
                     profile = profiles[0]
+                    sub_org_id = profile.get("turnkey_sub_org_id")
+                    
+                    # Check if wallet already exists in profile
                     if profile.get("eth_address") and profile.get("turnkey_wallet_id"):
                         logger.info(f"[WALLET] IDEMPOTENT: Found wallet in profiles for user {auth_user_id}")
                         return {
@@ -1067,22 +1071,24 @@ async def create_turnkey_wallet(
                             "walletId": profile.get("turnkey_wallet_id")
                         }
             
-            # Step 6: No existing wallet found - create new one
-            logger.info(f"[WALLET] No existing wallet found, creating new sub-org for user {auth_user_id}")
+            if not sub_org_id:
+                logger.error(f"[WALLET] No sub-org found for verified user {auth_user_id}")
+                raise HTTPException(status_code=400, detail="NO_SUB_ORG:Please complete email verification first")
             
-            from turnkey_service import create_sub_organization_with_wallet
+            # Step 6: Create wallet in existing sub-org
+            logger.info(f"[WALLET] Creating wallet in existing sub-org {sub_org_id} for user {auth_user_id}")
             
-            sub_org_id, wallet_id, eth_address, root_user_id = await create_sub_organization_with_wallet(
-                supabase_user_id=auth_user_id,
-                user_email=request.email or user_email,
-                user_name=request.name or (request.email or user_email).split('@')[0],
-                passkey_attestation=request.passkey_attestation
+            from turnkey_service import create_wallet_in_sub_org
+            
+            wallet_id, eth_address = await create_wallet_in_sub_org(
+                sub_org_id=sub_org_id,
+                user_email=request.email or user_email
             )
             
-            if not sub_org_id or not wallet_id or not eth_address:
+            if not wallet_id or not eth_address:
                 raise HTTPException(status_code=500, detail="Failed to create wallet via Turnkey")
             
-            logger.info(f"[WALLET] Created sub-org {sub_org_id}, wallet {wallet_id}, address {eth_address}")
+            logger.info(f"[WALLET] Created wallet {wallet_id} with address {eth_address} in sub-org {sub_org_id}")
             
             # Step 7: Store wallet in user_wallets table
             wallet_data = {
@@ -1109,14 +1115,12 @@ async def create_turnkey_wallet(
             
             if create_response.status_code not in [200, 201]:
                 logger.error(f"[WALLET] Failed to store in user_wallets: {create_response.status_code} - {create_response.text}")
-                # Don't fail - wallet was created in Turnkey, try to save in profiles at least
             else:
                 logger.info(f"[WALLET] Successfully stored in user_wallets table")
             
-            # Step 8: Also update profiles table with wallet info
+            # Step 8: Update profiles table with wallet info
             profile_update = {
                 "eth_address": eth_address,
-                "turnkey_sub_org_id": sub_org_id,
                 "turnkey_wallet_id": wallet_id
             }
             
