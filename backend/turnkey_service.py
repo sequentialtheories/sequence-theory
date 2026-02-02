@@ -6,16 +6,17 @@ CORRECT ARCHITECTURE (per Turnkey docs):
 - Root org = Sequence Theory (signs requests with API key)
 - Sub-org per app user with:
   - SYSTEM placeholder as root user (no auth methods = can't login)
-  - Wallet created during sub-org creation
+  - OTP policy auto-attached at creation time
+  - Wallet created ONLY after OTP verification
   - End user is NOT root - they verify via OTP BEFORE wallet creation
-- OTP happens against PARENT org before any sub-org exists
+- OTP happens inside the SUB-ORG (OTP is enabled by default in sub-orgs)
 - Parent org's API key retains full control over all sub-orgs
 
 FLOW:
-1. User calls init-email-auth → OTP sent via PARENT org
-2. User calls verify-email-otp → Verified via PARENT org → marked as verified
-3. User calls create-wallet → ONLY IF verified → sub-org+wallet created
-4. Sub-org root = system placeholder, NOT end user
+1. User calls init-email-auth → sub-org created (NO wallet) + OTP policy attached
+2. OTP sent via Turnkey inside sub-org
+3. User calls verify-email-otp → Verified via sub-org → marked as verified
+4. User calls create-wallet → ONLY IF verified → wallet created in existing sub-org
 
 Docs:
 - Organizations: https://docs.turnkey.com/concepts/organizations
@@ -30,6 +31,7 @@ only standard PyPI packages (cryptography, requests).
 import os
 import json
 import logging
+import httpx
 from typing import Optional, Dict, Any, Tuple
 from datetime import datetime
 
@@ -47,6 +49,10 @@ TURNKEY_API_BASE_URL = "https://api.turnkey.com"
 TURNKEY_ORGANIZATION_ID = os.environ.get('TURNKEY_ORGANIZATION_ID', '')
 TURNKEY_API_PUBLIC_KEY = os.environ.get('TURNKEY_API_PUBLIC_KEY', '')
 TURNKEY_API_PRIVATE_KEY = os.environ.get('TURNKEY_API_PRIVATE_KEY', '')
+
+# Supabase Configuration (for DB operations)
+SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
+SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
 
 
 def get_timestamp_ms() -> str:
