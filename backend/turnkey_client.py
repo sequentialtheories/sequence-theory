@@ -165,8 +165,12 @@ class TurnkeyClient:
         return self._make_request("POST", "/public/v1/submit/init_otp_auth", body)
 
     def otp_auth(self, body: Dict[str, Any]) -> Dict[str, Any]:
-        """Verify OTP authentication."""
+        """Verify OTP authentication (legacy credential bundle method)."""
         return self._make_request("POST", "/public/v1/submit/otp_auth", body)
+
+    def verify_otp(self, body: Dict[str, Any]) -> Dict[str, Any]:
+        """Verify OTP code and get verification token (OTP-based method)."""
+        return self._make_request("POST", "/public/v1/submit/verify_otp", body)
 
     def sign_raw_payload(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """Sign a raw payload."""
