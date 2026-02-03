@@ -212,7 +212,24 @@ class InitOtpAuthBody:
 
 @dataclass
 class VerifyOtpBody:
-    """Body for otp_auth (verify) request."""
+    """Body for verify_otp request (OTP-based authentication method)."""
+    type: str = "ACTIVITY_TYPE_VERIFY_OTP"
+    timestampMs: str = ""
+    organizationId: str = ""
+    parameters: Dict[str, Any] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "type": self.type,
+            "timestampMs": self.timestampMs,
+            "organizationId": self.organizationId,
+            "parameters": self.parameters or {}
+        }
+
+
+@dataclass
+class OtpAuthBody:
+    """Body for otp_auth request (legacy credential bundle method)."""
     type: str = "ACTIVITY_TYPE_OTP_AUTH"
     timestampMs: str = ""
     organizationId: str = ""
