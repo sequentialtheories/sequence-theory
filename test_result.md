@@ -113,6 +113,18 @@ user_problem_statement: |
   4. Charts should not crash the page
 
 backend:
+  - task: "Turnkey OTP Verification Fix - ACTIVITY_TYPE_VERIFY_OTP"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py, backend/turnkey_client.py, backend/turnkey_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED: Changed OTP verification from ACTIVITY_TYPE_OTP_AUTH to ACTIVITY_TYPE_VERIFY_OTP per Turnkey documentation. OTP_AUTH was for credential bundle method (requires targetPublicKey), VERIFY_OTP is for server-side OTP verification (returns verificationToken). Changes made: 1) Added verify_otp() method to TurnkeyClient, 2) Updated verify_email_otp endpoint to use ACTIVITY_TYPE_VERIFY_OTP, 3) Updated turnkey_service.py verify_otp_for_user function. This should fix the crash after entering OTP code."
+
   - task: "Turnkey Verification Gate API Testing"
     implemented: true
     working: true
