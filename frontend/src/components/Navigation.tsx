@@ -93,7 +93,7 @@ const Navigation = () => {
                       size="sm"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 rounded-full transition-all duration-200 hover:shadow-md"
                     >
-                      Join The Vault Club
+                      Join TVC
                     </Button>
                   </>
                 )}
