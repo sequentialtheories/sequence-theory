@@ -34,12 +34,12 @@ const SupplementalOfferings = () => {
         <div className="text-center mb-12 animate-slide-up">
           <h2 className="text-3xl font-bold mb-4 text-foreground">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Beyond The Vault Club
+              Beyond TVC
             </span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-slide-up [animation-delay:0.2s]">
             Beyond The Vault Club, we provide education and community 
-            to help you succeed in investing.
+            to help you succeed in decentralized finance.
           </p>
         </div>
 
