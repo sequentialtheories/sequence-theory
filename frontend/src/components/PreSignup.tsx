@@ -91,13 +91,13 @@ const PreSignup = () => {
           
           {/* Headline */}
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-primary-foreground">
-            Join The Vault Club
+            Join TVC
           </h2>
           
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-primary-foreground/90 mb-8 leading-relaxed">
-            Ready to ease into digital assets smartly? Get priority access to our investment platform — 
-            earn and learn before token madness.
+            Ready to ease into decentralized finance? TVC bridges DeFi and long-term wealth building — 
+            the subscription to your future. Your Money. Your Power.
           </p>
           
           {/* Form - Fixed color contrast */}
