@@ -1350,6 +1350,8 @@ async def verify_email_otp(
             raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
         
         # Verify OTP via Turnkey against SUB-ORG (same as init)
+        # CORRECT: Use ACTIVITY_TYPE_VERIFY_OTP (not OTP_AUTH)
+        # Per Turnkey docs: https://docs.turnkey.com/authentication/email#otp-based-authentication-flow
         logger.info(f"[TURNKEY-OTP] Verifying OTP for user {user_id} in sub-org {sub_org_id}, otpId: {otp_id}")
         
         from turnkey_client import TurnkeyClient, ApiKeyStamper, ApiKeyStamperConfig
@@ -1370,9 +1372,11 @@ async def verify_email_otp(
             organization_id=sub_org_id  # TARGET SUB-ORG
         )
         
-        # Verify against SUB-ORG (same as init)
+        # CORRECT: Use ACTIVITY_TYPE_VERIFY_OTP (not ACTIVITY_TYPE_OTP_AUTH)
+        # OTP_AUTH requires targetPublicKey and is for credential bundle method
+        # VERIFY_OTP returns a verificationToken and is for server-side OTP verification
         verify_body = {
-            "type": "ACTIVITY_TYPE_OTP_AUTH",
+            "type": "ACTIVITY_TYPE_VERIFY_OTP",
             "timestampMs": str(int(time.time() * 1000)),
             "organizationId": sub_org_id,  # SUB-ORG (same as init)
             "parameters": {
@@ -1382,14 +1386,18 @@ async def verify_email_otp(
         }
         
         try:
-            result = turnkey_client.otp_auth(verify_body)
+            result = turnkey_client.verify_otp(verify_body)
             
             activity = result.get("activity", {})
             activity_result = activity.get("result", {})
-            verify_result = activity_result.get("otpAuthResult")
+            # VERIFY_OTP returns verifyOtpResult with verificationToken
+            verify_result = activity_result.get("verifyOtpResult", {})
+            verification_token = verify_result.get("verificationToken", "")
             
             if verify_result:
                 logger.info(f"[TURNKEY-OTP] SUCCESS - OTP verified for user {user_id} in sub-org {sub_org_id}")
+                if verification_token:
+                    logger.info(f"[TURNKEY-OTP] Got verificationToken (length: {len(verification_token)})")
                 
                 # Mark user as verified - NOW they can create wallet
                 verified_users[user_id] = True
