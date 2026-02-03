@@ -52,7 +52,7 @@ const FAQ = () => {
               Frequently Asked Questions
             </h1>
             <p className="text-xl text-muted-foreground">
-              Find answers to common questions about Sequence Theory and The Vault Club
+              Find answers to common questions about Sequence Theory and TVC
             </p>
           </div>
 
