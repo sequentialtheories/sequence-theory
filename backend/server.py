@@ -1038,7 +1038,7 @@ async def create_turnkey_wallet(
             logger.info(f"[WALLET] Checking for existing wallet for user {effective_user_id}")
             check_response = await client.get(
                 f"{SUPABASE_URL}/rest/v1/user_wallets",
-                params={"user_id": f"eq.{auth_user_id}", "select": "*"},
+                params={"user_id": f"eq.{effective_user_id}", "select": "*"},
                 headers={
                     "apikey": SUPABASE_SERVICE_KEY,
                     "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
@@ -1055,7 +1055,7 @@ async def create_turnkey_wallet(
                     
                     # Check if wallet already exists (idempotent)
                     if existing.get("wallet_address") and existing.get("turnkey_wallet_id"):
-                        logger.info(f"[WALLET] IDEMPOTENT: Returning existing wallet for user {auth_user_id}")
+                        logger.info(f"[WALLET] IDEMPOTENT: Returning existing wallet for user {effective_user_id}")
                         return {
                             "walletAddress": existing.get("wallet_address"),
                             "walletId": existing.get("turnkey_wallet_id")
@@ -1063,16 +1063,16 @@ async def create_turnkey_wallet(
             
             # If not in DB, check verified_sub_orgs (from OTP verification)
             if not sub_org_id:
-                sub_org_id = verified_sub_orgs.get(auth_user_id)
+                sub_org_id = verified_sub_orgs.get(effective_user_id)
                 if sub_org_id:
-                    logger.info(f"[WALLET] Found sub_org_id {sub_org_id} in verified_sub_orgs for user {auth_user_id}")
+                    logger.info(f"[WALLET] Found sub_org_id {sub_org_id} in verified_sub_orgs for user {effective_user_id}")
             
             if not sub_org_id:
-                logger.error(f"[WALLET] No sub-org found for verified user {auth_user_id}")
+                logger.error(f"[WALLET] No sub-org found for verified user {effective_user_id}")
                 raise HTTPException(status_code=400, detail="NO_SUB_ORG:Please complete email verification first")
             
             # Step 5: Create wallet in existing sub-org
-            logger.info(f"[WALLET] Creating wallet in existing sub-org {sub_org_id} for user {auth_user_id}")
+            logger.info(f"[WALLET] Creating wallet in existing sub-org {sub_org_id} for user {effective_user_id}")
             
             from turnkey_service import create_wallet_in_sub_org
             
