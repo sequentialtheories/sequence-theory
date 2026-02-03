@@ -205,7 +205,7 @@ const ShortfallsOfCrypto = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/" className="flex-1">
                 <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50">
-                  Explore Vault Club
+                  Explore TVC
                 </Button>
               </Link>
               <Link to="/white-paper" className="flex-1">
