@@ -31,7 +31,7 @@ backend_dir = Path(__file__).parent / "backend"
 sys.path.insert(0, str(backend_dir))
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://wallet-auth-service.preview.emergentagent.com"
+BACKEND_URL = "https://otp-verification-4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # Test credentials from review request

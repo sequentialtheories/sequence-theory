@@ -17,7 +17,7 @@ import json
 from datetime import datetime
 
 # Backend URL from frontend .env
-BACKEND_URL = "https://wallet-auth-service.preview.emergentagent.com"
+BACKEND_URL = "https://otp-verification-4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class CryptoIndicesAPITester:
