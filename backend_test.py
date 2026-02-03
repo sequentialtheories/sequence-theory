@@ -708,7 +708,7 @@ class TurnkeyOtpVerificationTester:
 
 async def main():
     """Main test runner"""
-    async with TurnkeyVerificationGateTester() as tester:
+    async with TurnkeyOtpVerificationTester() as tester:
         success = await tester.run_all_tests()
         return 0 if success else 1
 
