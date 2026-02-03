@@ -304,7 +304,7 @@ export function TurnkeyWalletSetup() {
       }
 
       if (data.isVerified) {
-        // Auto-create wallet
+        // Auto-create wallet after successful passkey verification
         await createWallet();
       }
     } catch (err) {
