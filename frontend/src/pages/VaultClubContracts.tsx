@@ -6,18 +6,18 @@ const VaultClubContracts = () => {
   return (
     <ArticleLayout title="Investment Contracts" level="Intermediate">
       <div className="space-y-8">
-        <h2 className="text-3xl font-bold text-gray-900">What Is The Vault Club?</h2>
+        <h2 className="text-3xl font-bold text-gray-900">What Is TVC (The Vault Club)?</h2>
         
         <div className="bg-cyan-50 p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4 text-cyan-800">A Structured DeFi Investment System</h3>
+          <h3 className="text-xl font-semibold mb-4 text-cyan-800">A Decentralized Software Coordination Platform</h3>
           <p className="text-gray-700 mb-4">
-            The Vault Club is a sophisticated, automated investment system that uses smart contracts on the blockchain. 
-            It's not about giving your money to random people - it's about participating in a carefully designed, 
-            algorithmic system that manages DeFi investments through proven protocols.
+            TVC is designed to bridge the gap between decentralized finance (DeFi) and long-term retail wealth building. 
+            It transforms "managerial effort" into "deterministic code," offering an intuitive interface and subscription model 
+            for the next generation of "set-and-forget" investors.
           </p>
           <p className="text-gray-700">
-            Think of it like a high-tech savings account that automatically invests your money across different 
-            DeFi protocols to generate returns, with built-in protections and a structured approach to wealth building.
+            Think of it as a "subscription to your future" — combining the transparency of DeFi with Web2 ease. 
+            TVC provides a Web2 feel with Web3 infrastructure, making non-custodial technology frictionless.
           </p>
         </div>
 
