@@ -1016,21 +1016,26 @@ async def create_turnkey_wallet(
             auth_user_id = user_data.get("id")
             user_email = user_data.get("email")
             
-            # Step 2: Verify request user_id matches authenticated user
-            if request.user_id != auth_user_id:
+            # Step 2: Derive user_id and email from JWT if not provided
+            # If request.user_id is provided, verify it matches (backward compat)
+            if request.user_id and request.user_id != auth_user_id:
                 logger.error(f"SECURITY: User {auth_user_id} tried to create wallet for {request.user_id}")
                 raise HTTPException(status_code=403, detail="USER_MISMATCH")
             
+            # Use JWT-derived values (request values are optional overrides)
+            effective_user_id = auth_user_id
+            effective_email = request.email or user_email
+            
             # Step 3: Server-enforced verification gate (HARD RULE)
-            if auth_user_id not in verified_users or not verified_users[auth_user_id]:
-                logger.warning(f"User {auth_user_id} tried to create wallet without verification")
+            if effective_user_id not in verified_users or not verified_users[effective_user_id]:
+                logger.warning(f"User {effective_user_id} tried to create wallet without verification")
                 return JSONResponse(
                     status_code=403,
                     content={"error": "NOT_VERIFIED"}
                 )
             
             # Step 4: IDEMPOTENCY CHECK - Check if user already has a wallet
-            logger.info(f"[WALLET] Checking for existing wallet for user {auth_user_id}")
+            logger.info(f"[WALLET] Checking for existing wallet for user {effective_user_id}")
             check_response = await client.get(
                 f"{SUPABASE_URL}/rest/v1/user_wallets",
                 params={"user_id": f"eq.{auth_user_id}", "select": "*"},
