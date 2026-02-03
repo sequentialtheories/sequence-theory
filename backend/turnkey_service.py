@@ -312,7 +312,12 @@ async def verify_otp_for_user(
     sub_org_id: str
 ) -> Tuple[bool, Optional[str]]:
     """
-    Verify email OTP for a user.
+    Verify email OTP for a user using ACTIVITY_TYPE_VERIFY_OTP.
+    
+    CORRECT ACTIVITY (per Turnkey docs):
+    - Use ACTIVITY_TYPE_VERIFY_OTP (not ACTIVITY_TYPE_OTP_AUTH)
+    - OTP_AUTH is for credential bundle method and requires targetPublicKey
+    - VERIFY_OTP is for server-side OTP verification and returns verificationToken
     
     CRITICAL: OTP verification MUST use the SAME sub-org as init-otp.
     
@@ -340,15 +345,17 @@ async def verify_otp_for_user(
         supabase_user_id=supabase_user_id,
         target_sub_org_id=sub_org_id,
         otp_id=otp_id,
-        activity_type="ACTIVITY_TYPE_OTP_AUTH"
+        activity_type="ACTIVITY_TYPE_VERIFY_OTP"
     )
     
     try:
         # Create client targeting the SUB-ORG (same as init)
         client = get_turnkey_client(sub_org_id)
         
+        # CORRECT: Use ACTIVITY_TYPE_VERIFY_OTP (not OTP_AUTH)
+        # Per Turnkey docs: https://docs.turnkey.com/authentication/email#otp-based-authentication-flow
         body = {
-            "type": "ACTIVITY_TYPE_OTP_AUTH",
+            "type": "ACTIVITY_TYPE_VERIFY_OTP",
             "timestampMs": get_timestamp_ms(),
             "organizationId": sub_org_id,  # Target SUB-ORG (same as init)
             "parameters": {
@@ -363,17 +370,20 @@ async def verify_otp_for_user(
             target_sub_org_id=sub_org_id,
             turnkey_request_organization_id=sub_org_id,
             turnkey_signing_api_key=TURNKEY_API_PUBLIC_KEY[:20] + "...",
-            activity_type="ACTIVITY_TYPE_OTP_AUTH",
+            activity_type="ACTIVITY_TYPE_VERIFY_OTP",
             otp_id=otp_id
         )
         
-        result = client.otp_auth(body)
+        result = client.verify_otp(body)
         
         activity = result.get("activity", {})
         activity_id = activity.get("id", "")
         activity_status = activity.get("status", "")
         activity_result = activity.get("result", {})
-        verify_result = activity_result.get("otpAuthResult")
+        
+        # VERIFY_OTP returns verifyOtpResult with verificationToken
+        verify_result = activity_result.get("verifyOtpResult", {})
+        verification_token = verify_result.get("verificationToken", "")
         
         structured_log(
             "verify_otp_response",
@@ -381,6 +391,7 @@ async def verify_otp_for_user(
             target_sub_org_id=sub_org_id,
             activity_id=activity_id,
             activity_status=activity_status,
+            has_verification_token=bool(verification_token),
             verified=bool(verify_result),
             success=bool(verify_result)
         )
