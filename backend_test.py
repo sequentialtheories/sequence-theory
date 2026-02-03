@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
-Backend Test Suite for Turnkey Verification Gate Flow
-====================================================
+Backend Test Suite for Turnkey OTP Verification Fix
+===================================================
 
-Tests the FIXED Turnkey verification gate flow as requested:
-1. Login to get auth token
-2. Test create-wallet without verification (should fail with 403 NOT_VERIFIED)
-3. Test init-email-auth (should create sub-org + send OTP)
-4. Check backend logs for sub-org creation
-5. Verify sub-org was stored in DB
+Tests the FIXED Turnkey OTP verification flow as requested in review:
+1. Login with credentials: sequencetheoryinc@gmail.com / TestPassword123!
+2. Call POST /api/turnkey/init-email-auth with email - should return { ok: true } and send OTP
+3. Check backend logs for OTP code or otpId
+4. Call POST /api/turnkey/verify-email-otp with the correct OTP code - should return { isVerified: true }
+5. Call POST /api/turnkey/verification-status - should return { isVerified: true, method: "emailOtp" }
+6. Call POST /api/turnkey/create-wallet - should return wallet address (not 403 NOT_VERIFIED)
+
+KEY VERIFICATION: The fix changed from ACTIVITY_TYPE_OTP_AUTH to ACTIVITY_TYPE_VERIFY_OTP
 
 Test credentials:
 - Email: sequencetheoryinc@gmail.com
