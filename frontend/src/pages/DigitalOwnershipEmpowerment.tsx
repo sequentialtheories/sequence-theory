@@ -413,12 +413,12 @@ const DigitalOwnershipEmpowerment = () => {
                 <div className="bg-blue-500 text-white p-3 rounded-lg mb-3">
                   <span className="font-bold">Stage 1</span>
                 </div>
-                <h5 className="font-semibold text-gray-900 mb-2">The Vault Club</h5>
+                <h5 className="font-semibold text-gray-900 mb-2">TVC (The Vault Club)</h5>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li>Start your crypto journey here</li>
-                  <li>Educational foundation</li>
-                  <li>Community support & learning</li>
-                  <li>Safe introduction to crypto</li>
+                  <li>Start your DeFi journey here</li>
+                  <li>Select Risk & Rigor levels</li>
+                  <li>100% non-custodial from day one</li>
+                  <li>Web2 ease, Web3 ownership</li>
                 </ul>
               </div>
               <div className="text-center">
