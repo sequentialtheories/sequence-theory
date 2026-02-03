@@ -225,7 +225,7 @@ export function TurnkeyWalletSetup() {
         throw new Error(data.detail || 'INVALID_OTP');
       }
 
-      if (data.verified) {
+      if (data.isVerified) {
         // Auto-create wallet
         await createWallet();
       }
@@ -303,7 +303,7 @@ export function TurnkeyWalletSetup() {
         throw new Error(data.detail || 'PASSKEY_FAILED');
       }
 
-      if (data.verified) {
+      if (data.isVerified) {
         // Auto-create wallet
         await createWallet();
       }
