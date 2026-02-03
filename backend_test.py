@@ -391,101 +391,256 @@ class TurnkeyOtpVerificationTester:
             )
             return False
     
-    async def test_verify_sub_org_in_db(self):
-        """Test 5: Verify sub-org was stored in DB (check user_wallets table)"""
-        if not self.auth_token or not self.user_id:
+    async def test_verify_email_otp(self):
+        """Test 4: Call POST /api/turnkey/verify-email-otp with correct OTP - should return { isVerified: true }"""
+        if not self.auth_token:
             self.log_result(
-                "Verify Sub-org in DB", 
+                "Verify Email OTP", 
                 False, 
-                "No auth token or user ID available"
+                "No auth token available - login test must pass first"
+            )
+            return False
+        
+        if not self.otp_code:
+            self.log_result(
+                "Verify Email OTP", 
+                False, 
+                "No OTP code found in logs - init-email-auth and log check must pass first"
             )
             return False
         
         try:
-            # Check user_wallets table for turnkey_sub_org_id (correct table)
-            supabase_url = "https://qldjhlnsphlixmzzrdwi.supabase.co"
-            supabase_service_key = "sb_secret_c-DnSa7oU98uN-oL1MhcZg_t3GeTf7i"
+            verify_otp_data = {
+                "email": TEST_EMAIL,
+                "otp_code": self.otp_code
+            }
             
-            response = await self.client.get(
-                f"{supabase_url}/rest/v1/user_wallets",
-                params={"user_id": f"eq.{self.user_id}", "select": "user_id,turnkey_sub_org_id,turnkey_wallet_id,wallet_address"},
+            response = await self.client.post(
+                f"{API_BASE}/turnkey/verify-email-otp",
+                json=verify_otp_data,
                 headers={
-                    "apikey": supabase_service_key,
-                    "Authorization": f"Bearer {supabase_service_key}"
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
                 }
             )
             
+            # Should return 200 with isVerified: true
             if response.status_code != 200:
-                # If no user_wallets record exists, that's expected since wallet creation failed
-                # But let's check if the sub-org was created in the backend (from logs)
                 self.log_result(
-                    "Verify Sub-org in DB", 
-                    True, 
-                    "Sub-org created successfully but not stored in DB (expected - wallet creation blocked by verification gate)",
-                    {
-                        "status_code": response.status_code, 
-                        "response": response.text,
-                        "note": "Sub-org 57b6c9d6-cd39-40e8-8b41-20d8ccf64660 was created in Turnkey but not stored in user_wallets (correct behavior)"
-                    }
+                    "Verify Email OTP", 
+                    False, 
+                    f"OTP verification failed with HTTP {response.status_code}: {response.text}",
+                    {"status_code": response.status_code, "response": response.text, "otp_used": self.otp_code}
                 )
-                return True
+                return False
             
-            wallets = response.json()
+            try:
+                response_data = response.json()
+            except:
+                response_data = {"text": response.text}
             
-            if not wallets or len(wallets) == 0:
-                # No wallet record is expected since wallet creation was blocked
+            # Check for isVerified: true
+            if not response_data.get("isVerified"):
                 self.log_result(
-                    "Verify Sub-org in DB", 
-                    True, 
-                    "No user_wallets record found (expected - verification gate working correctly)",
-                    {
-                        "user_id": self.user_id, 
-                        "wallets": wallets,
-                        "note": "Sub-org was created in Turnkey but wallet creation was blocked by verification gate"
-                    }
+                    "Verify Email OTP", 
+                    False, 
+                    f"Expected 'isVerified: true' in response, got: {response_data}",
+                    {"response": response_data, "otp_used": self.otp_code}
                 )
-                return True
+                return False
             
-            wallet = wallets[0]
-            sub_org_id = wallet.get("turnkey_sub_org_id")
-            
-            if sub_org_id:
-                # Validate sub-org ID format (should be UUID)
-                if len(sub_org_id) != 36 or sub_org_id.count('-') != 4:
-                    self.log_result(
-                        "Verify Sub-org in DB", 
-                        False, 
-                        f"Invalid sub-org ID format: {sub_org_id}",
-                        {"sub_org_id": sub_org_id, "wallet": wallet}
-                    )
-                    return False
-                
-                self.log_result(
-                    "Verify Sub-org in DB", 
-                    True, 
-                    f"Sub-org ID found in user_wallets table: {sub_org_id}",
-                    {
-                        "user_id": self.user_id,
-                        "sub_org_id": sub_org_id,
-                        "wallet_address": wallet.get("wallet_address"),
-                        "wallet_id": wallet.get("turnkey_wallet_id")
-                    }
-                )
-                return True
-            else:
-                self.log_result(
-                    "Verify Sub-org in DB", 
-                    True, 
-                    "Wallet record exists but no sub-org ID (expected if wallet was created before sub-org fix)",
-                    {"wallet": wallet}
-                )
-                return True
+            self.log_result(
+                "Verify Email OTP", 
+                True, 
+                f"OTP verification successful with code {self.otp_code}",
+                {
+                    "status_code": response.status_code,
+                    "response": response_data,
+                    "otp_used": self.otp_code
+                }
+            )
+            return True
             
         except Exception as e:
             self.log_result(
-                "Verify Sub-org in DB", 
+                "Verify Email OTP", 
                 False, 
-                f"Exception during DB verification: {str(e)}",
+                f"Exception during OTP verification: {str(e)}",
+                {"error_type": type(e).__name__, "otp_used": self.otp_code}
+            )
+            return False
+    
+    async def test_verification_status(self):
+        """Test 5: Call POST /api/turnkey/verification-status - should return { isVerified: true, method: "emailOtp" }"""
+        if not self.auth_token:
+            self.log_result(
+                "Verification Status", 
+                False, 
+                "No auth token available - login test must pass first"
+            )
+            return False
+        
+        try:
+            response = await self.client.get(
+                f"{API_BASE}/turnkey/verification-status",
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}"
+                }
+            )
+            
+            # Should return 200 with verification status
+            if response.status_code != 200:
+                self.log_result(
+                    "Verification Status", 
+                    False, 
+                    f"Verification status check failed with HTTP {response.status_code}: {response.text}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+                return False
+            
+            try:
+                response_data = response.json()
+            except:
+                response_data = {"text": response.text}
+            
+            # Check for isVerified: true and method: "emailOtp"
+            is_verified = response_data.get("isVerified")
+            method = response_data.get("method")
+            
+            if not is_verified:
+                self.log_result(
+                    "Verification Status", 
+                    False, 
+                    f"Expected 'isVerified: true', got: {is_verified}",
+                    {"response": response_data}
+                )
+                return False
+            
+            if method != "emailOtp":
+                self.log_result(
+                    "Verification Status", 
+                    False, 
+                    f"Expected 'method: emailOtp', got: {method}",
+                    {"response": response_data}
+                )
+                return False
+            
+            self.log_result(
+                "Verification Status", 
+                True, 
+                f"Verification status correct: isVerified={is_verified}, method={method}",
+                {
+                    "status_code": response.status_code,
+                    "response": response_data
+                }
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Verification Status", 
+                False, 
+                f"Exception during verification status check: {str(e)}",
+                {"error_type": type(e).__name__}
+            )
+            return False
+    
+    async def test_create_wallet_after_verification(self):
+        """Test 6: Call POST /api/turnkey/create-wallet - should return wallet address (not 403 NOT_VERIFIED)"""
+        if not self.auth_token or not self.user_id:
+            self.log_result(
+                "Create Wallet After Verification", 
+                False, 
+                "No auth token or user ID available - login test must pass first"
+            )
+            return False
+        
+        try:
+            create_wallet_data = {
+                "email": TEST_EMAIL,
+                "user_id": self.user_id
+            }
+            
+            response = await self.client.post(
+                f"{API_BASE}/turnkey/create-wallet",
+                json=create_wallet_data,
+                headers={
+                    "Authorization": f"Bearer {self.auth_token}",
+                    "Content-Type": "application/json"
+                }
+            )
+            
+            # Should return 200 with wallet address (NOT 403 NOT_VERIFIED)
+            if response.status_code == 403:
+                try:
+                    error_data = response.json()
+                except:
+                    error_data = {"text": response.text}
+                
+                if "NOT_VERIFIED" in str(error_data):
+                    self.log_result(
+                        "Create Wallet After Verification", 
+                        False, 
+                        "Wallet creation still blocked by verification gate - OTP verification may have failed",
+                        {"status_code": response.status_code, "error": error_data}
+                    )
+                    return False
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Create Wallet After Verification", 
+                    False, 
+                    f"Wallet creation failed with HTTP {response.status_code}: {response.text}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+                return False
+            
+            try:
+                response_data = response.json()
+            except:
+                response_data = {"text": response.text}
+            
+            # Check for wallet address
+            wallet_address = response_data.get("walletAddress")
+            wallet_id = response_data.get("walletId")
+            
+            if not wallet_address:
+                self.log_result(
+                    "Create Wallet After Verification", 
+                    False, 
+                    f"No wallet address in response: {response_data}",
+                    {"response": response_data}
+                )
+                return False
+            
+            # Validate wallet address format (should be Ethereum address)
+            if not wallet_address.startswith("0x") or len(wallet_address) != 42:
+                self.log_result(
+                    "Create Wallet After Verification", 
+                    False, 
+                    f"Invalid wallet address format: {wallet_address}",
+                    {"wallet_address": wallet_address, "response": response_data}
+                )
+                return False
+            
+            self.log_result(
+                "Create Wallet After Verification", 
+                True, 
+                f"Wallet created successfully: {wallet_address}",
+                {
+                    "status_code": response.status_code,
+                    "wallet_address": wallet_address,
+                    "wallet_id": wallet_id,
+                    "response": response_data
+                }
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Create Wallet After Verification", 
+                False, 
+                f"Exception during wallet creation: {str(e)}",
                 {"error_type": type(e).__name__}
             )
             return False
