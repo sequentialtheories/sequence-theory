@@ -416,8 +416,8 @@ const Index: React.FC = () => {
                   label: "Our Solution",
                   variant: "primary",
                 }}
-                title="The Vault Club"
-                description="A structured, automated investment system designed for long-term wealth building"
+                title="The Vault Club (TVC)"
+                description="A decentralized software coordination platform — Web2 feel, Web3 infrastructure"
               />
 
               {/* Solution card */}
@@ -432,15 +432,15 @@ const Index: React.FC = () => {
                     <h3 className="text-2xl font-bold mb-6 text-foreground">Set It & Forget It</h3>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        Join a small group of like-minded investors with shared goals. Choose your
-                        commitment level - from 1 to 20 years - and let the system handle the rest.
-                        No daily decisions. No market timing. Just consistent, disciplined growth.
+                        TVC is the "subscription to your future." Select your Risk & Rigor level
+                        and let deterministic smart contracts handle the rest. Not a tool for speculation — 
+                        a tool for structured discipline. 100% non-custodial ownership.
                       </p>
                       <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-6 my-6">
                         <p>
-                          <strong>Your journey:</strong> Make regular contributions, watch your wealth
-                          grow through automated compounding, and transition to wealth preservation as
-                          you approach your goals.
+                          <strong>Your journey:</strong> Transform "managerial effort" into "deterministic code." 
+                          Grow wealth through established DeFi protocols (Aave, Morpho, sUSDC) with 
+                          immutable contract logic governed by unanimous consent.
                         </p>
                       </div>
                     </div>
