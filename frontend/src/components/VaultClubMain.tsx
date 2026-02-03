@@ -123,7 +123,7 @@ const VaultClubMain = () => {
           <div className="bg-gradient-primary text-primary-foreground rounded-2xl p-8 max-w-2xl mx-auto shadow-strong transition-spring hover:scale-105 hover:shadow-glow animate-glow">
             <h3 className="text-2xl font-bold mb-4">Ready to Build Long-Term Wealth?</h3>
             <p className="text-lg mb-6 opacity-90">
-              Join The Vault Club — automated, disciplined investing designed for the long haul.
+              Join TVC — the subscription to your future. Stop chasing hype, start compounding legacy.
             </p>
             <Button onClick={handleJoinClick} size="lg" className="bg-background text-primary hover:bg-secondary px-8 py-3 rounded-full text-lg font-semibold transition-bounce hover:scale-110 shadow-medium hover:shadow-strong">
               Get Priority Access
