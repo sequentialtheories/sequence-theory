@@ -646,33 +646,37 @@ class TurnkeyOtpVerificationTester:
             return False
     
     async def run_all_tests(self):
-        """Run all Turnkey verification gate tests"""
+        """Run all Turnkey OTP verification tests"""
         print("=" * 80)
-        print("TURNKEY VERIFICATION GATE FLOW TESTING")
+        print("TURNKEY OTP VERIFICATION FIX TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"API Base: {API_BASE}")
         print(f"Test Email: {TEST_EMAIL}")
+        print(f"Key Fix: Changed from ACTIVITY_TYPE_OTP_AUTH to ACTIVITY_TYPE_VERIFY_OTP")
         print(f"Test started at: {datetime.utcnow().isoformat()}")
         print()
         
-        # Run tests in sequence
+        # Run tests in sequence as per review request
         test_results = []
         
-        # Test 1: Login to get auth token
+        # Test 1: Login with credentials: sequencetheoryinc@gmail.com / TestPassword123!
         test_results.append(await self.test_login_authentication())
         
-        # Test 2: Test create-wallet without verification (should fail)
-        test_results.append(await self.test_create_wallet_without_verification())
-        
-        # Test 3: Test init-email-auth (should create sub-org + send OTP)
+        # Test 2: Call POST /api/turnkey/init-email-auth with email - should return { ok: true } and send OTP
         test_results.append(await self.test_init_email_auth())
         
-        # Test 4: Check backend logs for sub-org creation
-        test_results.append(await self.test_check_backend_logs())
+        # Test 3: Check backend logs for OTP code or otpId
+        test_results.append(await self.test_check_backend_logs_for_otp())
         
-        # Test 5: Verify sub-org was stored in DB
-        test_results.append(await self.test_verify_sub_org_in_db())
+        # Test 4: Call POST /api/turnkey/verify-email-otp with the correct OTP code - should return { isVerified: true }
+        test_results.append(await self.test_verify_email_otp())
+        
+        # Test 5: Call POST /api/turnkey/verification-status - should return { isVerified: true, method: "emailOtp" }
+        test_results.append(await self.test_verification_status())
+        
+        # Test 6: Call POST /api/turnkey/create-wallet - should return wallet address (not 403 NOT_VERIFIED)
+        test_results.append(await self.test_create_wallet_after_verification())
         
         # Summary
         print("=" * 80)
@@ -684,6 +688,12 @@ class TurnkeyOtpVerificationTester:
         
         print(f"Tests passed: {passed}/{total}")
         print(f"Success rate: {(passed/total*100):.1f}%" if total > 0 else "No tests run")
+        
+        # Key verification results
+        print("\nKey Verification Points:")
+        print("✓ verify-email-otp must return { isVerified: true } after correct OTP")
+        print("✓ create-wallet must succeed immediately after verification")
+        print("✓ Focus: ACTIVITY_TYPE_VERIFY_OTP instead of ACTIVITY_TYPE_OTP_AUTH")
         
         # Detailed results
         print("\nDetailed Results:")
