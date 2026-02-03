@@ -1387,7 +1387,7 @@ async def verify_email_otp(
             "organizationId": sub_org_id,  # SUB-ORG (same as init)
             "parameters": {
                 "otpId": otp_id,
-                "otpCode": request.otp_code
+                "otpCode": otp_code
             }
         }
         
