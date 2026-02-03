@@ -102,7 +102,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-6 text-background">Receive Priority Access During Launch</h3>
             <p className="text-background/70 text-sm mb-4">
-              Be first to know when The Vault Club launches.
+              Be first to know when TVC launches. Your Money. Your Power.
             </p>
             <form onSubmit={handleEarlyAccessSubmit} className="space-y-3">
               <div className="relative">
