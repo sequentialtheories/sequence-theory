@@ -11,9 +11,9 @@ const ExpandingBeyondVaultClub = () => {
         <div className="bg-cyan-50 p-6 rounded-lg">
           <h3 className="text-xl font-semibold mb-4 text-cyan-800">Building on Your Foundation</h3>
           <p className="text-gray-700">
-            Your Vault Club contracts provide a solid digital asset foundation. Portfolio expansion means adding 
-            complementary investments while maintaining this core strategy. Think of it like learning to drive - 
-            you start with an instructor, then gradually take on more independent journeys while keeping that guidance available.
+            TVC provides a solid DeFi foundation with deterministic smart contracts across established protocols. 
+            Portfolio expansion means adding complementary investments while maintaining this core strategy. 
+            Think of TVC as your structured DeFi base — then you can explore other opportunities with confidence.
           </p>
         </div>
 
@@ -23,8 +23,8 @@ const ExpandingBeyondVaultClub = () => {
           <div className="bg-green-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-green-800">Knowledge Readiness</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>You understand your Vault Club contracts completely</li>
-              <li>You can explain basic DeFi protocols</li>
+              <li>You understand how TVC's Risk & Rigor levels work</li>
+              <li>You can explain basic DeFi protocols (Aave, Morpho)</li>
               <li>You've weathered market volatility calmly</li>
               <li>You have clear additional investment goals</li>
             </ul>
@@ -33,10 +33,10 @@ const ExpandingBeyondVaultClub = () => {
           <div className="bg-blue-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-blue-800">Emotional Readiness</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>You're comfortable with existing commitments</li>
+              <li>You're comfortable with your TVC strategy</li>
               <li>You make decisions based on analysis, not emotions</li>
               <li>You have realistic expectations about returns</li>
-              <li>You're excited to learn while maintaining your foundation</li>
+              <li>You understand 100% non-custodial means 100% responsibility</li>
             </ul>
           </div>
         </div>
@@ -44,31 +44,31 @@ const ExpandingBeyondVaultClub = () => {
         <h3 className="text-2xl font-semibold text-gray-900">Your Investment Journey Progression</h3>
         
         <p className="text-gray-700 mb-4">
-          Advanced investors understand that wealth building involves a strategic progression through different investment approaches. 
-          Your journey naturally flows from structured contracts to individual token selection, and eventually to traditional markets.
+          Advanced investors understand that wealth building involves a strategic progression. 
+          Your journey naturally flows from TVC's structured approach to individual token selection.
         </p>
 
         <div className="space-y-6">
           <div className="bg-purple-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-purple-800">Step 1: Digital Asset Foundation - Vault Club</h4>
+            <h4 className="text-lg font-semibold mb-3 text-purple-800">Step 1: DeFi Foundation - TVC</h4>
             <p className="text-gray-700">
-              Your contracts provide systematic investing, professional strategies, built-in risk management, 
-              and long-term compound growth - all automated to remove emotional decisions. This is your foundation.
+              TVC provides your structured DeFi foundation: deterministic smart contracts, Risk & Rigor levels 
+              across Aave V3, sUSDC, and Morpho — all non-custodial and automated. This removes emotional decisions 
+              and establishes your core strategy.
             </p>
           </div>
           
           <div className="bg-cyan-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-cyan-800">Step 2: Individual Token Selection - Cryptocurrency Exchanges</h4>
             <p className="text-gray-700 mb-3">
-              Once comfortable with your foundation, cryptocurrency exchanges open up access to thousands of digital assets:
+              Once comfortable with your TVC foundation, cryptocurrency exchanges open access to thousands of digital assets:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
               <li>Research and select specific tokens based on fundamentals and use cases</li>
-              <li>Access to major cryptocurrencies, DeFi tokens, and emerging projects</li>
+              <li>Access major cryptocurrencies, DeFi tokens, and emerging projects</li>
               <li>Practice dollar-cost averaging into chosen assets</li>
               <li>Learn proper security practices for holding digital assets</li>
               <li>Develop skills in technical and fundamental analysis</li>
-              <li>Explore different blockchain ecosystems and their native tokens</li>
             </ul>
             <div className="mt-4 p-4 bg-cyan-100 rounded-lg">
               <p className="text-sm text-cyan-800">
@@ -79,15 +79,15 @@ const ExpandingBeyondVaultClub = () => {
           </div>
           
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Step 3: Traditional Markets (Optional Advanced Step)</h4>
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Step 3: Advanced DeFi (Optional)</h4>
             <p className="text-gray-700 mb-3">
-              With digital asset experience, traditional markets can complement your portfolio:
+              With TVC experience, you may explore more complex DeFi strategies:
             </p>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Established companies for stability and dividends</li>
-              <li>Index funds for broad market exposure</li>
-              <li>Tax-advantaged retirement accounts</li>
-              <li>Different risk/return profile from digital assets</li>
+              <li>Liquidity provision on DEXs</li>
+              <li>Yield farming strategies</li>
+              <li>Cross-chain bridges and L2 solutions</li>
+              <li>Different risk/return profiles than TVC's curated approach</li>
             </ul>
           </div>
         </div>
@@ -100,9 +100,9 @@ const ExpandingBeyondVaultClub = () => {
         </p>
 
         <div className="bg-green-50 p-6 rounded-lg">
-          <h4 className="text-lg font-semibold mb-3 text-green-800">The Plethora of Available Tokens</h4>
+          <h4 className="text-lg font-semibold mb-3 text-green-800">Available Token Categories</h4>
           <p className="text-gray-700 mb-4">
-            Major exchanges offer access to thousands of tokens across different categories and blockchain ecosystems:
+            Major exchanges offer access to thousands of tokens across different categories:
           </p>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -126,12 +126,7 @@ const ExpandingBeyondVaultClub = () => {
               </ul>
             </div>
           </div>
-          <p className="text-gray-700 mt-4">
-            This variety allows you to build targeted exposure to specific sectors, technologies, or investment themes 
-            within the digital asset space - from Web3 infrastructure to decentralized finance applications.
-          </p>
         </div>
-
 
         <h3 className="text-2xl font-semibold text-gray-900">Multi-Asset Investment Strategies</h3>
         
@@ -139,76 +134,58 @@ const ExpandingBeyondVaultClub = () => {
           <div className="bg-purple-50 p-6 rounded-lg">
             <h4 className="text-lg font-semibold mb-3 text-purple-800">Strategic Asset Allocation</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li><strong>Core Holdings:</strong> Vault Club contracts for systematic digital asset exposure (60-70%)</li>
-              <li><strong>Individual Tokens:</strong> Selected digital assets via exchanges for targeted exposure (20-30%)</li>
+              <li><strong>Core Holdings:</strong> TVC for structured DeFi exposure (60-70%)</li>
+              <li><strong>Individual Tokens:</strong> Selected digital assets via exchanges (20-30%)</li>
               <li><strong>Emerging Opportunities:</strong> New tokens and DeFi protocols (5-10%)</li>
-              <li><strong>Stablecoins:</strong> For liquidity and DeFi opportunities (5-10%)</li>
+              <li><strong>Stablecoins:</strong> For liquidity and opportunities (5-10%)</li>
             </ul>
           </div>
           
           <div className="bg-blue-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-blue-800">Dollar-Cost Averaging Across Tokens</h4>
+            <h4 className="text-lg font-semibold mb-3 text-blue-800">Dollar-Cost Averaging</h4>
             <p className="text-gray-700">
-              Your Vault Club experience with systematic investing extends perfectly to individual tokens through 
-              regular exchange purchases. Set up recurring buys for your chosen tokens to smooth out volatility 
+              Your TVC experience with structured investing applies perfectly to individual tokens. 
+              Set up recurring buys for your chosen tokens to smooth out volatility 
               and build positions over time without trying to time the market.
             </p>
           </div>
-          
-          <div className="bg-cyan-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-cyan-800">Ecosystem Diversification</h4>
-            <p className="text-gray-700 mb-3">
-              Spread your individual token selections across different blockchain ecosystems and use cases:
-            </p>
-            <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li><strong>Store of Value:</strong> Bitcoin for digital gold exposure</li>
-              <li><strong>Smart Contract Platforms:</strong> Ethereum, Solana, Avalanche</li>
-              <li><strong>DeFi Infrastructure:</strong> Chainlink, Uniswap, AAVE</li>
-              <li><strong>Layer 2 Solutions:</strong> Polygon, Arbitrum, Optimism</li>
-              <li><strong>Emerging Narratives:</strong> AI tokens, gaming tokens, RWA tokens</li>
-            </ul>
-          </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Risk Management & Security Considerations</h3>
+        <h3 className="text-2xl font-semibold text-gray-900">Risk Management & Security</h3>
         
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-red-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-red-800">Position Sizing & Portfolio Management</h4>
+            <h4 className="text-lg font-semibold mb-3 text-red-800">Position Sizing</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>Vault Club commitments remain your foundation</li>
-              <li>Individual tokens should be researched and position-sized appropriately</li>
-              <li>Never invest more than you can afford to lose in any single token</li>
-              <li>Consider correlation between similar ecosystem tokens</li>
-              <li>Regularly rebalance based on performance and goals</li>
+              <li>TVC remains your structured foundation</li>
+              <li>Individual tokens should be researched and sized appropriately</li>
+              <li>Never invest more than you can afford to lose</li>
+              <li>Consider correlation between similar tokens</li>
+              <li>Regularly rebalance based on performance</li>
             </ul>
           </div>
           
           <div className="bg-yellow-50 p-6 rounded-lg">
-            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Security & Tax Implications</h4>
+            <h4 className="text-lg font-semibold mb-3 text-yellow-800">Security & Tax</h4>
             <ul className="list-disc pl-6 text-gray-700 space-y-1">
-              <li>All digital assets (contracts and individual tokens) taxed as property</li>
-              <li>Track all transactions for tax reporting purposes</li>
-              <li>Consider using portfolio tracking tools (CoinTracker, Koinly)</li>
-              <li>Understand the tax implications of DeFi activities</li>
-              <li>Keep detailed records of purchases, sales, and transfers</li>
+              <li>All digital assets taxed as property</li>
+              <li>Track all transactions for tax reporting</li>
+              <li>Consider portfolio tracking tools (CoinTracker, Koinly)</li>
+              <li>Understand DeFi tax implications</li>
+              <li>Keep detailed records</li>
             </ul>
           </div>
         </div>
 
-        <h3 className="text-2xl font-semibold text-gray-900">Your Advanced Investment Principles</h3>
-        
         <div className="bg-gray-50 p-6 rounded-lg">
           <h4 className="text-lg font-semibold mb-3 text-gray-800">Key Takeaways</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>Vault Club contracts serve as your sophisticated digital asset foundation</li>
-            <li>Cryptocurrency exchanges provide access to thousands of tokens across different ecosystems</li>
-            <li>Choose the right wallet type based on your security needs and trading frequency</li>
-            <li>Individual token selection develops your analysis and research skills</li>
-            <li>Ecosystem diversification reduces concentration risk while maintaining digital asset focus</li>
-            <li>Systematic investing principles apply to both structured contracts and individual tokens</li>
-            <li>Proper security practices become critical when self-custodying digital assets</li>
-            <li>Tax tracking and compliance require ongoing attention and proper tools</li>
+            <li>TVC serves as your structured DeFi foundation with Risk & Rigor levels</li>
+            <li>Cryptocurrency exchanges provide access to thousands of tokens</li>
+            <li>Individual token selection develops your analysis skills</li>
+            <li>Ecosystem diversification reduces concentration risk</li>
+            <li>Proper security practices are critical when self-custodying</li>
+            <li>Tax tracking and compliance require ongoing attention</li>
           </ul>
         </div>
 
