@@ -6,39 +6,39 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What is Sequence Theory?",
-      answer: "Sequence Theory helps everyday people learn about money and investing. We make it easy to understand and get started, even if you've never invested before."
+      answer: "Sequence Theory is focused on building accessible tools and services that onboard everyday users into decentralized finance. Our flagship platform, TVC (The Vault Club), bridges DeFi and long-term retail wealth building."
     },
     {
-      question: "What is The Vault Club?",
-      answer: "The Vault Club is our investment system that automatically grows your money over time. You contribute regularly, and our system reinvests your funds to help them compound and grow."
+      question: "What is TVC (The Vault Club)?",
+      answer: "TVC is a decentralized software coordination platform — the 'subscription to your future.' It transforms 'managerial effort' into 'deterministic code,' offering Web2 ease with Web3 infrastructure. Users select Risk & Rigor levels, and smart contracts handle the rest automatically."
     },
     {
-      question: "How does it work exactly?",
-      answer: "You set up regular contributions (like $50 a week), and our system automatically invests that money across different opportunities. It's designed to grow slowly and steadily over time without you having to manage it daily."
+      question: "Is TVC non-custodial?",
+      answer: "Yes, 100% non-custodial. Your private keys are generated client-side and are never accessible to Sequence Theory. You maintain complete control of your funds at all times. Your Money. Your Power."
     },
     {
-      question: "Who is this for?",
-      answer: "This is for people who want to build wealth but don't know where to start, or those who want steady growth without the stress of day trading or managing complex investments."
+      question: "How does TVC work?",
+      answer: "Users don't 'trade' — they select Risk & Rigor levels that dictate fund distribution across established DeFi protocols. Conservative uses Aave V3 for stablecoin lending, Medium uses sUSDC for savings rates, and Risky accesses Morpho's institutional-grade vaults. Once deployed, contract logic is deterministic and immutable."
     },
     {
-      question: "Is this safe?",
-      answer: "All investing has risks, but our approach focuses on steady, long-term growth rather than risky quick gains. We spread investments across multiple areas to reduce risk, and you maintain control over your contributions. And since everything is on the blockchain & automated with smart contracts, all fund management is observable & automatic!"
-    },
-    {
-      question: "Do I need to know about crypto or investing?",
-      answer: "Not at all! We teach you everything you need to know through simple lessons and modules. Our community also helps newcomers learn and feel confident. Learn about the tech behind the contract as you grow your wealth!"
-    },
-    {
-      question: "How do I start?",
-      answer: "Create an account, go through our 'Learn Now' section to understand the basics, then choose how much and how often you want to contribute. Join our Discord community for support along the way."
-    },
-    {
-      question: "Is this financial advice?",
-      answer: "No, everything we provide is for education only. We teach you how to think about money and investing, encouraging self empowered financial advising."
+      question: "Who is TVC for?",
+      answer: "TVC is designed for the next generation of 'set-and-forget' investors who want to build long-term wealth through DeFi without the complexity. It's not a tool for speculation — it's a tool for structured discipline."
     },
     {
       question: "What does it cost?",
-      answer: "Sequence Theory provides educational content & community completely for free! While The Vault Club charges minimal utility fees, there is no upfront fee at all!"
+      answer: "Simple, transparent pricing: $1.50 per user per week ($0.50 for gas fees + $1.00 utility fee). No hidden costs, no percentage-based fees on your gains."
+    },
+    {
+      question: "Do I need to understand crypto to use TVC?",
+      answer: "No! TVC provides a Web2 feel with Web3 infrastructure. Sign in with Email or Passkey — no seed phrases to manage. Our 'Earn While You Learn' approach embeds education directly into the experience through integrations with LearnWeb3, Coinbase Education, and other platforms."
+    },
+    {
+      question: "Can I withdraw my funds?",
+      answer: "Emergency liquidity is built in. However, profits are not earned if deposits are withdrawn before contract conclusion. TVC encourages structured, long-term participation."
+    },
+    {
+      question: "Is this financial advice?",
+      answer: "No. Everything we provide is for education only. We teach you how to think about decentralized finance and empower self-directed financial decisions."
     }
   ];
 
