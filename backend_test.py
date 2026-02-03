@@ -222,7 +222,7 @@ class TurnkeyOtpVerificationTester:
             return False
     
     async def test_init_email_auth(self):
-        """Test 3: Test init-email-auth (should create sub-org + send OTP)"""
+        """Test 2: Call POST /api/turnkey/init-email-auth - should return { ok: true } and send OTP"""
         if not self.auth_token:
             self.log_result(
                 "Init Email Auth", 
@@ -273,7 +273,7 @@ class TurnkeyOtpVerificationTester:
             self.log_result(
                 "Init Email Auth", 
                 True, 
-                "Email auth initialization successful - sub-org should be created",
+                "Email auth initialization successful - OTP should be sent",
                 {
                     "status_code": response.status_code,
                     "response": response_data
