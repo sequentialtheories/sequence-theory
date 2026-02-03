@@ -41,12 +41,14 @@ API_BASE = f"{BACKEND_URL}/api"
 TEST_EMAIL = "sequencetheoryinc@gmail.com"
 TEST_PASSWORD = "TestPassword123!"
 
-class TurnkeyVerificationGateTester:
+class TurnkeyOtpVerificationTester:
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=30.0)
         self.test_results = []
         self.auth_token = None
         self.user_id = None
+        self.otp_code = None
+        self.otp_id = None
         
     async def __aenter__(self):
         return self
