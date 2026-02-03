@@ -107,10 +107,10 @@ const SOLUTIONS = [
 ];
 
 const DIFFERENTIATORS = [
-  "Automated compounding - your money grows without constant attention",
-  "Structured discipline - built-in commitment keeps you on track",
-  "Wealth preservation - automatic transition to safer assets over time",
-  "Community support - invest alongside others with shared goals",
+  "Deterministic code - your funds work automatically without human intervention",
+  "Risk & Rigor levels - select your risk profile, not individual trades",
+  "100% non-custodial - your keys, your control, always",
+  "Consumer-first design - Web2 ease with Web3 ownership",
 ];
 
 const Index: React.FC = () => {
