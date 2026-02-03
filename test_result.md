@@ -282,12 +282,32 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Turnkey OTP Verification Fix - ACTIVITY_TYPE_VERIFY_OTP"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
+  - agent: "main"
+    message: |
+      CRITICAL FIX: Changed OTP verification activity type from ACTIVITY_TYPE_OTP_AUTH to ACTIVITY_TYPE_VERIFY_OTP.
+      
+      Per Turnkey documentation (https://docs.turnkey.com/authentication/email#otp-based-authentication-flow):
+      - ACTIVITY_TYPE_OTP_AUTH is for credential bundle method (requires targetPublicKey)
+      - ACTIVITY_TYPE_VERIFY_OTP is for server-side OTP verification (returns verificationToken)
+      
+      The fix changes:
+      1. Added verify_otp() method to TurnkeyClient in turnkey_client.py
+      2. Updated /api/turnkey/verify-email-otp endpoint to use ACTIVITY_TYPE_VERIFY_OTP
+      3. Updated turnkey_service.py verify_otp_for_user to use correct activity type
+      
+      TEST REQUIREMENTS:
+      1. POST /api/turnkey/init-email-auth → should send email OTP
+      2. POST /api/turnkey/verify-email-otp with correct code → should return { isVerified: true }
+      3. POST /api/turnkey/create-wallet → should succeed immediately after verification
+      
+      Test credentials: sequencetheoryinc@gmail.com / TestPassword123!
   - agent: "main"
     message: |
       Fixed Digital Asset Indices endpoint with three major improvements:
