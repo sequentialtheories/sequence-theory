@@ -38,10 +38,10 @@ const VaultClubMain = () => {
         <div className="text-center mb-16 animate-slide-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              The Vault Club
+              The Vault Club (TVC)
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-slide-up [animation-delay:0.2s]">A private, choreographed financial schematic designed for long-term capital growth through disciplined, automated smart contracts.</p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 animate-slide-up [animation-delay:0.2s]">A decentralized software coordination platform transforming 'managerial effort' into 'deterministic code' — bridging DeFi and long-term retail wealth building with Web2 ease and Web3 infrastructure.</p>
         </div>
 
         {/* How It Works */}
