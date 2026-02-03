@@ -171,13 +171,13 @@ const VaultClubContracts = () => {
         <div className="bg-gray-50 p-6 rounded-lg">
           <h4 className="text-lg font-semibold mb-3 text-gray-800">Key Takeaways</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>The Vault Club is an automated DeFi investment system using smart contracts</li>
-            <li>Funds are diversified across established protocols like AAVE and Quickswap</li>
-            <li>Two-phase strategy focuses on growth, then preservation</li>
-            <li>Small group structure with flexible commitment periods (1-20 years)</li>
-            <li>Built-in risk management and emergency protections</li>
-            <li>Designed for long-term wealth building through systematic investing</li>
-            <li>Transparent, blockchain-based operations with community support</li>
+            <li>TVC is a decentralized software coordination platform for long-term wealth building</li>
+            <li>Web2-Soul, Web3-Body architecture: familiar login, 100% non-custodial ownership</li>
+            <li>Users don't "trade" — they select Risk & Rigor levels across established DeFi protocols</li>
+            <li>Deterministic, immutable contract logic governed by unanimous participant consent</li>
+            <li>Risk tiers: Conservative (Aave V3), Medium (sUSDC savings), Risky (Morpho institutional vaults)</li>
+            <li>Not a tool for speculation — a tool for structured discipline</li>
+            <li>Your Money. Your Power. The subscription to your future.</li>
           </ul>
         </div>
 
