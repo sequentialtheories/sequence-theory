@@ -290,14 +290,14 @@ class TurnkeyOtpVerificationTester:
             )
             return False
     
-    async def test_check_backend_logs(self):
-        """Test 4: Check backend logs for sub-org creation"""
+    async def test_check_backend_logs_for_otp(self):
+        """Test 3: Check backend logs for OTP code or otpId"""
         try:
-            # Check supervisor backend error logs for detailed sub-org creation
+            # Check supervisor backend error logs for OTP details
             import subprocess
             
-            # Check recent backend error logs (more detailed)
-            cmd = ["tail", "-n", "50", "/var/log/supervisor/backend.err.log"]
+            # Check recent backend error logs for OTP information
+            cmd = ["tail", "-n", "100", "/var/log/supervisor/backend.err.log"]
             
             result = subprocess.run(
                 cmd, 
@@ -308,7 +308,7 @@ class TurnkeyOtpVerificationTester:
             
             if result.returncode != 0:
                 self.log_result(
-                    "Check Backend Logs", 
+                    "Check Backend Logs for OTP", 
                     False, 
                     f"Failed to read backend logs: {result.stderr}",
                     {"return_code": result.returncode, "stderr": result.stderr}
@@ -317,64 +317,74 @@ class TurnkeyOtpVerificationTester:
             
             logs = result.stdout
             
-            # Look for specific sub-org creation success messages
-            sub_org_created = "create_sub_org_without_wallet_created" in logs
-            sub_org_id_found = "57b6c9d6-cd39-40e8-8b41-20d8ccf64660" in logs or "sub_org_id" in logs
-            
-            # Look for the specific success pattern
-            success_patterns = [
-                "create_sub_org_without_wallet_start",
-                "create_sub_org_without_wallet_request",
-                "create_sub_org_without_wallet_created",
-                "ensure_sub_org_for_otp_created"
+            # Look for OTP-related log entries
+            otp_patterns = [
+                "[TURNKEY-OTP]",
+                "otpId:",
+                "[OTP-DEV]",
+                "Generated OTP",
+                "OTP sent to"
             ]
             
             found_patterns = []
-            for pattern in success_patterns:
+            otp_info = {}
+            
+            for pattern in otp_patterns:
                 if pattern in logs:
                     found_patterns.append(pattern)
             
-            # Check for OTP attempt (even if it failed)
-            otp_attempt = "[TURNKEY-OTP]" in logs or "init_otp_auth" in logs
+            # Extract OTP code from logs (dev mode)
+            import re
+            otp_match = re.search(r'\[OTP-DEV\].*?(\d{6})', logs)
+            if otp_match:
+                self.otp_code = otp_match.group(1)
+                otp_info["otp_code"] = self.otp_code
             
-            if sub_org_created and len(found_patterns) >= 3:
+            # Extract otpId from logs
+            otpid_match = re.search(r'otpId:\s*([a-f0-9-]{36})', logs)
+            if otpid_match:
+                self.otp_id = otpid_match.group(1)
+                otp_info["otp_id"] = self.otp_id
+            
+            # Check for Turnkey OTP success
+            turnkey_success = "SUCCESS - OTP sent to" in logs or "EMAIL OTP sent to" in logs
+            
+            if found_patterns and (self.otp_code or self.otp_id or turnkey_success):
                 self.log_result(
-                    "Check Backend Logs", 
+                    "Check Backend Logs for OTP", 
                     True, 
-                    f"Sub-org creation SUCCESS found in logs. Patterns: {found_patterns}",
+                    f"OTP information found in logs. Patterns: {found_patterns}",
                     {
-                        "sub_org_created": sub_org_created,
-                        "sub_org_id_found": sub_org_id_found,
                         "found_patterns": found_patterns,
-                        "otp_attempt": otp_attempt,
-                        "log_sample": logs[-800:] if len(logs) > 800 else logs
+                        "otp_info": otp_info,
+                        "turnkey_success": turnkey_success,
+                        "log_sample": logs[-1000:] if len(logs) > 1000 else logs
                     }
                 )
                 return True
             else:
                 self.log_result(
-                    "Check Backend Logs", 
+                    "Check Backend Logs for OTP", 
                     False, 
-                    f"Sub-org creation incomplete. Found patterns: {found_patterns}",
+                    f"No OTP information found in logs. Found patterns: {found_patterns}",
                     {
-                        "sub_org_created": sub_org_created,
                         "found_patterns": found_patterns,
-                        "searched_for": success_patterns,
-                        "log_sample": logs[-800:] if len(logs) > 800 else logs
+                        "searched_for": otp_patterns,
+                        "log_sample": logs[-1000:] if len(logs) > 1000 else logs
                     }
                 )
                 return False
                 
         except subprocess.TimeoutExpired:
             self.log_result(
-                "Check Backend Logs", 
+                "Check Backend Logs for OTP", 
                 False, 
                 "Log check timed out after 10 seconds"
             )
             return False
         except Exception as e:
             self.log_result(
-                "Check Backend Logs", 
+                "Check Backend Logs for OTP", 
                 False, 
                 f"Exception during log check: {str(e)}",
                 {"error_type": type(e).__name__}
