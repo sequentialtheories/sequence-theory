@@ -51,11 +51,11 @@ const About = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-            The Vault Club by Sequence Theory
+            TVC by Sequence Theory
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Our premier investment contract platform designed for those ready to ease into digital assets 
-            through structured earning opportunities, not random token purchases.
+            A decentralized software coordination platform designed to bridge the gap between DeFi and long-term retail wealth building — 
+            for the next generation of 'set-and-forget' investors.
           </p>
         </div>
         
