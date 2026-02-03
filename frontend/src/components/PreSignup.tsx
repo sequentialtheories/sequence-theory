@@ -50,7 +50,7 @@ const PreSignup = () => {
     
     try {
       toast({
-        title: "Welcome to The Vault Club!",
+        title: "Welcome to TVC!",
         description: "Complete your account to get early access and your secure wallet.",
       });
       navigate(`/auth?email=${encodeURIComponent(sanitizedEmail)}`);
