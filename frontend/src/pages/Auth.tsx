@@ -164,7 +164,7 @@ export default function Auth() {
           <CardTitle className="text-2xl font-bold">
             Join Sequence Theory
           </CardTitle>
-          <CardDescription>Create Your Account to Access The Vault Club & More!</CardDescription>
+          <CardDescription>Create Your Account to Access TVC & More!</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
