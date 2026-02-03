@@ -1323,6 +1323,11 @@ async def verify_email_otp(
         
         current_time = time.time()
         
+        # Accept 'code' as alias for 'otp_code'
+        otp_code = request.otp_code or request.code
+        if not otp_code:
+            raise HTTPException(status_code=400, detail="INVALID_OTP:Missing verification code.")
+        
         # Check OTP storage
         stored = otp_storage.get(user_id)
         
