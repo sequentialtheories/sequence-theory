@@ -560,7 +560,7 @@ const Index: React.FC = () => {
                   variant: "warning",
                 }}
                 title="Frequently Asked Questions"
-                description="Quick answers to help you understand The Vault Club"
+                description="Quick answers to help you understand TVC"
                 titleClassName="text-3xl sm:text-4xl"
               />
 
