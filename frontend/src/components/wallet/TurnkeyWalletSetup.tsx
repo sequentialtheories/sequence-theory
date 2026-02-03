@@ -150,7 +150,7 @@ export function TurnkeyWalletSetup() {
         
         if (verifyRes.ok) {
           const verifyData = await verifyRes.json();
-          if (verifyData.verified) {
+          if (verifyData.isVerified) {
             // Auto-create wallet after verification
             await createWallet();
             return;
