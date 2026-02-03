@@ -880,9 +880,9 @@ async def admin_sync_cleanup(authorization: str = Header(None)):
 # ============================================================================
 
 class CreateWalletRequest(BaseModel):
-    email: str
+    email: Optional[str] = None  # Optional - derived from JWT if not provided
     name: Optional[str] = None
-    user_id: str  # Supabase auth user ID
+    user_id: Optional[str] = None  # Optional - derived from JWT if not provided
     passkey_attestation: Optional[Dict[str, Any]] = None
 
 class SignMessageRequest(BaseModel):
@@ -907,7 +907,8 @@ class EmailOtpInitRequest(BaseModel):
 
 class EmailOtpVerifyRequest(BaseModel):
     email: str
-    otp_code: str
+    otp_code: Optional[str] = None
+    code: Optional[str] = None  # Alias for otp_code
 
 class PasskeyVerifyRequest(BaseModel):
     credential_id: str
