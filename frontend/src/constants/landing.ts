@@ -22,7 +22,7 @@ export const THEME_VARIANTS = {
 export type ThemeVariant = keyof typeof THEME_VARIANTS;
 
 export const SEO_CONFIG = {
-  title: 'Sequence Theory - Your Money, Your Power. Through The Vault Club',
-  description: 'Your Money, Your Power. Join The Vault Club by Sequence Theory for accessible financial education and communal cryptocurrency investments.',
-  keywords: 'Your Money Your Power, Sequence Theory, Vault Club, cryptocurrency investing, financial empowerment, wealth building',
+  title: 'Sequence Theory - TVC: Consumer-First DeFi. Your Money, Your Power.',
+  description: 'TVC (The Vault Club) bridges DeFi and long-term retail wealth building. Web2 feel, Web3 infrastructure. Non-custodial tech made frictionless. Your Money. Your Power.',
+  keywords: 'TVC, The Vault Club, Sequence Theory, DeFi, non-custodial, decentralized finance, wealth building, consumer-first DeFi',
 } as const;
