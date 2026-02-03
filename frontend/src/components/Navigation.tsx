@@ -155,7 +155,7 @@ const Navigation = () => {
                           }}
                           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
                         >
-                          Join The Vault Club
+                          Join TVC
                         </Button>
                       </>
                     )}
