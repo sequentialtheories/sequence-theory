@@ -12,25 +12,25 @@ const About = () => {
       icon: GraduationCap,
       title: "Earn While You Learn",
       description: "Generate returns through structured investment contracts while building your digital asset knowledge.",
-      expandedDescription: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience. While users engage with our smart contract strategies inside The Vault Club, they simultaneously gain structured financial knowledge—empowering them to understand the mechanics behind their investments in real time. This hands-on approach reduces costly trial-and-error learning, builds long-term confidence, and helps users grow both their assets and their understanding of decentralized finance from day one. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
+      expandedDescription: "Earn While You Learn is a core principle at Sequence Theory, designed to shift users away from blindly buying tokens they don't understand toward intentional, informed participation in the crypto economy. Through integrations with platforms like LearnWeb3, Coinbase Education, and other on-chain learning initiatives, we embed education directly into the investment experience. While users engage with our smart contract strategies inside TVC, they simultaneously gain structured financial knowledge—empowering them to understand the mechanics behind their investments in real time. This hands-on approach reduces costly trial-and-error learning, builds long-term confidence, and helps users grow both their assets and their understanding of decentralized finance from day one. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
       isExpandable: true,
       isExpanded: isEarnWhileYouLearnExpanded,
       setExpanded: setIsEarnWhileYouLearnExpanded
     },
     {
       icon: TrendingUp,
-      title: "Mitigate Volatility",
-      description: "Skip the random token speculation. Our platform provides steady growth through proven strategies.",
-      expandedDescription: "Mitigating Volatility is about bringing structure to the unpredictable nature of crypto. In this space, prices move based almost entirely on supply and demand, since there's no central value anchor like in traditional markets. That means price swings are often driven by hype, panic, or sudden shifts in sentiment. The Vault Club helps reduce that chaos by introducing more predictable & systematic behavior into the market. Through features like recurring contributions, automated reinvestment, and time-locked contracts, we create steady demand and discourage impulsive decision making. This helps smooth out some of the noise and gives users a more stable path to be successful over time. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
+      title: "Consumer-First DeFi",
+      description: "Web2 feel with Web3 infrastructure — making non-custodial technology frictionless for everyday investors.",
+      expandedDescription: "TVC transforms 'managerial effort' into 'deterministic code,' offering an intuitive interface that brings a Web2 feel to Web3 infrastructure. We're becoming an industry standard of consumer-first DeFi by finding the fine balance between accessibility and true non-custodial ownership. Users don't need to manage seed phrases or navigate complex interfaces — they simply sign in with familiar methods like Email or Passkey while their private keys remain 100% in their control, generated client-side and never accessible to Sequence Theory. This is how we make non-custodial tech frictionless.",
       isExpandable: true,
       isExpanded: isMitigateVolatilityExpanded,
       setExpanded: setIsMitigateVolatilityExpanded
     },
     {
       icon: Shield,
-      title: "Investment Contracts",
-      description: "Structured agreements that protect your capital while you ease into the digital asset space.",
-      expandedDescription: "Investment Contracts are a safer and smarter way to start in crypto—especially before diving into an exchange. Platforms like Coinbase or Binance can feel like a sea of tokens, many of which serve different purposes or, frankly, have no real value at all. Some tokens aren't even designed to increase in price, and others—like memecoins—exist mainly for speculation. For beginners, this can lead to confusion, impulsive purchases, and costly mistakes. That's why The Vault Club offers structured contracts as a starting point. Instead of buying random tokens and figuring it out later, users can begin with a clear, guided strategy that grows over time and teaches them how crypto really works. It's about building first, then exploring on your terms, with confidence. Emergency liquidity is built in but profits are not earned if deposits are withdrawn before contract conclusion.",
+      title: "Set & Forget Investing",
+      description: "Once deployed, contract logic is immutable — governed by unanimous consent, not speculation.",
+      expandedDescription: "The Vault Club is the 'subscription to your future.' It is not a tool for speculation; it is a tool for structured discipline. Users do not 'trade'; they select Risk & Rigor levels that dictate fund distribution across different DeFi protocols. Conservative options use stablecoin lending through Aave V3, medium risk holds sUSDC for savings rates, while higher risk accesses precurated vaults using institutional risk modeling through Morpho. Once a contract is deployed, its logic is deterministic and immutable — governed by the unanimous consent of participants. This empowers everyday investors to stop chasing hype and start compounding legacy.",
       isExpandable: true,
       isExpanded: isInvestmentContractsExpanded,
       setExpanded: setIsInvestmentContractsExpanded
@@ -38,8 +38,8 @@ const About = () => {
     {
       icon: Users,
       title: "Your Community",
-      description: "Connect with others who understand the difference between investing and gambling on tokens.",
-      expandedDescription: "Your Community at Sequence Theory is built on trust, purpose, and long-term value — something that's unfortunately rare in the crypto space. Too often, wealth-building platforms turn out to be get rich quick schemes or pump and dump groups disguised as communities. Many so called crypto groups push \"free plays\" or insider tips that are really just setups for someone else to profit at your expense. We're the outlier. Sequence Theory operates with full transparency, a mission driven purpose, and a clear goal: to make crypto more accessible, educational, and empowering for everyday people. We're not here to exploit the system. We're here to rebuild it, and that means actively calling out and stepping over the predatory actors that give this space a bad name. This is your community built for real progress, not empty promises.",
+      description: "Connect with the next generation of 'set-and-forget' investors building long-term wealth.",
+      expandedDescription: "Your Community at Sequence Theory is built on trust, purpose, and long-term value — something that's unfortunately rare in the crypto space. Too often, wealth-building platforms turn out to be get rich quick schemes or pump and dump groups disguised as communities. We're the outlier. TVC bridges the gap between decentralized finance and long-term retail wealth building, designed for the next generation of 'set-and-forget' investors. This is your community built for real progress, not empty promises. Your Money. Your Power.",
       isExpandable: true,
       isExpanded: isYourCommunityExpanded,
       setExpanded: setIsYourCommunityExpanded
