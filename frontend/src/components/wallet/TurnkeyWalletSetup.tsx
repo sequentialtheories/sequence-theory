@@ -226,7 +226,7 @@ export function TurnkeyWalletSetup() {
       }
 
       if (data.isVerified) {
-        // Auto-create wallet
+        // Auto-create wallet after successful OTP verification
         await createWallet();
       }
     } catch (err) {
