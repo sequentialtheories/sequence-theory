@@ -222,7 +222,7 @@ const Index: React.FC = () => {
                     size="lg"
                     className="text-base px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 min-w-[220px]"
                   >
-                    Learn About The Vault Club
+                    Learn About TVC
                     <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                   </Button>
                 </Link>
