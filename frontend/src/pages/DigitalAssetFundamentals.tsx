@@ -158,17 +158,17 @@ const DigitalAssetFundamentals = () => {
         
         <p className="text-gray-700 mb-4">
           Given all these risks and complexities, jumping directly into buying individual digital assets is like trying to perform surgery without medical training. 
-          That's why structured investment approaches, like Vault Club contracts, can be valuable for beginners.
+          That's why structured investment approaches, like TVC (The Vault Club), can be valuable for beginners.
         </p>
 
         <div className="bg-green-50 p-6 rounded-lg">
           <h4 className="text-lg font-semibold mb-3 text-green-800">Benefits of Structured Approaches</h4>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
-            <li>Professional management reduces your learning curve</li>
-            <li>Diversification across multiple assets and types reduces risk</li>
-            <li>Systematic strategies remove emotional decision-making</li>
-            <li>You can learn while your money is still working for you</li>
-            <li>Exposure to different asset types without needing to understand each one deeply</li>
+            <li>Deterministic smart contracts remove emotional decision-making</li>
+            <li>Risk & Rigor levels let you choose your risk profile, not individual trades</li>
+            <li>100% non-custodial ownership keeps you in control</li>
+            <li>You can learn while your capital is deployed through established DeFi protocols</li>
+            <li>Web2 ease with Web3 infrastructure — no seed phrases to manage</li>
           </ul>
         </div>
 
