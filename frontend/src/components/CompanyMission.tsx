@@ -6,17 +6,17 @@ const CompanyMission = () => {
     {
       icon: Target,
       title: "Our Core Mission",
-      description: "Democratize financial empowerment through community-based investment and education."
+      description: "Bridge the gap between decentralized finance and long-term retail wealth building through consumer-first design."
     },
     {
       icon: Lightbulb,
       title: "Our Approach",
-      description: "Automate long-term compounding and wBTC accumulation through disciplined, non-custodial smart contracts."
+      description: "Transform 'managerial effort' into 'deterministic code' — Web2 feel with Web3 infrastructure, 100% non-custodial."
     },
     {
       icon: Globe,
       title: "Our Vision",
-      description: "Address growing financial illiteracy and inequality with an accessible wealth-building system."
+      description: "Become the industry standard of consumer-first DeFi, making non-custodial technology frictionless for everyday investors."
     }
   ];
 
@@ -35,7 +35,7 @@ const CompanyMission = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto animate-slide-up [animation-delay:0.2s]">
-            The Vault Club acts as an automated coordinator — not a custodian or bank. You retain full control.
+            TVC acts as an automated coordinator — not a custodian or bank. You retain 100% non-custodial ownership. Your Money. Your Power.
           </p>
         </div>
 
@@ -54,25 +54,25 @@ const CompanyMission = () => {
         <div className="max-w-4xl mx-auto animate-slide-up [animation-delay:0.5s]">
           <div className="bg-gradient-card backdrop-blur-sm rounded-2xl p-8 border border-primary/10 shadow-medium hover:shadow-strong transition-spring">
             <h3 className="text-2xl font-semibold mb-6 text-foreground text-center">
-              Why We Built The Vault Club
+              Why We Built TVC
             </h3>
             
             <div className="space-y-6 text-muted-foreground">
               <p className="text-lg leading-relaxed animate-slide-left">
-                The goal is not to encourage financial obsession but to replace it with structure. 
-                Through automated smart contracts, we've created a system that enforces disciplined participation 
-                while remaining 100% non-custodial — your keys, your control.
+                TVC is the "subscription to your future." It is not a tool for speculation — it is a tool for structured discipline. 
+                Users don't "trade"; they select Risk & Rigor levels. Once deployed, contract logic is deterministic and immutable, 
+                governed by unanimous consent of participants.
               </p>
               
               <p className="text-lg leading-relaxed animate-slide-right [animation-delay:0.7s]">
-                Our two-phase strategy starts with the Mega Vault for growth and compounding, 
-                then transitions to wBTC accumulation for wealth preservation. 
-                Capital is deployed across three strands: Spark, Aave, and QuickSwap protocols.
+                Our Web2-Soul, Web3-Body architecture provides frictionless onboarding. Users sign in with Email/Passkey 
+                while private keys remain 100% in their control — generated client-side, never accessible to Sequence Theory.
+                This is how we make non-custodial technology frictionless.
               </p>
               
               <p className="text-lg leading-relaxed animate-slide-left [animation-delay:0.9s]">
-                Built-in safeguards protect all participants: missed deposit redistribution, 
-                emergency withdrawal options, and multisig security. 
+                Risk management through established DeFi protocols: Conservative (Aave V3 stablecoin lending), 
+                Medium (sUSDC savings rates), and Risky (Morpho institutional-grade vaults). 
                 Simple, transparent pricing at $1.50/user/week — no hidden fees.
               </p>
             </div>
