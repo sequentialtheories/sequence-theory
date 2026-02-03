@@ -19,12 +19,12 @@ export const FAQPreview: React.FC = () => {
 
   const faqs: FAQItem[] = [
     {
-      question: "What is The Vault Club?",
-      answer: "The Vault Club is a private, automated investment system designed for long-term capital growth. It's a 'Set & Forget' approach — you make regular contributions and the system handles everything else, from compounding to wealth preservation."
+      question: "What is TVC (The Vault Club)?",
+      answer: "TVC is a decentralized software coordination platform designed to bridge DeFi and long-term retail wealth building. It's the 'subscription to your future' — transforming 'managerial effort' into 'deterministic code' with a Web2 feel and Web3 infrastructure. You select Risk & Rigor levels, and the system handles everything else."
     },
     {
       question: "Is my money safe? Who controls my funds?",
-      answer: "You maintain full control of your funds at all times. The system acts as an automated coordinator — not a custodian or bank. Your investments work for you automatically while you retain complete ownership."
+      answer: "You maintain 100% non-custodial ownership at all times. Private keys are generated client-side and are never accessible to Sequence Theory. TVC acts as an automated coordinator — not a custodian or bank. Your investments work for you automatically while you retain complete control."
     },
     {
       question: "How much does it cost?",
