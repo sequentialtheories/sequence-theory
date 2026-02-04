@@ -1078,7 +1078,7 @@ async def create_turnkey_wallet(
             
             wallet_id, eth_address = await create_wallet_in_sub_org(
                 sub_org_id=sub_org_id,
-                user_email=request.email or user_email
+                user_email=effective_email
             )
             
             if not wallet_id or not eth_address:
@@ -1088,7 +1088,7 @@ async def create_turnkey_wallet(
             
             # Step 6: Store wallet in user_wallets table (INSERT new record)
             wallet_data = {
-                "user_id": auth_user_id,
+                "user_id": effective_user_id,
                 "wallet_address": eth_address,
                 "turnkey_sub_org_id": sub_org_id,
                 "turnkey_wallet_id": wallet_id,
@@ -1114,10 +1114,10 @@ async def create_turnkey_wallet(
             else:
                 logger.info(f"[WALLET] Successfully stored in user_wallets table")
                 # Clean up verified_sub_orgs now that it's in DB
-                if auth_user_id in verified_sub_orgs:
-                    del verified_sub_orgs[auth_user_id]
+                if effective_user_id in verified_sub_orgs:
+                    del verified_sub_orgs[effective_user_id]
         
-        logger.info(f"[WALLET] SUCCESS: Created wallet for user {auth_user_id}: {eth_address}")
+        logger.info(f"[WALLET] SUCCESS: Created wallet for user {effective_user_id}: {eth_address}")
         
         return {
             "walletAddress": eth_address,
