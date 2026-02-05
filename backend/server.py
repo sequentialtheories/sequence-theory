@@ -1273,7 +1273,7 @@ async def init_email_otp(
         # Store OTP info with sub_org_id for verification step
         otp_storage[user_id] = {
             "otp_id": otp_id,
-            "sub_org_id": sub_org_id,  # CRITICAL: Need this for verify step
+            "sub_org_id": sub_org_id,
             "expires": current_time + OTP_EXPIRY_SECONDS,
             "email": user_email,
             "attempts": 0,
@@ -1282,7 +1282,28 @@ async def init_email_otp(
             "locked_until": None
         }
         
-        return {"ok": True}
+        # PERSIST sub_org_id to DB for durability
+        async with httpx.AsyncClient(timeout=30.0) as db_client:
+            # Upsert to user_wallets with just sub_org_id (no wallet yet)
+            await db_client.post(
+                f"{SUPABASE_URL}/rest/v1/user_wallets",
+                json={
+                    "user_id": user_id,
+                    "turnkey_sub_org_id": sub_org_id,
+                    "wallet_address": None,
+                    "provider": "turnkey",
+                    "network": "polygon"
+                },
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                    "Content-Type": "application/json",
+                    "Prefer": "resolution=merge-duplicates"
+                }
+            )
+        
+        # RETURN otpId to client - client MUST send it back in verify
+        return {"ok": True, "otpId": otp_id}
         
     except HTTPException:
         raise
