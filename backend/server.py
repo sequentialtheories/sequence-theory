@@ -1632,11 +1632,13 @@ async def get_turnkey_wallet_info(authorization: str = Header(None)):
                 wallets = wallet_response.json()
                 if wallets and len(wallets) > 0:
                     wallet = wallets[0]
-                    return {
-                        "hasWallet": True,
-                        "walletAddress": wallet.get("wallet_address"),
-                        "walletId": wallet.get("turnkey_wallet_id")
-                    }
+                    # ONLY return hasWallet:true if wallet_address EXISTS (not null)
+                    if wallet.get("wallet_address") and wallet.get("turnkey_wallet_id"):
+                        return {
+                            "hasWallet": True,
+                            "walletAddress": wallet.get("wallet_address"),
+                            "walletId": wallet.get("turnkey_wallet_id")
+                        }
             
             # Fallback: Check profiles table
             profile_response = await client.get(
