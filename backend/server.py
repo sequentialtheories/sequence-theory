@@ -1355,32 +1355,39 @@ async def verify_email_otp(
         if not otp_code:
             raise HTTPException(status_code=400, detail="INVALID_OTP:Missing verification code.")
         
-        # Check OTP storage
-        stored = otp_storage.get(user_id)
+        # Get otpId from client (REQUIRED) - client got this from init-email-auth response
+        otp_id = request.otpId
         
-        if not stored:
-            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:No verification code found. Please request a new one.")
-        
-        locked_until = stored.get("locked_until") or 0
-        if locked_until and current_time < locked_until:
-            wait_time = int(locked_until - current_time)
-            raise HTTPException(
-                status_code=429, 
-                detail=f"RATE_LIMITED:Account locked. Try again in {wait_time} seconds."
-            )
-        
-        if current_time > stored["expires"]:
-            del otp_storage[user_id]
-            raise HTTPException(status_code=400, detail="OTP_EXPIRED:Verification code expired. Please request a new one.")
-        
-        otp_id = stored.get("otp_id")
-        sub_org_id = stored.get("sub_org_id")  # CRITICAL: Get sub-org from storage
+        # Fallback to in-memory storage if client didn't send otpId
+        stored = otp_storage.get(user_id, {})
+        if not otp_id:
+            otp_id = stored.get("otp_id")
         
         if not otp_id:
-            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
+            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Missing otpId. Please request a new code.")
+        
+        # Get sub_org_id from DB (durable) - NOT from memory
+        async with httpx.AsyncClient(timeout=30.0) as db_client:
+            wallet_response = await db_client.get(
+                f"{SUPABASE_URL}/rest/v1/user_wallets",
+                params={"user_id": f"eq.{user_id}", "select": "turnkey_sub_org_id"},
+                headers={
+                    "apikey": SUPABASE_SERVICE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}"
+                }
+            )
+            sub_org_id = None
+            if wallet_response.status_code == 200:
+                wallets = wallet_response.json()
+                if wallets:
+                    sub_org_id = wallets[0].get("turnkey_sub_org_id")
+        
+        # Fallback to memory if DB doesn't have it
+        if not sub_org_id:
+            sub_org_id = stored.get("sub_org_id")
         
         if not sub_org_id:
-            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:Invalid verification state. Please request a new code.")
+            raise HTTPException(status_code=400, detail="OTP_NOT_FOUND:No sub-org found. Please request a new code.")
         
         # Verify OTP via Turnkey against SUB-ORG (same as init)
         # CORRECT: Use ACTIVITY_TYPE_VERIFY_OTP (not OTP_AUTH)
