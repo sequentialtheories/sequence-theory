@@ -909,6 +909,7 @@ class EmailOtpVerifyRequest(BaseModel):
     email: str
     otp_code: Optional[str] = None
     code: Optional[str] = None  # Alias for otp_code
+    otpId: Optional[str] = None  # Client MUST send this from init response
 
 class PasskeyVerifyRequest(BaseModel):
     credential_id: str
